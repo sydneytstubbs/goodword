@@ -50,6 +50,7 @@ const eslintConfig = defineConfig([
   {
     // Primitives are allowed only in tokens.css and fixed-color marketing sections (DS 2.2).
     files: [...PRODUCT, "lib/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.ts"],
     rules: {
       "good-word/no-raw-values": "error",
     },

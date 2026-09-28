@@ -79,6 +79,10 @@
   --ring-color-surface-raised: var(--surface-raised);
   --ring-color-poster-edge: var(--poster-edge);
   --outline-color-focus: var(--focus-ring);
+  --text-decoration-color-strong: var(--border-strong);
+  --text-decoration-color-action: var(--action);
+  --text-decoration-color-inverse: var(--inverse-text);
+  --caret-color-action: var(--action);
 
   /* Shape */
   --radius-poster: var(--radius-poster);
@@ -87,6 +91,7 @@
   --radius-sheet: var(--radius-sheet);
   --radius-device: var(--radius-device);
   --radius-pill: var(--radius-pill);
+  --radius-checkbox: var(--radius-checkbox);
 
   /* Elevation */
   --shadow-sm: var(--shadow-sm);
@@ -130,6 +135,10 @@
 @utility max-h-sheet { max-height: var(--sheet-max-height); }
 @utility h-topbar { height: var(--topbar-height); }
 @utility h-tabbar { height: var(--tabbar-height); }
+@utility w-dialog { width: calc(100% - 2 * var(--space-5)); }
+@utility mb-keyboard { margin-bottom: var(--keyboard-inset, 0px); }
+@utility pb-safe-footer { padding-bottom: max(var(--space-4), env(safe-area-inset-bottom)); }
+@utility bottom-toast { bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom) + var(--space-3)); }
 @utility border-hairline { border-width: var(--border-width); }
 
 /* Selected segment position for the segmented control: seg-pos-0, seg-pos-1, ... */
@@ -166,3 +175,6 @@
     }
   }
 }
+
+/* Dark theme (prepared, not shipped; 3.10). Only for things tokens can't express, like the poster-edge ring. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

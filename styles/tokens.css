@@ -81,6 +81,7 @@
   --radius-sheet: 16px;    /* sheet top corners */
   --radius-device: 44px;   /* marketing phone frame */
   --radius-pill: 999px;    /* chips, avatars, badges, composer, jump-to-new pills */
+  --radius-checkbox: 5px;  /* Addition: checkbox box (4.1.6) */
 
   /* ---------- Elevation: soft, low, neutral ---------- */
   --shadow-sm: 0 1px 2px rgb(10 10 10 / 0.05);
@@ -97,6 +98,11 @@
   --dur-base: 180ms;        /* toasts, small reveals, list inserts */
   --dur-slow: 280ms;        /* sheets and dialogs entering */
   --dur-expressive: 400ms;  /* marketing entrances only */
+  /* Addition: exits (~70% of entrances, 3.7.2) and the two loops */
+  --dur-exit: 120ms;        /* toasts and dialogs out */
+  --dur-exit-sheet: 200ms;  /* sheets out */
+  --dur-pulse: 1.6s;        /* skeleton pulse */
+  --dur-spin: 0.8s;         /* button spinner */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-enter: cubic-bezier(0, 0, 0.2, 1);  /* decelerate into place */
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);   /* accelerate away */
