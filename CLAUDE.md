@@ -63,7 +63,14 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 - TMDB API (server-side only), JustWatch attribution for where-to-watch
 - Transactional email provider (Resend, pending confirmation) from step 7
 
-**Commands:** update this section once the project is scaffolded (dev, build, lint, type-check, test).
+**Commands** (pnpm):
+- `pnpm dev`: local dev server at http://localhost:3000
+- `pnpm build`: production build
+- `pnpm lint`: ESLint
+- `pnpm typecheck`: generate route types, then `tsc --noEmit`
+- Tests: not set up yet (added in step 0)
+
+Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 
 **Environment variables** (never commit values; keep `.env.example` current):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, and from step 7 `EMAIL_API_KEY`. If one is missing, tell Sydney which one and where to get it; don't work around it.
