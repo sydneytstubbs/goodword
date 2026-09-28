@@ -1,0 +1,6 @@
+/* Styleguide-only controls (DESIGN-SYSTEM.md 14). */
+
+/* 200% text: type tokens are rem, so this scales text and nothing else (WCAG 1.4.4). */
+:root[data-text-scale="200"] {
+  font-size: 200%;
+}
