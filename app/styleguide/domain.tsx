@@ -82,9 +82,10 @@ function VouchButtons() {
         <Specimen label="Live: tap to vouch; tap again for the menu">
           <VouchButton vouched={vouched} size="lg" emphasis="primary" {...handlers} />
         </Specimen>
-        <Specimen label="Not vouched: primary (detail) and secondary (rows)">
+        <Specimen label="Not vouched: primary (detail), secondary, and a row's (“Add” below 768px)">
           <VouchButton vouched={false} size="lg" emphasis="primary" {...handlers} />
           <VouchButton vouched={false} size="md" emphasis="secondary" {...handlers} />
+          <VouchButton vouched={false} size="md" emphasis="secondary" titleName="The Night Ferry" {...handlers} />
         </Specimen>
         <Specimen label="Vouched: wash, Check, “Your good word”">
           <VouchButton vouched size="lg" {...handlers} />
@@ -113,11 +114,11 @@ function RecCards() {
           <RecCardGrid title={titles.moth} goodWords={[{ person: people.bea, at: NOW }]} href="#rec-card" viewerId={viewer.id} />
         </div>
       </Specimen>
-      <Specimen label="row: the vouch button is a separate target" wide>
+      <Specimen label="row: the vouch button is a separate target; it says “Add” below 768px" wide>
         <div className="w-full max-w-detail">
-          <RecCardRow title={titles.nightFerry} goodWords={goodWords.nightFerry} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} {...handlers} />} />
+          <RecCardRow title={titles.nightFerry} goodWords={goodWords.nightFerry} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} titleName={titles.nightFerry.name} {...handlers} />} />
           <RecCardRow title={titles.lowTide} goodWords={goodWords.lowTide} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched {...handlers} />} />
-          <RecCardRow title={titles.moth} goodWords={[]} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} {...handlers} />} />
+          <RecCardRow title={titles.moth} goodWords={[]} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} titleName={titles.moth.name} {...handlers} />} />
         </div>
       </Specimen>
       <Specimen label="detail: the title screen (title-l is its h1; shown lower here)" wide>

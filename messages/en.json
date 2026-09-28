@@ -65,6 +65,7 @@
   },
   "vouch": {
     "put": "Put in a good word",
+    "putShort": "Add",
     "yours": "Your good word",
     "editNote": "Edit note",
     "changeGroups": "Change groups",

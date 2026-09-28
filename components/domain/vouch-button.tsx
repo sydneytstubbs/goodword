@@ -22,6 +22,11 @@ export type VouchButtonProps = {
   onChangeGroups: () => void;
   onTakeBack: () => void;
   fullWidth?: boolean;
+  /**
+   * The title, for rows. Below 768px a row's button just says "Add", and the
+   * title completes its accessible name ("Add The Night Ferry").
+   */
+  titleName?: string;
 };
 
 function CrossFadeIcon({ vouched }: { vouched: boolean }) {
@@ -50,6 +55,7 @@ export function VouchButton({
   onChangeGroups,
   onTakeBack,
   fullWidth,
+  titleName,
 }: VouchButtonProps) {
   const base = cn(buttonBase, buttonSizes[size], fullWidth && "w-full");
 
@@ -57,7 +63,17 @@ export function VouchButton({
     return (
       <button type="button" aria-pressed={false} onClick={onPut} className={cn(base, buttonVariants[emphasis])}>
         <CrossFadeIcon vouched={false} />
-        {t("vouch.put")}
+        {size === "md" && titleName ? (
+          <>
+            <span className="md:hidden">
+              {t("vouch.putShort")}
+              <span className="sr-only"> {titleName}</span>
+            </span>
+            <span className="hidden md:inline">{t("vouch.put")}</span>
+          </>
+        ) : (
+          t("vouch.put")
+        )}
       </button>
     );
   }
