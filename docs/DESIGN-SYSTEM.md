@@ -1329,7 +1329,7 @@ Semantic versioning for the system:
 One page that renders:
 - **Foundations:** color swatches with live-computed contrast ratios for every pairing in 3.1.3, in both themes; the type scale; spacing; elevation levels; radii; motion demos (with a reduced-motion toggle); the full icon map.
 - **Components:** every component in every state from 3.8, every variant and size.
-- **Patterns:** one working example of each pattern from Section 5, including all screen states from 5.12.
+- **Patterns:** one working example of each pattern from Section 5, including all screen states from 5.12. Patterns are added step by step: each build step adds the patterns it builds, using the real components and behavior, rather than all patterns being mocked up front in step 0.
 - **Controls:** dev-only theme toggle (light / dark, also `?theme=dark`), reduced-motion simulation, forced-colors preview note, and a 200% text toggle.
 
 It is excluded from search indexing and from production navigation, and it's the target for visual regression and axe tests.
@@ -1403,6 +1403,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.1.1 (2026-09-28):** `/styleguide` patterns (14) are added step by step as each build step builds them; step 0 covers foundations and every Section 4 component in every state.
 - **v3.1 (2026-09-27):** `title-l` becomes the big editorial page title: 56px (44px step-down), line height 0.92, tracking -0.025em, with spacing rules (3.2.2).
 - **v3.0 (2026-09-27): Editorial.** A new visual language: calm, modern, minimal. Behavior, patterns, content rules, and accessibility requirements are unchanged, and section numbers are preserved so the product requirements still resolve.
   - **Breaking:** new palette (paper, ink, graphite, one cobalt accent, muted people tones clay, ochre, moss, plum); `--border` split into `--border-subtle` and `--border-strong`; removed `--highlight`, `--on-accent`, `--shadow-color`, `--radius-input`, and the v2 accent primitives; added `--action-hover`, `--action-text`, `--action-wash`, `--on-action`, `--surface-hover`, `--surface-pressed`, `--people-1` to `--people-4`, `--on-people`, `--poster-edge`, `--radius-control`, `--radius-device`.
