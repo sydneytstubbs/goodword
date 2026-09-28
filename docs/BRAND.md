@@ -1,6 +1,6 @@
 # Good Word: Brand Guide
 
-**Version** 2.0 (Editorial) · **Owner** Sydney · **Last updated** 2026-09-27
+**Version** 2.0.1 (Editorial) · **Owner** Sydney · **Last updated** 2026-09-28
 
 How Good Word presents itself, anywhere: the app, the marketing page, emails, invite previews, and the app icon. `DESIGN-SYSTEM.md` holds the exact tokens and components; this guide explains the brand they express. If the two ever disagree on a value, the design system wins.
 
@@ -100,7 +100,7 @@ Mostly neutral, with one accent. Color comes from the posters and the people.
 
 | Role | Typeface | Notes |
 |---|---|---|
-| Display | **Instrument Serif** (Google Fonts) | Headlines only, 28px and up. Regular and italic. Italic for emphasis, sparingly |
+| Display | **Instrument Serif** (Google Fonts) | Headlines only, 24px and up. Regular and italic. Italic for emphasis, sparingly |
 | Everything else | **Inter** (Google Fonts, variable) | UI, body, labels, numbers. Tabular figures for counts |
 
 - **Contrast of scale is the design.** Very large serif headlines against small, quiet Inter text.
@@ -146,3 +146,10 @@ Quiet and quick. Things fade and settle a few pixels into place; nothing bounces
 | Keep cobalt for actions and your own good word | Use cobalt for decoration or headlines |
 | Frame product UI straight and clean | Tilt, sticker, or scribble on anything |
 | Write like a friend with taste | Write like a hype account |
+
+---
+
+## 11. Changelog
+
+- **v2.0.1 (2026-09-28):** Instrument Serif minimum is 24px, matching `DESIGN-SYSTEM.md` 3.2.2 (was 28px).
+- **v2.0 (2026-09-27):** Editorial direction.
