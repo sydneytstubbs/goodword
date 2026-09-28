@@ -1,0 +1,129 @@
+/*
+ * Type scale utilities (DESIGN-SYSTEM.md 3.2.1). Each utility is the whole
+ * style: family, size, line height, weight, tracking. Instrument Serif is
+ * only reachable through the serif utilities here, all 24px and up, so it
+ * can't be set smaller anywhere else (lint enforces this; see 11.5).
+ */
+
+/* ---------- Instrument Serif (24px and up) ---------- */
+@utility text-display-xl {
+  font-family: var(--font-display);
+  font-size: var(--type-display-xl-size);
+  line-height: var(--type-display-xl-leading);
+  letter-spacing: var(--type-display-xl-tracking);
+  font-weight: var(--weight-regular);
+}
+@utility text-display-l {
+  font-family: var(--font-display);
+  font-size: var(--type-display-l-size);
+  line-height: var(--type-display-l-leading);
+  letter-spacing: var(--type-display-l-tracking);
+  font-weight: var(--weight-regular);
+}
+@utility text-display-m {
+  font-family: var(--font-display);
+  font-size: var(--type-display-m-size);
+  line-height: var(--type-display-m-leading);
+  letter-spacing: var(--type-display-m-tracking);
+  font-weight: var(--weight-regular);
+}
+@utility text-title-l {
+  font-family: var(--font-display);
+  font-size: var(--type-title-l-size);
+  line-height: var(--type-title-l-leading);
+  letter-spacing: var(--type-title-l-tracking);
+  font-weight: var(--weight-regular);
+}
+@utility text-title-l-step {
+  font-family: var(--font-display);
+  font-size: var(--type-title-l-step-size);
+  line-height: var(--type-title-l-step-leading);
+  letter-spacing: var(--type-title-l-tracking);
+  font-weight: var(--weight-regular);
+}
+@utility text-quote {
+  font-family: var(--font-display);
+  font-size: var(--type-quote-size);
+  line-height: var(--type-quote-leading);
+  font-style: italic;
+  font-weight: var(--weight-regular);
+}
+@utility text-wordmark {
+  font-family: var(--font-display);
+  font-size: var(--type-wordmark-size);
+  line-height: 1;
+  font-weight: var(--weight-regular);
+}
+@utility text-poster-title {
+  font-family: var(--font-display);
+  font-size: var(--type-poster-title-size);
+  line-height: var(--type-poster-title-leading);
+  font-weight: var(--weight-regular);
+}
+/* The single serif initial on 48px row posters and 64px activity posters */
+@utility text-poster-initial {
+  font-family: var(--font-display);
+  font-size: var(--type-quote-size);
+  line-height: 1;
+  font-weight: var(--weight-regular);
+}
+
+/* ---------- Inter ---------- */
+@utility text-title-m {
+  font-family: var(--font-body);
+  font-size: var(--type-title-m-size);
+  line-height: var(--type-title-m-leading);
+  letter-spacing: var(--type-title-m-tracking);
+  font-weight: var(--weight-semibold);
+}
+@utility text-heading {
+  font-family: var(--font-body);
+  font-size: var(--type-heading-size);
+  line-height: var(--type-heading-leading);
+  letter-spacing: var(--type-heading-tracking);
+  font-weight: var(--weight-semibold);
+}
+@utility text-body {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-weight: var(--weight-regular);
+}
+@utility text-body-marketing {
+  font-family: var(--font-body);
+  font-size: var(--type-body-marketing-size);
+  line-height: var(--type-body-marketing-leading);
+  font-weight: var(--weight-regular);
+}
+@utility text-body-strong {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  font-weight: var(--weight-semibold);
+}
+@utility text-label {
+  font-family: var(--font-body);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  font-weight: var(--weight-medium);
+}
+@utility text-card-title {
+  font-family: var(--font-body);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  font-weight: var(--weight-semibold);
+}
+@utility text-caption {
+  font-family: var(--font-body);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  font-weight: var(--weight-regular);
+}
+@utility text-overline {
+  font-family: var(--font-body);
+  font-size: var(--type-overline-size);
+  line-height: var(--type-overline-leading);
+  letter-spacing: var(--type-overline-tracking);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+}

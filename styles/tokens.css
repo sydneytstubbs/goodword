@@ -1,0 +1,195 @@
+/*
+ * Good Word design tokens (DESIGN-SYSTEM.md 3.1.1, v3.1).
+ * The only place raw values live. Components use semantic roles only.
+ *
+ * Additions beyond the 3.1.1 block, each marked below:
+ * - Theme selectors also match any element with data-theme, so a region
+ *   (the marketing page, a styleguide preview) can pin its theme.
+ * - --font-* point at the next/font variables first.
+ * - Type scale tokens from 3.2.1, in rem so 200% text works (7.1).
+ * - A few layout sizes the components need (sheet, dialog, bars).
+ */
+
+:root,
+[data-theme="light"] {
+  /* ---------- Primitive palette ---------- */
+  --paper: #FAFAF9;
+  --white: #FFFFFF;
+  --stone-100: #F3F3F1;
+  --stone-150: #EDEDEA;
+  --stone-200: #E6E5E3;
+  --stone-500: #8A8A87;
+  --graphite: #6B6B6B;
+  --ink: #0A0A0A;
+  --cobalt: #2B4BFF;
+  --cobalt-600: #1F3BE0;
+  --cobalt-50: #EEF1FF;
+  --red-700: #B42318;
+  --red-50: #FEF3F2;
+  --green-700: #15803D;
+  /* People and poster tones: deep, muted, film-still colors */
+  --clay: #9A4A36;
+  --ochre: #7D5A12;
+  --moss: #3F5E45;
+  --plum: #5E4670;
+
+  /* ---------- Semantic roles (components use ONLY these) ---------- */
+  --surface: var(--paper);             /* page */
+  --surface-raised: var(--white);      /* cards, sheets, inputs, menus */
+  --surface-sunken: var(--stone-100);  /* skeletons, segmented track, covers */
+  --surface-hover: var(--stone-100);   /* hover on neutral controls */
+  --surface-pressed: var(--stone-150); /* pressed on neutral controls */
+  --text: var(--ink);
+  --text-muted: var(--graphite);
+  --border-subtle: var(--stone-200);   /* dividers, card edges (decorative) */
+  --border-strong: var(--stone-500);   /* inputs and controls (meets 3:1) */
+  --action: var(--cobalt);             /* the one accent */
+  --action-hover: var(--cobalt-600);
+  --action-text: var(--cobalt-600);    /* cobalt text on wash or small sizes */
+  --action-wash: var(--cobalt-50);     /* vouched state, mentions of you, "New" */
+  --on-action: var(--white);
+  --success: var(--green-700);
+  --danger: var(--red-700);
+  --danger-tint: var(--red-50);
+  --inverse-surface: var(--ink);       /* toasts, selected chips, ink section */
+  --inverse-text: var(--white);
+  --focus-ring: var(--cobalt);
+  --scrim: rgb(10 10 10 / 0.32);
+  --people-1: var(--clay);
+  --people-2: var(--ochre);
+  --people-3: var(--moss);
+  --people-4: var(--plum);
+  --on-people: var(--white);
+  --poster-edge: rgb(10 10 10 / 0.08); /* inset hairline on posters */
+  color-scheme: light;
+
+  /* ---------- Type ---------- */
+  /* Addition: next/font variables first, then the 3.1.1 stacks. */
+  --font-display: var(--font-instrument-serif), "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ---------- Space (4px base) ---------- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-24: 96px; --space-32: 128px;
+
+  /* ---------- Shape ---------- */
+  --border-width: 1px;
+  --radius-poster: 6px;
+  --radius-control: 8px;   /* buttons, inputs */
+  --radius-card: 12px;     /* cards, menus, dialogs, banners */
+  --radius-sheet: 16px;    /* sheet top corners */
+  --radius-device: 44px;   /* marketing phone frame */
+  --radius-pill: 999px;    /* chips, avatars, badges, composer, jump-to-new pills */
+
+  /* ---------- Elevation: soft, low, neutral ---------- */
+  --shadow-sm: 0 1px 2px rgb(10 10 10 / 0.05);
+  --shadow-md: 0 1px 2px rgb(10 10 10 / 0.04), 0 6px 16px rgb(10 10 10 / 0.06);
+  --shadow-lg: 0 2px 6px rgb(10 10 10 / 0.06), 0 16px 40px rgb(10 10 10 / 0.12);
+
+  /* ---------- Focus and targets ---------- */
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --target-min: 44px;
+
+  /* ---------- Motion ---------- */
+  --dur-fast: 120ms;        /* hover, press, toggles */
+  --dur-base: 180ms;        /* toasts, small reveals, list inserts */
+  --dur-slow: 280ms;        /* sheets and dialogs entering */
+  --dur-expressive: 400ms;  /* marketing entrances only */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);  /* decelerate into place */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);   /* accelerate away */
+
+  /* ---------- Layout ---------- */
+  --width-reading: 65ch;
+  --width-detail: 720px;
+  --width-content: 1040px;
+  --width-marketing: 1200px;
+
+  /* ---------- Layers ---------- */
+  --z-sticky: 10;
+  --z-nav: 20;
+  --z-scrim: 30;
+  --z-sheet: 40;
+  --z-toast: 60;
+
+  /* ---------- Addition: type scale (3.2.1), rem so text can scale ---------- */
+  --type-display-xl-size: clamp(3.5rem, 10vw, 9rem);
+  --type-display-xl-leading: 0.95;
+  --type-display-xl-tracking: -0.02em;
+  --type-display-l-size: clamp(2.5rem, 6vw, 5rem);
+  --type-display-l-leading: 1;
+  --type-display-l-tracking: -0.015em;
+  --type-display-m-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  --type-display-m-leading: 1.1;
+  --type-display-m-tracking: -0.01em;
+  --type-title-l-size: 3.5rem;
+  --type-title-l-leading: 0.92;
+  --type-title-l-step-size: 2.75rem;   /* step-down when 56px needs 3 lines */
+  --type-title-l-step-leading: 0.95;
+  --type-title-l-tracking: -0.025em;
+  --type-quote-size: 1.5rem;
+  --type-quote-leading: 1.25;
+  --type-title-m-size: 1.25rem;
+  --type-title-m-leading: 1.3;
+  --type-title-m-tracking: -0.01em;
+  --type-heading-size: 1.0625rem;
+  --type-heading-leading: 1.35;
+  --type-heading-tracking: -0.005em;
+  --type-body-size: 1rem;
+  --type-body-leading: 1.5;
+  --type-body-marketing-size: 1.125rem;
+  --type-body-marketing-leading: 1.6;
+  --type-label-size: 0.9375rem;
+  --type-label-leading: 1.3;
+  --type-caption-size: 0.8125rem;
+  --type-caption-leading: 1.4;
+  --type-overline-size: 0.75rem;
+  --type-overline-leading: 1.3;
+  --type-overline-tracking: 0.08em;
+  /* Brand assets and the typographic poster (4.2.1): serif, never under 24px */
+  --type-wordmark-size: 1.75rem;
+  --type-poster-title-size: clamp(1.5rem, 16cqi, 2.75rem);
+  --type-poster-title-leading: 1.05;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ---------- Addition: component layout sizes ---------- */
+  --sheet-max-height: 90dvh;
+  --topbar-height: 52px;
+  --tabbar-height: 56px;
+}
+
+/* Dark theme: prepared, not shipped. Applies only when data-theme="dark". */
+:root[data-theme="dark"],
+[data-theme="dark"] {
+  --surface: #0C0C0D;
+  --surface-raised: #18181A;
+  --surface-sunken: #070708;
+  --surface-hover: #1F1F22;
+  --surface-pressed: #26262A;
+  --text: #F5F5F4;
+  --text-muted: #A1A1A6;
+  --border-subtle: #2A2A2D;
+  --border-strong: #707075;
+  --action: #8EA2FF;
+  --action-hover: #A9B8FF;
+  --action-text: #8EA2FF;
+  --action-wash: #1A2040;
+  --on-action: #0A0A0A;
+  --success: #4ADE80;
+  --danger: #FF8A7A;
+  --danger-tint: #3A1715;
+  --inverse-surface: #F5F5F4;
+  --inverse-text: #0A0A0A;
+  --focus-ring: #8EA2FF;
+  --scrim: rgb(0 0 0 / 0.6);
+  --poster-edge: rgb(255 255 255 / 0.08);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.5), 0 16px 40px rgb(0 0 0 / 0.6);
+  /* People tones and --on-people are unchanged */
+  color-scheme: dark;
+}
