@@ -28,7 +28,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | Step | Scope | Source | Status |
 |---|---|---|---|
 | 0 | Foundations: tokens, fonts, Tailwind mapping, lint rules, `/styleguide` | DS 11.6 steps 1–2, DS 14 | In review |
-| M | Rebuild the marketing page on the new system | Marketing spec v2, DS 11.6 steps 3–5 | Not started |
+| M | Rebuild the marketing page on the new system | Marketing spec v2, DS 11.6 steps 3–5 | In review |
 | 1 | Accounts | PRD 12, slice 1 | Not started |
 | 2 | Groups | PRD 12, slice 2 | Not started |
 | 3 | Titles (TMDB) | PRD 12, slice 3 | Not started |
@@ -69,7 +69,7 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 - `pnpm lint`: ESLint (with the design system rules in `eslint-rules/`) and Stylelint
 - `pnpm typecheck`: generate route types, then `tsc --noEmit`
 - `pnpm test`: unit tests (lib helpers, lint rules, type tokens) with Vitest
-- `pnpm test:e2e`: Playwright on `/styleguide`: axe in both themes, keyboard behavior, visual snapshots at 390 and 1440. Run after `pnpm build`. Set `CHROMIUM_PATH` to use a preinstalled Chromium; add `--update-snapshots` after an intended visual change.
+- `pnpm test:e2e`: Playwright on `/styleguide`: axe in both themes, keyboard behavior, visual snapshots at 390 and 1440. Run after `pnpm build`; add `--update-snapshots` after an intended visual change. Playwright is pinned to 1.56.1 (and its Chromium build) so snapshots match CI; upgrade it deliberately and regenerate snapshots in the same change.
 
 Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 

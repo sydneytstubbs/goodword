@@ -52,19 +52,20 @@ export function t(key: MessageKey, vars?: MessageVars): string {
   return interpolate(resolve(key, vars), vars);
 }
 
-/** Like t(), but renders <b>…</b> in the message as <strong>. */
+/** Like t(), but renders <b>…</b> as <strong> and <em>…</em> as <em>. */
 export function tRich(key: MessageKey, vars?: MessageVars): ReactNode {
   const text = t(key, vars);
-  const parts = text.split(/(<b>.*?<\/b>)/g).filter(Boolean);
+  const parts = text.split(/(<b>.*?<\/b>|<em>.*?<\/em>)/g).filter(Boolean);
   return parts.map((part, i) => {
     const bold = part.match(/^<b>(.*)<\/b>$/);
-    return bold
-      ? createElement("strong", { key: i, className: "font-semibold" }, bold[1])
-      : createElement(Fragment, { key: i }, part);
+    if (bold) return createElement("strong", { key: i, className: "font-semibold" }, bold[1]);
+    const italic = part.match(/^<em>(.*)<\/em>$/);
+    if (italic) return createElement("em", { key: i, className: "italic" }, italic[1]);
+    return createElement(Fragment, { key: i }, part);
   });
 }
 
 /** Plain-text version of a rich message, for accessible names and previews. */
 export function tPlain(key: MessageKey, vars?: MessageVars): string {
-  return t(key, vars).replace(/<\/?b>/g, "");
+  return t(key, vars).replace(/<\/?(?:b|em)>/g, "");
 }

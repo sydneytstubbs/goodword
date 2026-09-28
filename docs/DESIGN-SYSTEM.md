@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.1.2 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-28
+**Version** 3.2.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-28
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -1405,6 +1405,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.0 (2026-09-28):** Tokens added for the marketing page (spec 6.7, 7.6, 8.3): `--inverse-text-muted` (white at 72% on ink, 10.3:1) and `--inverse-border` (white at 15%), `--width-subhead` (36ch), `--phone-width` and `--phone-height` (390 × 844), `--radius-device-screen` (34px, inside the 10px bezel), and `--stagger` (60ms). Also recorded from step 0: type-scale tokens in rem, `--radius-checkbox` (5px), exit durations `--dur-exit` and `--dur-exit-sheet`, and theme selectors that match any `[data-theme]` element so a region can pin its theme.
 - **v3.1.2 (2026-09-28):** Vouch button in rows says "Add" below 768px (4.2.3). Title detail follows 4.2.2's order for now; the conflict with 5.7 is open question 9.
 - **v3.1.1 (2026-09-28):** `/styleguide` patterns (14) are added step by step as each build step builds them; step 0 covers foundations and every Section 4 component in every state.
 - **v3.1 (2026-09-27):** `title-l` becomes the big editorial page title: 56px (44px step-down), line height 0.92, tracking -0.025em, with spacing rules (3.2.2).

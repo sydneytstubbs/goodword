@@ -63,6 +63,7 @@
   --text-color-danger: var(--danger);
   --text-color-inverse: var(--inverse-text);
   --text-color-on-people: var(--on-people);
+  --text-color-inverse-muted: var(--inverse-text-muted);
 
   /* Borders: border-* (and divide-*) */
   --border-color-subtle: var(--border-subtle);
@@ -73,6 +74,7 @@
   --border-color-danger: var(--danger);
   --border-color-surface: var(--surface);
   --border-color-surface-raised: var(--surface-raised);
+  --border-color-inverse: var(--inverse-border);
 
   /* Rings (avatar-stack separators, poster edge) and outlines */
   --ring-color-surface: var(--surface);
@@ -90,6 +92,7 @@
   --radius-card: var(--radius-card);
   --radius-sheet: var(--radius-sheet);
   --radius-device: var(--radius-device);
+  --radius-device-screen: var(--radius-device-screen);
   --radius-pill: var(--radius-pill);
   --radius-checkbox: var(--radius-checkbox);
 
@@ -114,6 +117,7 @@
   --container-detail: var(--width-detail);
   --container-content: var(--width-content);
   --container-marketing: var(--width-marketing);
+  --container-subhead: var(--width-subhead);
 
   /* Font weights: font-regular, font-medium, font-semibold */
   --font-weight-regular: var(--weight-regular);

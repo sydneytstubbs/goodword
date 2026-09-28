@@ -3,7 +3,7 @@
 import NextLink from "next/link";
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
-import { peopleTone, toneBg } from "@/lib/people-color";
+import { peopleTone, toneBg, type PeopleTone } from "@/lib/people-color";
 import { Icon } from "../icon";
 
 // Chips (DESIGN-SYSTEM.md 4.1.9). Group chip says which shelf; filter chip
@@ -11,11 +11,20 @@ import { Icon } from "../icon";
 
 export type Group = { id: string; name: string };
 
-export function GroupDot({ group, className }: { group: Pick<Group, "id">; className?: string }) {
+export function GroupDot({
+  group,
+  tone,
+  className,
+}: {
+  group: Pick<Group, "id">;
+  /** Normally derived from the group id; set it to pin a tone (marketing mockups). */
+  tone?: PeopleTone;
+  className?: string;
+}) {
   return (
     <span
       aria-hidden="true"
-      className={cn("inline-block size-2 shrink-0 rounded-pill", toneBg[peopleTone(group.id)], className)}
+      className={cn("inline-block size-2 shrink-0 rounded-pill", toneBg[tone ?? peopleTone(group.id)], className)}
     />
   );
 }

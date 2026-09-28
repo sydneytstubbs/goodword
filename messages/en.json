@@ -66,6 +66,8 @@
   "vouch": {
     "put": "Put in a good word",
     "putShort": "Add",
+    "noteLabel": "Anything to add?",
+    "notePlaceholder": "ep 3 is where it gets you",
     "yours": "Your good word",
     "editNote": "Edit note",
     "changeGroups": "Change groups",
@@ -161,5 +163,119 @@
   },
   "wordmark": {
     "name": "Good Word"
+  },
+  "marketing": {
+    "meta": {
+      "title": "Good Word: show and movie recs from your friends",
+      "description": "A private shelf of shows and movies your friends vouch for. No algorithm, no strangers."
+    },
+    "nav": {
+      "label": "Sections",
+      "howItWorks": "How it works",
+      "groups": "Groups",
+      "talk": "Talk about it",
+      "faq": "FAQ",
+      "comingSoon": "Coming soon",
+      "menu": "Menu",
+      "close": "Close",
+      "home": "Good Word home"
+    },
+    "hero": {
+      "eyebrow": "Coming soon",
+      "headline": "Take your friends' <em>word</em> for it.",
+      "subhead": "A private shelf of shows and movies your friends vouch for. No algorithm. No strangers. Just your people.",
+      "cta": "See how it works",
+      "phoneAlt": "A group shelf for College crew showing four shows and movies with the friends who vouched for them.",
+      "quote": "ep 3 is where it gets you. trust me.",
+      "quoteContext": "vouched for {title}"
+    },
+    "problem": {
+      "eyebrow": "The problem",
+      "headline": "You asked the group chat what to watch.",
+      "body": "Three days later, one reply. It was a link to a trailer. Meanwhile the algorithm still thinks you want another true-crime documentary because you watched one in 2022.",
+      "algorithmLabel": "The algorithm",
+      "algorithmCaption": "Because you watched Baking Showdown: Season 4",
+      "algorithmAlt": "Four identical grey placeholder tiles.",
+      "friendLabel": "A friend",
+      "friendQuote": "ok you need to watch The Night Ferry. it's strange and perfect."
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "headline": "Three things. That's the whole app.",
+      "step1Title": "Put in a good word.",
+      "step1Body": "Search a title, tap once, add a note if you like. About ten seconds.",
+      "step1Alt": "Putting in a good word for The Night Ferry, with the note “ep 3 is where it gets you”, visible to 2 groups and 11 people.",
+      "step2Title": "It lands on your groups' shelves.",
+      "step2Body": "College friends, the group chat, your book club. Each group keeps its own shelf.",
+      "step2Alt": "Two shelves, College crew and The girls, each showing The Night Ferry.",
+      "step3Title": "Pick from people you trust.",
+      "step3Body": "Filter by mood, length, and where it's streaming, and every pick still has a friend's name on it.",
+      "step3Alt": "A shelf filtered to comedy, under 2 hours, on Netflix, showing three picks and who vouched for each.",
+      "filterComedy": "Comedy",
+      "filterLength": "Under 2 hours",
+      "filterService": "Netflix",
+      "filteredCount": "3 good words"
+    },
+    "groups": {
+      "eyebrow": "Groups",
+      "headline": "Different friends, different <em>taste</em>.",
+      "body": "You'd trust your film friend on a slow Korean thriller and your sister on a comfort rewatch. Keep a separate shelf for each circle.",
+      "onTwoShelves": "On 2 shelves."
+    },
+    "talk": {
+      "eyebrow": "Talk about it",
+      "headline": "Finished it? Say so.",
+      "body": "Every title on your shelf has a conversation, just for that group. Mention a friend to pull them in. Mark spoilers so nobody gets ruined.",
+      "phoneAlt": "A conversation about The Night Ferry in College crew: Tess says she just finished episode 6 and mentions Priya, Mo's comment is covered as a spoiler, and the comment box says “Say something to College crew…”.",
+      "note": "Conversations stay inside the group. No one else can see them.",
+      "back": "Back",
+      "tessComment": "just finished ep 6. ",
+      "tessCommentEnd": " you were right"
+    },
+    "humans": {
+      "headline": "Humans <em>only</em>.",
+      "lead1": "Every pick has a name on it.",
+      "rest1": "If it's on the shelf, a friend put it there.",
+      "lead2": "We don't watch you watch.",
+      "rest2": "Nothing is logged unless you choose to vouch for it.",
+      "lead3": "No algorithm picks.",
+      "rest3": "If none of your friends have vouched for a short horror movie yet, we'll just tell you."
+    },
+    "isnt": {
+      "label": "What Good Word isn't",
+      "summary": "Good Word has no star ratings, public profiles, followers, endless feeds, or reviews.",
+      "item1": "Star ratings",
+      "item2": "Public profiles",
+      "item3": "Followers",
+      "item4": "Endless feeds",
+      "item5": "Reviews nobody reads",
+      "line": "Just your friends' good word."
+    },
+    "faq": {
+      "headline": "Questions",
+      "q1": "Is it public?",
+      "a1": "No. Groups are private and invite-only. Only people in a group can see its shelf and its conversations.",
+      "q2": "Is it just for movies?",
+      "a2": "Shows and movies to start. Restaurants and “who's your plumber” may come later.",
+      "q3": "Do I have to log everything I watch?",
+      "a3": "No. Only what you'd recommend. It's a shelf of favorites, not a diary.",
+      "q4": "Can we talk about what we watched?",
+      "a4": "Yes. Every title has a conversation for your group, with mentions and spoiler covers.",
+      "q5": "Does it use AI?",
+      "a5": "Only behind the scenes, to match titles and fill in details. It never recommends anything on its own.",
+      "q6": "When can I use it?",
+      "a6": "We're building it now. Coming soon.",
+      "q7": "Is it free?",
+      "a7": "Yes, for now."
+    },
+    "closing": {
+      "headline": "Your friends already have great <em>taste</em>.",
+      "subhead": "Good Word makes sure none of it gets lost.",
+      "comingSoon": "Coming soon"
+    },
+    "footer": {
+      "madeBy": "Made by people who ask their friends what to watch.",
+      "copyright": "© {year} Good Word"
+    }
   }
 }

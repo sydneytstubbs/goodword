@@ -1,0 +1,53 @@
+/*
+ * Marketing page (good-word-marketing-page-spec.md 7.6, 8.3). Imported by
+ * the (marketing) layout only.
+ */
+
+/*
+ * Entrances (spec 8.3): sections and vignettes fade in and rise 8px once
+ * when 20% visible, 60ms apart within a group. Only with scripting on (so
+ * nothing stays hidden without JS) and motion allowed; otherwise everything
+ * is in its final state from the start.
+ */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="reduce"]) [data-reveal] {
+    transition-property: opacity, translate;
+    transition-duration: var(--dur-expressive);
+    transition-timing-function: var(--ease-enter);
+    transition-delay: calc(var(--reveal-index, 0) * var(--stagger));
+  }
+  :root:not([data-motion="reduce"]) [data-reveal]:not([data-visible]) {
+    opacity: 0;
+    translate: 0 var(--space-2);
+  }
+}
+
+/*
+ * Phone frame (spec 7.6): real HTML at 390px wide, scaled to fit whatever
+ * width the frame gets. The scale is set by PhoneFrame from its measured width.
+ */
+.phone-screen {
+  width: var(--phone-width);
+  height: var(--phone-height);
+  scale: var(--phone-scale, 1);
+  transform-origin: top left;
+}
+
+.phone-viewport {
+  aspect-ratio: 390 / 844;
+}
+
+/* FAQ (spec 6.9): native details/summary with our own plus/minus. */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Stagger position within a group (data-reveal-index="0".."5"). */
+[data-reveal-index="1"] { --reveal-index: 1; }
+[data-reveal-index="2"] { --reveal-index: 2; }
+[data-reveal-index="3"] { --reveal-index: 3; }
+[data-reveal-index="4"] { --reveal-index: 4; }
+[data-reveal-index="5"] { --reveal-index: 5; }

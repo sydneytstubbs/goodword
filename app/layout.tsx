@@ -7,6 +7,9 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+  // Not preloaded: the metric-matched fallback holds its place without shifting
+  // layout, and the display serif (the hero headline, the LCP) loads first.
+  preload: false,
 });
 
 const instrumentSerif = Instrument_Serif({
