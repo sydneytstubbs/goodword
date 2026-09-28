@@ -24,7 +24,7 @@ export type Destination = "shelf" | "activity" | "you";
 /** Icon-only link with the icon button's look (the Activity bell navigates). */
 function IconLink({ href, icon, label, badge }: { href: string; icon: IconName; label: string; badge?: ReactNode }) {
   return (
-    <Tooltip content={label}>
+    <Tooltip content={label} align="end">
       <NextLink
         href={href}
         aria-label={label}
@@ -76,7 +76,13 @@ export function TopBar({
           label={activityCount > 0 ? t("nav.activityWithCount", { count: activityCount }) : t("nav.activity")}
           badge={activityCount > 0 ? <CountBadge count={activityCount} label="" /> : undefined}
         />
-        <IconButton icon="share" iconSize={24} label={t("nav.invite", { group: groupName })} onClick={onInvite} />
+        <IconButton
+          icon="share"
+          iconSize={24}
+          label={t("nav.invite", { group: groupName })}
+          onClick={onInvite}
+          tooltipAlign="end"
+        />
       </div>
     </header>
   );
@@ -107,14 +113,17 @@ export function TabBar({
   current,
   onAdd,
   placement = "fixed",
+  label,
 }: {
   current?: Exclude<Destination, "activity">;
   onAdd: () => void;
   placement?: Placement;
+  /** Landmark name; defaults to "Main". */
+  label?: string;
 }) {
   return (
     <nav
-      aria-label={t("nav.main")}
+      aria-label={label ?? t("nav.main")}
       className={cn(
         "border-t border-subtle bg-surface pb-safe",
         placement === "fixed" && "fixed inset-x-0 bottom-0 z-nav lg:hidden",
@@ -154,6 +163,7 @@ export function Rail({
   currentGroupId,
   onAdd,
   placement = "fixed",
+  label,
 }: {
   current?: Destination;
   activityCount?: number;
@@ -161,10 +171,12 @@ export function Rail({
   currentGroupId?: string;
   onAdd: () => void;
   placement?: Placement;
+  /** Landmark name; defaults to "Main". */
+  label?: string;
 }) {
   return (
     <nav
-      aria-label={t("nav.main")}
+      aria-label={label ?? t("nav.main")}
       className={cn(
         "flex w-60 flex-col gap-6 border-e border-subtle bg-surface px-4 py-6",
         placement === "fixed" ? "fixed inset-y-0 start-0 z-nav hidden lg:flex" : "min-h-120",
@@ -180,11 +192,13 @@ export function Rail({
         {railLinks.map((link) => {
           const isCurrent = current === link.id;
           const count = link.id === "activity" ? activityCount : 0;
+          // On a group's shelf the group row is the page; Shelf is the section it's in.
+          const ariaCurrent = isCurrent ? (link.id === "shelf" && currentGroupId ? "true" : "page") : undefined;
           return (
             <li key={link.id}>
               <NextLink
                 href={link.href}
-                aria-current={isCurrent ? "page" : undefined}
+                aria-current={ariaCurrent}
                 className={cn(railRow, isCurrent ? "bg-surface-sunken font-semibold text-default fc-selected" : "text-default")}
               >
                 <Icon name={link.icon} size={20} weight={isCurrent ? "fill" : "regular"} />

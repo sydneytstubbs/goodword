@@ -178,3 +178,35 @@
 
 /* Dark theme (prepared, not shipped; 3.10). Only for things tokens can't express, like the poster-edge ring. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Interaction states (3.8). hover: only on devices that hover. Both hover
+ * and active also match data-force, so /styleguide can show every state
+ * statically (DS 14): <button data-force="hover">.
+ */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &:where([data-force~="hover"]) {
+    @slot;
+  }
+}
+@custom-variant active {
+  &:active {
+    @slot;
+  }
+  &:where([data-force~="pressed"]) {
+    @slot;
+  }
+}
+@custom-variant focus {
+  &:focus {
+    @slot;
+  }
+  &:where([data-force~="focus"]) {
+    @slot;
+  }
+}

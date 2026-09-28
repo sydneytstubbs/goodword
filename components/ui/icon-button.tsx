@@ -20,10 +20,11 @@ export type IconButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "ari
   badge?: ReactNode;
   tooltip?: boolean;
   tooltipSide?: "top" | "bottom";
+  tooltipAlign?: "center" | "end";
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, label, iconSize = 20, tone = "default", weight = "regular", badge, tooltip = true, tooltipSide, className, type = "button", ...props },
+  { icon, label, iconSize = 20, tone = "default", weight = "regular", badge, tooltip = true, tooltipSide, tooltipAlign, className, type = "button", ...props },
   ref,
 ) {
   const button = (
@@ -50,7 +51,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
     </button>
   );
   return tooltip ? (
-    <Tooltip content={label} side={tooltipSide}>
+    <Tooltip content={label} side={tooltipSide} align={tooltipAlign}>
       {button}
     </Tooltip>
   ) : (

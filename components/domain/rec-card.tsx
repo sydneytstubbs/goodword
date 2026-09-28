@@ -24,9 +24,10 @@ type Common = {
 export function VouchedByRow({ goodWords, viewerId }: { goodWords: GoodWord[]; viewerId?: string }) {
   if (goodWords.length === 0) return null;
   return (
-    <span className="flex min-w-0 items-center gap-2">
+    // Names wrap rather than truncate: never fewer than 8 visible characters (DS 3.2.2).
+    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
       <AvatarStack people={goodWords.map((g) => g.person)} size={24} />
-      <span className="truncate text-caption text-muted">{vouchedByCompact(goodWords, viewerId)}</span>
+      <span className="text-caption text-muted">{vouchedByCompact(goodWords, viewerId)}</span>
     </span>
   );
 }
@@ -124,13 +125,13 @@ export function RecCardDetail({
   now,
 }: Common & {
   /** title-l is the page's h1 (DS 3.2.2); /styleguide renders it lower. */
-  headingLevel?: 1 | 2 | 3;
+  headingLevel?: 1 | 2 | 3 | 4;
   whereToWatch?: ReactNode;
   vouchButton: ReactNode;
   now?: Date;
 }) {
   const Heading = `h${headingLevel}` as const;
-  const SubHeading = `h${headingLevel + 1}` as "h2" | "h3" | "h4";
+  const SubHeading = `h${headingLevel + 1}` as "h2" | "h3" | "h4" | "h5";
   // Step down to 44px when 56px would need three lines (DS 3.2.2).
   const long = title.name.length > 22;
   return (

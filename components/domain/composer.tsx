@@ -226,9 +226,9 @@ export function Composer({
         value={text}
         maxLength={MAX}
         placeholder={t("composer.placeholder", { group: group.name })}
-        role="combobox"
+        // A textarea can't take role="combobox" in HTML, so it keeps its textbox role
+        // with the autocomplete attributes that role supports.
         aria-autocomplete="list"
-        aria-expanded={listOpen}
         aria-controls={listOpen ? listId : undefined}
         aria-activedescendant={listOpen ? optionId(active) : undefined}
         onChange={(e) => change(e.target.value, e.target.selectionStart)}

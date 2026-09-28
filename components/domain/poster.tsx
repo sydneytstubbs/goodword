@@ -73,8 +73,9 @@ export function Poster({
           {small ? (
             <span className="m-auto text-poster-initial">{Array.from(title.name)[0]}</span>
           ) : (
-            <div className="flex h-full flex-col justify-between p-3">
-              <span className="line-clamp-3 text-poster-title">{title.name}</span>
+            // Title sits at the bottom, so a "New" badge on the top-left corner never covers it.
+            <div className="flex h-full flex-col justify-end gap-2 p-3">
+              <span className="line-clamp-3 text-poster-title wrap-break-word">{title.name}</span>
               <span className="text-caption">
                 {t("title.meta", { type: t(`title.${title.type}`), year: String(title.year) })}
               </span>

@@ -23,6 +23,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Show what people type literally: Inter's contextual alternates turn "7x2" into "7×2". */
+  input,
+  textarea {
+    font-variant-ligatures: no-contextual;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
   }
@@ -31,8 +37,9 @@
     text-wrap: pretty;
   }
 
-  /* Focus-visible (3.8): never removed, never replaced by hover. */
-  :focus-visible {
+  /* Focus-visible (3.8): never removed, never replaced by hover. data-force shows it in /styleguide. */
+  :focus-visible,
+  [data-force~="focus"] {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
   }

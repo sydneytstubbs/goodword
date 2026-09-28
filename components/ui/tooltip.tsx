@@ -12,10 +12,13 @@ export function Tooltip({
   content,
   children,
   side = "bottom",
+  align = "center",
 }: {
   content: string;
   children: ReactNode;
   side?: "top" | "bottom";
+  /** "end" keeps tooltips on edge controls (top bar icons) inside the viewport. */
+  align?: "center" | "end";
 }) {
   const [dismissed, setDismissed] = useState(false);
 
@@ -36,11 +39,13 @@ export function Tooltip({
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute left-1/2 z-toast hidden -translate-x-1/2 whitespace-nowrap rounded-control bg-inverse px-2 py-1 text-caption text-inverse shadow-md fc-edge",
-          "invisible opacity-0 transition duration-fast ease-standard",
-          "pointer-fine:block group-hover/tip:visible group-hover/tip:opacity-100 group-hover/tip:delay-500 group-hover/tip:pointer-events-auto",
-          "group-focus-within/tip:visible group-focus-within/tip:opacity-100 group-focus-within/tip:delay-0",
-          "group-data-dismissed/tip:invisible group-data-dismissed/tip:opacity-0",
+          "pointer-events-none absolute z-toast hidden whitespace-nowrap rounded-control bg-inverse px-2 py-1 text-caption text-inverse shadow-md fc-edge",
+          // Out of layout until shown, so hidden tooltips never widen the page.
+          "opacity-0 transition-discrete transition duration-fast ease-standard starting:opacity-0",
+          "pointer-fine:group-hover/tip:block pointer-fine:group-hover/tip:opacity-100 pointer-fine:group-hover/tip:delay-500 pointer-fine:group-hover/tip:pointer-events-auto",
+          "pointer-fine:group-focus-within/tip:block pointer-fine:group-focus-within/tip:opacity-100 pointer-fine:group-focus-within/tip:delay-0",
+          "group-data-dismissed/tip:hidden",
+          align === "center" ? "left-1/2 -translate-x-1/2" : "end-0",
           side === "bottom" ? "top-full mt-1" : "bottom-full mb-1",
         )}
       >
