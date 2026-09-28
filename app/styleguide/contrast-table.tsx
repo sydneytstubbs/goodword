@@ -25,6 +25,7 @@ const PAIRS: Pair[] = [
   { fg: "--success", bg: "--surface", min: 4.5, documented: [4.8, 11.2] },
   { fg: "--success", bg: "--surface-sunken", min: 4.5, documented: [4.5, 11.6], note: "At the limit; no small success text on sunken" },
   { fg: "--inverse-text", bg: "--inverse-surface", min: 4.5, documented: [19.8, 18.2] },
+  { fg: "--inverse-text-muted", bg: "--inverse-surface", min: 4.5, documented: [10.3, 7.9], note: "Marketing ink section (spec 6.7)" },
   { fg: "--on-people", bg: "--people-1", min: 4.5, documented: [6.2, 6.2] },
   { fg: "--on-people", bg: "--people-2", min: 4.5, documented: [6.3, 6.3] },
   { fg: "--on-people", bg: "--people-3", min: 4.5, documented: [7.3, 7.3] },
