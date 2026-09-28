@@ -61,6 +61,15 @@ const eslintConfig = defineConfig([
       "good-word/no-hardcoded-strings": "error",
     },
   },
+  {
+    // Generated images (favicon, Apple icon, Open Graph) are rendered by next/og,
+    // which only understands inline styles and needs the font named directly.
+    files: ["app/**/{icon,apple-icon,opengraph-image}.tsx", "app/_brand/**/*.tsx"],
+    rules: {
+      "react/forbid-dom-props": "off",
+      "good-word/serif-type": "off",
+    },
+  },
   globalIgnores([
     ".next/**",
     "out/**",
