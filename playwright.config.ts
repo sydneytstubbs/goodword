@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // Accessibility, behavior, and visual tests for /styleguide (DESIGN-SYSTEM.md 7.4, 12.3).
-// Run after `pnpm build`. CHROMIUM_PATH points at a preinstalled Chromium when set.
+// Run after `pnpm build`. Playwright is pinned (1.56.1) so local runs and CI use
+// the same Chromium build and headless shell, and snapshots match exactly.
 const PORT = 3100;
 
 export default defineConfig({
@@ -12,7 +13,6 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: `http://localhost:${PORT}`,
-    launchOptions: process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},
   },
   projects: [
     { name: "mobile-390", use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 } } },

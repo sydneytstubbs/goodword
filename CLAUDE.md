@@ -69,7 +69,7 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 - `pnpm lint`: ESLint (with the design system rules in `eslint-rules/`) and Stylelint
 - `pnpm typecheck`: generate route types, then `tsc --noEmit`
 - `pnpm test`: unit tests (lib helpers, lint rules, type tokens) with Vitest
-- `pnpm test:e2e`: Playwright on `/styleguide`: axe in both themes, keyboard behavior, visual snapshots at 390 and 1440. Run after `pnpm build`. Set `CHROMIUM_PATH` to use a preinstalled Chromium; add `--update-snapshots` after an intended visual change.
+- `pnpm test:e2e`: Playwright on `/styleguide`: axe in both themes, keyboard behavior, visual snapshots at 390 and 1440. Run after `pnpm build`; add `--update-snapshots` after an intended visual change. Playwright is pinned to 1.56.1 (and its Chromium build) so snapshots match CI; upgrade it deliberately and regenerate snapshots in the same change.
 
 Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 
