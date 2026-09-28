@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-27
+**Version** 1.2.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-28
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -44,7 +44,7 @@ The build brief for the Good Word web app. It defines **what** the product does:
 |---|---|
 | `PRODUCT-REQUIREMENTS.md` (this) | What the product does, for whom, and in what order it gets built |
 | `DESIGN-SYSTEM.md` | How it looks, behaves, and reads: tokens, components, patterns, copy, accessibility |
-| `good-word-marketing-page-spec.md` | The marketing page (already built) |
+| `good-word-marketing-page-spec.md` | The marketing page (built in step M, after foundations) |
 
 If this doc and the design system conflict on **what** the product does, this doc wins. If they conflict on **how** it looks or behaves, the design system wins.
 
@@ -739,7 +739,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 
 ### 9.6 Hosting and stack
 - **Assumed stack:** Next.js (App Router) on Vercel, Supabase (Postgres, Auth, Realtime for P1 live updates), Tailwind per DS 11.
-- **Check first:** the marketing page was specified as Next.js or Astro. If it was built with Astro, stop and ask how to structure the repo before building the app.
+- **Decided (open question 1):** Next.js. The marketing page and the app live in one Next.js app, the marketing page in the `(marketing)` route group.
 
 ---
 
@@ -886,7 +886,7 @@ Decide before the slice that needs them.
 
 | # | Question | Proposal | Needed by |
 |---|---|---|---|
-| 1 | Marketing page framework: Next.js or Astro? | If Astro, keep marketing and app in one repo as separate apps, or move marketing into the Next.js app | Slice 0 |
+| 1 | Marketing page framework: Next.js or Astro? | **Decided (2026-09-28): Next.js.** Marketing and app share one Next.js app | Slice 0 |
 | 2 | Share-my-shelf conflicts with DS 5.14 ("Nothing is public") | Amend DS 5.14 to "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
 | 3 | The marketing page promises "Ask, and pull from people you trust" with the example "Something funny, under 30 minutes" | For the MVP, filters (Comedy + Under 30 minutes) fulfill this; either keep the copy or change the example until Ask ships | Beta launch |
 | 4 | Digest day and time | Thursday, 5pm local | Slice 7 |
@@ -903,6 +903,8 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.2 (2026-09-28):** Open question 1 decided: Next.js, one app for marketing and product (9.6).
+- **v1.2.1 (2026-09-28):** The marketing page isn't built yet; it's built after foundations (CLAUDE.md step M).
 - **v1.2 (2026-09-27):** Made visual references direction-neutral (milestone moment, `genreAccent` values) so this doc works with Design System v3.0 (Editorial).
 - **v1.1 (2026-09-27):** Added conversations on titles (per group), @mentions, spoilers, and Activity (F13, F14, J6); mention emails and digest summary; data model and RLS for comments; analytics for H7; new build slice 6. Aligned to Design System v2.1.
 - **v1.0 (2026-09-27):** Initial product requirements for the MVP, aligned to Design System v2.0.

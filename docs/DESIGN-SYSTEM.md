@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-27
+**Version** 3.1.2 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-28
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -685,7 +685,7 @@ One component, three variants.
 #### 4.2.3 Vouch button (signature component)
 - **Purpose:** put in (or take back) your good word on a title.
 - **States:**
-  - Not vouched: `primary` on the detail screen (it's that screen's one primary action), `secondary` in rows. `Plus` icon, "Put in a good word".
+  - Not vouched: `primary` on the detail screen (it's that screen's one primary action), `secondary` in rows. `Plus` icon, "Put in a good word". In rows below 768px the label is just "Add" (the title is part of its accessible name: "Add The Night Ferry"), so the title and names keep their room on small phones.
   - Vouched: `--action-wash` fill, `--action-text` label and `Check` icon, "Your good word". `aria-pressed="true"`.
 - **Behavior:**
   - Tapping when not vouched opens the confirm sheet (5.4) so the user can add a note and see who will see it.
@@ -854,6 +854,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 ### 5.7 Title detail
 - Order of content, most to least important: poster and title, who vouched and their notes, where to watch, the vouch button, the conversation preview (5.17), then metadata (genre, runtime or seasons, year, overview).
+- **For now, the `detail` rec card follows 4.2.2's order** (meta, genres, where to watch, then friends' good words, then the vouch button). The two orders are reconciled when the title detail screen is built (open question 9).
 - **Where to watch** comes from TMDB's watch provider data for the user's region, showing provider names and logos grouped by Stream / Rent / Buy. **JustWatch attribution is required** alongside this data, per TMDB's terms. If nothing is available: "Not streaming in your region right now."
 - The overview is collapsed to 3 lines with "More" when longer.
 
@@ -1329,7 +1330,7 @@ Semantic versioning for the system:
 One page that renders:
 - **Foundations:** color swatches with live-computed contrast ratios for every pairing in 3.1.3, in both themes; the type scale; spacing; elevation levels; radii; motion demos (with a reduced-motion toggle); the full icon map.
 - **Components:** every component in every state from 3.8, every variant and size.
-- **Patterns:** one working example of each pattern from Section 5, including all screen states from 5.12.
+- **Patterns:** one working example of each pattern from Section 5, including all screen states from 5.12. Patterns are added step by step: each build step adds the patterns it builds, using the real components and behavior, rather than all patterns being mocked up front in step 0.
 - **Controls:** dev-only theme toggle (light / dark, also `?theme=dark`), reduced-motion simulation, forced-colors preview note, and a 200% text toggle.
 
 It is excluded from search indexing and from production navigation, and it's the target for visual regression and axe tests.
@@ -1398,11 +1399,14 @@ It is excluded from search indexing and from production navigation, and it's the
 6. **Tokens to DTCG JSON:** move when a native app starts (8.4).
 7. **Reactions on comments** (a single "same" or heart): deliberately left out of the MVP to keep conversations about words. Revisit after beta.
 8. **Comments from people who leave a group:** proposed to stay visible and attributed so conversations still make sense. Confirm.
+9. **Title detail order:** 4.2.2 and 5.7 list the content in different orders. Following 4.2.2 for now; decide when title detail is built (PRD slice 5).
 
 ---
 
 ## 17. Changelog
 
+- **v3.1.2 (2026-09-28):** Vouch button in rows says "Add" below 768px (4.2.3). Title detail follows 4.2.2's order for now; the conflict with 5.7 is open question 9.
+- **v3.1.1 (2026-09-28):** `/styleguide` patterns (14) are added step by step as each build step builds them; step 0 covers foundations and every Section 4 component in every state.
 - **v3.1 (2026-09-27):** `title-l` becomes the big editorial page title: 56px (44px step-down), line height 0.92, tracking -0.025em, with spacing rules (3.2.2).
 - **v3.0 (2026-09-27): Editorial.** A new visual language: calm, modern, minimal. Behavior, patterns, content rules, and accessibility requirements are unchanged, and section numbers are preserved so the product requirements still resolve.
   - **Breaking:** new palette (paper, ink, graphite, one cobalt accent, muted people tones clay, ochre, moss, plum); `--border` split into `--border-subtle` and `--border-strong`; removed `--highlight`, `--on-accent`, `--shadow-color`, `--radius-input`, and the v2 accent primitives; added `--action-hover`, `--action-text`, `--action-wash`, `--on-action`, `--surface-hover`, `--surface-pressed`, `--people-1` to `--people-4`, `--on-people`, `--poster-edge`, `--radius-control`, `--radius-device`.

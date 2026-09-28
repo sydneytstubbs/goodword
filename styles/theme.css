@@ -1,0 +1,212 @@
+/*
+ * Tailwind mapping (DESIGN-SYSTEM.md 11.2).
+ * Tailwind's defaults are cleared so only design tokens exist as classes:
+ * bg-red-500, shadow-xl, rounded-3xl, font-serif and so on don't compile.
+ * `reference inline` means Tailwind emits no variables of its own; each
+ * utility points straight at the token in tokens.css.
+ */
+
+@theme reference inline {
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --radius-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
+  --blur-*: initial;
+  --perspective-*: initial;
+  --breakpoint-*: initial;
+  --font-weight-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+
+  /* 4px base; matches --space-* (p-4 = --space-4 = 16px). px, so 200% text scales type only. */
+  --spacing: 4px;
+
+  /* Breakpoints (3.3.2) */
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 90rem;
+
+  /* Backgrounds: bg-* */
+  --background-color-surface: var(--surface);
+  --background-color-surface-raised: var(--surface-raised);
+  --background-color-surface-sunken: var(--surface-sunken);
+  --background-color-surface-hover: var(--surface-hover);
+  --background-color-surface-pressed: var(--surface-pressed);
+  --background-color-action: var(--action);
+  --background-color-action-hover: var(--action-hover);
+  --background-color-action-wash: var(--action-wash);
+  --background-color-on-action: var(--on-action);
+  --background-color-danger-tint: var(--danger-tint);
+  --background-color-inverse: var(--inverse-surface);
+  --background-color-scrim: var(--scrim);
+  --background-color-subtle: var(--border-subtle);
+  --background-color-strong: var(--border-strong);
+  --background-color-default: var(--text);
+  --background-color-people-1: var(--people-1);
+  --background-color-people-2: var(--people-2);
+  --background-color-people-3: var(--people-3);
+  --background-color-people-4: var(--people-4);
+
+  /* Text: text-* */
+  --text-color-default: var(--text);
+  --text-color-muted: var(--text-muted);
+  --text-color-action: var(--action);
+  --text-color-action-text: var(--action-text);
+  --text-color-on-action: var(--on-action);
+  --text-color-success: var(--success);
+  --text-color-danger: var(--danger);
+  --text-color-inverse: var(--inverse-text);
+  --text-color-on-people: var(--on-people);
+
+  /* Borders: border-* (and divide-*) */
+  --border-color-subtle: var(--border-subtle);
+  --border-color-strong: var(--border-strong);
+  --border-color-default: var(--text);
+  --border-color-muted: var(--text-muted);
+  --border-color-action: var(--action);
+  --border-color-danger: var(--danger);
+  --border-color-surface: var(--surface);
+  --border-color-surface-raised: var(--surface-raised);
+
+  /* Rings (avatar-stack separators, poster edge) and outlines */
+  --ring-color-surface: var(--surface);
+  --ring-color-surface-raised: var(--surface-raised);
+  --ring-color-poster-edge: var(--poster-edge);
+  --outline-color-focus: var(--focus-ring);
+  --text-decoration-color-strong: var(--border-strong);
+  --text-decoration-color-action: var(--action);
+  --text-decoration-color-inverse: var(--inverse-text);
+  --caret-color-action: var(--action);
+
+  /* Shape */
+  --radius-poster: var(--radius-poster);
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-sheet: var(--radius-sheet);
+  --radius-device: var(--radius-device);
+  --radius-pill: var(--radius-pill);
+  --radius-checkbox: var(--radius-checkbox);
+
+  /* Elevation */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* Motion */
+  --transition-duration-fast: var(--dur-fast);
+  --transition-duration-base: var(--dur-base);
+  --transition-duration-slow: var(--dur-slow);
+  --transition-duration-expressive: var(--dur-expressive);
+  --ease-standard: var(--ease-standard);
+  --ease-enter: var(--ease-enter);
+  --ease-exit: var(--ease-exit);
+  --default-transition-duration: var(--dur-fast);
+  --default-transition-timing-function: var(--ease-standard);
+
+  /* Layout widths: max-w-reading, max-w-detail, ... */
+  --container-reading: var(--width-reading);
+  --container-detail: var(--width-detail);
+  --container-content: var(--width-content);
+  --container-marketing: var(--width-marketing);
+
+  /* Font weights: font-regular, font-medium, font-semibold */
+  --font-weight-regular: var(--weight-regular);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+}
+
+/* Layers (3.1.1): z-sticky, z-nav, z-scrim, z-sheet, z-toast */
+@utility z-sticky { z-index: var(--z-sticky); }
+@utility z-nav { z-index: var(--z-nav); }
+@utility z-scrim { z-index: var(--z-scrim); }
+@utility z-sheet { z-index: var(--z-sheet); }
+@utility z-toast { z-index: var(--z-toast); }
+
+/* Targets and component layout sizes */
+@utility min-h-target { min-height: var(--target-min); }
+@utility min-w-target { min-width: var(--target-min); }
+@utility size-target { width: var(--target-min); height: var(--target-min); }
+@utility max-h-sheet { max-height: var(--sheet-max-height); }
+@utility h-topbar { height: var(--topbar-height); }
+@utility h-tabbar { height: var(--tabbar-height); }
+@utility w-dialog { width: calc(100% - 2 * var(--space-5)); }
+@utility mb-keyboard { margin-bottom: var(--keyboard-inset, 0px); }
+@utility pb-safe-footer { padding-bottom: max(var(--space-4), env(safe-area-inset-bottom)); }
+@utility bottom-toast { bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom) + var(--space-3)); }
+@utility border-hairline { border-width: var(--border-width); }
+
+/* Selected segment position for the segmented control: seg-pos-0, seg-pos-1, ... */
+@utility seg-pos-* {
+  translate: calc(--value(integer) * 100%) 0;
+}
+
+/* Safe areas (8.2) */
+@utility pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+@utility pt-safe { padding-top: env(safe-area-inset-top); }
+
+/*
+ * Forced colors (3.10): shadows and tints disappear, so anything that
+ * relies on them gets a CanvasText edge, and selected states use Highlight.
+ */
+@utility fc-edge {
+  @media (forced-colors: active) {
+    border: var(--border-width) solid CanvasText;
+  }
+}
+@utility fc-selected {
+  @media (forced-colors: active) {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}
+
+/* Motion that respects both prefers-reduced-motion and the styleguide simulation. */
+@custom-variant motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-motion="reduce"]) & {
+      @slot;
+    }
+  }
+}
+
+/* Dark theme (prepared, not shipped; 3.10). Only for things tokens can't express, like the poster-edge ring. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Interaction states (3.8). hover: only on devices that hover. Both hover
+ * and active also match data-force, so /styleguide can show every state
+ * statically (DS 14): <button data-force="hover">.
+ */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &:where([data-force~="hover"]) {
+    @slot;
+  }
+}
+@custom-variant active {
+  &:active {
+    @slot;
+  }
+  &:where([data-force~="pressed"]) {
+    @slot;
+  }
+}
+@custom-variant focus {
+  &:focus {
+    @slot;
+  }
+  &:where([data-force~="focus"]) {
+    @slot;
+  }
+}

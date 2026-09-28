@@ -1,0 +1,62 @@
+/* Base element styles (DESIGN-SYSTEM.md 3.2.2, 3.3.3, 3.8, 8.2). */
+
+@layer base {
+  html {
+    background-color: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Focus never hides behind the sticky top bar or tab bar (3.3.3). */
+    scroll-padding-top: calc(var(--topbar-height) + var(--space-2));
+    scroll-padding-bottom: calc(var(--tabbar-height) + var(--space-2));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-leading);
+    /* The system supplies its own press states (8.2). */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Show what people type literally: Inter's contextual alternates turn "7x2" into "7×2". */
+  input,
+  textarea {
+    font-variant-ligatures: no-contextual;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Focus-visible (3.8): never removed, never replaced by hover. data-force shows it in /styleguide. */
+  :focus-visible,
+  [data-force~="focus"] {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* Body scroll lock while a sheet or dialog is open. */
+  :root[data-scroll-lock] {
+    overflow: hidden;
+  }
+
+  ::selection {
+    background-color: var(--action-wash);
+    color: var(--text);
+  }
+
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Close",
+    "moreActions": "More actions",
+    "loading": "Loading",
+    "undo": "Undo",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "done": "Done",
+    "opensInNewTab": "(opens in new tab)",
+    "unread": "Unread",
+    "new": "New",
+    "on": "On",
+    "off": "Off",
+    "you": "You",
+    "skipToContent": "Skip to content"
+  },
+  "field": {
+    "optional": "(optional)",
+    "charactersLeft": "{count} left",
+    "charactersLeftAnnounce_one": "{count} character left",
+    "charactersLeftAnnounce_other": "{count} characters left",
+    "limitReached": "Character limit reached"
+  },
+  "people": {
+    "others_one": "{count} other",
+    "others_other": "{count} others",
+    "overflow": "+{count}",
+    "compactOverflow": "{names} +{count}"
+  },
+  "count": {
+    "cap": "99+",
+    "unread_one": "{count} unread",
+    "unread_other": "{count} unread"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "yesterday": "yesterday",
+    "daysAgo": "{count}d ago",
+    "runtime": "{h}h {m}m",
+    "runtimeHours": "{h}h",
+    "runtimeMinutes": "{m}m"
+  },
+  "milestone": {
+    "announce": "Milestone: {text}"
+  },
+  "title": {
+    "movie": "Film",
+    "tv": "Series",
+    "meta": "{type} · {year}",
+    "metaRuntime": "{type} · {year} · {runtime}",
+    "accessibleName": "{title}, {type}, {year}.",
+    "vouchedFor": "Vouched for by {names}.",
+    "comments_one": "{count} comment",
+    "comments_other": "{count} comments",
+    "unseenComments": "New comments",
+    "whereToWatch": "Where to watch",
+    "genres": "Genres",
+    "goodWords": "Good words"
+  },
+  "vouch": {
+    "put": "Put in a good word",
+    "putShort": "Add",
+    "yours": "Your good word",
+    "editNote": "Edit note",
+    "changeGroups": "Change groups",
+    "takeBack": "Take it back",
+    "takenBack": "Taken back.",
+    "didntSave": "That didn't save. Check your connection and try again.",
+    "menuLabel": "Your good word options"
+  },
+  "search": {
+    "label": "Search for a show or movie",
+    "clear": "Clear search",
+    "recent": "Recent searches",
+    "clearRecent": "Clear",
+    "results_one": "{count} result",
+    "results_other": "{count} results",
+    "noResults": "Nothing for “{query}”. Check the spelling, or try the original title.",
+    "error": "Search isn't working right now. Try again.",
+    "onYourShelf": "On your shelf",
+    "friendsVouched": "{names} vouched for this",
+    "loading": "Searching"
+  },
+  "groups": {
+    "allGroups": "All groups",
+    "createGroup": "Create a group",
+    "switcherLabel": "Switch shelf. Current: {name}",
+    "sheetTitle": "Your shelves",
+    "members_one": "{count} member",
+    "members_other": "{count} members",
+    "groupsHeading": "Groups"
+  },
+  "visibility": {
+    "oneGroup_one": "Visible to {group} · {count} person",
+    "oneGroup_other": "Visible to {group} · {count} people",
+    "manyGroups": "Visible to {groups} groups · {people} people",
+    "noGroups": "Pick at least one group",
+    "pickerTitle": "Who can see it",
+    "change": "Change who can see it"
+  },
+  "invite": {
+    "linkLabel": "Invite link",
+    "copy": "Copy link",
+    "share": "Share",
+    "copied": "Link copied. Send it to someone whose taste you trust.",
+    "copyFailed": "Couldn't copy the link. Select it and copy it yourself.",
+    "shareText": "Join {group} on Good Word",
+    "reset": "Link reset. The old link no longer works.",
+    "expired": "This invite link has expired. Ask {name} for a new one."
+  },
+  "nav": {
+    "main": "Main",
+    "shelf": "Shelf",
+    "add": "Add",
+    "you": "You",
+    "activity": "Activity",
+    "activityWithCount": "Activity, {count} unread",
+    "invite": "Invite to {group}",
+    "help": "Help"
+  },
+  "robot": {
+    "label": "Robot guess"
+  },
+  "comment": {
+    "edited": "edited",
+    "mentionsYou": "Mentions you",
+    "sending": "Sending…",
+    "failed": "Didn't send.",
+    "accessibleName": "{name}, {time}",
+    "moreActionsFor": "More actions for {name}'s comment",
+    "deleted": "Comment deleted.",
+    "markedSpoiler": "Marked as spoiler",
+    "editLabel": "Edit your comment",
+    "list": "Comments"
+  },
+  "composer": {
+    "label": "Comment",
+    "placeholder": "Say something to {group}…",
+    "mention": "Mention someone",
+    "spoiler": "Spoiler",
+    "send": "Send",
+    "sendEmpty": "Write something to send",
+    "suggestions_one": "{count} person",
+    "suggestions_other": "{count} people",
+    "suggestionsLabel": "People in {group}"
+  },
+  "spoiler": {
+    "cover": "Spoiler from {name} · Tap to reveal",
+    "preview": "a spoiler comment"
+  },
+  "activity": {
+    "mention": "<b>{actor}</b> mentioned you on <b>{title}</b> in {group}",
+    "comment": "<b>{actor}</b> commented on <b>{title}</b> in {group}",
+    "join": "<b>{actor}</b> joined {group}"
+  },
+  "wordmark": {
+    "name": "Good Word"
+  }
+}
