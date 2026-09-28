@@ -108,6 +108,7 @@
     "copy": "Copy link",
     "share": "Share",
     "copied": "Link copied. Send it to someone whose taste you trust.",
+    "copyFailed": "Couldn't copy the link. Select it and copy it yourself.",
     "shareText": "Join {group} on Good Word",
     "reset": "Link reset. The old link no longer works.",
     "expired": "This invite link has expired. Ask {name} for a new one."

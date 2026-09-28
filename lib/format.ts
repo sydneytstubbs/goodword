@@ -22,6 +22,19 @@ export function relativeTime(date: Date, now: Date = new Date()): string {
   return date.getFullYear() === now.getFullYear() ? shortDate.format(date) : shortDateYear.format(date);
 }
 
+const relativeLong = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+/** Spoken relative time for accessible names: "2 hours ago", "yesterday". */
+export function relativeTimeLong(date: Date, now: Date = new Date()): string {
+  const diff = date.getTime() - now.getTime();
+  const abs = Math.abs(diff);
+  if (abs < MINUTE) return relativeLong.format(0, "second");
+  if (abs < HOUR) return relativeLong.format(Math.round(diff / MINUTE), "minute");
+  if (abs < DAY) return relativeLong.format(Math.round(diff / HOUR), "hour");
+  if (abs < 7 * DAY) return relativeLong.format(Math.round(diff / DAY), "day");
+  return fullDateTime.format(date);
+}
+
 /** Full date and time for accessible names and `title`s. */
 export function fullTime(date: Date): string {
   return fullDateTime.format(date);

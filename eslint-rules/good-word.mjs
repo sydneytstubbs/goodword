@@ -16,9 +16,10 @@ const COLOR_FN = /\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color)\(/;
 
 // Tailwind arbitrary values: bg-[#fff], text-[17px], [mask:x], bg-(--x)
 const ARBITRARY = /(?:^|\s)(?:[\w-]+:)*!?-?[a-z][\w-]*-\[[^\]\s]+\]|(?:^|\s)(?:[\w-]+:)*\[[a-z-]+:[^\]\s]+\]|-\(--[\w-]+\)/;
-// Spacing on the token scale (3.3.1): --space-1..32, plus 0, px and 0.5 for hairline insets.
+// Spacing on the token scale (3.3.1): --space-1..32, plus 0 and 0.5 (2px hairline insets)
+// and 2.5 (the 10px poster-to-text gap in rec cards, DS 4.2.2).
 const SPACING = /(?:^|\s)(?:[\w-]+:)*(p|px|py|pt|pb|pl|pr|ps|pe|m|mx|my|mt|mb|ml|mr|ms|me|gap|gap-x|gap-y|space-x|space-y)-(\d+(?:\.\d+)?)(?=\s|$)/g;
-const SPACING_SCALE = new Set(["0", "0.5", "1", "2", "3", "4", "5", "6", "8", "10", "12", "16", "24", "32"]);
+const SPACING_SCALE = new Set(["0", "0.5", "1", "2.5", "2", "3", "4", "5", "6", "8", "10", "12", "16", "24", "32"]);
 
 const SERIF_TYPE = /(?:^|\s)(?:[\w-]+:)*text-(?:display-xl|display-l|display-m|title-l|title-l-step|quote|wordmark|poster-title|poster-initial)(?=\s|$)/;
 const INTER_TYPE = /(?:^|\s)(?:[\w-]+:)*text-(?:title-m|heading|body|body-marketing|body-strong|label|card-title|caption|overline)(?=\s|$)/;
