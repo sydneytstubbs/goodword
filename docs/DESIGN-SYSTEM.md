@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.3 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.4 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -598,6 +598,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 - **Filter chip:** toggle for narrowing. Unselected: `--surface-raised`, `--border-subtle` hairline, `label` weight 500. Selected: `--inverse-surface` fill, `--inverse-text`, leading `Check` 16px. `aria-pressed`. Optional count in tabular figures ("Netflix 12").
 - Visual height 32px; hit area 44px.
 - Show at most five filter chips, then a "More filters" chip that opens a sheet.
+- **Chip button** ("More filters"): the filter chip's unselected look with a trailing `CaretDown`, and `aria-haspopup="dialog"`. When filters inside the sheet are on, it shows how many, and its border becomes `--border-strong`. Not a toggle, so no `aria-pressed`.
 
 #### 4.1.10 Avatar and avatar stack
 - Circle in a people tone assigned deterministically from the user id, initial in `--on-people`, Inter 600. Sizes 24, 32, 40, 56. No border in light mode; a 1px `--poster-edge` ring in dark mode.
@@ -677,7 +678,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 One component, three variants.
 - **`grid`** (shelves): no card box. The poster (level 1) is the object; beneath it, 10px apart: title (`card-title`, 2 lines max), meta (`caption`, `--text-muted`, "Series · 2024"), the vouched-by row, and, if there is one, the most recent friend note as a quote (`caption` in `--text-muted`, in curly quotes, 2 lines max). When the group's conversation has comments, a comment count sits at the end of the meta line (`ChatCircle` 16px and the number), with a 6px `--action` dot when there are comments you haven't seen. A "New" label badge (4.1.11) sits on the poster's top-left corner, 8px in.
 - **`row`** (search results, dense lists): 48×72 poster left; title, meta, and vouched-by right; vouch button trailing. Level 0, hairline `--border-subtle` dividers between rows, 12px vertical padding.
-- **`detail`** (title screen): large poster, title as `title-l`, meta, genres, where to watch (5.7), then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), and the note in `quote` (Instrument Serif italic 24px), then the vouch button (`lg`).
+- **`detail`** (title screen): large poster, title as `title-l`, meta, genres, then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote` (Instrument Serif italic 24px), and group chips for which of **your** groups it's in ("Only you" for your own with none); then where to watch (5.7), the vouch button (`lg`), the conversation preview (5.17), and the overview.
 - **Vouched-by row:** avatar stack (24px) plus names in `caption` ("Priya, Jonah +1"). Always visible. Your own good word is listed as "You".
 - **Behavior:** the whole card is one link to the detail screen. In `row`, the vouch button is a separate target, and the rest of the row is the link. No nested interactive elements inside the card link. Desktop hover raises the poster to `--shadow-md`; nothing moves.
 - **Accessibility:** the accessible name reads as a sentence: "The Night Ferry, series, 2024. Vouched for by Priya and Jonah." 
@@ -704,6 +705,7 @@ One component, three variants.
 #### 4.2.5 Group switcher
 - Top-bar control: current group name plus `CaretDown`. Opens a sheet listing groups (sorted by recent activity, each with avatar stack and member count), an "All groups" option, and "Create a group".
 - The current shelf is always named on screen. "All groups" is an explicit, labeled choice, never an unlabeled default.
+- Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The Shelf tab shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
 
 #### 4.2.6 Visibility line
 - A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus "Visible to College crew · 6 people", or "Visible to 3 groups · 14 people".
@@ -847,7 +849,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 ### 5.6 Browsing and filtering the shelf
 - **Default sort:** newest good word first. Alternative: "Most vouched".
-- **Controls** stick under the top bar: segmented control (All / Movies / Shows), then filter chips for streaming services with counts, then sort.
+- **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My shelf) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the shelf scrolls beneath them.
 - **Active filters are always visible**, with a single "Clear" action and a result count ("12 good words").
 - **Filters combine** with AND across types (Movies + Netflix) and OR within a type (Netflix OR Hulu), and the UI says so implicitly by grouping chips by type.
 - **Empty result:** "Nobody's vouched for a Netflix movie yet." with Clear filters, plus the robot-guess offer where it applies (5.15).
@@ -855,8 +857,8 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 ### 5.7 Title detail
 - Order of content, most to least important: poster and title, who vouched and their notes, where to watch, the vouch button, the conversation preview (5.17), then metadata (genre, runtime or seasons, year, overview).
-- **For now, the `detail` rec card follows 4.2.2's order** (meta, genres, where to watch, then friends' good words, then the vouch button). The two orders are reconciled when the title detail screen is built (open question 9).
-- **Where to watch** comes from TMDB's watch provider data for the user's region, showing provider names and logos grouped by Stream / Rent / Buy. **JustWatch attribution is required** alongside this data, per TMDB's terms. If nothing is available: "Not streaming in your region right now."
+- Meta (type, year, runtime or seasons) and genres sit with the title as text; the overview comes last (PRD F6, 4.2.2 `detail`).
+- **Where to watch** comes from TMDB's watch provider data for the user's region, showing provider names and logos grouped by Stream / Rent / Buy. **JustWatch attribution is required** alongside this data, per TMDB's terms. If nothing is available: "Not streaming in your region right now." Each provider links to TMDB's watch page for the title and opens in a new tab, since the user is mid-choice (4.1.3). It loads after the rest of the screen, with its own skeleton and its own error state with Retry (5.12, partial).
 - The overview is collapsed to 3 lines with "More" when longer.
 
 ### 5.8 Groups
@@ -1088,6 +1090,20 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | First-good-word prompt | What's something you'd tell these folks to watch? |
 | Shelf didn't load | This shelf didn't load · Good Word is having a moment. Try again in a minute. |
 | Offline banner (before queued writes, PRD F12) | You're offline. You can keep browsing what's already loaded. |
+| Filter bar result count | 12 good words · **Clear** |
+| Sort | Newest · Most vouched |
+| More filters sheet | Filters · Show 12 good words · Clear |
+| Length filter | Any · Under 30 minutes · Under 2 hours |
+| Empty filter result, no services or type | Nobody's vouched for anything on Netflix yet. |
+| Empty filter result, with genres or length | Nobody's vouched for anything like that yet. |
+| Empty filter result, body | Clear filters to see the whole shelf. |
+| Empty filter result, length on, some runtimes unknown | Titles without a known length are left out while a length filter is on. |
+| Empty filter result, My shelf | You haven't vouched for anything like that. |
+| More filters, no services | None of these are streaming in your region yet. |
+| Load more | Load more |
+| New good words in the switcher | 3 new good words |
+| Where to watch, didn't load | Where to watch didn't load · Good Word is having a moment. Try again in a minute. |
+| JustWatch attribution | Streaming data from JustWatch |
 | Conversation preview heading | Talk about it in College crew |
 | Add a comment field | Add a comment… |
 | Composer placeholder | Say something to College crew… |
@@ -1402,6 +1418,7 @@ It is excluded from search indexing and from production navigation, and it's the
 - When someone leaves a group, their good words leave that shelf (5.8)
 - Conversations belong to one title in one group, are flat (no nested replies), and allow mentions of that group's members only (5.17)
 - Spoilers are covered and never rendered until revealed (4.2.12)
+- Title detail order: friends first, then where to watch, the vouch button, the conversation preview, and the overview (PRD F6, 4.2.2, 5.7; decided 2026-09-29)
 
 **Open**
 1. **Marketing page in dark mode:** proposed to stay light-only as a fixed brand surface. Confirm.
@@ -1412,12 +1429,12 @@ It is excluded from search indexing and from production navigation, and it's the
 6. **Tokens to DTCG JSON:** move when a native app starts (8.4).
 7. **Reactions on comments** (a single "same" or heart): deliberately left out of the MVP to keep conversations about words. Revisit after beta.
 8. **Comments from people who leave a group:** proposed to stay visible and attributed so conversations still make sense. Confirm.
-9. **Title detail order:** 4.2.2 and 5.7 list the content in different orders. Following 4.2.2 for now; decide when title detail is built (PRD slice 5).
 
 ---
 
 ## 17. Changelog
 
+- **v3.2.4 (2026-09-29):** Step 5. Open question 9 decided: title detail is friends first (4.2.2, 5.7), and each good word shows chips for which of your groups it's in. The chip button for More filters (4.1.9). New counts in the group switcher and rail, and a dot on the Shelf tab (4.2.5). Filter bar layout, sort placement, and active filters on the bar (5.6). Where to watch links, loading, and error (5.7). Microcopy for filters, no results, paging, and where to watch (6.6). Utility `scrollbar-none` for the chip row. `/styleguide` gains the browsing pattern, where-to-watch states, and New counts.
 - **v3.2.3 (2026-09-29):** Step 4. The visibility line with no groups picked reads "Only you, for now" and isn't an error (4.2.6). Microcopy for the log flow's other toasts, the 10th good word milestone, the first-good-word prompt, a shelf that didn't load, and an offline banner that doesn't promise queued writes until PRD F12 builds them (6.6). `/styleguide` gains a Patterns section for 5.4 and the shelf states.
 - **v3.2.2 (2026-09-29):** Step 3 additions. Title search gets an offline state (4.2.4). Microcopy for search offline, a title that didn't load, and a title that can't be found (6.6). Token `--rail-width` (240px) so content clears the desktop rail.
 - **v3.2.1 (2026-09-29):** The You tab is renamed **My shelf** (tab bar, rail, shortcuts, and every "You ›" path), so your own shelf is a main navigation item. The icon stays `UserCircle`; routes stay under `/you`.
