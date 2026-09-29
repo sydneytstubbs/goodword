@@ -101,7 +101,8 @@ test.describe("the core loop", () => {
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
 
     await expect(sheet).toBeHidden();
-    await expect(page.getByText("On your shelf. Jonah and Tess will see it.")).toBeVisible();
+    // Names follow group order, which the docs leave open.
+    await expect(page.getByText(/On your shelf\. (Jonah and Tess|Tess and Jonah) will see it\./)).toBeVisible();
     const card = page.getByRole("link", { name: "The Night Ferry, series, 2024. Vouched for by You." });
     await expect(card).toBeVisible();
     await expect(card).toContainText("“ep 3 is where it gets you”");
@@ -144,8 +145,9 @@ test.describe("the core loop", () => {
   test("All groups shows one card with each person once; other groups never see Jonah", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/shelf/all");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("All groups");
+    // Jonah's good word arrived after Priya last looked, so the card is New (F5.5).
     await expect(page.getByRole("link", { name: /^The Night Ferry/ })).toHaveAccessibleName(
-      "The Night Ferry, series, 2024. Vouched for by You and Jonah.",
+      "The Night Ferry, series, 2024. Vouched for by You and Jonah. New.",
     );
     await expectNoViolations(page);
 

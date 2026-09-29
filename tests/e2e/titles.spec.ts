@@ -14,7 +14,11 @@ const invented = [
 
 async function openAdd(page: Page) {
   // The tab bar's Add below 1024px; the rail's button from 1024px.
-  await page.getByRole("button", { name: /^(Add|Put in a good word)$/ }).filter({ visible: true }).click();
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("button", { name: /^(Add|Put in a good word)$/ })
+    .filter({ visible: true })
+    .click();
   const sheet = page.getByRole("dialog", { name: "Put in a good word" });
   await expect(sheet).toBeVisible();
   return sheet;
