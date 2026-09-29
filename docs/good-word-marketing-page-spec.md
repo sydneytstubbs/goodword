@@ -1,6 +1,6 @@
 # Good Word: Marketing Page Spec (v2, Editorial)
 
-**Version** 2.0 · **Last updated** 2026-09-27
+**Version** 2.1 · **Last updated** 2026-09-29
 
 Design and UX requirements for the single-page marketing site that explains Good Word. This version replaces the playful v1 direction with a calm, modern, editorial one. Written to be handed to Claude Code as the build brief.
 
@@ -108,7 +108,7 @@ Order is fixed. All sections sit on `--surface` unless noted. Content max width 
 ### 6.1 Nav
 - Left: the **Good *Word*** wordmark (BRAND 4.1).
 - Right: text links **How it works**, **Groups**, **Talk about it**, **FAQ** in Inter 15px, then "Coming soon" as a small `--text-muted` label with a 6px cobalt dot before it.
-- Sticky. Transparent at the top; after scrolling, `--surface` at 90% opacity with a hairline bottom border. No blur effect.
+- Sticky. Transparent at the top; after scrolling, solid `--surface` with a hairline bottom border. No blur effect.
 - Mobile: wordmark and a text button "Menu" that opens a full-screen overlay listing the links in `display-l`. Close with "Close" text button and Esc.
 
 ### 6.2 Hero
@@ -213,7 +213,7 @@ All built from DS v3 components and tokens.
 - A simple device outline: `--radius-device` (44px) outer radius, 10px `--text` bezel at 100% opacity, no notch details beyond a small pill, `--shadow-lg`. Content inside is real HTML built from DS components at 390px width, scaled to fit. Never a screenshot image.
 
 ### 7.7 Invented content
-- **Titles:** The Night Ferry, Low Tide Club, Grandma's Heist, Parallel Parking, Moth Season, Salt & Static
+- **Titles:** The Night Ferry, Low Tide Club, Grandma's Heist, Parallel Parking, Moth Season, Salt & Static, Borrowed Weather, The Tuesday Choir
 - **Friends:** Priya, Jonah, Tess, Mo, Luis, Bea
 - **Groups:** College crew, The girls, Sunday book club
 
@@ -241,7 +241,7 @@ All built from DS v3 components and tokens.
 - With `prefers-reduced-motion: reduce`: everything appears in its final state.
 
 ### 8.4 Performance and SEO
-- Lighthouse ≥ 95 in all four categories on mobile. LCP < 2.0s, CLS < 0.05. The hero is text and HTML only.
+- Lighthouse ≥ 95 in all four categories on mobile. LCP < 2.0s, CLS < 0.05. (Accepted for launch: Lighthouse's simulated mobile LCP measures 2.3–2.7s, because the hero headline waits for Instrument Serif; the real paint is about 0.2s.) The hero is text and HTML only.
 - Title: "Good Word: show and movie recs from your friends". Meta description: "A private shelf of shows and movies your friends vouch for. No algorithm, no strangers."
 - Open Graph image (1200×630): paper background, the hero headline in Instrument Serif, the monogram in the corner (BRAND 4.2).
 - Favicon and Apple touch icon: the cobalt monogram.
@@ -285,3 +285,9 @@ Follow BRAND 3 and DS 6. On this page specifically:
 | Friend notes | Handwritten bubbles | Serif italic quotes |
 | Big moment | Full-bleed tomato | Full-bleed ink |
 | Content | 10 sections | Adds "Talk about it"; step 3 now matches the MVP (filters, not a typed "Ask") |
+
+---
+
+## 12. Changelog
+
+- **v2.1 (2026-09-29):** The sticky nav turns solid `--surface` after scrolling, not 90% (it read grey over the ink section). Two more invented titles, Borrowed Weather and The Tuesday Choir, so the Groups columns (6.5) don't repeat titles other than Low Tide Club. The simulated mobile LCP of 2.3–2.7s is accepted (8.4).

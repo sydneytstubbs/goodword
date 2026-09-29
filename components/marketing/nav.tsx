@@ -6,8 +6,8 @@ import { t } from "@/lib/messages";
 import { Wordmark } from "../domain/wordmark";
 import { useModal } from "../ui/use-modal";
 
-// Marketing nav (spec 6.1). Sticky; transparent at the top, then surface at
-// 90% with a hairline once the page scrolls (no blur). Below 768px, a "Menu"
+// Marketing nav (spec 6.1). Sticky; transparent at the top, then solid
+// surface with a hairline once the page scrolls (no blur). Below 768px, a "Menu"
 // text button opens a full-screen overlay of the links, closed with "Close"
 // or Esc; focus is trapped while it's open.
 
@@ -63,7 +63,7 @@ export function MarketingNav() {
     <>
       <header
         ref={header}
-        className="sticky top-0 z-nav border-b border-transparent transition duration-base ease-standard data-scrolled:border-subtle data-scrolled:bg-surface/90"
+        className="sticky top-0 z-nav border-b border-transparent transition duration-base ease-standard data-scrolled:border-subtle data-scrolled:bg-surface"
       >
         <div className="mx-auto flex h-16 max-w-marketing items-center justify-between gap-6 px-5 md:px-8 lg:px-10">
           <a href="#top" aria-label={t("marketing.nav.home")} className="rounded-control">

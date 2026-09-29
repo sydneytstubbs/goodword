@@ -27,8 +27,8 @@ Work through these steps in order. Update this table when a step is reviewed and
 
 | Step | Scope | Source | Status |
 |---|---|---|---|
-| 0 | Foundations: tokens, fonts, Tailwind mapping, lint rules, `/styleguide` | DS 11.6 steps 1–2, DS 14 | In review |
-| M | Rebuild the marketing page on the new system | Marketing spec v2, DS 11.6 steps 3–5 | In review |
+| 0 | Foundations: tokens, fonts, Tailwind mapping, lint rules, `/styleguide` | DS 11.6 steps 1–2, DS 14 | Done |
+| M | Rebuild the marketing page on the new system | Marketing spec v2, DS 11.6 steps 3–5 | Done |
 | 1 | Accounts | PRD 12, slice 1 | Not started |
 | 2 | Groups | PRD 12, slice 2 | Not started |
 | 3 | Titles (TMDB) | PRD 12, slice 3 | Not started |
@@ -61,7 +61,7 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 - Supabase: Postgres, Auth (magic link and Google), Realtime (for conversations)
 - Tailwind CSS mapped to the design system tokens
 - TMDB API (server-side only), JustWatch attribution for where-to-watch
-- Transactional email provider (Resend, pending confirmation) from step 7
+- Resend for all email: sign-in links from step 1 (as Supabase Auth's SMTP sender), product email from step 7
 
 **Commands** (pnpm):
 - `pnpm dev`: local dev server at http://localhost:3000 (styleguide at `/styleguide`)
@@ -74,7 +74,7 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 
 **Environment variables** (never commit values; keep `.env.example` current):
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, and from step 7 `EMAIL_API_KEY`. If one is missing, tell Sydney which one and where to get it; don't work around it.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, and `EMAIL_API_KEY` (Resend, from step 1). For database migrations and auth settings: `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`. If one is missing, tell Sydney which one and where to get it; don't work around it.
 
 ---
 

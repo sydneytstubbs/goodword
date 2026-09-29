@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-28
+**Version** 1.2.3 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -315,7 +315,7 @@ Each feature lists user stories, rules, acceptance criteria, states, and edge ca
 **Rules**
 - Sign-in follows DS 5.3 exactly: magic link (valid 15 minutes, single use) or Google OAuth. No passwords.
 - Sign-in and sign-up are the same flow. Never ask the user which one they want.
-- Sessions last 90 days per device, refreshed on use.
+- Sessions last 90 days per device, refreshed on use. (Supabase's free plan can't cap a session at exactly 90 days; sessions stay alive while in use. Accepted for the MVP.)
 - **Display name** is required, 1 to 30 characters, asked once on first sign-in at `/welcome` ("What should friends call you?"), prefilled from Google when available. It's what appears on every good word.
 - **Region** defaults from the browser locale (fallback `US`) and is editable in Settings. It controls where-to-watch data.
 - **Resend link** is available after 30 seconds (visible countdown). Sign-in emails are rate limited to 5 per email address per hour, with a clear message when hit.
@@ -729,7 +729,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 - Supabase Auth: email magic links (15-minute, single-use) and Google OAuth. Custom, on-brand email template for the magic link.
 
 ### 9.4 Email
-- A transactional email provider (for example, Resend or Postmark) with a verified sending domain, SPF, DKIM, and DMARC.
+- **Resend** (decided), with a verified sending domain, SPF, DKIM, and DMARC. It sends sign-in links from slice 1 as Supabase Auth's custom SMTP sender, and all product email from slice 7.
 - Support RFC 8058 one-click unsubscribe (`List-Unsubscribe` and `List-Unsubscribe-Post` headers) on digest and prompt emails.
 - Templates are responsive, readable in plain text, and survive dark-mode email clients. Every image has alt text.
 - No open-tracking pixels. Measure engagement by link clicks with `ref` parameters.
@@ -893,7 +893,7 @@ Decide before the slice that needs them.
 | 5 | When someone leaves, their good words leave that shelf | Confirm (currently specified) | Slice 2 |
 | 6 | Group size limit of 50 and 20 groups per person | Confirm, or raise after beta | Slice 2 |
 | 7 | Should removed members be told? | No for the MVP; revisit if it causes confusion | Slice 2 |
-| 8 | Email provider | Resend | Slice 7 |
+| 8 | Email provider | **Decided (2026-09-29): Resend**, set up in slice 1 for sign-in links | Slice 1 |
 | 9 | Do we need an explicit "Watched it" action to prove H5? | Rely on where-to-watch clicks and interviews for the MVP; build "Watched it because of you" first if evidence is unclear | After beta |
 | 10 | Comments from people who leave or are removed | Stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
 | 11 | Can people comment on a title nobody in the group has vouched for? | No. Conversations exist only for titles on the group's shelf, so they're always discoverable. To start one, put in a good word first | Slice 6 |
@@ -903,6 +903,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.3 (2026-09-29):** Resend decided and moved up to slice 1 for sign-in emails (9.4, open question 8). Session length accepted as "stays signed in while in use" on the free plan (F1). Within slice 1, Google sign-in is built after email links.
 - **v1.2.2 (2026-09-28):** Open question 1 decided: Next.js, one app for marketing and product (9.6).
 - **v1.2.1 (2026-09-28):** The marketing page isn't built yet; it's built after foundations (CLAUDE.md step M).
 - **v1.2 (2026-09-27):** Made visual references direction-neutral (milestone moment, `genreAccent` values) so this doc works with Design System v3.0 (Editorial).
