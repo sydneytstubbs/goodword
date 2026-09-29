@@ -99,7 +99,7 @@ for (const theme of ["light", "dark"] as const) {
   test(`visual snapshots (${theme})`, async ({ page }) => {
     await open(page, theme);
     await page.addStyleTag({ content: "*{caret-color:transparent!important}" });
-    for (const id of ["color", "type", "space", "motion", "icons", "primitives", "domain"]) {
+    for (const id of ["color", "type", "space", "motion", "icons", "primitives", "domain", "patterns"]) {
       const section = page.locator(`section[aria-labelledby="${id}"]`);
       await expect(section).toHaveScreenshot(`${id}-${theme}.png`);
     }

@@ -126,32 +126,40 @@ test.describe("titles", () => {
     await expectNoViolations(page);
   });
 
-  test("picking a result opens its title, saved to the cache with an accent", async ({ browser }) => {
+  test("picking a result opens the confirm step; its title page saves it to the cache with an accent", async ({ browser }) => {
     test.skip(!tmdb, "needs TMDB_API_READ_TOKEN");
     const page = await signedIn(browser);
     const sheet = await openAdd(page);
+    const response = page.waitForResponse((r) => r.url().includes("/api/titles/search"));
     await sheet.getByRole("combobox").fill("night");
+    const body = (await (await response).json()) as { results: Array<{ type: string; tmdbId: number; name: string }> };
     const first = sheet.getByRole("option").first();
     const name = (await first.locator(".text-card-title").textContent())!;
     await first.click();
 
-    await expect(page).toHaveURL(/\/title\/(movie|tv)\/\d+$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
-    await expect(page).toHaveTitle(`${name} · Good Word`);
-    await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
-    await expectNoViolations(page);
-
-    const [, type, tmdbId] = new URL(page.url()).pathname.split("/").slice(1);
-    const { data } = await admin().from("titles").select("title, accent, fetched_at").eq("media_type", type).eq("tmdb_id", Number(tmdbId)).single();
-    expect(data?.title).toBe(name);
-    expect(data?.accent).toMatch(/^(clay|ochre|moss|plum)$/);
+    // Step 4: a result opens the confirm step in the same sheet (DS 5.4).
+    await expect(sheet.getByLabel("Anything to add? (optional)")).toBeFocused();
+    await expect(sheet.getByText(name, { exact: true })).toBeVisible();
+    await expect(sheet.getByText("Only you, for now")).toBeVisible();
+    await expect(page).toHaveURL(/\/shelf$/);
 
     // Back returns to where Add was opened, with the sheet closed.
     await page.goBack();
     await expect(page).toHaveURL(/\/shelf$/);
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
 
+    const { type, tmdbId } = body.results.find((r) => r.name === name)!;
+    await page.goto(`/title/${type}/${tmdbId}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
+    await expect(page).toHaveTitle(`${name} · Good Word`);
+    await expect(page.getByText("None of your groups have vouched for this yet.")).toBeVisible();
+    await expectNoViolations(page);
+    const { data } = await admin().from("titles").select("title, accent").eq("media_type", type).eq("tmdb_id", tmdbId).single();
+    expect(data?.title).toBe(name);
+    expect(data?.accent).toMatch(/^(clay|ochre|moss|plum)$/);
+
     // The search is remembered on this device.
+    await page.goBack();
     const again = await openAdd(page);
     await expect(again.getByRole("heading", { name: "Recent searches" })).toBeVisible();
     await again.getByRole("button", { name: "night" }).click();

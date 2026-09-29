@@ -2,6 +2,7 @@ import { Wordmark } from "@/components/domain/wordmark";
 import { Controls } from "./controls";
 import { Domain } from "./domain";
 import { Foundations } from "./foundations";
+import { Patterns } from "./patterns";
 import { Primitives } from "./primitives";
 
 const CONTENTS = [
@@ -12,6 +13,7 @@ const CONTENTS = [
   ["icons", "Icons"],
   ["primitives", "Primitives"],
   ["domain", "Domain components"],
+  ["patterns", "Patterns"],
 ];
 
 export default function StyleguidePage() {
@@ -52,6 +54,7 @@ export default function StyleguidePage() {
         <Foundations />
         <Primitives />
         <Domain />
+        <Patterns />
       </main>
     </>
   );
