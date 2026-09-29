@@ -1,11 +1,13 @@
 "use client";
 
+import type { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 import { useEffect, useRef } from "react";
-import { createClient } from "./client";
 
 // Live updates through Realtime Broadcast on private channels (PRD F13,
 // F14). The database only lets members listen to a group's conversations,
 // and each person to their own Activity. Messages carry ids, never text.
+// The Supabase client loads after the page is interactive, so it never
+// slows the first render (DS 9).
 
 type Handler = (payload: Record<string, unknown>) => void;
 
@@ -22,10 +24,13 @@ export function useBroadcast(topic: string | null, event: string, onMessage: Han
 
   useEffect(() => {
     if (!topic) return;
-    const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let supabase: SupabaseClient | null = null;
+    let channel: RealtimeChannel | null = null;
     let cancelled = false;
     (async () => {
+      const { createClient } = await import("./client");
+      if (cancelled) return;
+      supabase = createClient();
       await supabase.realtime.setAuth();
       if (cancelled) return;
       channel = supabase
@@ -39,7 +44,7 @@ export function useBroadcast(topic: string | null, event: string, onMessage: Han
     });
     return () => {
       cancelled = true;
-      if (channel) void supabase.removeChannel(channel);
+      if (supabase && channel) void supabase.removeChannel(channel);
     };
   }, [topic, event]);
 }
