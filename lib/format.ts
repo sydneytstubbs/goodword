@@ -55,6 +55,11 @@ export function nameList(names: string[]): string {
   return listFormat.format([names[0], names[1], others]);
 }
 
+/** Every item, however many: "College crew, The girls, and Sunday book club". */
+export function joinList(items: string[]): string {
+  return listFormat.format(items);
+}
+
 /** Compact vouched-by names: "Priya", "Priya, Jonah", "Priya, Jonah +1". */
 export function compactNames(names: string[], max = 2): string {
   const shown = names.slice(0, max).join(", ");

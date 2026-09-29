@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.8 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.9 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -278,6 +278,7 @@ Extends DS 5.1.
 | `/groups/[groupId]` | Group details: invite, members, rename, leave, delete | Member | P0 |
 | `/people/[userId]` | Person view: their good words in groups you share | Signed in, shares a group | P1 |
 | `/s/[token]` | Shared shelf (read-only, public by link) | Public | P1 |
+| `/unsubscribe?token=` | Unsubscribe from one kind of email, with Undo (F7.7) | Public (signed token) | P0 |
 | `/privacy`, `/terms` | Legal pages | Public | P0 |
 | `/styleguide` | Design system reference (DS 14) | Dev only | P0 |
 
@@ -535,7 +536,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 - To the group owner, when someone joins: "Jonah joined College crew." Batched to at most one email per day per owner. Default on.
 
 #### F7.4 Mention emails (P0)
-- When someone mentions you (F13), send one email per conversation, batched over 15 minutes: subject "Priya mentioned you on The Night Ferry" (or "Priya and Jonah mentioned you…" if several). Body: poster, group name, the comment(s) mentioning you (or "a spoiler comment"), and one button, "Open the conversation", deep-linking to the first mentioning comment.
+- When someone mentions you (F13), send one email per conversation, batched over 15 minutes (in practice: sent once the first unsent mention is 10 minutes old, by a job that runs every 5 minutes, so it always arrives within 15): subject "Priya mentioned you on The Night Ferry" (or "Priya and Jonah mentioned you…" if several). Body: poster, group name, the comment(s) mentioning you (or "a spoiler comment"), and one button, "Open the conversation", deep-linking to the first mentioning comment.
 - Don't send if you've already opened that comment in the app, or if the comment was deleted before sending.
 - Default on; one-click unsubscribe from mention emails.
 
@@ -548,7 +549,9 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 #### F7.7 Preferences (P0)
 - In Settings › Notifications: switches for Weekly digest, Mentions (email), Someone joined your group, and (P1) Weekend prompt. Each takes effect immediately (DS 5.16). Activity items are always recorded in-app regardless of email settings.
 - A global cap: at most one non-transactional email per day per user; quiet hours 9pm to 9am local. **Mention emails are exempt from the daily cap** (DS 5.13) but respect quiet hours: a mention during quiet hours sends at 9am.
-- Unsubscribe links work without signing in (signed token), confirm on a simple page, and offer undo.
+- Unsubscribe links work without signing in (signed token), confirm on a simple page (`/unsubscribe`), and offer undo. The page applies the change as it loads, so it's one tap; mail scanners that only fetch the link change nothing. Mail apps' own unsubscribe button uses RFC 8058 one-click (9.4).
+- When the daily cap would hold both, the digest goes first; join emails wait for the next day. A digest held by quiet hours or the cap goes out within 24 hours of its slot, or not at all that week.
+- Email is never sent to reserved test domains (`example.com`, `.test`, and similar), so test accounts can't hurt the sending domain.
 
 **Acceptance**
 - Given no new good words from others in a user's groups this week, then no digest is sent.
@@ -682,7 +685,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `comment_mentions` | `comment_id`, `mentioned_user_id` | Unique pair. Mentioned user must be a member of the comment's group |
 | `conversation_reads` | `user_id`, `group_id`, `title_id`, `last_read_at` | Drives the "New" divider and unseen-comment dots |
 | `conversation_participants` | `user_id`, `group_id`, `title_id`, `muted` | Created when you comment or vouch for that title in that group; decides who gets comment activity. `muted` reserved for later |
-| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `conversation_started`, `group_join`), `actor_id`, `group_id`, `title_id`, `comment_id`, `read_at` | Deleted after 90 days, or when the source comment is deleted |
+| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `conversation_started`, `group_join`), `actor_id`, `group_id`, `title_id`, `comment_id`, `read_at`, `email_handled_at` (mention and join emails: sent, or deliberately not sent) | Deleted after 90 days, or when the source comment is deleted |
 | `notification_log` | `user_id`, `type`, `sent_at`, `payload_ref` | Enforces caps and dedupes sends |
 | `streaming_services` (P1) | `user_id`, `region`, `provider_ids` (array) | |
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
@@ -738,7 +741,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 - No open-tracking pixels. Measure engagement by link clicks with `ref` parameters.
 
 ### 9.5 Scheduling
-- A scheduled job (Vercel Cron or Supabase scheduled functions) runs hourly and sends any digests or prompts due in each user's local time, respecting caps and the notification log.
+- A scheduled job runs every 5 minutes and sends any digests, mention emails, join emails, or prompts due in each user's local time, respecting caps and the notification log. Supabase `pg_cron` calls the app's `/api/email/run` through `pg_net` (Vercel's free plan only runs cron once a day). The app's address and a random job secret live in Supabase Vault, created by the step 7 migration; the app checks each call against it.
 
 ### 9.6 Hosting and stack
 - **Assumed stack:** Next.js (App Router) on Vercel, Supabase (Postgres, Auth, Realtime for P1 live updates), Tailwind per DS 11.
@@ -892,7 +895,7 @@ Decide before the slice that needs them.
 | 1 | Marketing page framework: Next.js or Astro? | **Decided (2026-09-28): Next.js.** Marketing and app share one Next.js app | Slice 0 |
 | 2 | Share-my-shelf conflicts with DS 5.14 ("Nothing is public") | Amend DS 5.14 to "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
 | 3 | The marketing page promises "Ask, and pull from people you trust" with the example "Something funny, under 30 minutes" | For the MVP, filters (Comedy + Under 30 minutes) fulfill this; either keep the copy or change the example until Ask ships | Beta launch |
-| 4 | Digest day and time | Thursday, 5pm local | Slice 7 |
+| 4 | Digest day and time | Thursday, 5pm local. Built this way in slice 7 (one setting in `digest_slot`); still to confirm | Slice 7 |
 | 5 | When someone leaves, their good words leave that shelf | Confirm (currently specified) | Slice 2 |
 | 6 | Group size limit of 50 and 20 groups per person | Confirm, or raise after beta | Slice 2 |
 | 7 | Should removed members be told? | No for the MVP; revisit if it causes confusion | Slice 2 |
@@ -906,6 +909,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.9 (2026-09-29):** Step 7. Open question 4 (digest Thursday 5pm local) built as proposed, pending confirmation. `/unsubscribe` route (6.1). Mention batching timed so the email arrives within 15 minutes (F7.4). Unsubscribe page, cap priority, and reserved test domains (F7.7). The scheduler is Supabase `pg_cron` every 5 minutes (9.5). `activity_items.email_handled_at` (section 8). Settings has Notifications from step 7; step 8 adds the rest.
 - **v1.2.8 (2026-09-29):** Step 6. Open questions 10 and 11 decided: comments from people who leave stay attributed, and any title can have a conversation in any of your groups (F6, F13, section 8). The first comment in a conversation gives every other member a `conversation_started` Activity item (F13, F14). On phones the Activity bell sits at the right of the header, and the conversation screen hides the tab bar (6.2). `comments.deleted_by` and `profiles.spoiler_hint_seen_at` (section 8).
 - **v1.2.7 (2026-09-29):** Step 5 accepted. The JustWatch logo is deferred; the attribution is text with a link for now (9.2).
 - **v1.2.6 (2026-09-29):** Step 5. The `groups` query parameter filters My shelf by group (6.3). A streaming service means subscription, free, or free with ads, and chip counts reflect the other filters (F5.4). "Last viewed" starts at joining, and viewing All groups counts for each group (F5.5). `watch_providers` details (section 8). Title detail keeps the order in F6 (DS open question 9 decided).
