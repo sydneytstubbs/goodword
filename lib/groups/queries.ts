@@ -13,7 +13,7 @@ export type GroupDetail = {
   ownerId: string;
   members: Member[];
   inviteCode: string | null;
-  me: { role: "owner" | "member"; welcomeSeenAt: string | null };
+  me: { role: "owner" | "member"; welcomeSeenAt: string | null; joinPromptDismissedAt: string | null };
 };
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -61,7 +61,7 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
   if (!group) return null;
 
   const [{ data: rows }, { data: invite }] = await Promise.all([
-    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at").eq("group_id", groupId).order("joined_at"),
+    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at, join_prompt_dismissed_at").eq("group_id", groupId).order("joined_at"),
     supabase.from("invites").select("code").eq("group_id", groupId).is("revoked_at", null).maybeSingle(),
   ]);
   const nameOf = await names(supabase, (rows ?? []).map((r) => r.user_id as string));
@@ -73,7 +73,11 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
     name: group.name as string,
     ownerId: group.owner_id as string,
     inviteCode: (invite?.code as string | undefined) ?? null,
-    me: { role: mine.role as "owner" | "member", welcomeSeenAt: mine.welcome_seen_at as string | null },
+    me: {
+      role: mine.role as "owner" | "member",
+      welcomeSeenAt: mine.welcome_seen_at as string | null,
+      joinPromptDismissedAt: mine.join_prompt_dismissed_at as string | null,
+    },
     members: (rows ?? []).map((r) => ({
       id: r.user_id as string,
       name: nameOf.get(r.user_id as string) ?? "",

@@ -74,3 +74,12 @@ export function runtime(minutes: number): string {
   if (h === 0) return t("time.runtimeMinutes", { m });
   return m === 0 ? t("time.runtimeHours", { h }) : t("time.runtime", { h, m });
 }
+
+/**
+ * Up to two names, then a count: "Priya", "Priya and Jonah",
+ * "Priya, Jonah, and 1 other", "Priya, Jonah, and 9 others" (PRD F4 toast).
+ */
+export function audienceNames(names: string[]): string {
+  if (names.length <= 2) return listFormat.format(names);
+  return listFormat.format([names[0], names[1], t("people.others", { count: names.length - 2 })]);
+}

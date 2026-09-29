@@ -44,3 +44,25 @@ export type CommentData = {
   edited?: boolean;
   spoiler?: boolean;
 };
+
+/** How someone arrived when they put in a good word (PRD 11.3). */
+export type GoodWordSource = "organic" | "digest" | "nudge_email" | "join_prompt" | "share" | "import";
+
+/** The viewer's own good word on a title (PRD F4): one note, any number of their groups. */
+export type MyGoodWord = {
+  /** Empty when there's no note. */
+  note: string;
+  groupIds: string[];
+  createdAt: string;
+  source: GoodWordSource;
+  /** When it went on each shelf, by group id, so Undo restores it exactly. */
+  sharedAt: Record<string, string>;
+};
+
+/** One card per title per shelf (PRD F4): everyone who vouched, newest first. */
+export type ShelfCard = {
+  title: Title;
+  goodWords: GoodWord[];
+  /** My shelf only: the viewer's groups it's shared into. */
+  groupIds?: string[];
+};
