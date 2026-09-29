@@ -233,8 +233,12 @@ test.describe("the core loop", () => {
     await expect(page.getByRole("link", { name: /^Low Tide Club/ })).toBeVisible();
     const prompt = page.getByRole("complementary", { name: "What's something you'd tell these folks to watch?" });
     await expect(prompt).toHaveCount(0);
-    await page.clock.fastForward(20_000);
-    await expect(prompt).toBeVisible();
+    // The prompt's timer starts once the page hydrates, which can be after
+    // the server-rendered cards show; keep the clock moving until it fires.
+    await expect(async () => {
+      await page.clock.fastForward(20_000);
+      await expect(prompt).toBeVisible({ timeout: 1_000 });
+    }).toPass();
     await expectNoViolations(page);
     await prompt.getByRole("button", { name: "Close" }).click();
     await expect(prompt).toHaveCount(0);
