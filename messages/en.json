@@ -462,7 +462,8 @@
     "accountHeading": "Account",
     "signedInAs": "Signed in as {name}",
     "signOut": "Sign out",
-    "goodWordsHeading": "Your good words"
+    "goodWordsHeading": "Your good words",
+    "settingsLink": "Settings"
   },
   "join": {
     "invited": "{name} invited you to {group}.",
@@ -530,5 +531,75 @@
     "show": "show",
     "aNoun": "a {noun}",
     "anNoun": "an {noun}"
+  },
+  "settings": {
+    "title": "Settings",
+    "notificationsHeading": "Notifications",
+    "notificationsIntro": "Emails from Good Word. Activity in the app shows everything, whatever you pick here.",
+    "digest": "Weekly digest",
+    "digestHint": "Thursday evenings, when friends have put in good words that week",
+    "mentions": "Mentions",
+    "mentionsHint": "An email when someone mentions you in a conversation",
+    "groupJoins": "Someone joined your group",
+    "groupJoinsHint": "For groups you're the owner of, at most once a day",
+    "didntSave": "That didn't save. Check your connection and try again.",
+    "loadFailed": "Check your connection and try again.",
+    "errorTitle": "Settings didn't load"
+  },
+  "unsubscribe": {
+    "pageTitle": "Unsubscribe",
+    "kind": {
+      "digest": "the weekly digest",
+      "mention_email": "mention emails",
+      "group_joins": "emails when someone joins your group"
+    },
+    "working": "Unsubscribing you from {kind}…",
+    "confirm": "Unsubscribe from {kind}",
+    "done": "You're unsubscribed from {kind}.",
+    "doneBody": "Everything is still in Good Word. You can turn emails back on any time in Settings.",
+    "undone": "You're getting {kind} again.",
+    "failed": "That didn't work. Check your connection and try again.",
+    "invalidTitle": "This link doesn't work",
+    "invalid": "It may have been cut off in your email app. You can change which emails you get in Settings.",
+    "openSettings": "Open settings"
+  },
+  "email": {
+    "brand": "Good Word",
+    "settings": "Notification settings",
+    "linkFallback": "If the button doesn't work, paste this link into your browser:",
+    "digest": {
+      "subject_one": "This week on Good Word: 1 new good word",
+      "subject_other": "This week on Good Word: {count} new good words",
+      "heading": "This week on Good Word",
+      "preheader": "From {names}.",
+      "vouched": "{names} vouched for this",
+      "seeAll": "See all {count} in {group}",
+      "comments_one": "1 new comment",
+      "comments_other": "{count} new comments",
+      "titles_one": "1 title",
+      "titles_other": "{count} titles",
+      "conversations": "{comments} on {titles}",
+      "titleComments_one": "1 comment",
+      "titleComments_other": "{count} comments",
+      "open": "Open Good Word",
+      "why": "You're getting this because you're in {groups} on Good Word.",
+      "unsubscribe": "Unsubscribe from the weekly digest"
+    },
+    "mention": {
+      "subject": "{names} mentioned you on {title}",
+      "inGroup": "In {group}",
+      "spoiler": "a spoiler comment",
+      "open": "Open the conversation",
+      "why": "You're getting this because someone in {group} mentioned you on Good Word.",
+      "unsubscribe": "Unsubscribe from mention emails"
+    },
+    "groupJoin": {
+      "subjectOne": "{names} joined {group}",
+      "subjectMany": "{names} joined your groups",
+      "line": "{names} joined {group}.",
+      "open": "Open Good Word",
+      "why": "You're getting this because you're the owner of {groups} on Good Word.",
+      "unsubscribe": "Unsubscribe from join emails"
+    }
   }
 }
