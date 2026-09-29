@@ -35,6 +35,11 @@ export function relativeTimeLong(date: Date, now: Date = new Date()): string {
   return fullDateTime.format(date);
 }
 
+/** "Sep 12", with the year when it isn't this year. */
+export function calendarDate(date: Date, now: Date = new Date()): string {
+  return date.getFullYear() === now.getFullYear() ? shortDate.format(date) : shortDateYear.format(date);
+}
+
 /** Full date and time for accessible names and `title`s. */
 export function fullTime(date: Date): string {
   return fullDateTime.format(date);

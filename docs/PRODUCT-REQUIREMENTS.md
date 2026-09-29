@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.3 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.4 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -246,7 +246,7 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 **Success:** a mention reaches the right person within 15 minutes, and nobody outside College crew can see or search any of it.
 
 ### J7. Sharing my shelf with someone outside Good Word (P1)
-1. A coworker asks Sydney what to watch. She goes to **You › Share my shelf**, turns it on, and copies the link.
+1. A coworker asks Sydney what to watch. She goes to **My shelf › Settings › Share my shelf**, turns it on, and copies the link.
 2. The coworker opens a read-only page: "Sydney's good words", with posters, titles, and Sydney's notes, and a small "Made with Good Word" link.
 3. Later, Sydney turns the link off, and it stops working immediately.
 
@@ -271,7 +271,7 @@ Extends DS 5.1.
 | `/title/[type]/[tmdbId]` | Title detail (`type` is `movie` or `tv`) | Signed in | P0 |
 | `/title/[type]/[tmdbId]/conversation?group=[groupId]` | A group's conversation about a title (on desktop, a panel beside title detail) | Member of that group | P0 |
 | `/activity` | Activity: mentions, new comments in your conversations, joins | Signed in | P0 |
-| `/you` | My shelf, my groups, settings entry | Signed in | P0 |
+| `/you` | My shelf (a main tab): your good words, your groups, settings entry | Signed in | P0 |
 | `/you/settings` | Account, region, notifications, services (P1), share link (P1) | Signed in | P0 |
 | `/you/help` | Help, FAQ, shortcuts, send feedback, about and attributions | Signed in | P0 |
 | `/groups/new` | Create a group | Signed in | P0 |
@@ -284,7 +284,7 @@ Extends DS 5.1.
 **Sheets over the current route (no navigation):** Add (search and confirm), group switcher, filters, vouch menu, confirm dialogs. Opening a sheet pushes a history entry so the Back gesture closes it (DS 5.1).
 
 ### 6.2 Navigation model
-- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **You** (DS 4.2.8). The top bar holds the group switcher, the Activity bell with an unread count, and an invite button.
+- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My shelf** (DS 4.2.8). The top bar holds the group switcher, the Activity bell with an unread count, and an invite button.
 - **Desktop (1024px and up):** left rail with the same destinations plus the group list.
 - **Shelf tab** shows the last viewed shelf (a group or All groups), remembered per device.
 - **Add** opens the log sheet over whatever screen you're on, and returns you there afterward.
@@ -450,8 +450,8 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 - Titled "All groups". Combines every group you're in, deduplicated: one card per title, with the vouched-by row merging all people across your groups (each person once).
 - Group chips on the detail screen show which of **your** groups each good word is in.
 
-#### F5.3 My shelf (in `/you`)
-- Titled "Your shelf". Shows only your own good words, including ones with zero groups.
+#### F5.3 My shelf (the My shelf tab, `/you`)
+- A main navigation destination, labeled **My shelf** in the tab bar and rail. The page is titled "Your shelf". Below your good words: your groups, then links to Settings and Help. Shows only your own good words, including ones with zero groups.
 - Each card shows group chips for where it's shared, or "Only you".
 - A group filter lets you see what you've shared into a specific group.
 
@@ -903,6 +903,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.4 (2026-09-29):** My shelf is a main navigation item: the You tab is renamed My shelf and leads with your good words, then your groups and a Settings link (6.1, 6.2, F5.3, J7). Routes stay under `/you`.
 - **v1.2.3 (2026-09-29):** Resend decided and moved up to slice 1 for sign-in emails (9.4, open question 8). Session length accepted as "stays signed in while in use" on the free plan (F1). Within slice 1, Google sign-in is built after email links.
 - **v1.2.2 (2026-09-28):** Open question 1 decided: Next.js, one app for marketing and product (9.6).
 - **v1.2.1 (2026-09-28):** The marketing page isn't built yet; it's built after foundations (CLAUDE.md step M).
