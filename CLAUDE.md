@@ -30,7 +30,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 0 | Foundations: tokens, fonts, Tailwind mapping, lint rules, `/styleguide` | DS 11.6 steps 1–2, DS 14 | Done |
 | M | Rebuild the marketing page on the new system | Marketing spec v2, DS 11.6 steps 3–5 | Done |
 | 1 | Accounts | PRD 12, slice 1 | In review |
-| 2 | Groups | PRD 12, slice 2 | Not started |
+| 2 | Groups | PRD 12, slice 2 | In review |
 | 3 | Titles (TMDB) | PRD 12, slice 3 | Not started |
 | 4 | The core loop | PRD 12, slice 4 | Not started |
 | 5 | Choosing | PRD 12, slice 5 | Not started |

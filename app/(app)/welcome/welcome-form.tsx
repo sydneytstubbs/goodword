@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { t } from "@/lib/messages";
@@ -8,6 +8,10 @@ import { saveName, type WelcomeState } from "./actions";
 
 export function WelcomeForm({ next, initialName }: { next: string; initialName: string }) {
   const [state, action, pending] = useActionState<WelcomeState, FormData>(saveName, {});
+
+  useEffect(() => {
+    if (state.next) window.location.assign(state.next);
+  }, [state.next]);
 
   // Region and timezone come from the browser (PRD F1); Settings edits region later.
   function submit(formData: FormData) {
@@ -31,7 +35,7 @@ export function WelcomeForm({ next, initialName }: { next: string; initialName: 
         defaultValue={state.name ?? initialName}
         error={state.error ? t(`auth.welcome.${state.error}`) : undefined}
       />
-      <Button type="submit" variant="primary" size="lg" fullWidth loading={pending}>
+      <Button type="submit" variant="primary" size="lg" fullWidth loading={pending || Boolean(state.next)}>
         {t("auth.welcome.submit")}
       </Button>
     </form>

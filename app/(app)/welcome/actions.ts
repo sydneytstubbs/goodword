@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { safeNext } from "@/lib/auth/paths";
 import { createClient } from "@/lib/supabase/server";
 
-export type WelcomeState = { error?: "nameRequired" | "saveFailed"; name?: string };
+export type WelcomeState = { error?: "nameRequired" | "saveFailed"; name?: string; next?: string };
 
 function validRegion(value: string, fallback = "US") {
   return /^[A-Z]{2}$/.test(value) ? value : fallback;
@@ -39,5 +39,7 @@ export async function saveName(_prev: WelcomeState, formData: FormData): Promise
     .eq("user_id", data.user.id);
   if (error) return { error: "saveFailed", name };
 
-  redirect(next);
+  // The client navigates: `next` can be a route handler (joining a group after
+  // sign-in), which a server-action redirect can't follow.
+  return { name, next };
 }

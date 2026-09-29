@@ -96,7 +96,55 @@
     "sheetTitle": "Your shelves",
     "members_one": "{count} member",
     "members_other": "{count} members",
-    "groupsHeading": "Groups"
+    "groupsHeading": "Groups",
+    "new": {
+      "title": "Start a group",
+      "nameLabel": "Name your group",
+      "placeholder": "College crew",
+      "examples": "Like College crew or Sunday book club.",
+      "submit": "Create group",
+      "nameRequired": "Give your group a name.",
+      "duplicate": "You're already in a group called {name}. That's fine if you want two.",
+      "tooManyGroups": "You're in 20 groups, the most you can have. Leave one to start another.",
+      "failed": "That didn't save. Check your connection and try again."
+    },
+    "details": {
+      "label": "Group details",
+      "inviteHeading": "Invite your people",
+      "membersHeading": "Members",
+      "owner": "Owner",
+      "you": "You",
+      "joined": "Joined {date}",
+      "settingsHeading": "Group settings",
+      "renameLabel": "Group name",
+      "renameSubmit": "Save name",
+      "renamed": "Group renamed.",
+      "resetLink": "Reset invite link",
+      "resetDone": "Link reset. The old link no longer works.",
+      "leaveHeading": "Leave or delete",
+      "leave": "Leave group",
+      "delete": "Delete group",
+      "removeMember": "Remove {name} from {group}",
+      "failed": "That didn't save. Check your connection and try again."
+    },
+    "dialog": {
+      "leaveTitle": "Leave {group}?",
+      "leaveBody": "Your good words will leave this shelf too. You can rejoin with an invite.",
+      "leaveOwnerBody": "Your good words will leave this shelf too. {name} becomes the owner. You can rejoin with an invite.",
+      "leaveLastBody": "You're the only member, so leaving deletes {group}. This can't be undone.",
+      "leaveConfirm": "Leave group",
+      "leaveLastConfirm": "Leave and delete",
+      "removeTitle": "Remove {name} from {group}?",
+      "removeBody": "Their good words leave this shelf. They can rejoin with the current invite link, so reset it if you want to keep them out.",
+      "removeConfirm": "Remove {name}",
+      "deleteTitle": "Delete {group}?",
+      "deleteBody_one": "This removes the group for {count} person and can't be undone.",
+      "deleteBody_other": "This removes the group for {count} people and can't be undone.",
+      "deleteConfirm": "Delete {group}",
+      "resetTitle": "Reset the invite link?",
+      "resetBody": "The old link stops working right away. Anyone who hasn't joined yet will need the new one.",
+      "resetConfirm": "Reset link"
+    }
   },
   "visibility": {
     "oneGroup_one": "Visible to {group} · {count} person",
@@ -112,7 +160,7 @@
     "share": "Share",
     "copied": "Link copied. Send it to someone whose taste you trust.",
     "copyFailed": "Couldn't copy the link. Select it and copy it yourself.",
-    "shareText": "Join {group} on Good Word",
+    "shareText": "Join {group} on Good Word, where we share the shows and movies we'd vouch for.",
     "reset": "Link reset. The old link no longer works.",
     "expired": "This invite link has expired. Ask {name} for a new one."
   },
@@ -314,11 +362,41 @@
   },
   "shelf": {
     "noGroupsTitle": "No groups yet",
-    "noGroupsBody": "Got an invite link? Open it to join."
+    "noGroupsBody": "Start a group for the people whose taste you trust. Got an invite link? Open it to join.",
+    "startGroup": "Start a group",
+    "groupEmptyTitle": "Nothing here yet",
+    "groupEmptyBody": "Be the first to put in a good word.",
+    "inviteFriends": "Invite friends",
+    "allEmptyTitle": "Nothing here yet",
+    "allEmptyBody": "Good words from all your groups will show up here.",
+    "welcome": "You're in. Here's what {group} vouches for.",
+    "notInGroupTitle": "You're not in this group",
+    "notInGroupBody": "If someone sent you an invite link, open it to join.",
+    "goToShelf": "Go to your shelf"
   },
   "you": {
     "title": "You",
     "signedInAs": "Signed in as {name}",
     "signOut": "Sign out"
+  },
+  "join": {
+    "invited": "{name} invited you to {group}.",
+    "members_one": "{count} person is already sharing what they'd watch.",
+    "members_other": "{count} people are already sharing what they'd watch.",
+    "about": "Good Word is a private shelf of the shows and movies your friends vouch for. Only members can see it.",
+    "join": "Join {group}",
+    "learnMore": "What's Good Word?",
+    "invalid": "This invite link doesn't work. Ask whoever sent it for a new one.",
+    "invalidTitle": "This link doesn't work",
+    "expiredTitle": "This link has expired",
+    "full": "{group} is full. Groups can have up to 50 members.",
+    "tooManyGroups": "You're in 20 groups, the most you can have. Leave one to join {group}.",
+    "slowDown": "Too many tries from here. Wait a few minutes and try again.",
+    "joining": "Joining {group}"
+  },
+  "notice": {
+    "alreadyMember": "You're already in {group}.",
+    "left": "You left {group}.",
+    "deleted": "{group} was deleted."
   }
 }
