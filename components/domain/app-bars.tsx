@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { t } from "@/lib/messages";
 import { Icon, type IconName } from "../icon";
 import { Button } from "../ui/button";
-import { CountBadge } from "../ui/badge";
+import { CountBadge, UnreadDot } from "../ui/badge";
 import { GroupDot } from "../ui/chip";
 import { IconButton } from "../ui/icon-button";
 import { Tooltip } from "../ui/tooltip";
@@ -93,7 +93,7 @@ const tabs: Array<{ id: Exclude<Destination, "activity">; href: string; icon: Ic
   { id: "you", href: "/you", icon: "you", label: () => t("nav.you") },
 ];
 
-function TabLink({ tab, current }: { tab: (typeof tabs)[number]; current: boolean }) {
+function TabLink({ tab, current, dot = false }: { tab: (typeof tabs)[number]; current: boolean; dot?: boolean }) {
   return (
     <NextLink
       href={tab.href}
@@ -103,7 +103,10 @@ function TabLink({ tab, current }: { tab: (typeof tabs)[number]; current: boolea
         current ? "font-semibold text-default" : "text-muted hover:text-default",
       )}
     >
-      <Icon name={tab.icon} size={24} weight={current ? "fill" : "regular"} />
+      <span className="relative">
+        <Icon name={tab.icon} size={24} weight={current ? "fill" : "regular"} />
+        {dot && <UnreadDot label={t("shelf.hasNew")} className="absolute -top-0.5 -right-1" />}
+      </span>
       {tab.label()}
     </NextLink>
   );
@@ -111,11 +114,14 @@ function TabLink({ tab, current }: { tab: (typeof tabs)[number]; current: boolea
 
 export function TabBar({
   current,
+  shelfDot = false,
   onAdd,
   placement = "fixed",
   label,
 }: {
   current?: Exclude<Destination, "activity">;
+  /** Some group has new good words since you last looked (PRD F5.5). */
+  shelfDot?: boolean;
   onAdd: () => void;
   placement?: Placement;
   /** Landmark name; defaults to "Main". */
@@ -130,7 +136,7 @@ export function TabBar({
       )}
     >
       <div className="flex h-tabbar items-center">
-        <TabLink tab={tabs[0]} current={current === "shelf"} />
+        <TabLink tab={tabs[0]} current={current === "shelf"} dot={shelfDot} />
         <div className="flex flex-1 justify-center">
           <button
             type="button"
@@ -159,6 +165,7 @@ const railRow =
 export function Rail({
   current,
   activityCount = 0,
+  newCounts = {},
   groups,
   currentGroupId,
   onAdd,
@@ -168,6 +175,8 @@ export function Rail({
 }: {
   current?: Destination;
   activityCount?: number;
+  /** New good words per group since you last looked (PRD F5.5). */
+  newCounts?: Record<string, number>;
   groups: Group[];
   currentGroupId?: string;
   onAdd: () => void;
@@ -207,6 +216,7 @@ export function Rail({
                 <Icon name={link.icon} size={20} weight={isCurrent ? "fill" : "regular"} />
                 <span className="flex-1">{link.label()}</span>
                 {count > 0 && <CountBadge count={count} />}
+                {link.id === "shelf" && Object.values(newCounts).some((n) => n > 0) && <UnreadDot label={t("shelf.hasNew")} />}
               </NextLink>
             </li>
           );
@@ -225,7 +235,8 @@ export function Rail({
                   className={cn(railRow, isCurrent ? "bg-surface-sunken font-semibold text-default fc-selected" : "text-default")}
                 >
                   <GroupDot group={group} />
-                  <span className="truncate">{group.name}</span>
+                  <span className="flex-1 truncate">{group.name}</span>
+                  <CountBadge count={newCounts[group.id] ?? 0} label={t("shelf.newCount", { count: newCounts[group.id] ?? 0 })} />
                 </NextLink>
               </li>
             );

@@ -16,18 +16,21 @@ export async function generateMetadata({ params }: PageProps<"/shelf/[groupId]">
 
 export default async function GroupShelfPage({ params }: PageProps<"/shelf/[groupId]">) {
   const { groupId } = await params;
-  const { user } = await requireOnboardedUser(`/shelf/${groupId}`);
+  const { user, profile } = await requireOnboardedUser(`/shelf/${groupId}`);
   const [group, groups] = await Promise.all([getGroup(groupId, user.id), listMyGroups(user.id)]);
   const summary = groups.find((g) => g.id === groupId);
   if (!group || !summary) notFound();
-  const [cards, vouchedHere] = await Promise.all([groupShelf(groupId), hasGoodWordIn(groupId, user.id)]);
+  const [shelf, vouchedHere] = await Promise.all([
+    groupShelf(groupId, user.id, profile.region),
+    hasGoodWordIn(groupId, user.id),
+  ]);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-12">
       <GroupShelf
         groups={groups}
         group={summary}
-        cards={cards}
+        shelf={shelf}
         inviteLink={group.inviteCode ? `${await siteOrigin()}/join/${group.inviteCode}` : null}
         showWelcome={!group.me.welcomeSeenAt}
         showJoinPrompt={!vouchedHere && !group.me.joinPromptDismissedAt}

@@ -31,6 +31,8 @@ export type GoodWord = {
   person: Person;
   note?: string;
   at: Date;
+  /** Title detail: which of the viewer's groups it's shared into (PRD F6). Empty is "Only you". */
+  groups?: Group[];
 };
 
 /** A comment body: text with mention tokens, stored by user id (DS 4.2.11). */
@@ -65,4 +67,14 @@ export type ShelfCard = {
   goodWords: GoodWord[];
   /** My shelf only: the viewer's groups it's shared into. */
   groupIds?: string[];
+  /** A good word from someone else since the viewer last looked at this shelf (PRD F5.5). */
+  isNew?: boolean;
+  /** Streaming services (TMDB provider ids) in the viewer's region. Unknown until fetched. */
+  services?: number[];
 };
+
+/** A streaming service on a shelf, for the services filter (PRD F5.4). */
+export type Service = { id: number; name: string };
+
+/** A shelf's cards, and the streaming services on it in the viewer's region. */
+export type Shelf = { cards: ShelfCard[]; services: Service[] };

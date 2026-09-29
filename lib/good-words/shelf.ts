@@ -80,6 +80,7 @@ export function applyOverlays(cards: ShelfCard[], overlays: Overlay[], scope: Sh
       continue;
     }
     byTitle.set(title.id, {
+      ...card,
       title: card?.title ?? title,
       goodWords,
       ...(scope.kind === "mine" && mine ? { groupIds: mine.groupIds } : {}),

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ShelfCard } from "@/components/domain/types";
+import type { Shelf } from "@/components/domain/types";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { t } from "@/lib/messages";
@@ -9,11 +9,12 @@ import { ShelfCards } from "../shelf/shelf-cards";
 
 // Your own good words, including ones in no group (PRD F5.3). Each card says
 // where it's shared, or "Only you".
-export function MyShelfCards({ cards }: { cards: ShelfCard[] }) {
+export function MyShelfCards({ shelf }: { shelf: Shelf }) {
   const { openAdd } = useAdd();
   return (
     <ShelfCards
-      cards={cards}
+      cards={shelf.cards}
+      services={shelf.services}
       scope={{ kind: "mine" }}
       empty={
         <EmptyState

@@ -148,6 +148,8 @@
 @utility pb-safe-footer { padding-bottom: max(var(--space-4), env(safe-area-inset-bottom)); }
 @utility bottom-toast { bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom) + var(--space-3)); }
 @utility border-hairline { border-width: var(--border-width); }
+/* A row of chips that scrolls sideways on phones, without a visible scrollbar (DS 5.6). */
+@utility scrollbar-none { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
 
 /* Selected segment position for the segmented control: seg-pos-0, seg-pos-1, ... */
 @utility seg-pos-* {

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { ConfirmGoodWord } from "@/components/domain/confirm-good-word";
+import { FilterBar } from "@/components/domain/filter-bar";
 import { JoinPromptCard } from "@/components/domain/join-prompt-card";
 import { RecCardGrid } from "@/components/domain/rec-card";
+import type { ShelfCard } from "@/components/domain/types";
 import { Banner } from "@/components/ui/banner";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -11,13 +13,14 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Milestone } from "@/components/ui/milestone";
 import { Skeleton, SkeletonRegion } from "@/components/ui/skeleton";
 import { ToastView } from "@/components/ui/toast";
+import { DEFAULT_FILTERS, filterShelf, genreCounts, serviceCounts, type Filters } from "@/lib/good-words/filters";
 import { t } from "@/lib/messages";
 import { goodWords, groups, groupsWithCounts, people, titles, viewer } from "./fixtures";
 import { Component, Frame, Note, Section, Specimen, SpecimenGrid } from "./parts";
 
 // Patterns (DS 14), added step by step. Step 4: putting in a good word (5.4)
-// and the three shelves in every state (PRD F5.7, DS 5.12), built from the
-// same components the app uses.
+// and the three shelves in every state (PRD F5.7, DS 5.12). Step 5:
+// browsing and filtering (5.6). Built from the same components the app uses.
 
 const GRID = "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4";
 
@@ -104,12 +107,12 @@ function PuttingIn() {
 function Shelves() {
   return (
     <Component id="shelf-states" title="Shelves" spec="5.12">
-      <Frame label="Ideal: a group shelf, one card per title, newest first (2, 3, then 4 columns)">
+      <Frame label="Ideal: a group shelf, one card per title, newest first (2, 3, then 4 columns); New since your last visit">
         <div className="p-4">
           <ul className={GRID}>
             {(["nightFerry", "lowTide", "heist"] as const).map((key) => (
               <li key={key}>
-                <RecCardGrid title={titles[key]} goodWords={goodWords[key]} href="#shelf-states" viewerId={viewer.id} />
+                <RecCardGrid title={titles[key]} goodWords={goodWords[key]} href="#shelf-states" viewerId={viewer.id} isNew={key === "nightFerry"} />
               </li>
             ))}
             <li>
@@ -227,9 +230,83 @@ function Shelves() {
           </SkeletonRegion>
         </Specimen>
       </SpecimenGrid>
-      <Note>
-        Filters, sort, paging, and New badges are step 5, so the no-results state arrives with them.
-      </Note>
+    </Component>
+  );
+}
+
+const shelfServices = [
+  { id: 8, name: "Netflix" },
+  { id: 15, name: "Hulu" },
+  { id: 337, name: "Disney Plus" },
+];
+
+const shelfCards: ShelfCard[] = [
+  { title: titles.nightFerry, goodWords: goodWords.nightFerry, services: [8], isNew: true },
+  { title: titles.lowTide, goodWords: goodWords.lowTide, services: [8, 15] },
+  { title: titles.heist, goodWords: goodWords.heist, services: [15] },
+  { title: titles.moth, goodWords: [{ person: people.bea, at: new Date("2026-09-20T18:00:00Z") }], services: [337] },
+];
+
+function Browsing() {
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const { cards } = filterShelf(shelfCards, filters);
+  return (
+    <Component id="browsing" title="Browsing and filtering the shelf" spec="5.6">
+      <Frame label="Live: All / Movies / Shows, service chips with counts, More filters, sort. Active filters stay visible with a count and Clear">
+        <div className="flex flex-col gap-6 px-4 pb-4">
+          <FilterBar
+            filters={filters}
+            resultCount={cards.length}
+            onChange={(next) => setFilters(next)}
+            options={{ services: serviceCounts(shelfCards, shelfServices, filters), genres: genreCounts(shelfCards, filters) }}
+          />
+          {cards.length === 0 ? (
+            <EmptyState
+              headingLevel={4}
+              title={t("filters.noResults", { subject: "a Netflix movie" })}
+              body={t("filters.noResultsBody")}
+              action={
+                <Button variant="secondary" onClick={() => setFilters(DEFAULT_FILTERS)}>
+                  {t("filters.clearFilters")}
+                </Button>
+              }
+            />
+          ) : (
+            <div className="flex flex-col gap-10">
+              <ul className={GRID}>
+                {cards.map((card) => (
+                  <li key={card.title.id}>
+                    <RecCardGrid title={card.title} goodWords={card.goodWords} href="#browsing" viewerId={viewer.id} isNew={card.isNew} />
+                  </li>
+                ))}
+              </ul>
+              <p className="text-center text-caption text-muted">{t("shelf.end")}</p>
+            </div>
+          )}
+        </div>
+      </Frame>
+      <SpecimenGrid>
+        <Specimen label="More than 24 cards: infinite scroll, with Load more as the fallback">
+          <Button variant="secondary">{t("shelf.loadMore")}</Button>
+        </Specimen>
+        <Specimen label="No results, with a length filter on: says titles with unknown length are left out">
+          <EmptyState
+            headingLevel={4}
+            title={t("filters.noResultsAny")}
+            body={t("filters.unknownLength")}
+            action={<Button variant="secondary">{t("filters.clearFilters")}</Button>}
+          />
+        </Specimen>
+        <Specimen label="No results on My shelf">
+          <EmptyState
+            headingLevel={4}
+            title={t("filters.noResultsMine")}
+            body={t("filters.noResultsBody")}
+            action={<Button variant="secondary">{t("filters.clearFilters")}</Button>}
+          />
+        </Specimen>
+      </SpecimenGrid>
+      <Note>In the app, every filter lives in the URL: the segmented control adds a history entry, chips and sort replace it (PRD 6.3).</Note>
     </Component>
   );
 }
@@ -239,10 +316,11 @@ export function Patterns() {
     <Section
       id="patterns"
       title="Patterns"
-      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the shelves."
+      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the shelves. Step 5: browsing and filtering."
     >
       <PuttingIn />
       <Shelves />
+      <Browsing />
     </Section>
   );
 }

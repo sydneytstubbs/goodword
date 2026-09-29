@@ -7,7 +7,7 @@ import { CountBadge, LabelBadge, UnreadDot } from "@/components/ui/badge";
 import { Banner } from "@/components/ui/banner";
 import { Button, type ButtonSize, type ButtonVariant } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FilterChip, GroupChip, GroupDot } from "@/components/ui/chip";
+import { ChipButton, FilterChip, GroupChip, GroupDot } from "@/components/ui/chip";
 import { Dialog } from "@/components/ui/dialog";
 import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Menu } from "@/components/ui/menu";
@@ -282,6 +282,10 @@ function Chips() {
           <FilterChip label="Comedy" selected />
           <FilterChip label="Comedy" selected={false} data-force="focus" />
         </Specimen>
+        <Specimen label="Chip button: opens a sheet; shows how many filters inside are on">
+          <ChipButton label="More filters" />
+          <ChipButton label="More filters" count={2} countLabel="More filters, 2 on" />
+        </Specimen>
         <Specimen label="With counts; at most five, then More filters" wide>
           <div className="flex flex-wrap gap-2">
             {services.map(([name, count]) => (
@@ -293,7 +297,7 @@ function Chips() {
                 onClick={() => setSelected((s) => (s.includes(name) ? s.filter((x) => x !== name) : [...s, name]))}
               />
             ))}
-            <FilterChip label="More filters" selected={false} />
+            <ChipButton label="More filters" />
           </div>
         </Specimen>
       </SpecimenGrid>

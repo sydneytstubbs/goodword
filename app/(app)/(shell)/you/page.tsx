@@ -15,16 +15,19 @@ export const metadata: Metadata = { title: "My shelf · Good Word" };
 
 // The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
 // groups, then account. Settings and Help arrive with step 8, which moves
-// Sign out into Settings; the group filter arrives with the other filters in step 5.
+// Sign out into Settings. Filters include which of your groups it's in (F5.3).
 export default async function MyShelfPage() {
   const { user, profile } = await requireOnboardedUser("/you");
-  const [groups, cards] = await Promise.all([listMyGroups(user.id), myShelf(user.id, profile.display_name)]);
+  const [groups, shelf] = await Promise.all([
+    listMyGroups(user.id),
+    myShelf(user.id, profile.display_name, profile.region),
+  ]);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-10 px-4 py-8">
       <h1 className="text-title-l text-default">{t("you.title")}</h1>
 
-      <MyShelfCards cards={cards} />
+      <MyShelfCards shelf={shelf} />
 
       <section className="flex max-w-reading flex-col gap-3">
         <h2 className="text-title-m text-default">{t("you.groupsHeading")}</h2>

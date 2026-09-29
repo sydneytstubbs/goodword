@@ -53,6 +53,21 @@ export const listMyGroups = cache(async (userId: string): Promise<GroupSummary[]
     }));
 });
 
+/**
+ * New good words from other people per group since you last looked at its
+ * shelf (PRD F5.5): the switcher's counts and the Shelf tab's dot. RLS-scoped.
+ * Empty (no badges) if it can't be read, rather than failing the page.
+ */
+export const newGoodWordCounts = cache(async (): Promise<Record<string, number>> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("new_good_word_counts");
+  if (error) {
+    console.error("new good word counts failed", error.code);
+    return {};
+  }
+  return Object.fromEntries(((data ?? []) as Array<{ group_id: string; new_count: number }>).map((r) => [r.group_id, r.new_count]));
+});
+
 /** A group the signed-in user belongs to, or null (not a member, or no such group: never say which). */
 export const getGroup = cache(async (groupId: string, userId: string): Promise<GroupDetail | null> => {
   if (!/^[0-9a-f-]{36}$/i.test(groupId)) return null;

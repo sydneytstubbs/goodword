@@ -6,6 +6,7 @@ import { t } from "@/lib/messages";
 import NextLink from "next/link";
 import { Icon } from "@/components/icon";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useShelfNews } from "../shelf-news";
 
 // The shelf's own bar: the group switcher, group details, and the invite
 // button, which opens the current group's invite card in a sheet (F2.3). The
@@ -20,11 +21,12 @@ export function ShelfBar({
   onInvite?: () => void;
 }) {
   const current = groups.find((g) => g.id === currentId);
+  const { counts } = useShelfNews();
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/shelf/${id}`} />
+        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/shelf/${id}`} newCounts={counts} />
       </div>
       {current && (
         <div className="flex items-center">

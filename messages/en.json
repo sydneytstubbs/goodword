@@ -67,7 +67,9 @@
     "unseenComments": "New comments",
     "whereToWatch": "Where to watch",
     "genres": "Genres",
-    "goodWords": "Good words"
+    "goodWords": "Good words",
+    "more": "More",
+    "overview": "Overview"
   },
   "titleDetail": {
     "loading": "Loading title",
@@ -406,7 +408,12 @@
     "joinPrompt": "What's something you'd tell these folks to watch?",
     "goodWords_one": "{count} good word",
     "goodWords_other": "{count} good words",
-    "membersLink": "{names}. See group details"
+    "membersLink": "{names}. See group details",
+    "loadMore": "Load more",
+    "end": "That's the whole shelf.",
+    "newCount_one": "{count} new good word",
+    "newCount_other": "{count} new good words",
+    "hasNew": "New good words"
   },
   "you": {
     "title": "Your shelf",
@@ -438,5 +445,52 @@
     "alreadyMember": "You're already in {group}.",
     "left": "You left {group}.",
     "deleted": "{group} was deleted."
+  },
+  "whereToWatch": {
+    "stream": "Stream",
+    "rent": "Rent",
+    "buy": "Buy",
+    "none": "Not streaming in your region right now.",
+    "attributionBefore": "Streaming data from ",
+    "justWatch": "JustWatch",
+    "loading": "Loading where to watch",
+    "errorTitle": "Where to watch didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute."
+  },
+  "filters": {
+    "typeLabel": "Movies or shows",
+    "all": "All",
+    "movies": "Movies",
+    "shows": "Shows",
+    "barLabel": "Filter the shelf",
+    "more": "More filters",
+    "moreActive_one": "More filters, {count} on",
+    "moreActive_other": "More filters, {count} on",
+    "sheetTitle": "Filters",
+    "services": "Streaming services",
+    "noServices": "None of these are streaming in your region yet.",
+    "genres": "Genres",
+    "length": "Length",
+    "lengthAny": "Any",
+    "length30": "Under 30 minutes",
+    "length120": "Under 2 hours",
+    "groups": "Shared in",
+    "show_one": "Show {count} good word",
+    "show_other": "Show {count} good words",
+    "clear": "Clear",
+    "clearFilters": "Clear filters",
+    "sortLabel": "Sort: {sort}",
+    "newest": "Newest",
+    "vouched": "Most vouched",
+    "noResults": "Nobody's vouched for {subject} yet.",
+    "noResultsAny": "Nobody's vouched for anything like that yet.",
+    "noResultsMine": "You haven't vouched for anything like that.",
+    "noResultsBody": "Clear filters to see the whole shelf.",
+    "unknownLength": "Titles without a known length are left out while a length filter is on.",
+    "anythingOn": "anything on {services}",
+    "movie": "movie",
+    "show": "show",
+    "aNoun": "a {noun}",
+    "anNoun": "an {noun}"
   }
 }

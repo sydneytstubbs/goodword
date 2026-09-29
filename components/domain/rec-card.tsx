@@ -63,13 +63,15 @@ export function RecCardGrid({
   return (
     <NextLink
       href={href}
-      aria-label={
-        shelves
-          ? `${cardAccessibleName(title, goodWords, viewerId)} ${
-              shelves.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(shelves.map((g) => g.name)) })
-            }.`
-          : cardAccessibleName(title, goodWords, viewerId)
-      }
+      aria-label={[
+        cardAccessibleName(title, goodWords, viewerId),
+        shelves &&
+          `${shelves.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(shelves.map((g) => g.name)) })}.`,
+        // The badge is inside the link, so its text goes in the name (DS 4.1.11).
+        isNew && `${t("common.new")}.`,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       className={cn("group flex flex-col gap-2.5 rounded-poster", className)}
     >
       <span className="relative block">
@@ -142,8 +144,9 @@ export function RecCardRow({
 }
 
 /**
- * detail: the title screen. Order per 4.2.2: poster, title, meta, genres,
- * where to watch, each friend's good word, then the vouch button.
+ * detail: the title screen (DS 4.2.2, 5.7; PRD F6). Friends first: poster,
+ * title, meta, and genres; each friend's good word with the chips of your
+ * groups it's in; where to watch; the vouch button; then the overview.
  */
 export function RecCardDetail({
   title,
@@ -153,6 +156,7 @@ export function RecCardDetail({
   whereToWatch,
   vouchButton,
   noGoodWords,
+  overview,
   now,
 }: Common & {
   /** title-l is the page's h1 (DS 3.2.2); /styleguide renders it lower. */
@@ -161,6 +165,8 @@ export function RecCardDetail({
   vouchButton: ReactNode;
   /** Shown when nobody in your groups has vouched for it yet (PRD F6). */
   noGoodWords?: ReactNode;
+  /** Last, collapsed to three lines with More. */
+  overview?: ReactNode;
   now?: Date;
 }) {
   const Heading = `h${headingLevel}` as const;
@@ -170,7 +176,7 @@ export function RecCardDetail({
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
       <Poster title={title} size="detail" eager className="lg:w-72" />
-      <div className="flex min-w-0 flex-1 flex-col gap-6">
+      <div className="flex min-w-0 flex-1 flex-col gap-8">
         <div className="flex flex-col gap-3">
           <Heading className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{title.name}</Heading>
           <p className="text-caption text-muted">{titleMeta(title, true)}</p>
@@ -181,15 +187,6 @@ export function RecCardDetail({
             </p>
           )}
         </div>
-        {whereToWatch && (
-          <section className="flex flex-col gap-2">
-            <SubHeading className="flex items-center gap-2 text-heading text-default">
-              <Icon name="whereToWatch" size={20} />
-              {t("title.whereToWatch")}
-            </SubHeading>
-            {whereToWatch}
-          </section>
-        )}
         {goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
         {goodWords.length > 0 && (
           <section aria-label={t("title.goodWords")} className="flex flex-col gap-6">
@@ -205,12 +202,50 @@ export function RecCardDetail({
                   </time>
                 </figcaption>
                 {g.note && <blockquote className="text-quote text-default">“{g.note}”</blockquote>}
+                {g.groups && <GoodWordGroups groups={g.groups} />}
               </figure>
             ))}
           </section>
         )}
+        {whereToWatch && (
+          <section className="flex flex-col gap-3">
+            <SubHeading className="flex items-center gap-2 text-heading text-default">
+              <Icon name="whereToWatch" size={20} />
+              {t("title.whereToWatch")}
+            </SubHeading>
+            {whereToWatch}
+          </section>
+        )}
         <div>{vouchButton}</div>
+        {overview && (
+          <section className="flex flex-col gap-2">
+            <SubHeading className="sr-only">{t("title.overview")}</SubHeading>
+            {overview}
+          </section>
+        )}
       </div>
     </div>
+  );
+}
+
+/** Which of the viewer's groups a good word is in; "Only you" when none (PRD F6). */
+function GoodWordGroups({ groups }: { groups: Group[] }) {
+  if (groups.length === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-caption text-muted">
+        <Icon name="private" size={16} />
+        {t("vouch.onlyYou")}
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-wrap gap-1">
+      <span className="sr-only">{t("vouch.sharedIn", { groups: nameList(groups.map((g) => g.name)) })}</span>
+      {groups.map((group) => (
+        <span key={group.id} aria-hidden="true">
+          <GroupChip group={group} />
+        </span>
+      ))}
+    </span>
   );
 }

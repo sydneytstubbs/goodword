@@ -9,7 +9,7 @@ import { AllGroupsShelf } from "./all-groups-shelf";
 export const metadata: Metadata = { title: "All groups · Good Word" };
 
 export default async function AllGroupsPage() {
-  const { user } = await requireOnboardedUser("/shelf/all");
+  const { user, profile } = await requireOnboardedUser("/shelf/all");
   const groups = await listMyGroups(user.id);
   if (groups.length === 0) {
     return (
@@ -19,10 +19,14 @@ export default async function AllGroupsPage() {
       </main>
     );
   }
-  const cards = await allGroupsShelf(groups.map((g) => g.id));
+  const shelf = await allGroupsShelf(
+    groups.map((g) => g.id),
+    user.id,
+    profile.region,
+  );
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-12">
-      <AllGroupsShelf groups={groups} cards={cards} />
+      <AllGroupsShelf groups={groups} shelf={shelf} />
     </main>
   );
 }

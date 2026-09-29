@@ -5,6 +5,7 @@ import { Rail, TabBar } from "@/components/domain/app-bars";
 import type { Group } from "@/components/domain/types";
 import { shelfGroupId } from "@/lib/auth/paths";
 import { useAdd } from "./add";
+import { useShelfNews } from "./shelf-news";
 
 // The tab bar (below 1024px) and the rail (from 1024px), DS 4.2.8. Add opens
 // the search sheet. The rail leaves out Activity and Help until their screens
@@ -12,15 +13,17 @@ import { useAdd } from "./add";
 export function AppNav({ groups }: { groups: Group[] }) {
   const pathname = usePathname();
   const { openAdd } = useAdd();
+  const { counts } = useShelfNews();
   const add = () => openAdd();
   const current = pathname.startsWith("/shelf") ? "shelf" : pathname.startsWith("/you") ? "you" : undefined;
 
   return (
     <>
-      <TabBar current={current} onAdd={add} />
+      <TabBar current={current} onAdd={add} shelfDot={Object.values(counts).some((n) => n > 0)} />
       <Rail
         current={current}
         groups={groups}
+        newCounts={counts}
         currentGroupId={shelfGroupId(pathname) ?? undefined}
         onAdd={add}
         hide={["activity", "help"]}

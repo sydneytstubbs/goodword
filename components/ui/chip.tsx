@@ -84,3 +84,35 @@ export function FilterChip({ label, selected, count, className, ...props }: Filt
     </button>
   );
 }
+
+/**
+ * A chip that opens something rather than toggling: "More filters" (4.1.9).
+ * `count` is how many of the filters inside are on.
+ */
+export function ChipButton({
+  label,
+  count = 0,
+  countLabel,
+  className,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & { label: string; count?: number; countLabel?: string }) {
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={count > 0 ? countLabel : undefined}
+      className={cn(
+        "relative inline-flex h-8 shrink-0 items-center gap-1 rounded-pill border px-3 text-label font-medium transition duration-fast ease-standard",
+        "before:absolute before:inset-x-0 before:-inset-y-1.5 motion-ok:active:scale-98 fc-edge",
+        count > 0 ? "border-strong bg-surface-raised text-default" : "border-subtle bg-surface-raised text-default",
+        "hover:bg-surface-hover active:bg-surface-pressed",
+        className,
+      )}
+      {...props}
+    >
+      {label}
+      {count > 0 && <span className="tabular-nums text-muted">{count}</span>}
+      <Icon name="switcher" size={16} className="text-muted" />
+    </button>
+  );
+}

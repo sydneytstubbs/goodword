@@ -4,7 +4,7 @@ import NextLink from "next/link";
 import { useState } from "react";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { InviteCard } from "@/components/domain/invite-card";
-import type { ShelfCard } from "@/components/domain/types";
+import type { Shelf } from "@/components/domain/types";
 import { AvatarStack } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -15,6 +15,7 @@ import { t } from "@/lib/messages";
 import { useAdd } from "../../add";
 import { useGoodWords } from "../../good-words";
 import { ShelfBar } from "../shelf-bar";
+import { useMarkViewed } from "../../shelf-news";
 import { ShelfCards } from "../shelf-cards";
 import { JoinPrompt } from "./join-prompt";
 import { WelcomeBanner } from "./welcome-banner";
@@ -24,14 +25,14 @@ import { WelcomeBanner } from "./welcome-banner";
 export function GroupShelf({
   groups,
   group,
-  cards,
+  shelf,
   inviteLink,
   showWelcome,
   showJoinPrompt,
 }: {
   groups: SwitcherGroup[];
   group: SwitcherGroup;
-  cards: ShelfCard[];
+  shelf: Shelf;
   inviteLink: string | null;
   showWelcome: boolean;
   /** No good words from you here yet, and the prompt hasn't been dismissed (F5.7). */
@@ -40,6 +41,7 @@ export function GroupShelf({
   const { openAdd } = useAdd();
   const { overlays } = useGoodWords();
   const [inviteOpen, setInviteOpen] = useState(false);
+  useMarkViewed([group.id]);
   const openInvite = inviteLink ? () => setInviteOpen(true) : undefined;
   // Putting one in here, from anywhere, answers the prompt.
   const vouchedHere = overlays.some((o) => o.mine?.groupIds.includes(group.id));
@@ -61,7 +63,8 @@ export function GroupShelf({
         </NextLink>
       </header>
       <ShelfCards
-        cards={cards}
+        cards={shelf.cards}
+        services={shelf.services}
         scope={{ kind: "group", groupId: group.id }}
         empty={
           <EmptyState

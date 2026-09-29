@@ -5,6 +5,7 @@ import type { CommentData, GoodWord, Person, Title } from "@/components/domain/t
 import type { GroupWithCount } from "@/components/domain/visibility-line";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { resolveGenreAccent } from "@/lib/genre-accent";
+import type { WatchProviders } from "@/lib/tmdb/normalize";
 
 /** A fixed "now", so relative times and screenshots never drift. */
 export const NOW = new Date("2026-09-28T18:00:00Z");
@@ -68,6 +69,20 @@ export const goodWords: Record<string, GoodWord[]> = {
   ],
   heist: [{ person: people.luis, note: "the grandma steals every scene", at: ago(60 * 24 * 10) }],
   moth: [],
+};
+
+/** Where to watch, with invented logos left out (the letter fallback shows). */
+export const providers: WatchProviders = {
+  stream: [
+    { id: 8, name: "Netflix", logo: null },
+    { id: 15, name: "Hulu", logo: null },
+  ],
+  rent: [{ id: 2, name: "Apple TV Store", logo: null }],
+  buy: [
+    { id: 2, name: "Apple TV Store", logo: null },
+    { id: 10, name: "Amazon Video", logo: null },
+  ],
+  link: "https://www.themoviedb.org/",
 };
 
 export const comments: CommentData[] = [
