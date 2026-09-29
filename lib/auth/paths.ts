@@ -1,0 +1,17 @@
+// Route access (PRD 6.4). Only /, /privacy, /terms are indexable; the rest of
+// these routes send noindex. Later steps add their routes to the list.
+const PROTECTED_PREFIXES = ["/shelf", "/welcome", "/you", "/groups", "/activity", "/settings", "/title", "/person", "/admin"];
+
+export function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+/**
+ * Where to go after signing in. Only same-site paths are honored, so a
+ * crafted ?next= can't send someone to another site.
+ */
+export function safeNext(value: string | null | undefined, fallback = "/shelf"): string {
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return fallback;
+  if (/[\u0000-\u001f]/.test(value)) return fallback;
+  return value;
+}
