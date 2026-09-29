@@ -71,6 +71,8 @@ export type ShelfCard = {
   isNew?: boolean;
   /** Streaming services (TMDB provider ids) in the viewer's region. Unknown until fetched. */
   services?: number[];
+  /** Comments on it in this shelf's groups, and whether any are unseen (DS 4.2.2, PRD F13). */
+  comments?: { count: number; unseen: boolean };
 };
 
 /** A streaming service on a shelf, for the services filter (PRD F5.4). */

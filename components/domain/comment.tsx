@@ -9,8 +9,9 @@ import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { IconButton } from "../ui/icon-button";
 import { Menu } from "../ui/menu";
+import { Skeleton, SkeletonRegion } from "../ui/skeleton";
 import { Textarea } from "../ui/textarea";
-import { SpoilerCover } from "./spoiler-cover";
+import { SpoilerCover, SpoilerToggle } from "./spoiler-cover";
 import type { CommentData, CommentSegment, Person } from "./types";
 
 // Comment (DESIGN-SYSTEM.md 4.2.10): one message in a title's conversation
@@ -20,7 +21,8 @@ export type CommentStatus = "sent" | "sending" | "failed";
 
 export function CommentBody({ body, viewerId }: { body: CommentSegment[]; viewerId?: string }) {
   return (
-    <p className="max-w-reading text-body text-default">
+    // Line breaks are kept; long unbroken strings wrap (PRD F13).
+    <p className="max-w-reading whitespace-pre-wrap text-body text-default wrap-anywhere">
       {body.map((segment, i) =>
         segment.kind === "text" ? (
           <span key={i}>{segment.text}</span>
@@ -73,6 +75,9 @@ export function Comment({
   status = "sent",
   grouped = false,
   now,
+  highlighted = false,
+  revealedBody,
+  onReveal,
   onSave,
   onDelete,
   onRetry,
@@ -87,12 +92,21 @@ export function Comment({
   /** A burst from the same person within 5 minutes collapses the avatar and name. */
   grouped?: boolean;
   now?: Date;
-  onSave: (body: CommentSegment[]) => void;
+  /** Arrived at from a link: a brief wash (DS 5.17). */
+  highlighted?: boolean;
+  /**
+   * Someone else's spoiler whose text isn't in the page (DS 4.2.12): the text
+   * once it's been fetched. With `onReveal`, the cover asks for it.
+   */
+  revealedBody?: CommentSegment[];
+  onReveal?: () => void;
+  onSave: (body: CommentSegment[], spoiler: boolean) => void;
   onDelete: () => void;
   onRetry?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
+  const [draftSpoiler, setDraftSpoiler] = useState(false);
   const isAuthor = comment.author.id === viewerId;
   const mentionsYou = comment.body.some((s) => s.kind === "mention" && s.userId === viewerId);
   const time = relativeTime(comment.at, now);
@@ -105,6 +119,7 @@ export function Comment({
             icon: "edit" as const,
             onSelect: () => {
               setDraft(toText(comment.body));
+              setDraftSpoiler(comment.spoiler ?? false);
               setEditing(true);
             },
           },
@@ -122,7 +137,14 @@ export function Comment({
         className="flex flex-col gap-3"
         onSubmit={(e) => {
           e.preventDefault();
-          onSave(parseBody(draft, members));
+          if (draft.trim().length === 0) return;
+          onSave(
+            parseBody(
+              draft,
+              members.filter((m) => m.id !== viewerId),
+            ),
+            draftSpoiler,
+          );
           setEditing(false);
         }}
       >
@@ -136,7 +158,8 @@ export function Comment({
           minRows={2}
           autoFocus
         />
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <SpoilerToggle on={draftSpoiler} onToggle={() => setDraftSpoiler((on) => !on)} />
           <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
             {t("common.cancel")}
           </Button>
@@ -147,9 +170,13 @@ export function Comment({
       </form>
     );
   } else if (comment.spoiler && !isAuthor) {
+    const shown = onReveal ? revealedBody : comment.body;
     body = (
-      <SpoilerCover authorName={comment.author.name}>
-        {() => <CommentBody body={comment.body} viewerId={viewerId} />}
+      <SpoilerCover
+        authorName={comment.author.name}
+        {...(onReveal ? { revealed: revealedBody !== undefined, onReveal } : {})}
+      >
+        {() => <CommentBody body={shown ?? []} viewerId={viewerId} />}
       </SpoilerCover>
     );
   } else {
@@ -158,10 +185,12 @@ export function Comment({
 
   return (
     <article
+      id={`comment-${comment.id}`}
       aria-label={t("comment.accessibleName", { name: comment.author.name, time: relativeTimeLong(comment.at, now) })}
       className={cn(
-        "relative flex gap-3",
+        "relative flex scroll-mt-24 gap-3 rounded-control motion-ok:transition-colors motion-ok:duration-slow",
         mentionsYou && "-ms-3 border-s-2 border-action ps-2.5",
+        highlighted && "bg-action-wash",
       )}
     >
       {mentionsYou && <span className="sr-only">{t("comment.mentionsYou")}</span>}
@@ -239,5 +268,35 @@ export function CommentList({ children }: { children: ReactNode }) {
     <ol aria-label={t("comment.list")} className="flex flex-col gap-4">
       {children}
     </ol>
+  );
+}
+
+/** "2 new comments": live comments arrived while you were scrolled up (DS 5.17). Jumps to them. */
+export function NewCommentsPill({ count, onJump }: { count: number; onJump: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onJump}
+      className="pointer-events-auto inline-flex min-h-target items-center gap-1 rounded-pill bg-inverse px-4 text-label font-semibold text-inverse shadow-md fc-edge"
+    >
+      {t("conversation.newComments", { count })}
+    </button>
+  );
+}
+
+/** Four skeleton comments while a conversation loads (DS 5.17, 4.1.17). */
+export function CommentSkeletons() {
+  return (
+    <SkeletonRegion label={t("conversation.loading")} className="flex flex-col gap-6">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="flex gap-3">
+          <Skeleton className="size-8 rounded-pill" />
+          <div className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-4 w-24 rounded-control" />
+            <Skeleton className="h-4 w-3/4 rounded-control" />
+          </div>
+        </div>
+      ))}
+    </SkeletonRegion>
   );
 }

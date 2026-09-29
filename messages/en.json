@@ -234,7 +234,45 @@
   "activity": {
     "mention": "<b>{actor}</b> mentioned you on <b>{title}</b> in {group}",
     "comment": "<b>{actor}</b> commented on <b>{title}</b> in {group}",
+    "started": "<b>{actor}</b> started a conversation about <b>{title}</b> in {group}",
     "join": "<b>{actor}</b> joined {group}"
+  },
+  "conversation": {
+    "previewHeading": "Talk about it in {group}",
+    "groupsLabel": "Conversations in your groups",
+    "addComment": "Add a comment…",
+    "seeAll_one": "See {count} comment",
+    "seeAll_other": "See all {count} comments",
+    "empty": "No one's said anything about this yet. Start the conversation.",
+    "documentTitle": "{title} · {group} · Good Word",
+    "back": "Back to {title}",
+    "inGroup": "In {group}",
+    "loading": "Loading conversation",
+    "loadOlder": "Load earlier comments",
+    "newComments_one": "{count} new comment",
+    "newComments_other": "{count} new comments",
+    "newCommentFrom": "New comment from {name}",
+    "spoilerHint": "Talking about a specific episode? Mark it as a spoiler.",
+    "errorTitle": "This conversation didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "olderFailed": "Earlier comments didn't load. Check your connection and try again.",
+    "revealFailed": "That spoiler didn't load. Check your connection and try again.",
+    "didntSave": "That didn't save. Check your connection and try again.",
+    "rateLimited": "That's a lot of comments for 10 minutes. Try again in a little while.",
+    "offline": "You're offline. You can keep reading what's already loaded."
+  },
+  "activityScreen": {
+    "title": "Activity",
+    "markAllRead": "Mark all as read",
+    "today": "Today",
+    "week": "This week",
+    "earlier": "Earlier",
+    "emptyTitle": "Nothing yet.",
+    "emptyBody": "When friends mention you or reply, it'll show up here.",
+    "loading": "Loading activity",
+    "errorTitle": "Activity didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "didntSave": "That didn't save. Check your connection and try again."
   },
   "wordmark": {
     "name": "Good Word"

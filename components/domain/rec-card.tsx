@@ -69,6 +69,8 @@ export function RecCardGrid({
           `${shelves.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(shelves.map((g) => g.name)) })}.`,
         // The badge is inside the link, so its text goes in the name (DS 4.1.11).
         isNew && `${t("common.new")}.`,
+        commentCount > 0 && `${t("title.comments", { count: commentCount })}.`,
+        commentCount > 0 && unseenComments && `${t("title.unseenComments")}.`,
       ]
         .filter(Boolean)
         .join(" ")}
@@ -156,6 +158,7 @@ export function RecCardDetail({
   whereToWatch,
   vouchButton,
   noGoodWords,
+  conversation,
   overview,
   now,
 }: Common & {
@@ -165,6 +168,8 @@ export function RecCardDetail({
   vouchButton: ReactNode;
   /** Shown when nobody in your groups has vouched for it yet (PRD F6). */
   noGoodWords?: ReactNode;
+  /** The conversation preview, after the vouch button (DS 5.7, 5.17). */
+  conversation?: ReactNode;
   /** Last, collapsed to three lines with More. */
   overview?: ReactNode;
   now?: Date;
@@ -173,56 +178,61 @@ export function RecCardDetail({
   const SubHeading = `h${headingLevel + 1}` as "h2" | "h3" | "h4" | "h5";
   // Step down to 44px when 56px would need three lines (DS 3.2.2).
   const long = title.name.length > 22;
+  // Side by side on desktop, when there's room: beside a conversation panel
+  // at 1024px it stays stacked (DS 5.17).
   return (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-      <Poster title={title} size="detail" eager className="lg:w-72" />
-      <div className="flex min-w-0 flex-1 flex-col gap-8">
-        <div className="flex flex-col gap-3">
-          <Heading className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{title.name}</Heading>
-          <p className="text-caption text-muted">{titleMeta(title, true)}</p>
-          {title.genres.length > 0 && (
-            <p className="text-caption text-muted">
-              <span className="sr-only">{t("title.genres")}: </span>
-              {title.genres.join(t("title.metaSeparator"))}
-            </p>
+    <div className="@container">
+      <div className="flex flex-col gap-6 lg:@2xl:flex-row lg:@2xl:items-start lg:@2xl:gap-10">
+        <Poster title={title} size="detail" eager className="lg:@2xl:w-72" />
+        <div className="flex min-w-0 flex-1 flex-col gap-8">
+          <div className="flex flex-col gap-3">
+            <Heading className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{title.name}</Heading>
+            <p className="text-caption text-muted">{titleMeta(title, true)}</p>
+            {title.genres.length > 0 && (
+              <p className="text-caption text-muted">
+                <span className="sr-only">{t("title.genres")}: </span>
+                {title.genres.join(t("title.metaSeparator"))}
+              </p>
+            )}
+          </div>
+          {goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
+          {goodWords.length > 0 && (
+            <section aria-label={t("title.goodWords")} className="flex flex-col gap-6">
+              {goodWords.map((g) => (
+                <figure key={g.person.id} className="flex flex-col gap-2">
+                  <figcaption className="flex items-center gap-3">
+                    <Avatar person={g.person} size={32} decorative />
+                    <span className="text-body-strong text-default">
+                      {g.person.id === viewerId ? t("common.you") : g.person.name}
+                    </span>
+                    <time dateTime={g.at.toISOString()} title={fullTime(g.at)} className="text-caption text-muted">
+                      {relativeTime(g.at, now)}
+                    </time>
+                  </figcaption>
+                  {g.note && <blockquote className="text-quote text-default">“{g.note}”</blockquote>}
+                  {g.groups && <GoodWordGroups groups={g.groups} />}
+                </figure>
+              ))}
+            </section>
+          )}
+          {whereToWatch && (
+            <section className="flex flex-col gap-3">
+              <SubHeading className="flex items-center gap-2 text-heading text-default">
+                <Icon name="whereToWatch" size={20} />
+                {t("title.whereToWatch")}
+              </SubHeading>
+              {whereToWatch}
+            </section>
+          )}
+          <div>{vouchButton}</div>
+          {conversation}
+          {overview && (
+            <section className="flex flex-col gap-2">
+              <SubHeading className="sr-only">{t("title.overview")}</SubHeading>
+              {overview}
+            </section>
           )}
         </div>
-        {goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
-        {goodWords.length > 0 && (
-          <section aria-label={t("title.goodWords")} className="flex flex-col gap-6">
-            {goodWords.map((g) => (
-              <figure key={g.person.id} className="flex flex-col gap-2">
-                <figcaption className="flex items-center gap-3">
-                  <Avatar person={g.person} size={32} decorative />
-                  <span className="text-body-strong text-default">
-                    {g.person.id === viewerId ? t("common.you") : g.person.name}
-                  </span>
-                  <time dateTime={g.at.toISOString()} title={fullTime(g.at)} className="text-caption text-muted">
-                    {relativeTime(g.at, now)}
-                  </time>
-                </figcaption>
-                {g.note && <blockquote className="text-quote text-default">“{g.note}”</blockquote>}
-                {g.groups && <GoodWordGroups groups={g.groups} />}
-              </figure>
-            ))}
-          </section>
-        )}
-        {whereToWatch && (
-          <section className="flex flex-col gap-3">
-            <SubHeading className="flex items-center gap-2 text-heading text-default">
-              <Icon name="whereToWatch" size={20} />
-              {t("title.whereToWatch")}
-            </SubHeading>
-            {whereToWatch}
-          </section>
-        )}
-        <div>{vouchButton}</div>
-        {overview && (
-          <section className="flex flex-col gap-2">
-            <SubHeading className="sr-only">{t("title.overview")}</SubHeading>
-            {overview}
-          </section>
-        )}
       </div>
     </div>
   );

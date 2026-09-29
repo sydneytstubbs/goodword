@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
 import { cn } from "@/lib/cn";
 import { isDesktopPointer } from "@/lib/hooks";
 import { t } from "@/lib/messages";
@@ -8,6 +8,7 @@ import { Icon } from "../icon";
 import { Avatar } from "../ui/avatar";
 import { IconButton } from "../ui/icon-button";
 import { parseBody } from "./comment";
+import { SpoilerToggle } from "./spoiler-cover";
 import type { CommentSegment, Person } from "./types";
 import { VisibilityLine, type GroupWithCount } from "./visibility-line";
 
@@ -35,6 +36,9 @@ export function Composer({
   members,
   viewerId,
   draftKey,
+  autoFocus = false,
+  hint,
+  inputRef,
   onSend,
 }: {
   group: GroupWithCount;
@@ -43,6 +47,12 @@ export function Composer({
   viewerId: string;
   /** Unsent drafts are kept per title per group for the session. */
   draftKey: string;
+  /** "Add a comment…" opens the conversation with the composer focused (DS 5.17). */
+  autoFocus?: boolean;
+  /** A one-time hint above the field, e.g. suggesting Spoiler (DS 5.17). */
+  hint?: ReactNode;
+  /** The text field, so the screen can focus it (the empty conversation, DS 5.17). */
+  inputRef?: RefObject<HTMLTextAreaElement | null>;
   onSend: (comment: ComposerSend) => void;
 }) {
   const [text, setText] = useState("");
@@ -70,6 +80,10 @@ export function Composer({
     if (text) sessionStorage.setItem(`draft:${draftKey}`, text);
     else sessionStorage.removeItem(`draft:${draftKey}`);
   }, [text, draftKey]);
+
+  useEffect(() => {
+    if (autoFocus) textareaRef.current?.focus();
+  }, [autoFocus]);
 
   // Auto-grow 1 to 5 lines; pill-shaped at one line, card-shaped when taller.
   useEffect(() => {
@@ -216,12 +230,16 @@ export function Composer({
         {listOpen ? t("composer.suggestions", { count: suggestions.length }) : ""}
       </span>
       <VisibilityLine groups={[group]} peopleCount={group.memberCount} compact />
+      {hint}
       <label htmlFor={`${listId}-input`} className="sr-only">
         {t("composer.label")}
       </label>
       <textarea
         id={`${listId}-input`}
-        ref={textareaRef}
+        ref={(el) => {
+          textareaRef.current = el;
+          if (inputRef) inputRef.current = el;
+        }}
         rows={1}
         value={text}
         maxLength={MAX}
@@ -239,18 +257,7 @@ export function Composer({
       />
       <div className="flex items-center gap-1">
         <IconButton icon="mention" label={t("composer.mention")} tone="muted" onClick={mentionButton} tooltipSide="top" />
-        <button
-          type="button"
-          aria-pressed={spoiler}
-          onClick={() => setSpoiler((s) => !s)}
-          className={cn(
-            "inline-flex min-h-target items-center gap-1 rounded-control px-2 text-label transition duration-fast ease-standard hover:bg-surface-hover",
-            spoiler ? "font-semibold text-action-text" : "text-muted",
-          )}
-        >
-          <Icon name="spoiler" size={20} weight={spoiler ? "fill" : "regular"} />
-          {t("composer.spoiler")}
-        </button>
+        <SpoilerToggle on={spoiler} onToggle={() => setSpoiler((s) => !s)} />
         {text.length >= COUNTER_AT && (
           <span aria-hidden="true" className={cn("ms-auto text-caption tabular-nums", remaining === 0 ? "text-danger" : "text-muted")}>
             {t("field.charactersLeft", { count: remaining })}
