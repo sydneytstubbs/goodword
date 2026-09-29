@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
 import { cn } from "@/lib/cn";
 import { isDesktopPointer } from "@/lib/hooks";
 import { t } from "@/lib/messages";
@@ -60,6 +60,9 @@ export function Composer({
   const [query, setQuery] = useState<string | null>(null);
   const [active, setActive] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Where the caret goes once a programmatic change (a mention inserted or
+  // removed) has rendered, before the next keystroke can land.
+  const pendingCaret = useRef<number | null>(null);
   const listId = useId();
   const optionId = (i: number) => `${listId}-${i}`;
 
@@ -84,6 +87,14 @@ export function Composer({
   useEffect(() => {
     if (autoFocus) textareaRef.current?.focus();
   }, [autoFocus]);
+
+  useLayoutEffect(() => {
+    const el = textareaRef.current;
+    if (!el || pendingCaret.current === null) return;
+    el.focus();
+    el.setSelectionRange(pendingCaret.current, pendingCaret.current);
+    pendingCaret.current = null;
+  }, [text]);
 
   // Auto-grow 1 to 5 lines; pill-shaped at one line, card-shaped when taller.
   useEffect(() => {
@@ -124,13 +135,9 @@ export function Composer({
     const after = text.slice(caret);
     const token = `@${person.name} `;
     const next = before + token + after;
+    pendingCaret.current = Math.min(before.length + token.length, MAX);
     setText(next.slice(0, MAX));
     setQuery(null);
-    requestAnimationFrame(() => {
-      el.focus();
-      const position = before.length + token.length;
-      el.setSelectionRange(position, position);
-    });
   }
 
   function send() {
@@ -168,8 +175,8 @@ export function Composer({
       if (token) {
         e.preventDefault();
         const start = before.length - token.length;
+        pendingCaret.current = start;
         setText(text.slice(0, start) + text.slice(el.selectionStart));
-        requestAnimationFrame(() => el.setSelectionRange(start, start));
         return;
       }
     }
@@ -187,12 +194,9 @@ export function Composer({
     const insert = `${needsSpace ? " " : ""}@`;
     const next = text.slice(0, caret) + insert + text.slice(caret);
     setText(next);
+    pendingCaret.current = caret + insert.length;
     setQuery("");
     setActive(0);
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(caret + insert.length, caret + insert.length);
-    });
   }
 
   return (
