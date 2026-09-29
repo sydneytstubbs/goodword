@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ButtonLink } from "@/components/ui/button-link";
-import { EmptyState } from "@/components/ui/empty-state";
 import { LAST_SHELF_COOKIE } from "@/lib/auth/paths";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
+import { NoGroups } from "./no-groups";
 
 export const metadata: Metadata = { title: "Shelf · Good Word" };
 
@@ -20,19 +19,9 @@ export default async function ShelfPage() {
   if (target) redirect(`/shelf/${target.id}`);
 
   return (
-    <main className="mx-auto w-full max-w-content px-4 py-12">
+    <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 py-12">
       <h1 className="sr-only">{t("nav.shelf")}</h1>
-      <EmptyState
-        showShelf
-        headingLevel={2}
-        title={t("shelf.noGroupsTitle")}
-        body={t("shelf.noGroupsBody")}
-        action={
-          <ButtonLink href="/groups/new" variant="primary" size="lg" icon="add">
-            {t("shelf.startGroup")}
-          </ButtonLink>
-        }
-      />
+      <NoGroups />
     </main>
   );
 }

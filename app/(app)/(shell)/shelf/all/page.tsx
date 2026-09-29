@@ -1,22 +1,32 @@
 import type { Metadata } from "next";
-import { EmptyState } from "@/components/ui/empty-state";
 import { requireOnboardedUser } from "@/lib/auth/session";
+import { allGroupsShelf } from "@/lib/good-words/queries";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
-import { ShelfBar } from "../shelf-bar";
+import { NoGroups } from "../no-groups";
+import { AllGroupsShelf } from "./all-groups-shelf";
 
 export const metadata: Metadata = { title: "All groups · Good Word" };
 
-// Step 2 stub so the switcher's "All groups" row lands somewhere true. The
-// real All groups shelf arrives with the core loop (step 4).
 export default async function AllGroupsPage() {
-  const { user } = await requireOnboardedUser("/shelf/all");
+  const { user, profile } = await requireOnboardedUser("/shelf/all");
   const groups = await listMyGroups(user.id);
+  if (groups.length === 0) {
+    return (
+      <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 py-12">
+        <h1 className="sr-only">{t("groups.allGroups")}</h1>
+        <NoGroups />
+      </main>
+    );
+  }
+  const shelf = await allGroupsShelf(
+    groups.map((g) => g.id),
+    user.id,
+    profile.region,
+  );
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-12">
-      <h1 className="sr-only">{t("groups.allGroups")}</h1>
-      <ShelfBar groups={groups} currentId="all" />
-      <EmptyState showShelf headingLevel={2} title={t("shelf.allEmptyTitle")} body={t("shelf.allEmptyBody")} />
+      <AllGroupsShelf groups={groups} shelf={shelf} />
     </main>
   );
 }

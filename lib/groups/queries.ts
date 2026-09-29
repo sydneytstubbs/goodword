@@ -13,7 +13,7 @@ export type GroupDetail = {
   ownerId: string;
   members: Member[];
   inviteCode: string | null;
-  me: { role: "owner" | "member"; welcomeSeenAt: string | null };
+  me: { role: "owner" | "member"; welcomeSeenAt: string | null; joinPromptDismissedAt: string | null };
 };
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -53,6 +53,21 @@ export const listMyGroups = cache(async (userId: string): Promise<GroupSummary[]
     }));
 });
 
+/**
+ * New good words from other people per group since you last looked at its
+ * shelf (PRD F5.5): the switcher's counts and the Shelf tab's dot. RLS-scoped.
+ * Empty (no badges) if it can't be read, rather than failing the page.
+ */
+export const newGoodWordCounts = cache(async (): Promise<Record<string, number>> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("new_good_word_counts");
+  if (error) {
+    console.error("new good word counts failed", error.code);
+    return {};
+  }
+  return Object.fromEntries(((data ?? []) as Array<{ group_id: string; new_count: number }>).map((r) => [r.group_id, r.new_count]));
+});
+
 /** A group the signed-in user belongs to, or null (not a member, or no such group: never say which). */
 export const getGroup = cache(async (groupId: string, userId: string): Promise<GroupDetail | null> => {
   if (!/^[0-9a-f-]{36}$/i.test(groupId)) return null;
@@ -61,7 +76,7 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
   if (!group) return null;
 
   const [{ data: rows }, { data: invite }] = await Promise.all([
-    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at").eq("group_id", groupId).order("joined_at"),
+    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at, join_prompt_dismissed_at").eq("group_id", groupId).order("joined_at"),
     supabase.from("invites").select("code").eq("group_id", groupId).is("revoked_at", null).maybeSingle(),
   ]);
   const nameOf = await names(supabase, (rows ?? []).map((r) => r.user_id as string));
@@ -73,7 +88,11 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
     name: group.name as string,
     ownerId: group.owner_id as string,
     inviteCode: (invite?.code as string | undefined) ?? null,
-    me: { role: mine.role as "owner" | "member", welcomeSeenAt: mine.welcome_seen_at as string | null },
+    me: {
+      role: mine.role as "owner" | "member",
+      welcomeSeenAt: mine.welcome_seen_at as string | null,
+      joinPromptDismissedAt: mine.join_prompt_dismissed_at as string | null,
+    },
     members: (rows ?? []).map((r) => ({
       id: r.user_id as string,
       name: nameOf.get(r.user_id as string) ?? "",

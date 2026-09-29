@@ -15,6 +15,7 @@ import { TitleSearch } from "@/components/domain/title-search";
 import type { CommentData } from "@/components/domain/types";
 import { GroupPicker, VisibilityLine } from "@/components/domain/visibility-line";
 import { VouchButton } from "@/components/domain/vouch-button";
+import { WhereToWatchList, WhereToWatchSkeleton } from "@/components/domain/where-to-watch";
 import { Wordmark } from "@/components/domain/wordmark";
 import { useToast } from "@/components/ui/toast";
 import {
@@ -26,6 +27,7 @@ import {
   groupsWithCounts,
   members,
   people,
+  providers,
   switcherGroups,
   titles,
   viewer,
@@ -121,21 +123,39 @@ function RecCards() {
           <RecCardRow title={titles.moth} goodWords={[]} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} titleName={titles.moth.name} {...handlers} />} />
         </div>
       </Specimen>
-      <Specimen label="detail: the title screen (title-l is its h1; shown lower here)" wide>
+      <Specimen label="detail: friends first, each with your groups it's in; where to watch; the vouch button; the overview (title-l is its h1; shown lower here)" wide>
         <Frame>
           <div className="p-5 md:p-8">
             <RecCardDetail
               title={titles.nightFerry}
-              goodWords={goodWords.nightFerry}
+              goodWords={[
+                { person: viewer, note: "the lighthouse episode", at: NOW, groups: [] },
+                ...goodWords.nightFerry.map((g, i) => ({ ...g, groups: i === 0 ? [groups.college, groups.girls] : [groups.college] })),
+              ]}
               viewerId={viewer.id}
               headingLevel={4}
               now={NOW}
-              whereToWatch={<p className="text-body text-muted">Stream: Netflix · Rent: Apple TV</p>}
-              vouchButton={<VouchButton vouched={false} size="lg" emphasis="primary" {...handlers} />}
+              whereToWatch={<WhereToWatchList providers={providers} headingLevel={5} />}
+              vouchButton={<VouchButton vouched size="lg" emphasis="primary" {...handlers} />}
+              overview={
+                <p className="max-w-reading text-body text-default">
+                  A night ferry crosses the same stretch of water every evening, and its six regulars start to notice that one of them is keeping a secret.
+                </p>
+              }
             />
           </div>
         </Frame>
       </Specimen>
+      <SpecimenGrid>
+        <Specimen label="Where to watch: nothing in your region">
+          <WhereToWatchList providers={{ stream: [], rent: [], buy: [], link: null }} headingLevel={4} />
+        </Specimen>
+        <Specimen label="Where to watch: loading">
+          <div className="w-full">
+            <WhereToWatchSkeleton />
+          </div>
+        </Specimen>
+      </SpecimenGrid>
       <Specimen label="Vouched-by row, with your own good word as “You”">
         <VouchedByRow goodWords={[{ person: viewer, at: NOW }, ...goodWords.nightFerry]} viewerId={viewer.id} />
       </Specimen>
@@ -165,8 +185,14 @@ function Switcher() {
   const [current, setCurrent] = useState(groups.college.id);
   return (
     <Component id="group-switcher" title="Group switcher" spec="4.2.5">
-      <Specimen label="Opens a sheet; All groups is an explicit choice">
-        <GroupSwitcher groups={switcherGroups} currentId={current} hrefFor={(id) => `/shelf/${id}`} onSelect={setCurrent} />
+      <Specimen label="Opens a sheet; All groups is an explicit choice; counts of new good words since your last visit">
+        <GroupSwitcher
+          groups={switcherGroups}
+          currentId={current}
+          hrefFor={(id) => `/shelf/${id}`}
+          onSelect={setCurrent}
+          newCounts={{ [groups.girls.id]: 3, [groups.book.id]: 1 }}
+        />
       </Specimen>
     </Component>
   );
@@ -246,6 +272,11 @@ function Bars() {
             <TabBar placement="inline" current="shelf" onAdd={add} label="Tab bar preview" />
           </Frame>
         </Specimen>
+        <Specimen label="Tab bar, a group has new good words (dot on Shelf)" wide>
+          <Frame>
+            <TabBar placement="inline" current="you" shelfDot onAdd={add} label="Tab bar with new good words preview" />
+          </Frame>
+        </Specimen>
         <Specimen label="Rail (1024px and up)" wide>
           <Frame>
             <Rail
@@ -253,6 +284,7 @@ function Bars() {
               current="shelf"
               activityCount={3}
               groups={Object.values(groups)}
+              newCounts={{ [groups.girls.id]: 3 }}
               currentGroupId={groups.college.id}
               onAdd={add}
               label="Rail preview"

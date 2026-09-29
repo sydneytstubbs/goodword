@@ -173,6 +173,7 @@
   --sheet-max-height: 90dvh;
   --topbar-height: 52px;
   --tabbar-height: 56px;
+  --rail-width: 240px;
 }
 
 /* Dark theme: prepared, not shipped. Applies only when data-theme="dark". */

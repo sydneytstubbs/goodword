@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { t } from "@/lib/messages";
 import { Icon } from "../icon";
 import { AvatarStack } from "../ui/avatar";
+import { CountBadge } from "../ui/badge";
 import { GroupDot } from "../ui/chip";
 import { Sheet } from "../ui/sheet";
 import { TextLink } from "../ui/text-link";
@@ -23,6 +24,7 @@ export function GroupSwitcher({
   currentId,
   hrefFor,
   onSelect,
+  newCounts = {},
 }: {
   /** Sorted by recent activity. */
   groups: SwitcherGroup[];
@@ -30,6 +32,8 @@ export function GroupSwitcher({
   currentId: string;
   hrefFor: (groupId: string) => string;
   onSelect?: (groupId: string) => void;
+  /** New good words per group since you last looked (PRD F5.5). */
+  newCounts?: Record<string, number>;
 }) {
   const [open, setOpen] = useState(false);
   const current = currentId === ALL_GROUPS ? t("groups.allGroups") : groups.find((g) => g.id === currentId)?.name;
@@ -86,6 +90,7 @@ export function GroupSwitcher({
                       </span>
                     )}
                   </span>
+                  <CountBadge count={newCounts[group.id] ?? 0} label={t("shelf.newCount", { count: newCounts[group.id] ?? 0 })} />
                   {group.members.length > 0 && <AvatarStack people={group.members} size={24} ring="surface-raised" />}
                   {isCurrent && <Icon name="vouched" size={20} className="text-default" />}
                 </NextLink>

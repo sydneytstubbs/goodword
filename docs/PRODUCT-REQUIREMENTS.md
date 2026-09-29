@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.4 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.6 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -292,7 +292,7 @@ Extends DS 5.1.
 - **Conversations** open from title detail, a card's comment count, Activity, or a mention email. Back from a conversation returns to wherever you came from.
 
 ### 6.3 URL state
-Query parameters on shelf routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
+Query parameters on shelf routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list of TMDB genre names), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `groups` (My shelf only: comma list of group ids, F5.3), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
 
 ### 6.4 Access rules
 - Signed-out visitors to any signed-in route go to `/sign-in?next=<route>` and return there after signing in.
@@ -458,16 +458,16 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 #### F5.4 Sorting and filtering
 - **Sort:** Newest (default, by the most recent good word on that card) and Most vouched (by number of people, ties broken by newest).
 - **Type:** segmented control All / Movies / Shows.
-- **Streaming services:** up to five chips for the services most common on the current shelf in the user's region, with counts, then "More filters".
+- **Streaming services:** up to five chips for the services most common on the current shelf in the user's region, with counts, then "More filters". A service counts when the title is included with a subscription, free, or free with ads (TMDB's `flatrate`, `free`, and `ads`); rent and buy don't. Counts show how many cards each chip would leave, given the other filters. A title whose providers haven't been fetched yet matches no service.
 - **More filters sheet:** services (all), genres (TMDB genres present on the shelf), length (Any, Under 30 minutes, Under 2 hours), and, if P1 is built, "On my services".
 - **Length** uses movie runtime, or typical episode runtime for shows. Titles with unknown runtime are excluded when a length filter is on, and the empty state says so.
 - **Filter logic:** AND across categories, OR within a category (DS 5.6). Active filters are always visible with a result count and a single Clear.
 - **Paging:** 24 cards per page, infinite scroll with a "Load more" fallback and an end-of-shelf footer (DS 5.6).
 
 #### F5.5 New since your last visit
-- Each membership stores when you last viewed that shelf. Cards whose most recent good word from **someone else** is newer than that show a **New** badge (DS 4.1.11).
+- Each membership stores when you last viewed that shelf. Cards whose most recent good word from **someone else** is newer than that show a **New** badge (DS 4.1.11). Before your first visit, "last viewed" is when you joined, so good words from before you joined aren't New.
 - The group switcher shows a count of new good words per group; the Shelf tab shows a dot if any group has new ones.
-- "Last viewed" updates when you leave the shelf or after 10 seconds on it, not on arrival, so badges don't vanish before you see them.
+- "Last viewed" updates when you leave the shelf or after 10 seconds on it, not on arrival, so badges don't vanish before you see them. Viewing All groups counts as viewing each of your groups.
 
 #### F5.6 Live updates (P1)
 - While you're viewing a shelf, new good words from others don't insert themselves (content never jumps). A pill appears at the top: "2 new good words". Tapping it scrolls to top and inserts them. Your own good words insert immediately.
@@ -667,14 +667,14 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 
 | Table | Key fields | Notes |
 |---|---|---|
-| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at` | One per user |
+| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`) | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device |
 | `groups` | `name`, `owner_id`, `color` | `color` assigned at creation |
 | `group_members` | `group_id`, `user_id`, `role` (`owner`, `member`), `joined_at`, `last_viewed_at`, `welcome_seen_at`, `join_prompt_dismissed_at` | Unique (`group_id`, `user_id`) |
 | `invites` | `group_id`, `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group |
 | `titles` | `tmdb_id`, `media_type` (`movie`, `tv`), `title`, `original_title`, `year`, `poster_path`, `genres` (array of TMDB genre ids and names), `runtime_minutes`, `seasons`, `overview`, `accent` (one of the four `genreAccent` values in DS 4.2.1), `fetched_at` | Unique (`tmdb_id`, `media_type`). `accent` set once on insert via `genreAccent` (DS 4.2.1) |
 | `good_words` | `user_id`, `title_id`, `note` (max 140), `source` (`organic`, `digest`, `nudge_email`, `join_prompt`, `share`, `import`) | Unique (`user_id`, `title_id`) |
 | `good_word_groups` | `good_word_id`, `group_id`, `shared_at` | Unique pair. Which shelves a good word is on |
-| `watch_providers` | `title_id`, `region`, `providers` (json: stream, rent, buy), `link`, `fetched_at` | Cached per title per region |
+| `watch_providers` | `title_id`, `region`, `providers` (json: stream, rent, buy), `link`, `fetched_at` | Cached per title per region. Unique (`title_id`, `region`). Stream is TMDB's `flatrate`, `free`, and `ads` together. A region with nothing is stored with empty lists, so it isn't fetched again for a day |
 | `notification_prefs` | `user_id`, `digest`, `mention_email`, `group_joins`, `weekend_prompt` (booleans) | Defaults: all on |
 | `comments` | `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at` | Index on (`group_id`, `title_id`, `created_at`). Soft delete supports Undo; purge after the Undo window |
 | `comment_mentions` | `comment_id`, `mentioned_user_id` | Unique pair. Mentioned user must be a member of the comment's group |
@@ -903,6 +903,8 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.6 (2026-09-29):** Step 5. The `groups` query parameter filters My shelf by group (6.3). A streaming service means subscription, free, or free with ads, and chip counts reflect the other filters (F5.4). "Last viewed" starts at joining, and viewing All groups counts for each group (F5.5). `watch_providers` details (section 8). Title detail keeps the order in F6 (DS open question 9 decided).
+- **v1.2.5 (2026-09-29):** Step 4. `profiles.milestones` records milestone moments already shown (section 8). Putting in a good word for a title you already vouched for sets its groups to the ones picked (F4). The first-good-word prompt sits after the last card and appears only on a shelf that has cards; an empty shelf's own empty state already asks (F5.7).
 - **v1.2.4 (2026-09-29):** My shelf is a main navigation item: the You tab is renamed My shelf and leads with your good words, then your groups and a Settings link (6.1, 6.2, F5.3, J7). Routes stay under `/you`.
 - **v1.2.3 (2026-09-29):** Resend decided and moved up to slice 1 for sign-in emails (9.4, open question 8). Session length accepted as "stays signed in while in use" on the free plan (F1). Within slice 1, Google sign-in is built after email links.
 - **v1.2.2 (2026-09-28):** Open question 1 decided: Next.js, one app for marketing and product (9.6).

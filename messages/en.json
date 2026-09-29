@@ -47,21 +47,37 @@
     "runtimeMinutes": "{m}m"
   },
   "milestone": {
-    "announce": "Milestone: {text}"
+    "announce": "Milestone: {text}",
+    "firstLine": "Your first good word.",
+    "firstBody": "Your friends will see it on their shelves.",
+    "tenthLine": "Ten good words.",
+    "tenthBody": "That's a shelf worth browsing."
   },
   "title": {
     "movie": "Film",
     "tv": "Series",
-    "meta": "{type} · {year}",
-    "metaRuntime": "{type} · {year} · {runtime}",
+    "metaSeparator": " · ",
+    "seasons_one": "{count} season",
+    "seasons_other": "{count} seasons",
     "accessibleName": "{title}, {type}, {year}.",
+    "accessibleNameNoYear": "{title}, {type}.",
     "vouchedFor": "Vouched for by {names}.",
     "comments_one": "{count} comment",
     "comments_other": "{count} comments",
     "unseenComments": "New comments",
     "whereToWatch": "Where to watch",
     "genres": "Genres",
-    "goodWords": "Good words"
+    "goodWords": "Good words",
+    "more": "More",
+    "overview": "Overview"
+  },
+  "titleDetail": {
+    "loading": "Loading title",
+    "errorTitle": "This title didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "notFoundTitle": "We couldn't find that title",
+    "notFoundBody": "The link may be broken, or the title was removed. Try searching for it with Add.",
+    "noGoodWords": "None of your groups have vouched for this yet."
   },
   "vouch": {
     "put": "Put in a good word",
@@ -74,7 +90,17 @@
     "takeBack": "Take it back",
     "takenBack": "Taken back.",
     "didntSave": "That didn't save. Check your connection and try again.",
-    "menuLabel": "Your good word options"
+    "menuLabel": "Your good word options",
+    "alreadyOnShelves": "Your good word is already on these shelves.",
+    "saveNote": "Save note",
+    "onShelfAudience": "On your shelf. {names} will see it.",
+    "onShelfInvite": "On your shelf. Invite friends to share it.",
+    "onShelfOnlyYou": "On your shelf. Only you can see it for now.",
+    "invite": "Invite",
+    "rateLimited": "That's a lot of good words for one hour. Try again in a little while.",
+    "offline": "You're offline. Good words need a connection, so try again when you're back.",
+    "onlyYou": "Only you",
+    "sharedIn": "On {groups}"
   },
   "search": {
     "label": "Search for a show or movie",
@@ -85,6 +111,7 @@
     "results_other": "{count} results",
     "noResults": "Nothing for “{query}”. Check the spelling, or try the original title.",
     "error": "Search isn't working right now. Try again.",
+    "offline": "You're offline. Search needs a connection, so try again when you're back.",
     "onYourShelf": "On your shelf",
     "friendsVouched": "{names} vouched for this",
     "loading": "Searching"
@@ -150,7 +177,7 @@
     "oneGroup_one": "Visible to {group} · {count} person",
     "oneGroup_other": "Visible to {group} · {count} people",
     "manyGroups": "Visible to {groups} groups · {people} people",
-    "noGroups": "Pick at least one group",
+    "noGroups": "Only you, for now",
     "pickerTitle": "Who can see it",
     "change": "Change who can see it"
   },
@@ -362,7 +389,7 @@
   },
   "shelf": {
     "noGroupsTitle": "No groups yet",
-    "noGroupsBody": "Start a group for the people whose taste you trust. Got an invite link? Open it to join.",
+    "noGroupsBody": "Start a group, or put in a good word just for you.",
     "startGroup": "Start a group",
     "groupEmptyTitle": "Nothing here yet",
     "groupEmptyBody": "Be the first to put in a good word.",
@@ -372,7 +399,21 @@
     "welcome": "You're in. Here's what {group} vouches for.",
     "notInGroupTitle": "You're not in this group",
     "notInGroupBody": "If someone sent you an invite link, open it to join.",
-    "goToShelf": "Go to your shelf"
+    "goToShelf": "Go to your shelf",
+    "inviteHint": "Got an invite link? Open it to join.",
+    "loading": "Loading shelf",
+    "errorTitle": "This shelf didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "offline": "You're offline. You can keep browsing what's already loaded.",
+    "joinPrompt": "What's something you'd tell these folks to watch?",
+    "goodWords_one": "{count} good word",
+    "goodWords_other": "{count} good words",
+    "membersLink": "{names}. See group details",
+    "loadMore": "Load more",
+    "end": "That's the whole shelf.",
+    "newCount_one": "{count} new good word",
+    "newCount_other": "{count} new good words",
+    "hasNew": "New good words"
   },
   "you": {
     "title": "Your shelf",
@@ -382,7 +423,8 @@
     "noGroups": "You're not in any groups yet.",
     "accountHeading": "Account",
     "signedInAs": "Signed in as {name}",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "goodWordsHeading": "Your good words"
   },
   "join": {
     "invited": "{name} invited you to {group}.",
@@ -403,5 +445,52 @@
     "alreadyMember": "You're already in {group}.",
     "left": "You left {group}.",
     "deleted": "{group} was deleted."
+  },
+  "whereToWatch": {
+    "stream": "Stream",
+    "rent": "Rent",
+    "buy": "Buy",
+    "none": "Not streaming in your region right now.",
+    "attributionBefore": "Streaming data from ",
+    "justWatch": "JustWatch",
+    "loading": "Loading where to watch",
+    "errorTitle": "Where to watch didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute."
+  },
+  "filters": {
+    "typeLabel": "Movies or shows",
+    "all": "All",
+    "movies": "Movies",
+    "shows": "Shows",
+    "barLabel": "Filter the shelf",
+    "more": "More filters",
+    "moreActive_one": "More filters, {count} on",
+    "moreActive_other": "More filters, {count} on",
+    "sheetTitle": "Filters",
+    "services": "Streaming services",
+    "noServices": "None of these are streaming in your region yet.",
+    "genres": "Genres",
+    "length": "Length",
+    "lengthAny": "Any",
+    "length30": "Under 30 minutes",
+    "length120": "Under 2 hours",
+    "groups": "Shared in",
+    "show_one": "Show {count} good word",
+    "show_other": "Show {count} good words",
+    "clear": "Clear",
+    "clearFilters": "Clear filters",
+    "sortLabel": "Sort: {sort}",
+    "newest": "Newest",
+    "vouched": "Most vouched",
+    "noResults": "Nobody's vouched for {subject} yet.",
+    "noResultsAny": "Nobody's vouched for anything like that yet.",
+    "noResultsMine": "You haven't vouched for anything like that.",
+    "noResultsBody": "Clear filters to see the whole shelf.",
+    "unknownLength": "Titles without a known length are left out while a length filter is on.",
+    "anythingOn": "anything on {services}",
+    "movie": "movie",
+    "show": "show",
+    "aNoun": "a {noun}",
+    "anNoun": "an {noun}"
   }
 }
