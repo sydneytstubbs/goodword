@@ -43,6 +43,18 @@ function IconLink({ href, icon, label, badge }: { href: string; icon: IconName; 
   );
 }
 
+/** The Activity bell with its unread count (4.2.8, 4.1.11). */
+export function ActivityBell({ count = 0 }: { count?: number }) {
+  return (
+    <IconLink
+      href="/activity"
+      icon="activity"
+      label={count > 0 ? t("nav.activityWithCount", { count }) : t("nav.activity")}
+      badge={count > 0 ? <CountBadge count={count} label="" /> : undefined}
+    />
+  );
+}
+
 export function TopBar({
   switcher,
   groupName,
@@ -70,12 +82,7 @@ export function TopBar({
     >
       <div className="min-w-0">{switcher}</div>
       <div className="flex items-center">
-        <IconLink
-          href="/activity"
-          icon="activity"
-          label={activityCount > 0 ? t("nav.activityWithCount", { count: activityCount }) : t("nav.activity")}
-          badge={activityCount > 0 ? <CountBadge count={activityCount} label="" /> : undefined}
-        />
+        <ActivityBell count={activityCount} />
         <IconButton
           icon="share"
           iconSize={24}

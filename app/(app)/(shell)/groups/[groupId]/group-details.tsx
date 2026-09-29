@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { InviteCard, type InviteState } from "@/components/domain/invite-card";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,13 @@ import { Dialog } from "@/components/ui/dialog";
 import { IconButton } from "@/components/ui/icon-button";
 import { TextField } from "@/components/ui/text-field";
 import { useToast } from "@/components/ui/toast";
+import { markGroupJoinsRead } from "@/lib/conversations/actions";
 import { calendarDate } from "@/lib/format";
 import type { GroupDetail, Member } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { deleteGroup, leaveGroup, removeMember, renameGroup, resetInvite } from "../actions";
 import { duplicateOf } from "../names";
+import { useActivityCount } from "../../activity-count";
 
 type Pending = { kind: "leave" } | { kind: "delete" } | { kind: "reset" } | { kind: "remove"; member: Member } | null;
 
@@ -47,6 +49,12 @@ export function GroupDetails({
   const heir = others[0];
   const people = group.members.map((m) => ({ id: m.id, name: m.name }));
   const failed = () => showToast({ message: t("groups.details.failed") });
+  const { refresh: refreshActivity } = useActivityCount();
+
+  // Seeing the members marks "Mo joined College crew" read (PRD F14).
+  useEffect(() => {
+    if (isOwner) markGroupJoinsRead(group.id).then(refreshActivity, () => {});
+  }, [isOwner, group.id, refreshActivity]);
 
   function run(action: () => Promise<{ ok: boolean }>, onDone?: () => void) {
     startTransition(async () => {

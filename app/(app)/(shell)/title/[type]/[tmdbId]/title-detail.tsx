@@ -10,20 +10,25 @@ import { useGoodWords } from "../../../good-words";
 
 // Title detail (PRD F6, DS 4.2.2 `detail`): who in your groups vouched, yours
 // first as "You", where to watch, and the vouch button, this screen's one
-// primary action. Your own good word, and the groups it's in, reflect pending
-// changes at once. The conversation preview arrives in step 6.
+// primary action, then the conversation preview (DS 5.17). Your own good word,
+// and the groups it's in, reflect pending changes at once.
 export function TitleDetail({
   title,
   goodWords,
   mine: serverMine,
   whereToWatch,
+  conversation,
   overview,
+  headingLevel = 1,
 }: {
   title: Title;
   goodWords: GoodWord[];
   mine: MyGoodWord | null;
   whereToWatch: ReactNode;
+  conversation?: ReactNode;
   overview?: ReactNode;
+  /** Beside a conversation on desktop, the conversation has the page's h1. */
+  headingLevel?: 1 | 2;
 }) {
   const { viewer, groups, mineFor, takeBack } = useGoodWords();
   const { openAdd, openEditNote, openChangeGroups } = useAdd();
@@ -48,7 +53,9 @@ export function TitleDetail({
       viewerId={viewer.id}
       noGoodWords={t("titleDetail.noGoodWords")}
       whereToWatch={whereToWatch}
+      conversation={conversation}
       overview={overview}
+      headingLevel={headingLevel}
       vouchButton={
         <VouchButton
           vouched={mine !== null}

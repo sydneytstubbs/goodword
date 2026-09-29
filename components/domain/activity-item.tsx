@@ -11,11 +11,12 @@ import type { Group, Person, Title } from "./types";
 // the action, the title, and the group. The whole row links to the exact
 // comment; opening it marks it read.
 
-export type ActivityKind = "mention" | "comment" | "join";
+export type ActivityKind = "mention" | "comment" | "started" | "join";
 
 export function ActivityItem({
   kind,
   actor,
+  actorNames,
   title,
   group,
   quote,
@@ -24,9 +25,13 @@ export function ActivityItem({
   unread = false,
   href,
   now,
+  onOpen,
 }: {
   kind: ActivityKind;
+  /** The avatar: the most recent person. */
   actor: Person;
+  /** Collapsed items name everyone: "Jonah and Tess" (PRD F14). */
+  actorNames?: string;
   title?: Title;
   group: Group;
   /** The comment, quoted on one line. */
@@ -37,12 +42,15 @@ export function ActivityItem({
   unread?: boolean;
   href: string;
   now?: Date;
+  /** Opening an item marks it read (PRD F14). */
+  onOpen?: () => void;
 }) {
-  const vars = { actor: actor.name, title: title?.name ?? "", group: group.name };
+  const vars = { actor: actorNames ?? actor.name, title: title?.name ?? "", group: group.name };
   const preview = spoiler ? t("spoiler.preview") : quote && `“${quote}”`;
   return (
     <NextLink
       href={href}
+      onClick={onOpen}
       className={cn(
         "flex items-start gap-3 border-b border-subtle px-5 py-3 transition duration-fast ease-standard hover:bg-surface-hover",
         unread && "bg-action-wash",

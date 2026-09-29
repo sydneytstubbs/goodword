@@ -34,7 +34,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 3 | Titles (TMDB) | PRD 12, slice 3 | Done |
 | 4 | The core loop | PRD 12, slice 4 | Done |
 | 5 | Choosing | PRD 12, slice 5 | Done |
-| 6 | Conversations | PRD 12, slice 6 | Not started |
+| 6 | Conversations | PRD 12, slice 6 | In review |
 | 7 | Email | PRD 12, slice 7 | Not started |
 | 8 | Settings and trust | PRD 12, slice 8 | Not started |
 | 9 | Measurement | PRD 12, slice 9 | Not started |

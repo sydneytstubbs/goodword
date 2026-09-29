@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import type { GoodWord, GoodWordSource, Group, MyGoodWord, Person, Service, Shelf, ShelfCard, Title, TitleType } from "@/components/domain/types";
+import { commentCounts } from "@/lib/conversations/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getTitle } from "@/lib/titles/cache";
@@ -65,7 +66,7 @@ async function withServices(cards: ShelfCard[], rowIds: Map<string, string>, reg
 async function groupsShelf(groupIds: string[], viewerId: string, region: string): Promise<Shelf> {
   if (groupIds.length === 0) return { cards: [], services: [] };
   const supabase = await createClient();
-  const [{ data, error }, since] = await Promise.all([
+  const [{ data, error }, since, comments] = await Promise.all([
     supabase
       .from("good_word_groups")
       .select(`shared_at, group_id, good_words!inner(user_id, note, titles!inner(${TITLE_COLUMNS}))`)
@@ -73,6 +74,7 @@ async function groupsShelf(groupIds: string[], viewerId: string, region: string)
       .order("shared_at", { ascending: false })
       .returns<ShelfRow[]>(),
     lastViewed(supabase, viewerId, groupIds),
+    commentCounts(groupIds),
   ]);
   if (error) throw new Error(`shelf: ${error.code}`);
   const rows = data ?? [];
@@ -92,7 +94,10 @@ async function groupsShelf(groupIds: string[], viewerId: string, region: string)
       note: r.good_words.note,
       at: r.shared_at,
     })),
-  ).map((card) => (fresh.has(card.title.id) ? { ...card, isNew: true } : card));
+  ).map((card) => {
+    const counted = comments.get(rowIds.get(card.title.id) ?? "");
+    return { ...card, ...(fresh.has(card.title.id) ? { isNew: true } : {}), ...(counted ? { comments: counted } : {}) };
+  });
   return withServices(cards, rowIds, region);
 }
 

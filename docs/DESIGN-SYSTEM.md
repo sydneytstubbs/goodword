@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.4 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.5 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -720,6 +720,7 @@ One component, three variants.
 
 #### 4.2.8 App bars and navigation
 - **Top bar:** 52px, `--surface` fill. Group switcher on the left (group name in `heading` with `CaretDown`); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
+- **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the group switcher, group details, and invite button sit in the shelf's own bar on shelf screens. The conversation screen has its own compact header (5.17) and no tab bar.
 - **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **My shelf**. Shelf and My shelf are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
 - **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and My shelf as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
 - Add is a command, not a destination: it opens the log sheet over the current screen rather than navigating away.
@@ -767,7 +768,7 @@ One component, three variants.
 - **Purpose:** one entry in the Activity list (5.17).
 - **Anatomy:** actor avatar (40) · one sentence naming the person, the action, the title, and the group ("**Priya** mentioned you on **The Night Ferry** in College crew") · a one-line quote of the comment in `caption` (or "a spoiler comment") · relative time · 64×96 poster on the trailing edge. Unread items have a leading 8px `--action` dot plus the visually hidden word "Unread" and use `body-strong` for the sentence.
 - The whole row is one link to the exact comment. Opening it marks it read.
-- Types in the MVP: mention, new comment in a conversation you're part of, someone joined your group (owners only).
+- Types in the MVP: mention, new comment in a conversation you're part of, a conversation started in one of your groups, someone joined your group (owners only).
 - Level 0 rows with hairline `--border-subtle` dividers, like `row` rec cards. Unread rows also get an `--action-wash` background.
 
 ---
@@ -957,10 +958,10 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 **User problem:** people want to talk about what they're watching with the friends who recommended it ("wait until ep 6", "@Tess you'd love the ending"), without moving to the group chat and losing the thread.
 
 **Where conversations live**
-- A conversation belongs to **one title in one group**. It exists only for titles on that group's shelf (at least one member has put in a good word there), so every conversation is discoverable from the shelf.
+- A conversation belongs to **one title in one group**. Any title can have one, whether or not it's on that group's shelf. The first comment gives every other member an Activity item ("**Tess** started a conversation about **The Night Ferry** in College crew"), so a conversation is discoverable even when the title isn't on the shelf.
 - **Entry points:** the conversation preview on title detail, the comment count on shelf cards, Activity items, and mention emails.
-- **On title detail**, the conversation preview shows the group's name, the 3 most recent comments, "See all 12 comments", and a tappable "Add a comment" field that opens the full conversation with the composer focused. If the title is on several of your groups' shelves, a group chip row above the preview switches between their conversations. The default is the group you arrived from (`?group=`), otherwise the one with the most recent comment.
-- **The full conversation** (`/title/[type]/[id]/conversation?group=`) is its own screen: a compact header (poster thumbnail, title, group name, and back), the comment list, and the composer pinned to the bottom (4.2.11). On desktop it's a panel beside the title detail rather than a separate page.
+- **On title detail**, the conversation preview shows the group's name, the 3 most recent comments, "See all 12 comments", and a tappable "Add a comment" field that opens the full conversation with the composer focused. If you're in several groups, a group chip row above the preview lists all of them and switches between their conversations (`?group=`). The default is the group you arrived from (`?group=`), then the one with the most recent comment, then one whose shelf the title is on, then your most recently joined group.
+- **The full conversation** (`/title/[type]/[id]/conversation?group=`) is its own screen: a compact header (poster thumbnail, title, group name, and back), the comment list, and the composer pinned to the bottom (4.2.11). Below 1024px it hides the tab bar, like a messaging screen, and Back leaves it. On desktop it's a panel beside the title detail rather than a separate page.
 
 **How the list behaves** (standard messaging patterns)
 - **Chronological, oldest at the top, newest at the bottom.** Flat, with no nested replies; people reply by mentioning.
@@ -990,7 +991,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 | Offline | Cached comments; new comments queue as "Sending when you're back online" | Cached items with the offline banner |
 
 **Moderation (small private groups)**
-- Authors can edit and delete their comments; group owners can delete any comment in their group. Removing a member leaves their past comments visible, attributed to them, but they can no longer read or post. Reporting is out of scope for the MVP.
+- Authors can edit and delete their comments; group owners can delete any comment in their group. Removing a member leaves their past comments visible, attributed to them, but they can no longer read or post. The same goes for people who leave (decided 2026-09-29). Reporting is out of scope for the MVP.
 
 ---
 
@@ -1116,6 +1117,8 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Comment deleted toast | Comment deleted. **Undo** |
 | Mention activity | **Priya** mentioned you on **The Night Ferry** in College crew |
 | Comment activity | **Jonah** commented on **The Night Ferry** in College crew |
+| Conversation started activity | **Tess** started a conversation about **The Night Ferry** in College crew |
+| Join activity | **Mo** joined College crew |
 | Mention email subject | Priya mentioned you on The Night Ferry |
 | Empty activity | Nothing yet. When friends mention you or reply, it'll show up here. |
 
@@ -1417,6 +1420,8 @@ It is excluded from search indexing and from production navigation, and it's the
 - One card per title per group; vouches accumulate on it (5.4)
 - When someone leaves a group, their good words leave that shelf (5.8)
 - Conversations belong to one title in one group, are flat (no nested replies), and allow mentions of that group's members only (5.17)
+- Any title can have a conversation in any of your groups, not only titles on the shelf; the first comment tells the group (5.17; decided 2026-09-29)
+- Comments from people who leave a group stay visible and attributed (5.17; decided 2026-09-29)
 - Spoilers are covered and never rendered until revealed (4.2.12)
 - Title detail order: friends first, then where to watch, the vouch button, the conversation preview, and the overview (PRD F6, 4.2.2, 5.7; decided 2026-09-29)
 
@@ -1428,12 +1433,12 @@ It is excluded from search indexing and from production navigation, and it's the
 5. **"Watched it" signal:** should people be able to say they watched something because of a friend's good word? It would measure the product's real value, but adds a new action. Revisit after the MVP.
 6. **Tokens to DTCG JSON:** move when a native app starts (8.4).
 7. **Reactions on comments** (a single "same" or heart): deliberately left out of the MVP to keep conversations about words. Revisit after beta.
-8. **Comments from people who leave a group:** proposed to stay visible and attributed so conversations still make sense. Confirm.
 
 ---
 
 ## 17. Changelog
 
+- **v3.2.5 (2026-09-29):** Step 6. Any title can have a conversation in any of your groups; the first comment tells the group with a "started a conversation" Activity item, and title detail's chip row lists all your groups (4.2.13, 5.17). Open question 8 decided: comments from people who leave stay attributed. Below 1024px, the header holds the wordmark and the Activity bell, and the conversation screen hides the tab bar (4.2.8, 5.17). Microcopy for the new activity types (6.6).
 - **v3.2.4 (2026-09-29):** Step 5. Open question 9 decided: title detail is friends first (4.2.2, 5.7), and each good word shows chips for which of your groups it's in. The chip button for More filters (4.1.9). New counts in the group switcher and rail, and a dot on the Shelf tab (4.2.5). Filter bar layout, sort placement, and active filters on the bar (5.6). Where to watch links, loading, and error (5.7). Microcopy for filters, no results, paging, and where to watch (6.6). Utility `scrollbar-none` for the chip row. `/styleguide` gains the browsing pattern, where-to-watch states, and New counts.
 - **v3.2.3 (2026-09-29):** Step 4. The visibility line with no groups picked reads "Only you, for now" and isn't an error (4.2.6). Microcopy for the log flow's other toasts, the 10th good word milestone, the first-good-word prompt, a shelf that didn't load, and an offline banner that doesn't promise queued writes until PRD F12 builds them (6.6). `/styleguide` gains a Patterns section for 5.4 and the shelf states.
 - **v3.2.2 (2026-09-29):** Step 3 additions. Title search gets an offline state (4.2.4). Microcopy for search offline, a title that didn't load, and a title that can't be found (6.6). Token `--rail-width` (240px) so content clears the desktop rail.

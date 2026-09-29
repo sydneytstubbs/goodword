@@ -116,3 +116,28 @@ export function ChipButton({
     </button>
   );
 }
+
+/**
+ * A group chip that picks which group's conversation to show (DS 5.17). A
+ * link that replaces the URL's `?group=`; the current one is filled.
+ */
+export function GroupChoiceChip({ group, href, selected }: { group: Group; href: string; selected: boolean }) {
+  return (
+    <NextLink
+      href={href}
+      replace
+      scroll={false}
+      aria-current={selected ? "true" : undefined}
+      className={cn(
+        "relative inline-flex h-8 shrink-0 items-center gap-2 rounded-pill px-3 text-label font-medium transition duration-fast ease-standard",
+        "before:absolute before:inset-x-0 before:-inset-y-1.5 motion-ok:active:scale-98 fc-edge",
+        selected
+          ? "bg-inverse text-inverse fc-selected"
+          : "border border-subtle bg-surface-raised text-default hover:bg-surface-hover active:bg-surface-pressed",
+      )}
+    >
+      <GroupDot group={group} />
+      {group.name}
+    </NextLink>
+  );
+}

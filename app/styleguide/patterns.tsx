@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { ActivityItem } from "@/components/domain/activity-item";
+import { CommentSkeletons, NewCommentsPill } from "@/components/domain/comment";
 import { ConfirmGoodWord } from "@/components/domain/confirm-good-word";
+import {
+  ConversationPreviewError,
+  ConversationPreviewSection,
+  ConversationPreviewSkeleton,
+} from "@/components/domain/conversation-preview";
 import { FilterBar } from "@/components/domain/filter-bar";
 import { JoinPromptCard } from "@/components/domain/join-prompt-card";
 import { RecCardGrid } from "@/components/domain/rec-card";
@@ -15,12 +22,14 @@ import { Skeleton, SkeletonRegion } from "@/components/ui/skeleton";
 import { ToastView } from "@/components/ui/toast";
 import { DEFAULT_FILTERS, filterShelf, genreCounts, serviceCounts, type Filters } from "@/lib/good-words/filters";
 import { t } from "@/lib/messages";
-import { goodWords, groups, groupsWithCounts, people, titles, viewer } from "./fixtures";
+import type { ConversationPreview } from "@/lib/conversations/types";
+import { comments, goodWords, groups, groupsWithCounts, NOW, people, titles, viewer } from "./fixtures";
 import { Component, Frame, Note, Section, Specimen, SpecimenGrid } from "./parts";
 
 // Patterns (DS 14), added step by step. Step 4: putting in a good word (5.4)
 // and the three shelves in every state (PRD F5.7, DS 5.12). Step 5:
-// browsing and filtering (5.6). Built from the same components the app uses.
+// browsing and filtering (5.6). Step 6: conversations, mentions, and Activity
+// (5.17). Built from the same components the app uses.
 
 const GRID = "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4";
 
@@ -311,16 +320,142 @@ function Browsing() {
   );
 }
 
+const previews: ConversationPreview[] = [
+  {
+    group: groupsWithCounts[0],
+    count: 12,
+    latestAt: comments[4].at,
+    onShelf: true,
+    recent: comments.slice(2).map((c) => ({ ...c, covered: Boolean(c.spoiler) && c.author.id !== viewer.id })),
+  },
+  { group: groupsWithCounts[1], count: 0, onShelf: false, recent: [] },
+];
+
+function Conversations() {
+  return (
+    <Component id="conversations" title="Conversations, mentions, and Activity" spec="5.17">
+      <SpecimenGrid>
+        <Specimen label="Title detail preview: any title, in any of your groups; spoilers are never previewed">
+          <ConversationPreviewSection
+            title={titles.nightFerry}
+            previews={previews}
+            selectedId={groups.college.id}
+            viewerId={viewer.id}
+            pathname="/styleguide"
+            headingLevel={4}
+            now={NOW}
+          />
+        </Specimen>
+        <Specimen label="Preview, nothing said yet in this group">
+          <ConversationPreviewSection
+            title={titles.nightFerry}
+            previews={previews}
+            selectedId={groups.girls.id}
+            viewerId={viewer.id}
+            pathname="/styleguide"
+            headingLevel={4}
+            now={NOW}
+          />
+        </Specimen>
+        <Specimen label="Preview loading, and didn't load (only its region)">
+          <div className="flex flex-col gap-8">
+            <ConversationPreviewSkeleton />
+            <ConversationPreviewError headingLevel={4} />
+          </div>
+        </Specimen>
+      </SpecimenGrid>
+      <SpecimenGrid>
+        <Specimen label="Conversation, empty: tapping it focuses the composer">
+          <p className="rounded-card px-4 py-8 text-center text-body text-muted">{t("conversation.empty")}</p>
+        </Specimen>
+        <Specimen label="Conversation loading: 4 skeleton comments">
+          <CommentSkeletons />
+        </Specimen>
+        <Specimen label="Conversation didn't load: the composer and draft stay usable">
+          <ErrorState
+            headingLevel={4}
+            title={t("conversation.errorTitle")}
+            body={t("conversation.errorBody")}
+            action={<Button variant="secondary">{t("common.retry")}</Button>}
+          />
+        </Specimen>
+        <Specimen label="New comments arrived while scrolled up">
+          <div className="flex justify-center">
+            <NewCommentsPill count={2} onJump={() => {}} />
+          </div>
+        </Specimen>
+        <Specimen label="One-time hint, the first time someone comments on a series">
+          <p className="text-caption text-muted">{t("conversation.spoilerHint")}</p>
+        </Specimen>
+        <Specimen label="Offline: what's loaded stays; a comment that can't send says so, with Retry">
+          <Banner icon="offline">{t("shelf.offline")}</Banner>
+        </Specimen>
+      </SpecimenGrid>
+      <Frame label="Activity: Today, This week, Earlier; Mark all as read while anything is unread">
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-title-m text-default">{t("activityScreen.title")}</p>
+            <Button variant="secondary" size="sm">
+              {t("activityScreen.markAllRead")}
+            </Button>
+          </div>
+          <p className="text-overline text-muted uppercase">{t("activityScreen.today")}</p>
+          <ul className="-mx-4 border-t border-subtle">
+            <li>
+              <ActivityItem kind="mention" actor={people.priya} title={titles.nightFerry} group={groups.college} quote="@Tess you have to get to ep 6 before we talk" at={new Date(NOW.getTime() - 7_200_000)} unread href="#conversations" now={NOW} />
+            </li>
+            <li>
+              <ActivityItem kind="comment" actor={people.mo} actorNames="Mo and Jonah" title={titles.nightFerry} group={groups.college} spoiler at={new Date(NOW.getTime() - 2_400_000 * 3)} href="#conversations" now={NOW} />
+            </li>
+          </ul>
+        </div>
+      </Frame>
+      <SpecimenGrid>
+        <Specimen label="Activity, empty">
+          <EmptyState headingLevel={4} title={t("activityScreen.emptyTitle")} body={t("activityScreen.emptyBody")} />
+        </Specimen>
+        <Specimen label="Activity loading: 5 skeleton rows">
+          <SkeletonRegion label={t("activityScreen.loading")} className="flex flex-col">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-start gap-3 border-b border-subtle py-3">
+                <Skeleton className="size-10 rounded-pill" />
+                <div className="flex flex-1 flex-col gap-2">
+                  <Skeleton className="h-4 w-3/4 rounded-control" />
+                  <Skeleton className="h-3 w-1/2 rounded-control" />
+                </div>
+              </div>
+            ))}
+          </SkeletonRegion>
+        </Specimen>
+        <Specimen label="Activity didn't load">
+          <ErrorState
+            headingLevel={4}
+            title={t("activityScreen.errorTitle")}
+            body={t("activityScreen.errorBody")}
+            action={<Button variant="secondary">{t("common.retry")}</Button>}
+          />
+        </Specimen>
+      </SpecimenGrid>
+      <Note>
+        In the app: the full conversation is its own screen below 1024px (no tab bar, the composer above the keyboard),
+        and a panel beside title detail from 1024px. New comments from others arrive live; Activity&apos;s bell updates
+        within seconds.
+      </Note>
+    </Component>
+  );
+}
+
 export function Patterns() {
   return (
     <Section
       id="patterns"
       title="Patterns"
-      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the shelves. Step 5: browsing and filtering."
+      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the shelves. Step 5: browsing and filtering. Step 6: conversations and Activity."
     >
       <PuttingIn />
       <Shelves />
       <Browsing />
+      <Conversations />
     </Section>
   );
 }

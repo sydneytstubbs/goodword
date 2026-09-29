@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { cn } from "@/lib/cn";
 import { t } from "@/lib/messages";
 import { Icon } from "../icon";
 
@@ -9,7 +10,8 @@ import { Icon } from "../icon";
 // find-in-page can't expose it. Revealing lasts for the session.
 //
 // `children` is a render function so the body isn't even created before
-// reveal. In the app, it'll fetch the body on reveal (step 6).
+// reveal. In the app, the text isn't in the page at all until revealed: the
+// conversation fetches it on reveal and passes `revealed`.
 
 export function SpoilerCover({
   authorName,
@@ -55,6 +57,24 @@ export function SpoilerCover({
     >
       <Icon name="spoiler" size={16} className="shrink-0" />
       {t("spoiler.cover", { name: authorName })}
+    </button>
+  );
+}
+
+/** The Spoiler toggle (4.2.11), in the composer and when editing a comment. */
+export function SpoilerToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={onToggle}
+      className={cn(
+        "inline-flex min-h-target items-center gap-1 rounded-control px-2 text-label transition duration-fast ease-standard hover:bg-surface-hover",
+        on ? "font-semibold text-action-text" : "text-muted",
+      )}
+    >
+      <Icon name="spoiler" size={20} weight={on ? "fill" : "regular"} />
+      {t("composer.spoiler")}
     </button>
   );
 }
