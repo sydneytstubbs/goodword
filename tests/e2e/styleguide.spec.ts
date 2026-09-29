@@ -33,7 +33,7 @@ test("no horizontal scrolling", async ({ page }) => {
 
 test("segmented control moves with arrow keys", async ({ page }) => {
   await open(page, "light");
-  const group = page.getByRole("radiogroup", { name: "Show" });
+  const group = page.getByRole("radiogroup", { name: "Show", exact: true });
   await group.getByRole("radio", { name: "All" }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(group.getByRole("radio", { name: "Movies" })).toHaveAttribute("aria-checked", "true");
