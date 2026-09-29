@@ -1,22 +1,70 @@
 import type { Metadata } from "next";
+import NextLink from "next/link";
+import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui/button";
+import { GroupDot } from "@/components/ui/chip";
+import { EmptyState } from "@/components/ui/empty-state";
+import { TextLink } from "@/components/ui/text-link";
 import { requireOnboardedUser } from "@/lib/auth/session";
+import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { signOut } from "./actions";
 
-export const metadata: Metadata = { title: "You · Good Word" };
+export const metadata: Metadata = { title: "My shelf · Good Word" };
 
-export default async function YouPage() {
-  const { profile } = await requireOnboardedUser("/you");
+// The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
+// groups, then account. Good words arrive with step 4 (which adds "Put in a
+// good word" to the empty state); Settings and Help with step 8, which moves
+// Sign out into Settings.
+export default async function MyShelfPage() {
+  const { user, profile } = await requireOnboardedUser("/you");
+  const groups = await listMyGroups(user.id);
+
   return (
-    <main className="mx-auto flex w-full max-w-reading flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-reading flex-col gap-10 px-4 py-8">
       <h1 className="text-display-m text-default">{t("you.title")}</h1>
-      <p className="text-body text-muted">{t("you.signedInAs", { name: profile.display_name })}</p>
-      <form action={signOut}>
-        <Button type="submit" variant="secondary" icon="signOut">
-          {t("you.signOut")}
-        </Button>
-      </form>
+
+      <EmptyState showShelf headingLevel={2} title={t("you.emptyTitle")} body={t("you.emptyBody")} />
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-title-m text-default">{t("you.groupsHeading")}</h2>
+        {groups.length === 0 ? (
+          <p className="text-body text-muted">{t("you.noGroups")}</p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-subtle">
+            {groups.map((group) => (
+              <li key={group.id}>
+                <NextLink
+                  href={`/shelf/${group.id}`}
+                  className="-mx-2 flex min-h-14 items-center gap-3 rounded-control px-2 transition duration-fast ease-standard hover:bg-surface-hover"
+                >
+                  <span className="grid size-5 place-items-center">
+                    <GroupDot group={group} />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-body text-default">{group.name}</span>
+                    <span className="text-caption text-muted">{t("groups.members", { count: group.members.length })}</span>
+                  </span>
+                </NextLink>
+              </li>
+            ))}
+          </ul>
+        )}
+        <TextLink href="/groups/new" variant="standalone" className="gap-2 self-start">
+          <Icon name="add" size={20} />
+          {t("groups.createGroup")}
+        </TextLink>
+      </section>
+
+      <section className="flex flex-col items-start gap-3">
+        <h2 className="text-title-m text-default">{t("you.accountHeading")}</h2>
+        <p className="text-body text-muted">{t("you.signedInAs", { name: profile.display_name })}</p>
+        <form action={signOut}>
+          <Button type="submit" variant="secondary" icon="signOut">
+            {t("you.signOut")}
+          </Button>
+        </form>
+      </section>
     </main>
   );
 }

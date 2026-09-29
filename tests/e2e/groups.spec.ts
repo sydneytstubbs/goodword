@@ -58,6 +58,13 @@ test.describe("groups", () => {
     await expect(page.getByRole("button", { name: "Share" })).toBeVisible();
     await expect(page.getByText("Priya · You · Owner")).toBeVisible();
     await expectNoViolations(page);
+
+    // My shelf is a main nav item, listing your groups (PRD F5.3).
+    await page.getByRole("link", { name: "My shelf" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your shelf");
+    await expect(page.getByRole("heading", { level: 2, name: "Your shelf is empty" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /College crew/ })).toHaveAttribute("href", `/shelf/${groupId}`);
+    await expectNoViolations(page);
   });
 
   test("a signed-out friend joins from the link, through sign-in, onto the shelf", async ({ page }) => {

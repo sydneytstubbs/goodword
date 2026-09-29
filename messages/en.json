@@ -168,7 +168,7 @@
     "main": "Main",
     "shelf": "Shelf",
     "add": "Add",
-    "you": "You",
+    "you": "My shelf",
     "activity": "Activity",
     "activityWithCount": "Activity, {count} unread",
     "invite": "Invite to {group}",
@@ -375,7 +375,12 @@
     "goToShelf": "Go to your shelf"
   },
   "you": {
-    "title": "You",
+    "title": "Your shelf",
+    "emptyTitle": "Your shelf is empty",
+    "emptyBody": "What's something you'd tell a friend to watch?",
+    "groupsHeading": "Your groups",
+    "noGroups": "You're not in any groups yet.",
+    "accountHeading": "Account",
     "signedInAs": "Signed in as {name}",
     "signOut": "Sign out"
   },
