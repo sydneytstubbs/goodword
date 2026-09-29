@@ -21,12 +21,14 @@ export const viewer = people.luis;
 const title = (t: Omit<Title, "accent">): Title => ({ ...t, accent: resolveGenreAccent(t.genres, t.id) });
 
 export const titles = {
-  nightFerry: title({ id: "m-1", type: "tv", name: "The Night Ferry", year: 2024, genres: ["Drama", "Mystery"] }),
-  lowTide: title({ id: "m-2", type: "tv", name: "Low Tide Club", year: 2023, genres: ["Comedy"] }),
-  heist: title({ id: "m-3", type: "movie", name: "Grandma's Heist", year: 2022, runtime: 104, genres: ["Crime", "Comedy"] }),
-  parking: title({ id: "m-4", type: "movie", name: "Parallel Parking", year: 2024, runtime: 96, genres: ["Comedy", "Romance"] }),
-  moth: title({ id: "m-5", type: "movie", name: "Moth Season", year: 2025, runtime: 112, genres: ["Horror"] }),
-  salt: title({ id: "m-6", type: "movie", name: "Salt & Static", year: 2023, runtime: 101, genres: ["Comedy", "Science Fiction"] }),
+  nightFerry: title({ id: "title-1", type: "tv", name: "The Night Ferry", year: 2024, genres: ["Drama", "Mystery"] }),
+  lowTide: title({ id: "title-2", type: "tv", name: "Low Tide Club", year: 2023, genres: ["Comedy"] }),
+  heist: title({ id: "title-3", type: "movie", name: "Grandma's Heist", year: 2022, runtime: 104, genres: ["Crime", "Comedy"] }),
+  parking: title({ id: "title-4", type: "movie", name: "Parallel Parking", year: 2024, runtime: 96, genres: ["Comedy", "Romance"] }),
+  moth: title({ id: "title-5", type: "movie", name: "Moth Season", year: 2025, runtime: 112, genres: ["Horror"] }),
+  salt: title({ id: "title-6", type: "movie", name: "Salt & Static", year: 2023, runtime: 101, genres: ["Comedy", "Science Fiction"] }),
+  weather: title({ id: "title-7", type: "tv", name: "Borrowed Weather", year: 2025, genres: ["Documentary"] }),
+  choir: title({ id: "title-8", type: "movie", name: "The Tuesday Choir", year: 2021, runtime: 98, genres: ["Drama", "Music"] }),
 };
 
 export const groups = {

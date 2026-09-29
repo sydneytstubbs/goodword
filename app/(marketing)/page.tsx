@@ -188,7 +188,7 @@ function Groups() {
             group={groups.book}
             tone={2}
             people={members.book}
-            shelf={[{ title: titles.salt }, { title: titles.heist }, { title: titles.nightFerry }]}
+            shelf={[{ title: titles.salt }, { title: titles.weather }, { title: titles.choir }]}
           />
         </div>
       </div>
