@@ -277,5 +277,48 @@
       "madeBy": "Made by people who ask their friends what to watch.",
       "copyright": "© {year} Good Word"
     }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome to Good Word",
+      "body": "Enter your email and we'll send you a link. There's no password to remember.",
+      "emailLabel": "Email",
+      "submit": "Email me a sign-in link",
+      "or": "or",
+      "google": "Continue with Google",
+      "invalidEmail": "That email looks incomplete. Check for a missing @ or dot.",
+      "tooMany": "Too many sign-in links. Try again in a few minutes, or continue with Google.",
+      "sendFailed": "That didn't send. Check your connection and try again.",
+      "expired": "This sign-in link has expired. We can send a new one.",
+      "sendNew": "Send a new link",
+      "googleFailed": "Google sign-in didn't finish. Try again, or use an email link.",
+      "googleRetry": "Google didn't respond. Check your connection and try again."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "body": "We sent a link to <b>{email}</b>. It works for 15 minutes.",
+      "differentEmail": "Use a different email",
+      "resend": "Resend link",
+      "resendIn": "Resend link in {seconds}s",
+      "resendReady": "You can resend the link now.",
+      "resent": "New link sent. The old one no longer works."
+    },
+    "welcome": {
+      "title": "What should friends call you?",
+      "body": "This is the name on every good word you put in.",
+      "nameLabel": "Your name",
+      "submit": "Continue",
+      "nameRequired": "Add a name so friends know who's vouching.",
+      "saveFailed": "That didn't save. Check your connection and try again."
+    }
+  },
+  "shelf": {
+    "noGroupsTitle": "No groups yet",
+    "noGroupsBody": "Got an invite link? Open it to join."
+  },
+  "you": {
+    "title": "You",
+    "signedInAs": "Signed in as {name}",
+    "signOut": "Sign out"
   }
 }

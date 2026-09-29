@@ -10,6 +10,7 @@ import {
   Check,
   DotsThree,
   EyeSlash,
+  GoogleLogo,
   GearSix,
   LinkSimple,
   LockSimple,
@@ -59,6 +60,7 @@ export const icons = {
   mention: At,
   spoiler: EyeSlash,
   send: PaperPlaneRight,
+  google: GoogleLogo,
   // External links that open a new tab (DS 4.1.3)
   external: ArrowSquareOut,
 } as const;
