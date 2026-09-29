@@ -1,6 +1,6 @@
 import "server-only";
 import type { Title, TitleType } from "@/components/domain/types";
-import { detailsToRecord, searchResultsToTitles, type TitleRecord } from "./normalize";
+import { detailsToRecord, NO_PROVIDERS, providersForRegion, searchResultsToTitles, type TitleRecord, type WatchProviders } from "./normalize";
 
 // TMDB, server-side only (PRD 9.1). The read token never reaches the browser:
 // the browser calls the app's own routes, which call TMDB from here.
@@ -53,6 +53,16 @@ export async function fetchTitleDetails(type: TitleType, tmdbId: number): Promis
     return detailsToRecord(type, await get(`/${type}/${tmdbId}`, {}));
   } catch (error) {
     if (error instanceof TmdbError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** Where to watch a title in one region (PRD 9.2). Nothing, if TMDB doesn't have the title. */
+export async function fetchWatchProviders(type: TitleType, tmdbId: number, region: string): Promise<WatchProviders> {
+  try {
+    return providersForRegion(await get(`/${type}/${tmdbId}/watch/providers`, {}), region);
+  } catch (error) {
+    if (error instanceof TmdbError && error.status === 404) return NO_PROVIDERS;
     throw error;
   }
 }

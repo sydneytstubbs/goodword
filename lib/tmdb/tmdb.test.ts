@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { RateLimit } from "@/lib/rate-limit";
 import { posterSrc, posterSrcSet } from "./images";
-import { detailsToRecord, normalizeQuery, recordToTitle, searchResultsToTitles, yearOf } from "./normalize";
+import { detailsToRecord, normalizeQuery, providersForRegion, recordToTitle, searchResultsToTitles, yearOf } from "./normalize";
 import { SearchCache } from "./search-cache";
 
 // TMDB shapes are invented here, with the project's sample titles (CLAUDE.md).
@@ -150,5 +150,42 @@ describe("poster images", () => {
     expect(posterSrcSet("/f.jpg")).toBe(
       "https://image.tmdb.org/t/p/w154/f.jpg 154w, https://image.tmdb.org/t/p/w342/f.jpg 342w, https://image.tmdb.org/t/p/w500/f.jpg 500w",
     );
+  });
+});
+
+describe("watch providers", () => {
+  const raw = {
+    id: 101,
+    results: {
+      US: {
+        link: "https://www.themoviedb.org/tv/101-the-night-ferry/watch?locale=US",
+        flatrate: [
+          { provider_id: 15, provider_name: "Hulu", logo_path: "/hulu.png", display_priority: 4 },
+          { provider_id: 8, provider_name: "Netflix", logo_path: "/netflix.png", display_priority: 1 },
+        ],
+        ads: [{ provider_id: 8, provider_name: "Netflix", logo_path: "/netflix.png", display_priority: 1 }],
+        free: [{ provider_id: 73, provider_name: "Tubi TV", logo_path: null, display_priority: 9 }],
+        rent: [{ provider_id: 2, provider_name: "Apple TV Store", logo_path: "/apple.png", display_priority: 3 }, { provider_name: "No id" }],
+      },
+      GB: { link: "javascript:alert(1)", buy: [{ provider_id: 10, provider_name: "Amazon Video", logo_path: "/amazon.png" }] },
+    },
+  };
+
+  it("groups one region into stream, rent, and buy, in TMDB's display order", () => {
+    const us = providersForRegion(raw, "US");
+    expect(us.stream.map((p) => p.name)).toEqual(["Netflix", "Hulu", "Tubi TV"]);
+    expect(us.rent).toEqual([{ id: 2, name: "Apple TV Store", logo: "/apple.png" }]);
+    expect(us.buy).toEqual([]);
+    expect(us.link).toMatch(/^https:\/\/www\.themoviedb\.org\//);
+  });
+
+  it("counts free and ad-supported as streaming, once per service", () => {
+    expect(providersForRegion(raw, "US").stream.filter((p) => p.id === 8)).toHaveLength(1);
+  });
+
+  it("has nothing for a region TMDB doesn't list, and drops links that aren't https", () => {
+    expect(providersForRegion(raw, "FR")).toEqual({ stream: [], rent: [], buy: [], link: null });
+    expect(providersForRegion(raw, "GB")).toMatchObject({ link: null, buy: [{ id: 10, name: "Amazon Video" }] });
+    expect(providersForRegion({}, "US").stream).toEqual([]);
   });
 });

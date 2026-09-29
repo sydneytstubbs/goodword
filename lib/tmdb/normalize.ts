@@ -146,3 +146,47 @@ export function recordToTitle(record: Omit<TitleRecord, "overview" | "original_t
     ...(record.poster_path ? { posterPath: record.poster_path } : {}),
   };
 }
+
+/** A streaming service, rental store, or shop (TMDB watch providers, from JustWatch). */
+export type Provider = { id: number; name: string; logo: string | null };
+
+/** Where to watch one title in one region (PRD F6, 9.2): the `watch_providers` row. */
+export type WatchProviders = {
+  /** Included with a subscription, free, or free with ads. */
+  stream: Provider[];
+  rent: Provider[];
+  buy: Provider[];
+  /** TMDB's where-to-watch page for the title in this region. */
+  link: string | null;
+};
+
+export const NO_PROVIDERS: WatchProviders = { stream: [], rent: [], buy: [], link: null };
+
+function providerList(...lists: unknown[]): Provider[] {
+  const seen = new Map<number, Provider & { priority: number }>();
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const raw of list as Raw[]) {
+      const id = num(raw?.provider_id);
+      const name = str(raw?.provider_name);
+      if (!id || !name || seen.has(id)) continue;
+      const priority = typeof raw.display_priority === "number" ? raw.display_priority : Number.MAX_SAFE_INTEGER;
+      seen.set(id, { id, name, logo: str(raw.logo_path), priority });
+    }
+  }
+  return [...seen.values()].sort((a, b) => a.priority - b.priority).map(({ id, name, logo }) => ({ id, name, logo }));
+}
+
+/** One region's providers from `/{type}/{id}/watch/providers`, in TMDB's display order. */
+export function providersForRegion(raw: Raw, region: string): WatchProviders {
+  const results = raw.results as Record<string, Raw> | undefined;
+  const entry = results && typeof results === "object" ? results[region] : undefined;
+  if (!entry || typeof entry !== "object") return NO_PROVIDERS;
+  const link = str(entry.link);
+  return {
+    stream: providerList(entry.flatrate, entry.free, entry.ads),
+    rent: providerList(entry.rent),
+    buy: providerList(entry.buy),
+    link: link && /^https:\/\//.test(link) ? link : null,
+  };
+}

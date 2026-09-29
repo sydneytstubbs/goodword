@@ -15,3 +15,8 @@ export function posterSrc(path: string, width: PosterWidth = 342): string {
 export function posterSrcSet(path: string): string {
   return WIDTHS.map((w) => `${posterSrc(path, w)} ${w}w`).join(", ");
 }
+
+/** Provider logos are square; w92 covers 32px at 2x and 3x (DS 9). */
+export function logoSrc(path: string): string {
+  return `${TMDB_IMAGE_BASE}w92${path}`;
+}
