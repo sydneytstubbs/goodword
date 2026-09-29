@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.7 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.8 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -284,7 +284,7 @@ Extends DS 5.1.
 **Sheets over the current route (no navigation):** Add (search and confirm), group switcher, filters, vouch menu, confirm dialogs. Opening a sheet pushes a history entry so the Back gesture closes it (DS 5.1).
 
 ### 6.2 Navigation model
-- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My shelf** (DS 4.2.8). The top bar holds the group switcher, the Activity bell with an unread count, and an invite button.
+- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My shelf** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a shelf, the shelf's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
 - **Desktop (1024px and up):** left rail with the same destinations plus the group list.
 - **Shelf tab** shows the last viewed shelf (a group or All groups), remembered per device.
 - **Add** opens the log sheet over whatever screen you're on, and returns you there afterward.
@@ -500,7 +500,7 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 2. **Good words:** every person in your groups who vouched for it, each with avatar, name, note, when, and the chips of the groups (yours only) it's shared in. Your own good word is listed first as "You" with an Edit menu.
 3. **Where to watch** for the user's region, grouped Stream / Rent / Buy, with provider logos and names, each linking out to the provider (via TMDB's watch link). JustWatch attribution beneath (Section 9.2). If nothing: "Not streaming in your region right now."
 4. **Vouch button** (`lg`, DS 4.2.3).
-5. **Conversation preview** for the current group (F13), per DS 5.17: "Talk about it in College crew", the 3 most recent comments, "See all N comments", and "Add a comment…". If the title is on several of your groups' shelves, a chip row switches between their conversations. Hidden when the title isn't on any of your groups' shelves.
+5. **Conversation preview** for the current group (F13), per DS 5.17: "Talk about it in College crew", the 3 most recent comments, "See all N comments", and "Add a comment…". Any title can have a conversation in any of your groups, so if you're in several groups, a chip row of all of them switches between their conversations. The default is the group in `?group=`, then the group with the most recent comment, then a group whose shelf the title is on, then your most recently joined group. Hidden only when you're in no groups.
 6. Overview, collapsed to 3 lines with More.
 
 **Rules**
@@ -611,13 +611,14 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are the product rules.
 
 **Stories**
-- As a member, I can comment on a show or movie on my group's shelf, and see everyone else's comments in that group.
+- As a member, I can comment on any show or movie in my group, and see everyone else's comments in that group.
 - As a member, I can mention someone in the group with @ so they know I'm talking to them.
 - As a member, I can mark a comment as a spoiler so friends who haven't finished aren't spoiled.
 - As a member, I can edit or delete what I said.
 
 **Rules**
-- **Scope:** a conversation belongs to one title in one group. It exists only for titles on that group's shelf. The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
+- **Scope:** a conversation belongs to one title in one group. Any title can have one, whether or not it's on that group's shelf (open question 11). The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
+- **Starting a conversation:** the first comment in a group's conversation about a title gives every other member of that group an Activity item ("Tess started a conversation about The Night Ferry in College crew"), so a conversation on a title that isn't on the shelf can still be found. Later comments notify participants only.
 - **Who can take part:** current members of the group. Comments are visible to every current member.
 - **Structure:** flat and chronological (oldest first), no nested replies. Replying is done by mentioning.
 - **Comment:** 1 to 500 characters, plain text. Line breaks are kept. URLs are shown as text, not links, in the MVP.
@@ -626,6 +627,7 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - **Edit:** the author can edit anytime; the comment shows "edited". Newly added mentions notify; existing ones don't re-notify.
 - **Delete:** the author, or the group owner, can delete. Deletion is immediate with an 8-second Undo, then permanent. Deleting retracts related unread Activity items and unsent mention emails.
 - **Participants:** you become a participant in a title's conversation in a group when you comment there or put in a good word for that title in that group. Participants get Activity items for new comments (not emails).
+- **People who leave:** comments from people who leave or are removed stay visible and attributed to them, so conversations still make sense (open question 10). They're deleted only if that person deletes their account.
 - **Unseen tracking:** per person, per title, per group. Opening the conversation marks comments as seen up to the bottom of what was shown.
 - **Live updates:** while a conversation is open, new comments arrive in real time (DS 5.17). The shelf's comment counts update on the next load.
 - **Moderation:** owners can delete any comment in their group. No reporting in the MVP.
@@ -640,7 +642,7 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - Given two people have the conversation open, when one sends a comment, then it appears for the other within 2 seconds without a refresh, and without moving their scroll position if they've scrolled up.
 - Given the network drops while sending, then the comment shows "Didn't send." with Retry and Delete, and the text isn't lost.
 
-**Edge cases:** a mentioned member leaves before the email sends (don't send); a title leaves the shelf because its last good word was taken back (keep the conversation reachable from Activity and from title detail with a caption "No one in College crew vouches for this anymore", and allow comments to continue); very long unbroken strings (wrap with `overflow-wrap: anywhere`).
+**Edge cases:** a mentioned member leaves before the email sends (don't send); a title leaves the shelf because its last good word was taken back (nothing changes: the conversation stays on title detail and in Activity, and comments continue); very long unbroken strings (wrap with `overflow-wrap: anywhere`).
 
 ### F14. Activity (P0)
 
@@ -648,7 +650,7 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 
 **Rules**
 - Route `/activity`, opened from the bell in the top bar (and rail on desktop). The bell shows the unread count (DS 4.1.11).
-- Item types: `mention`, `comment` (in conversations you're part of, excluding your own), `group_join` (owners only). Items for the same conversation within an hour collapse into one ("Jonah and Tess commented on The Night Ferry").
+- Item types: `mention`, `comment` (in conversations you're part of, excluding your own), `conversation_started` (the first comment in a conversation in one of your groups, F13), `group_join` (owners only). Comment items for the same conversation within an hour collapse into one ("Jonah and Tess commented on The Night Ferry").
 - Each item deep-links to the exact comment (or group, for joins). Opening an item marks it read; "Mark all as read" marks everything read.
 - Items are kept for 90 days.
 - Activity respects group membership: leaving a group removes its items.
@@ -667,7 +669,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 
 | Table | Key fields | Notes |
 |---|---|---|
-| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`) | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device |
+| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`), `spoiler_hint_seen_at` | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device. `spoiler_hint_seen_at` records the one-time spoiler hint (DS 5.17) |
 | `groups` | `name`, `owner_id`, `color` | `color` assigned at creation |
 | `group_members` | `group_id`, `user_id`, `role` (`owner`, `member`), `joined_at`, `last_viewed_at`, `welcome_seen_at`, `join_prompt_dismissed_at` | Unique (`group_id`, `user_id`) |
 | `invites` | `group_id`, `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group |
@@ -676,11 +678,11 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `good_word_groups` | `good_word_id`, `group_id`, `shared_at` | Unique pair. Which shelves a good word is on |
 | `watch_providers` | `title_id`, `region`, `providers` (json: stream, rent, buy), `link`, `fetched_at` | Cached per title per region. Unique (`title_id`, `region`). Stream is TMDB's `flatrate`, `free`, and `ads` together. A region with nothing is stored with empty lists, so it isn't fetched again for a day |
 | `notification_prefs` | `user_id`, `digest`, `mention_email`, `group_joins`, `weekend_prompt` (booleans) | Defaults: all on |
-| `comments` | `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at` | Index on (`group_id`, `title_id`, `created_at`). Soft delete supports Undo; purge after the Undo window |
+| `comments` | `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at`, `deleted_by` | Index on (`group_id`, `title_id`, `created_at`). Mentions are stored in `body` by user id, so renamed people resolve correctly. Soft delete supports Undo; purge after the Undo window |
 | `comment_mentions` | `comment_id`, `mentioned_user_id` | Unique pair. Mentioned user must be a member of the comment's group |
 | `conversation_reads` | `user_id`, `group_id`, `title_id`, `last_read_at` | Drives the "New" divider and unseen-comment dots |
 | `conversation_participants` | `user_id`, `group_id`, `title_id`, `muted` | Created when you comment or vouch for that title in that group; decides who gets comment activity. `muted` reserved for later |
-| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `group_join`), `actor_id`, `group_id`, `title_id`, `comment_id`, `read_at` | Deleted after 90 days, or when the source comment is deleted |
+| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `conversation_started`, `group_join`), `actor_id`, `group_id`, `title_id`, `comment_id`, `read_at` | Deleted after 90 days, or when the source comment is deleted |
 | `notification_log` | `user_id`, `type`, `sent_at`, `payload_ref` | Enforces caps and dedupes sends |
 | `streaming_services` (P1) | `user_id`, `region`, `provider_ids` (array) | |
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
@@ -704,7 +706,8 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 - Only the good word's author can create, edit, or delete it and its group links, and only into groups they belong to.
 - Only owners can rename, reset invites, remove members, or delete groups.
 - A user can read comments only in groups they're currently a member of. Removed or departed members lose read access immediately.
-- A user can create a comment only in a group they belong to, on a title on that group's shelf, as themselves. Authors can edit and delete their own comments; group owners can delete any comment in their group.
+- A user can create a comment only in a group they belong to, as themselves, on any title. Authors can edit and delete their own comments; group owners can delete any comment in their group.
+- Comment authors' names stay readable in that group's conversations after they leave it (open question 10), and nowhere else.
 - A mention is valid only if the mentioned user is a member of the comment's group at the time of writing; the server drops any others and stores the text as plain text.
 - Users can read only their own `activity_items`, `conversation_reads`, and `notification_prefs`.
 - `titles` and `watch_providers` are readable by any signed-in user and writable only by the server.
@@ -895,14 +898,15 @@ Decide before the slice that needs them.
 | 7 | Should removed members be told? | No for the MVP; revisit if it causes confusion | Slice 2 |
 | 8 | Email provider | **Decided (2026-09-29): Resend**, set up in slice 1 for sign-in links | Slice 1 |
 | 9 | Do we need an explicit "Watched it" action to prove H5? | Rely on where-to-watch clicks and interviews for the MVP; build "Watched it because of you" first if evidence is unclear | After beta |
-| 10 | Comments from people who leave or are removed | Stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
-| 11 | Can people comment on a title nobody in the group has vouched for? | No. Conversations exist only for titles on the group's shelf, so they're always discoverable. To start one, put in a good word first | Slice 6 |
+| 10 | Comments from people who leave or are removed | **Decided (2026-09-29):** stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
+| 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the shelf (F13) | Slice 6 |
 | 12 | Should mentions work inside notes too? | Not in the MVP; notes travel across groups, so a mention could reach people outside the mentioned person's groups | After beta |
 
 ---
 
 ## 16. Changelog
 
+- **v1.2.8 (2026-09-29):** Step 6. Open questions 10 and 11 decided: comments from people who leave stay attributed, and any title can have a conversation in any of your groups (F6, F13, section 8). The first comment in a conversation gives every other member a `conversation_started` Activity item (F13, F14). On phones the Activity bell sits at the right of the header, and the conversation screen hides the tab bar (6.2). `comments.deleted_by` and `profiles.spoiler_hint_seen_at` (section 8).
 - **v1.2.7 (2026-09-29):** Step 5 accepted. The JustWatch logo is deferred; the attribution is text with a link for now (9.2).
 - **v1.2.6 (2026-09-29):** Step 5. The `groups` query parameter filters My shelf by group (6.3). A streaming service means subscription, free, or free with ads, and chip counts reflect the other filters (F5.4). "Last viewed" starts at joining, and viewing All groups counts for each group (F5.5). `watch_providers` details (section 8). Title detail keeps the order in F6 (DS open question 9 decided).
 - **v1.2.5 (2026-09-29):** Step 4. `profiles.milestones` records milestone moments already shown (section 8). Putting in a good word for a title you already vouched for sets its groups to the ones picked (F4). The first-good-word prompt sits after the last card and appears only on a shelf that has cards; an empty shelf's own empty state already asks (F5.7).
