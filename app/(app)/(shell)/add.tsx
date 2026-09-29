@@ -1,20 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { TitleSearch } from "@/components/domain/title-search";
-import type { Title } from "@/components/domain/types";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { Poster } from "@/components/domain/poster";
+import { TitleSearch, type SearchAnnotations } from "@/components/domain/title-search";
+import type { GoodWordSource, MyGoodWord, Person, Title } from "@/components/domain/types";
+import { ConfirmGoodWord, NoteField } from "@/components/domain/confirm-good-word";
+import { GroupPickerFields, VisibilityLine, type GroupWithCount } from "@/components/domain/visibility-line";
+import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
+import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/messages";
+import { useGoodWords } from "./good-words";
 
-// Add (PRD 6.2, DS 5.4): a command, not a destination. It opens the search
-// sheet over the current screen. Opening pushes a history entry so the Back
-// gesture closes the sheet (DS 5.1). In step 3, picking a result opens the
-// title; step 4 replaces that with the confirm sheet.
+// Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
+// current screen: search, then the confirm step (poster, optional note, and
+// the visibility line, defaulting to all your groups). The group picker, Edit
+// note, and Change groups replace the sheet's content rather than stacking a
+// second sheet (DS 4.1.13). Opening pushes a history entry so the Back
+// gesture closes the sheet (DS 5.1).
 
 const RECENT_KEY = "gw:recent-searches";
+const DRAFT_KEY = "gw:draft:";
 
-type AddContextValue = { openAdd: () => void };
+export type OpenAddOptions = { title?: Title; source?: GoodWordSource };
+
+type AddContextValue = {
+  openAdd: (options?: OpenAddOptions) => void;
+  openEditNote: (title: Title, mine: MyGoodWord) => void;
+  openChangeGroups: (title: Title, mine: MyGoodWord) => void;
+};
 const AddContext = createContext<AddContextValue | null>(null);
 
 export function useAdd(): AddContextValue {
@@ -23,13 +37,7 @@ export function useAdd(): AddContextValue {
   return value;
 }
 
-/** The app's own search route (PRD F3); TMDB is only ever called server-side. */
-async function searchTitles(query: string, signal: AbortSignal): Promise<Title[]> {
-  const res = await fetch(`/api/titles/search?q=${encodeURIComponent(query)}`, { signal });
-  if (!res.ok) throw new Error(`Search failed: ${res.status}`);
-  const data = (await res.json()) as { results: Title[] };
-  return data.results;
-}
+type ServerAnnotations = { mine: Record<string, MyGoodWord>; friends: Record<string, Person[]> };
 
 // Recent searches live on this device only (PRD F3).
 function readRecent(): string[] {
@@ -50,20 +58,100 @@ function writeRecent(recent: string[]) {
   }
 }
 
+// A typed note survives dismissing the sheet, for the session (DS 5.4).
+function readDraft(titleId: string): string | null {
+  try {
+    return sessionStorage.getItem(DRAFT_KEY + titleId);
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(titleId: string, note: string) {
+  try {
+    if (note) sessionStorage.setItem(DRAFT_KEY + titleId, note);
+    else sessionStorage.removeItem(DRAFT_KEY + titleId);
+  } catch {
+    // Storage unavailable: the draft lasts as long as the sheet.
+  }
+}
+
 const isSheetEntry = () => (window.history.state as { gwSheet?: string } | null)?.gwSheet === "add";
 
+const isTyping = (target: EventTarget | null) =>
+  target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+
+type View =
+  | { kind: "search" }
+  | { kind: "confirm"; title: Title }
+  | { kind: "picker"; title: Title }
+  | { kind: "editNote"; title: Title; mine: MyGoodWord }
+  | { kind: "groups"; title: Title; mine: MyGoodWord };
+
 export function AddProvider({ children }: { children: ReactNode }) {
-  const router = useRouter();
+  const { groups, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
+  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<View>({ kind: "search" });
   // A fresh search each time the sheet opens.
   const [session, setSession] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
+  const [source, setSource] = useState<GoodWordSource>("organic");
+  const [note, setNote] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [annotations, setAnnotations] = useState<ServerAnnotations>({ mine: {}, friends: {} });
 
-  const openAdd = useCallback(() => {
-    setRecent(readRecent());
-    setSession((s) => s + 1);
-    setOpen(true);
+  const allIds = groups.map((g) => g.id);
+  const withCounts: GroupWithCount[] = groups.map((g) => ({ id: g.id, name: g.name, memberCount: g.members.length }));
+  const peopleIn = (ids: string[]) =>
+    new Set(groups.filter((g) => ids.includes(g.id)).flatMap((g) => g.members.map((m) => m.id))).size;
+
+  const pushEntry = () => {
     if (!isSheetEntry()) window.history.pushState({ ...window.history.state, gwSheet: "add" }, "");
+  };
+
+  const mineOf = useCallback(
+    (title: Title) => mineFor(title.id, annotations.mine[title.id] ?? null),
+    [mineFor, annotations],
+  );
+
+  const confirm = useCallback(
+    (title: Title) => {
+      const mine = mineOf(title);
+      setNote(readDraft(title.id) ?? mine?.note ?? "");
+      setSelected(groups.map((g) => g.id));
+      setView({ kind: "confirm", title });
+    },
+    [mineOf, groups],
+  );
+
+  const openAdd = useCallback(
+    (options: OpenAddOptions = {}) => {
+      setSource(options.source ?? "organic");
+      if (options.title) confirm(options.title);
+      else {
+        setRecent(readRecent());
+        setSession((s) => s + 1);
+        setView({ kind: "search" });
+      }
+      setOpen(true);
+      pushEntry();
+    },
+    [confirm],
+  );
+
+  const openEditNote = useCallback((title: Title, mine: MyGoodWord) => {
+    setNote(mine.note);
+    setView({ kind: "editNote", title, mine });
+    setOpen(true);
+    pushEntry();
+  }, []);
+
+  const openChangeGroups = useCallback((title: Title, mine: MyGoodWord) => {
+    setSelected(mine.groupIds);
+    setView({ kind: "groups", title, mine });
+    setOpen(true);
+    pushEntry();
   }, []);
 
   // Back (or the swipe-back gesture) leaves the sheet's history entry: close it.
@@ -75,26 +163,184 @@ export function AddProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
+  // `n` opens Add on desktop (PRD F4), unless you're typing or a sheet is open.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "n" || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || isTyping(e.target)) return;
+      if (document.querySelector("dialog[open], [role='menu']")) return;
+      e.preventDefault();
+      openAdd();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [openAdd]);
+
   const close = useCallback(() => {
     if (isSheetEntry()) window.history.back();
     else setOpen(false);
   }, []);
 
-  const select = useCallback(
-    (title: Title) => {
-      setOpen(false);
-      // Replace the sheet's entry, so Back from the title returns to where Add was opened.
-      router.replace(`/title/${title.type}/${title.tmdbId}`);
-    },
-    [router],
-  );
+  /** The app's own search route (PRD F3); TMDB is only ever called server-side. */
+  const search = useCallback(async (query: string, signal: AbortSignal): Promise<Title[]> => {
+    const res = await fetch(`/api/titles/search?q=${encodeURIComponent(query)}`, { signal });
+    if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+    const data = (await res.json()) as { results: Title[]; annotations?: ServerAnnotations };
+    if (data.annotations) {
+      const found = data.annotations;
+      setAnnotations((a) => ({ mine: { ...a.mine, ...found.mine }, friends: { ...a.friends, ...found.friends } }));
+    }
+    return data.results;
+  }, []);
+
+  const searchAnnotations: SearchAnnotations = {
+    onYourShelf: [...new Set([...Object.keys(annotations.mine), ...overlays.map((o) => o.title.id)])].filter(
+      (id) => mineFor(id, annotations.mine[id] ?? null) !== null,
+    ),
+    friends: annotations.friends,
+  };
+
+  function changeNote(value: string, title: Title) {
+    setNote(value);
+    writeDraft(title.id, value);
+  }
+
+  function submitPut(title: Title) {
+    // Without a connection, keep the sheet and the note, and say why (PRD F12 baseline).
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      showToast({ message: t("vouch.offline") });
+      return;
+    }
+    const typed = note;
+    writeDraft(title.id, "");
+    put(title, { note: typed, groupIds: selected, source }, mineOf(title), () => writeDraft(title.id, typed));
+    close();
+  }
+
+  let sheetTitle = t("vouch.put");
+  let body: ReactNode = null;
+  let footer: ReactNode = undefined;
+
+  if (view.kind === "search") {
+    body = (
+      <TitleSearch
+        key={session}
+        search={search}
+        onSelect={confirm}
+        onClose={close}
+        annotations={searchAnnotations}
+        recent={recent}
+        onRecentChange={writeRecent}
+      />
+    );
+  } else if (view.kind === "confirm") {
+    const { title } = view;
+    const mine = mineOf(title);
+    // Already on every shelf picked: offer Edit note instead (DS 5.4).
+    const already = mine !== null && selected.every((id) => mine.groupIds.includes(id));
+    const chosen = withCounts.filter((g) => selected.includes(g.id));
+    body = (
+      <ConfirmGoodWord
+        title={title}
+        note={note}
+        onNoteChange={(value) => changeNote(value, title)}
+        already={already}
+        groups={chosen}
+        peopleCount={peopleIn(selected)}
+        onChangeGroups={groups.length > 0 ? () => setView({ kind: "picker", title }) : undefined}
+      />
+    );
+    footer = already ? (
+      <Button variant="primary" size="lg" icon="edit" fullWidth onClick={() => mine && openEditNote(title, mine)}>
+        {t("vouch.editNote")}
+      </Button>
+    ) : (
+      <Button variant="primary" size="lg" icon="add" fullWidth onClick={() => submitPut(title)}>
+        {t("vouch.put")}
+      </Button>
+    );
+  } else if (view.kind === "picker" || view.kind === "groups") {
+    sheetTitle = t("visibility.pickerTitle");
+    body = <GroupPickerFields groups={withCounts} selectedIds={selected} onSelectedChange={setSelected} />;
+    const done = () => {
+      if (view.kind === "picker") setView({ kind: "confirm", title: view.title });
+      else {
+        const { title, mine } = view;
+        const changed = selected.length !== mine.groupIds.length || selected.some((id) => !mine.groupIds.includes(id));
+        if (changed) setGroups(title, mine, allIds.filter((id) => selected.includes(id)));
+        close();
+      }
+    };
+    footer = (
+      <div className="flex flex-col gap-3">
+        <VisibilityLine groups={withCounts.filter((g) => selected.includes(g.id))} peopleCount={peopleIn(selected)} compact />
+        <Button variant="primary" size="lg" fullWidth onClick={done}>
+          {t("common.done")}
+        </Button>
+      </div>
+    );
+  } else if (view.kind === "editNote") {
+    const { title, mine } = view;
+    sheetTitle = t("vouch.editNote");
+    body = (
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center gap-3">
+          <Poster title={title} size="row" />
+          <p className="line-clamp-2 text-card-title text-default">{title.name}</p>
+        </div>
+        <NoteField value={note} onValueChange={setNote} />
+      </div>
+    );
+    footer = (
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
+        onClick={() => {
+          if (note.trim() !== mine.note) editNote(title, mine, note);
+          close();
+        }}
+      >
+        {t("vouch.saveNote")}
+      </Button>
+    );
+  }
 
   return (
-    <AddContext.Provider value={{ openAdd }}>
+    <AddContext.Provider value={{ openAdd, openEditNote, openChangeGroups }}>
       {children}
-      <Sheet open={open} onClose={close} title={t("vouch.put")}>
-        <TitleSearch key={session} search={searchTitles} onSelect={select} recent={recent} onRecentChange={writeRecent} />
+      <Sheet open={open} onClose={close} title={sheetTitle} footer={footer}>
+        <ViewFocus viewKey={view.kind} open={open}>
+          {body}
+        </ViewFocus>
       </Sheet>
     </AddContext.Provider>
   );
+}
+
+/**
+ * Moving between steps inside the open sheet replaces its content, so focus
+ * moves to the new step's first field (or first control), never to the page.
+ */
+function ViewFocus({ viewKey, open, children }: { viewKey: string; open: boolean; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (!open) {
+      first.current = true;
+      return;
+    }
+    // The sheet itself focuses the first field when it opens.
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const dialog = ref.current?.closest("dialog");
+    const target =
+      ref.current?.querySelector<HTMLElement>("input, textarea") ??
+      ref.current?.querySelector<HTMLElement>("button, [href]") ??
+      dialog?.querySelector<HTMLElement>("h2");
+    if (target && !target.hasAttribute("tabindex") && target.tagName === "H2") target.setAttribute("tabindex", "-1");
+    target?.focus();
+  }, [viewKey, open]);
+  return <div ref={ref}>{children}</div>;
 }

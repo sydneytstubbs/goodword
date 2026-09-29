@@ -46,7 +46,6 @@ export function VisibilityLine({
   const style = cn(
     "inline-flex items-center gap-2 text-muted",
     compact ? "text-caption" : "text-label font-medium",
-    groups.length === 0 && "text-danger",
     className,
   );
   if (!onChange) return <p className={style}>{content}</p>;
@@ -59,6 +58,35 @@ export function VisibilityLine({
     >
       {content}
     </button>
+  );
+}
+
+/** The group picker's checkboxes, for a sheet of their own or a step inside another sheet. */
+export function GroupPickerFields({
+  groups,
+  selectedIds,
+  onSelectedChange,
+}: {
+  groups: GroupWithCount[];
+  selectedIds: string[];
+  onSelectedChange: (ids: string[]) => void;
+}) {
+  return (
+    <fieldset>
+      <legend className="sr-only">{t("visibility.pickerTitle")}</legend>
+      {groups.map((group) => (
+        <Checkbox
+          key={group.id}
+          label={group.name}
+          description={t("groups.members", { count: group.memberCount })}
+          leading={<GroupDot group={group} />}
+          checked={selectedIds.includes(group.id)}
+          onChange={(e) =>
+            onSelectedChange(e.target.checked ? [...selectedIds, group.id] : selectedIds.filter((id) => id !== group.id))
+          }
+        />
+      ))}
+    </fieldset>
   );
 }
 
@@ -93,23 +121,7 @@ export function GroupPicker({
         </div>
       }
     >
-      <fieldset>
-        <legend className="sr-only">{t("visibility.pickerTitle")}</legend>
-        {groups.map((group) => (
-          <Checkbox
-            key={group.id}
-            label={group.name}
-            description={t("groups.members", { count: group.memberCount })}
-            leading={<GroupDot group={group} />}
-            checked={selectedIds.includes(group.id)}
-            onChange={(e) =>
-              onSelectedChange(
-                e.target.checked ? [...selectedIds, group.id] : selectedIds.filter((id) => id !== group.id),
-              )
-            }
-          />
-        ))}
-      </fieldset>
+      <GroupPickerFields groups={groups} selectedIds={selectedIds} onSelectedChange={onSelectedChange} />
     </Sheet>
   );
 }
