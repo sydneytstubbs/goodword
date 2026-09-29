@@ -154,6 +154,14 @@ export async function olderComments(groupId: string, titleId: string, before: st
   return { comments: rows.map((r) => toComment(r, viewerId)), hasOlder: rows.length === PAGE };
 }
 
+/** Everything from `from` on (catching up after the live connection drops), oldest first. */
+export async function newerComments(groupId: string, titleId: string, from: string, viewerId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("conversation_comments", { p_group: groupId, p_title: titleId, p_from: from, p_limit: MAX_UNSEEN });
+  if (error) throw new Error(`newer comments: ${error.code}`);
+  return ((data ?? []) as CommentRow[]).map((r) => toComment(r, viewerId));
+}
+
 /**
  * Comment counts for shelf cards (DS 4.2.2), by title row id: summed over
  * `groupIds`, and whether any has comments you haven't seen. Empty (no

@@ -3,7 +3,7 @@
 import type { CommentSegment } from "@/components/domain/types";
 import { createClient } from "@/lib/supabase/server";
 import { COMMENT_MAX, decodeBody, encodeBody, plainText, trimSegments } from "./body";
-import { olderComments as loadOlder, toComment, unreadActivityCount, type CommentRow } from "./queries";
+import { newerComments, olderComments as loadOlder, toComment, unreadActivityCount, type CommentRow } from "./queries";
 import type { ConversationComment } from "./types";
 
 // Conversation writes and the reads screens make after load (PRD F13, F14).
@@ -114,6 +114,19 @@ export async function fetchOlderComments(
   if (!viewer) return null;
   try {
     return await loadOlder(groupId, titleId, before, viewer);
+  } catch {
+    return null;
+  }
+}
+
+/** Comments from `from` on, to catch up after the live connection drops (DS 5.17). */
+export async function fetchNewerComments(groupId: string, titleId: string, from: string): Promise<ConversationComment[] | null> {
+  if (!valid(groupId, titleId) || Number.isNaN(Date.parse(from))) return null;
+  const supabase = await createClient();
+  const viewer = await viewerId(supabase);
+  if (!viewer) return null;
+  try {
+    return await newerComments(groupId, titleId, from, viewer);
   } catch {
     return null;
   }

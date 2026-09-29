@@ -175,8 +175,10 @@ export function ShelfCards({
                   title={card.title}
                   goodWords={card.goodWords}
                   viewerId={viewer.id}
-                  href={`/title/${card.title.type}/${card.title.tmdbId}`}
+                  href={`/title/${card.title.type}/${card.title.tmdbId}${scope.kind === "group" ? `?group=${scope.groupId}` : ""}`}
                   isNew={card.isNew}
+                  commentCount={card.comments?.count}
+                  unseenComments={card.comments?.unseen}
                   eager={i < 4}
                   shelves={
                     scope.kind === "mine"
