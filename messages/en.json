@@ -52,9 +52,11 @@
   "title": {
     "movie": "Film",
     "tv": "Series",
-    "meta": "{type} · {year}",
-    "metaRuntime": "{type} · {year} · {runtime}",
+    "metaSeparator": " · ",
+    "seasons_one": "{count} season",
+    "seasons_other": "{count} seasons",
     "accessibleName": "{title}, {type}, {year}.",
+    "accessibleNameNoYear": "{title}, {type}.",
     "vouchedFor": "Vouched for by {names}.",
     "comments_one": "{count} comment",
     "comments_other": "{count} comments",
@@ -62,6 +64,13 @@
     "whereToWatch": "Where to watch",
     "genres": "Genres",
     "goodWords": "Good words"
+  },
+  "titleDetail": {
+    "loading": "Loading title",
+    "errorTitle": "This title didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "notFoundTitle": "We couldn't find that title",
+    "notFoundBody": "The link may be broken, or the title was removed. Try searching for it with Add."
   },
   "vouch": {
     "put": "Put in a good word",
@@ -85,6 +94,7 @@
     "results_other": "{count} results",
     "noResults": "Nothing for “{query}”. Check the spelling, or try the original title.",
     "error": "Search isn't working right now. Try again.",
+    "offline": "You're offline. Search needs a connection, so try again when you're back.",
     "onYourShelf": "On your shelf",
     "friendsVouched": "{names} vouched for this",
     "loading": "Searching"

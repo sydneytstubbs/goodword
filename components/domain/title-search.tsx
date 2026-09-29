@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { cn } from "@/lib/cn";
 import { nameList } from "@/lib/format";
+import { useDelayedFlag } from "@/lib/hooks";
 import { t } from "@/lib/messages";
 import { Icon } from "../icon";
 import { AvatarStack } from "../ui/avatar";
@@ -16,8 +17,8 @@ import type { Person, Title } from "./types";
 
 // Title search (DESIGN-SYSTEM.md 4.2.4, 5.5). Combobox with a listbox:
 // arrows move, Enter selects, Esc clears then closes. 250ms debounce,
-// 2+ characters. Annotations prevent duplicates. In step 3 `search` calls
-// the TMDB route; here it's any async function.
+// 2+ characters, and a new query cancels the request in flight. Annotations
+// prevent duplicates. `search` is the app's TMDB route, or any async function.
 
 const DEBOUNCE_MS = 250;
 const MIN_CHARS = 2;
@@ -30,7 +31,9 @@ export type SearchAnnotations = {
   friends?: Record<string, Person[]>;
 };
 
-type Status = "idle" | "loading" | "results" | "empty" | "error";
+/** How the last finished search came out; "none" before one finishes. */
+type Settled = "none" | "results" | "empty" | "error" | "offline";
+type Status = Settled | "idle" | "loading";
 
 export function TitleSearch({
   search,
@@ -38,18 +41,22 @@ export function TitleSearch({
   onClose,
   annotations = {},
   recent: initialRecent = [],
+  onRecentChange,
   autoFocus = false,
 }: {
-  search: (query: string) => Promise<Title[]>;
+  search: (query: string, signal: AbortSignal) => Promise<Title[]>;
   onSelect: (title: Title) => void;
   /** Esc on an empty field closes the search sheet. */
   onClose?: () => void;
   annotations?: SearchAnnotations;
+  /** Recent searches, newest first (stored on the device by the caller). */
   recent?: string[];
+  onRecentChange?: (recent: string[]) => void;
   autoFocus?: boolean;
 }) {
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
+  const [settled, setSettled] = useState<Settled>("none");
+  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Title[]>([]);
   const [active, setActive] = useState(0);
   const [recent, setRecent] = useState(initialRecent.slice(0, MAX_RECENT));
@@ -61,30 +68,48 @@ export function TitleSearch({
 
   useEffect(() => {
     if (trimmed.length < MIN_CHARS) return;
-    let cancelled = false;
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
-      setStatus("loading");
+      setLoading(true);
       try {
-        const found = await search(trimmed);
-        if (cancelled) return;
+        const found = await search(trimmed, controller.signal);
+        if (controller.signal.aborted) return;
         setResults(found);
         setActive(0);
-        setStatus(found.length > 0 ? "results" : "empty");
+        setSettled(found.length > 0 ? "results" : "empty");
       } catch {
-        if (!cancelled) setStatus("error");
+        if (controller.signal.aborted) return;
+        setSettled(typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "error");
       }
+      setLoading(false);
     }, DEBOUNCE_MS);
     return () => {
-      cancelled = true;
       clearTimeout(timer);
+      controller.abort();
     };
   }, [trimmed, search, attempt]);
 
-  const shown: Status = trimmed.length < MIN_CHARS ? "idle" : status;
+  // The skeleton shows only after 300ms, then stays at least 500ms (DS 4.1.17).
+  // Until then, the last results stay put.
+  const slow = useDelayedFlag(trimmed.length >= MIN_CHARS && loading);
+  const shown: Status = trimmed.length < MIN_CHARS ? "idle" : slow ? "loading" : settled;
   const expanded = shown === "results";
 
+  function changeQuery(next: string) {
+    setQuery(next);
+    if (next.trim().length < MIN_CHARS) {
+      setSettled("none");
+      setLoading(false);
+    }
+  }
+
+  function updateRecent(next: string[]) {
+    setRecent(next);
+    onRecentChange?.(next);
+  }
+
   function select(title: Title) {
-    setRecent((r) => [trimmed, ...r.filter((q) => q !== trimmed)].slice(0, MAX_RECENT));
+    updateRecent([trimmed, ...recent.filter((q) => q !== trimmed)].slice(0, MAX_RECENT));
     onSelect(title);
   }
 
@@ -97,12 +122,13 @@ export function TitleSearch({
       setActive((a) => Math.max(a - 1, 0));
     } else if (e.key === "Enter" && expanded) {
       e.preventDefault();
-      select(results[active]);
+      // Results for an older query are still on screen while a new one loads.
+      if (!loading) select(results[active]);
     } else if (e.key === "Escape") {
       if (query) {
         e.preventDefault();
         e.stopPropagation();
-        setQuery("");
+        changeQuery("");
       } else {
         onClose?.();
       }
@@ -124,7 +150,7 @@ export function TitleSearch({
         autoFocus={autoFocus}
         placeholder={t("search.label")}
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => changeQuery(e.target.value)}
         onKeyDown={onKeyDown}
         role="combobox"
         aria-expanded={expanded}
@@ -140,7 +166,7 @@ export function TitleSearch({
               tooltip={false}
               label={t("search.clear")}
               onClick={() => {
-                setQuery("");
+                changeQuery("");
                 inputRef.current?.focus();
               }}
             />
@@ -156,7 +182,7 @@ export function TitleSearch({
         <section className="flex flex-col">
           <div className="flex items-center justify-between">
             <h3 className="text-caption font-semibold text-muted">{t("search.recent")}</h3>
-            <Button variant="ghost" size="sm" onClick={() => setRecent([])}>
+            <Button variant="ghost" size="sm" onClick={() => updateRecent([])}>
               {t("search.clearRecent")}
             </Button>
           </div>
@@ -165,7 +191,7 @@ export function TitleSearch({
               <li key={item}>
                 <button
                   type="button"
-                  onClick={() => setQuery(item)}
+                  onClick={() => changeQuery(item)}
                   className="flex min-h-target w-full items-center gap-3 rounded-control px-1 text-start text-body text-default hover:bg-surface-hover"
                 >
                   <Icon name="search" size={16} className="text-muted" />
@@ -191,7 +217,13 @@ export function TitleSearch({
         </SkeletonRegion>
       )}
 
-      <ul id={listId} role="listbox" aria-label={t("search.label")} hidden={!expanded}>
+      <ul
+        id={listId}
+        role="listbox"
+        aria-label={t("search.label")}
+        aria-busy={loading || undefined}
+        hidden={!expanded}
+      >
         {expanded &&
           results.map((title, i) => {
             const onShelf = annotations.onYourShelf?.includes(title.id);
@@ -235,11 +267,11 @@ export function TitleSearch({
 
       {shown === "empty" && <p className="text-body text-muted">{t("search.noResults", { query: trimmed })}</p>}
 
-      {shown === "error" && (
+      {(shown === "error" || shown === "offline") && (
         <div role="alert" className="flex flex-col items-start gap-3">
           <p className="flex items-center gap-2 text-body text-default">
-            <Icon name="error" size={20} className="text-muted" />
-            {t("search.error")}
+            <Icon name={shown === "offline" ? "offline" : "error"} size={20} className="shrink-0 text-muted" />
+            {shown === "offline" ? t("search.offline") : t("search.error")}
           </p>
           <Button variant="secondary" onClick={() => setAttempt((a) => a + 1)}>
             {t("common.retry")}

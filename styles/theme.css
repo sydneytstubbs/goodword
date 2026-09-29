@@ -139,6 +139,10 @@
 @utility max-h-sheet { max-height: var(--sheet-max-height); }
 @utility h-topbar { height: var(--topbar-height); }
 @utility h-tabbar { height: var(--tabbar-height); }
+/* Room under content for the fixed tab bar (DS 4.2.8). */
+/* Room beside content for the desktop rail. */
+@utility ps-rail { padding-inline-start: var(--rail-width); }
+@utility pb-tabbar-safe { padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom)); }
 @utility w-dialog { width: calc(100% - 2 * var(--space-5)); }
 @utility mb-keyboard { margin-bottom: var(--keyboard-inset, 0px); }
 @utility pb-safe-footer { padding-bottom: max(var(--space-4), env(safe-area-inset-bottom)); }

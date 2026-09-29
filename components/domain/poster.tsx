@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { accentToTone } from "@/lib/genre-accent";
-import { t } from "@/lib/messages";
 import { toneBg } from "@/lib/people-color";
+import { posterSrc, posterSrcSet } from "@/lib/tmdb/images";
+import { titleMeta } from "./title-meta";
 import type { Title } from "./types";
 
 // Poster (DESIGN-SYSTEM.md 4.2.1): 2:3, never shifts layout, an inset
@@ -20,6 +21,15 @@ const sizes: Record<PosterSize, string> = {
   detail: "w-full max-w-80",
 };
 
+// Rendered widths, so the browser picks w154 for rows, w342 for grid cards,
+// and w500 for detail from the srcset (DS 9).
+const renderedWidths: Record<PosterSize, string> = {
+  row: "48px",
+  activity: "64px",
+  grid: "(min-width: 768px) 240px, 50vw",
+  detail: "320px",
+};
+
 export function Poster({
   title,
   size = "grid",
@@ -28,7 +38,7 @@ export function Poster({
   eager = false,
   className,
 }: {
-  title: Pick<Title, "name" | "year" | "type" | "accent" | "posterUrl">;
+  title: Pick<Title, "name" | "year" | "type" | "accent" | "posterPath" | "posterUrl">;
   size?: PosterSize;
   /** "Title (year)", or omit when the title is written right next to the poster. */
   alt?: string;
@@ -40,7 +50,8 @@ export function Poster({
 }) {
   const [failed, setFailed] = useState(false);
   const small = size === "row" || size === "activity";
-  const showImage = title.posterUrl && !failed;
+  const src = title.posterPath ? posterSrc(title.posterPath) : title.posterUrl;
+  const showImage = src && !failed;
 
   return (
     <div
@@ -58,13 +69,19 @@ export function Poster({
         // TMDB serves its own size variants via srcset (DS 9), so next/image isn't needed here.
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={title.posterUrl}
+          src={src}
+          srcSet={title.posterPath ? posterSrcSet(title.posterPath) : undefined}
+          sizes={title.posterPath ? renderedWidths[size] : undefined}
           alt=""
           width={342}
           height={513}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           onError={() => setFailed(true)}
+          // An image that failed before hydration never fires onError.
+          ref={(img) => {
+            if (img?.complete && img.currentSrc && img.naturalWidth === 0) setFailed(true);
+          }}
           className="absolute inset-0 size-full object-cover"
         />
       )}
@@ -76,9 +93,7 @@ export function Poster({
             // Title sits at the bottom, so a "New" badge on the top-left corner never covers it.
             <div className="flex h-full flex-col justify-end gap-2 p-3">
               <span className="line-clamp-3 text-poster-title wrap-break-word">{title.name}</span>
-              <span className="text-caption">
-                {t("title.meta", { type: t(`title.${title.type}`), year: String(title.year) })}
-              </span>
+              <span className="text-caption">{titleMeta(title)}</span>
             </div>
           )}
         </div>

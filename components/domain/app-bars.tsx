@@ -164,6 +164,7 @@ export function Rail({
   onAdd,
   placement = "fixed",
   label,
+  hide = [],
 }: {
   current?: Destination;
   activityCount?: number;
@@ -173,6 +174,8 @@ export function Rail({
   placement?: Placement;
   /** Landmark name; defaults to "Main". */
   label?: string;
+  /** Links to leave out while their screens are still being built. */
+  hide?: Array<Destination | "help">;
 }) {
   return (
     <nav
@@ -189,7 +192,7 @@ export function Rail({
         {t("vouch.put")}
       </Button>
       <ul className="flex flex-col gap-1">
-        {railLinks.map((link) => {
+        {railLinks.filter((link) => !hide.includes(link.id)).map((link) => {
           const isCurrent = current === link.id;
           const count = link.id === "activity" ? activityCount : 0;
           // On a group's shelf the group row is the page; Shelf is the section it's in.
@@ -230,7 +233,7 @@ export function Rail({
         </ul>
       </div>
       {/* Help sits in the same place on every screen (DS 5.16, WCAG 3.2.6). */}
-      <div className="mt-auto">
+      <div className={cn("mt-auto", hide.includes("help") && "hidden")}>
         <NextLink href="/you/help" className={cn(railRow, "text-muted hover:text-default")}>
           <Icon name="help" size={20} />
           {t("nav.help")}

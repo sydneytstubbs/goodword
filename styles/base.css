@@ -29,6 +29,12 @@
     font-variant-ligatures: no-contextual;
   }
 
+  /* Search fields have their own clear button (4.2.4); hide the browser's. */
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    appearance: none;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
   }
