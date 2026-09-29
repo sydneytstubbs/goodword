@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.4 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.5 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -667,7 +667,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 
 | Table | Key fields | Notes |
 |---|---|---|
-| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at` | One per user |
+| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`) | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device |
 | `groups` | `name`, `owner_id`, `color` | `color` assigned at creation |
 | `group_members` | `group_id`, `user_id`, `role` (`owner`, `member`), `joined_at`, `last_viewed_at`, `welcome_seen_at`, `join_prompt_dismissed_at` | Unique (`group_id`, `user_id`) |
 | `invites` | `group_id`, `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group |
@@ -903,6 +903,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.5 (2026-09-29):** Step 4. `profiles.milestones` records milestone moments already shown (section 8). Putting in a good word for a title you already vouched for sets its groups to the ones picked (F4). The first-good-word prompt sits after the last card and appears only on a shelf that has cards; an empty shelf's own empty state already asks (F5.7).
 - **v1.2.4 (2026-09-29):** My shelf is a main navigation item: the You tab is renamed My shelf and leads with your good words, then your groups and a Settings link (6.1, 6.2, F5.3, J7). Routes stay under `/you`.
 - **v1.2.3 (2026-09-29):** Resend decided and moved up to slice 1 for sign-in emails (9.4, open question 8). Session length accepted as "stays signed in while in use" on the free plan (F1). Within slice 1, Google sign-in is built after email links.
 - **v1.2.2 (2026-09-28):** Open question 1 decided: Next.js, one app for marketing and product (9.6).

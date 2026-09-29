@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.2 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.3 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -709,6 +709,7 @@ One component, three variants.
 - A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus "Visible to College crew · 6 people", or "Visible to 3 groups · 14 people".
 - Tapping it opens the group picker. It updates live as groups are selected.
 - This is how the "private by default, visibly so" principle shows up in UI. It is required on the confirm sheet and on invite screens.
+- With no groups picked it reads "Only you, for now" in the default muted color. Zero groups is allowed (PRD F4), so it's not an error.
 
 #### 4.2.7 Invite card
 - Group name, avatar stack, member count, the invite link in a read-only field, "Copy link" (`secondary`), and "Share" (`primary`, uses the Web Share API with copy as fallback).
@@ -1052,6 +1053,11 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Vouched state | Your good word |
 | Take it back | Take it back |
 | Undo toast after taking back | Taken back. **Undo** |
+| Log success, nobody else yet | On your shelf. Invite friends to share it. **Invite** |
+| Log success, no groups picked | On your shelf. Only you can see it for now. |
+| Visibility line, no groups | Only you, for now |
+| Log offline | You're offline. Good words need a connection, so try again when you're back. |
+| Log rate limit | That's a lot of good words for one hour. Try again in a little while. |
 | Note label | Anything to add? (optional) |
 | Note placeholder | ep 3 is where it gets you |
 | Visibility line | Visible to College crew · 6 people |
@@ -1078,6 +1084,10 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Leave group | Leave College crew? Your good words will leave this shelf too. |
 | Delete group | Delete College crew? This removes 42 good words for 6 people and can't be undone. |
 | First good word milestone | Your first good word. · Your friends will see it on their shelves. |
+| 10th good word milestone | Ten good words. · That's a shelf worth browsing. |
+| First-good-word prompt | What's something you'd tell these folks to watch? |
+| Shelf didn't load | This shelf didn't load · Good Word is having a moment. Try again in a minute. |
+| Offline banner (before queued writes, PRD F12) | You're offline. You can keep browsing what's already loaded. |
 | Conversation preview heading | Talk about it in College crew |
 | Add a comment field | Add a comment… |
 | Composer placeholder | Say something to College crew… |
@@ -1408,6 +1418,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.3 (2026-09-29):** Step 4. The visibility line with no groups picked reads "Only you, for now" and isn't an error (4.2.6). Microcopy for the log flow's other toasts, the 10th good word milestone, the first-good-word prompt, a shelf that didn't load, and an offline banner that doesn't promise queued writes until PRD F12 builds them (6.6). `/styleguide` gains a Patterns section for 5.4 and the shelf states.
 - **v3.2.2 (2026-09-29):** Step 3 additions. Title search gets an offline state (4.2.4). Microcopy for search offline, a title that didn't load, and a title that can't be found (6.6). Token `--rail-width` (240px) so content clears the desktop rail.
 - **v3.2.1 (2026-09-29):** The You tab is renamed **My shelf** (tab bar, rail, shortcuts, and every "You ›" path), so your own shelf is a main navigation item. The icon stays `UserCircle`; routes stay under `/you`.
 - **v3.2.0 (2026-09-28):** Tokens added for the marketing page (spec 6.7, 7.6, 8.3): `--inverse-text-muted` (white at 72% on ink, 10.3:1) and `--inverse-border` (white at 15%), `--width-subhead` (36ch), `--phone-width` and `--phone-height` (390 × 844), `--radius-device-screen` (34px, inside the 10px bezel), and `--stagger` (60ms). Also recorded from step 0: type-scale tokens in rem, `--radius-checkbox` (5px), exit durations `--dur-exit` and `--dur-exit-sheet`, and theme selectors that match any `[data-theme]` element so a region can pin its theme.
