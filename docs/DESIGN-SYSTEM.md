@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.2 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -698,7 +698,7 @@ One component, three variants.
 - Full-width field with `MagnifyingGlass` icon and a clear button. Autofocus when opened from Add.
 - Debounce 250ms; minimum 2 characters. Results render as `row` rec cards.
 - **Result annotations** prevent duplicates: "On your shelf" for titles you already vouched for; friends' avatars for titles they vouched for ("Priya vouched for this").
-- **States:** empty (recent searches, up to 5, clearable), loading (3 skeleton rows), results, no results ("Nothing for 'nite ferry'. Check the spelling, or try the original title."), error ("Search isn't working right now. Try again." with Retry).
+- **States:** empty (recent searches, up to 5, clearable), loading (3 skeleton rows), results, no results ("Nothing for 'nite ferry'. Check the spelling, or try the original title."), error ("Search isn't working right now. Try again." with Retry), offline ("You're offline. Search needs a connection, so try again when you're back." with Retry).
 - **Accessibility:** combobox pattern with a listbox (`role="combobox"`, `aria-expanded`, `aria-activedescendant`). Arrow keys move, Enter selects, Esc clears then closes. Result count announced politely ("6 results").
 
 #### 4.2.5 Group switcher
@@ -1064,6 +1064,9 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Search empty | Search for a show or movie |
 | Search no results | Nothing for "nite ferry". Check the spelling, or try the original title. |
 | Search error | Search isn't working right now. Try again. |
+| Search offline | You're offline. Search needs a connection, so try again when you're back. |
+| Title didn't load | This title didn't load · Good Word is having a moment. Try again in a minute. |
+| Title not found | We couldn't find that title · The link may be broken, or the title was removed. Try searching for it with Add. |
 | Offline banner | You're offline. We'll send your changes when you're back. |
 | Queued item | Sending when you're back online |
 | End of shelf | That's the whole shelf. |
@@ -1405,6 +1408,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.2 (2026-09-29):** Step 3 additions. Title search gets an offline state (4.2.4). Microcopy for search offline, a title that didn't load, and a title that can't be found (6.6). Token `--rail-width` (240px) so content clears the desktop rail.
 - **v3.2.1 (2026-09-29):** The You tab is renamed **My shelf** (tab bar, rail, shortcuts, and every "You ›" path), so your own shelf is a main navigation item. The icon stays `UserCircle`; routes stay under `/you`.
 - **v3.2.0 (2026-09-28):** Tokens added for the marketing page (spec 6.7, 7.6, 8.3): `--inverse-text-muted` (white at 72% on ink, 10.3:1) and `--inverse-border` (white at 15%), `--width-subhead` (36ch), `--phone-width` and `--phone-height` (390 × 844), `--radius-device-screen` (34px, inside the 10px bezel), and `--stagger` (60ms). Also recorded from step 0: type-scale tokens in rem, `--radius-checkbox` (5px), exit durations `--dur-exit` and `--dur-exit-sheet`, and theme selectors that match any `[data-theme]` element so a region can pin its theme.
 - **v3.1.2 (2026-09-28):** Vouch button in rows says "Add" below 768px (4.2.3). Title detail follows 4.2.2's order for now; the conflict with 5.7 is open question 9.
