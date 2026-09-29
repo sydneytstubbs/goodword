@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-28
+**Version** 3.2.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -432,7 +432,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Settings | `GearSix` | Group | `UsersThree` |
 | Activity | `Bell` | More actions | `DotsThree` |
 | Where to watch | `MonitorPlay` | Shelf tab | `BookmarksSimple` |
-| You tab | `UserCircle` | Private / visibility | `LockSimple` |
+| My shelf tab | `UserCircle` | Private / visibility | `LockSimple` |
 | Edit | `PencilSimple` | Remove | `Trash` |
 | Error | `WarningCircle` | Offline | `WifiSlash` |
 | Help | `Question` | Robot guess | `Robot` |
@@ -498,7 +498,7 @@ Every interactive component expresses these states the same way. This table is t
 - **Desktop shortcuts** (shown in a shortcuts sheet under Help, never required):
   - `/` focuses search
   - `n` opens "Put in a good word"
-  - `g` then `s` goes to the shelf, `g` then `y` goes to You, `g` then `a` goes to Activity
+  - `g` then `s` goes to the shelf, `g` then `y` goes to My shelf, `g` then `a` goes to Activity
   - `?` shows shortcuts
 
   Shortcuts never fire while typing in a field.
@@ -671,7 +671,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
   - Unmapped or missing genres fall back to a tone picked deterministically from the title id.
   - The tone is resolved once when the title is first saved and stored on the title record, so it never changes later.
   - Color is decoration only. The genre is always shown as text on the detail screen.
-- **TMDB attribution is required**, persistently, in About (under You): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
+- **TMDB attribution is required**, persistently, in About (under My shelf › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
 
 #### 4.2.2 Rec card
 One component, three variants.
@@ -717,8 +717,8 @@ One component, three variants.
 
 #### 4.2.8 App bars and navigation
 - **Top bar:** 52px, `--surface` fill. Group switcher on the left (group name in `heading` with `CaretDown`); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
-- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **You**. Shelf and You are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
-- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and You as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
+- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **My shelf**. Shelf and My shelf are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
+- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and My shelf as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
 - Add is a command, not a destination: it opens the log sheet over the current screen rather than navigating away.
 
 #### 4.2.9 Robot guess card
@@ -785,7 +785,7 @@ Each pattern names the user problem, the solution, and the rules. Screens in the
 /title/[type]/[id]     title detail
 /title/[type]/[id]/conversation?group=[groupId]   a group's conversation about a title
 /activity              mentions, replies, and joins (Bell in the top bar)
-/you                   your shelf, groups, settings, help (You tab)
+/you                   your shelf, groups, settings, help (My shelf tab)
 /you/settings          account, notifications, about
 /groups/new            create a group
 /groups/[id]           group details, members, invite
@@ -819,7 +819,7 @@ Most people will meet Good Word through an invite link. This is the most importa
 - **Check-your-email step:** shows the address the link went to, a "Use a different email" link, and "Resend link" that becomes available after 30 seconds with a visible countdown. States that the link works for 15 minutes.
 - **Link opened on a different device or browser:** sign the user in there and continue, rather than erroring.
 - **Expired or used link:** a banner explaining it plus a one-tap resend, prefilled with the email.
-- **Session length:** stay signed in for 90 days on a device. Signing out is in You › Settings.
+- **Session length:** stay signed in for 90 days on a device. Signing out is in My shelf › Settings.
 - **Name:** asked once, after the first sign-in, as a single field: "What should friends call you?" Prefilled from Google when available. It's the name shown on every good word.
 
 ### 5.4 Putting in a good word (the core flow)
@@ -946,7 +946,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - A robot guess never appears unrequested, never sends a notification, and is never counted as a good word.
 
 ### 5.16 Help and settings
-- **Consistent help location:** Help lives in You › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
+- **Consistent help location:** Help lives in My shelf › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
 - **Contextual help** appears in empty states and helper text at the moment of need, never as a tour.
 - **Settings** take effect immediately (switches), are grouped by topic (Account, Notifications, About), and confirm with a toast only when the effect isn't visible.
 
@@ -1405,6 +1405,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.1 (2026-09-29):** The You tab is renamed **My shelf** (tab bar, rail, shortcuts, and every "You ›" path), so your own shelf is a main navigation item. The icon stays `UserCircle`; routes stay under `/you`.
 - **v3.2.0 (2026-09-28):** Tokens added for the marketing page (spec 6.7, 7.6, 8.3): `--inverse-text-muted` (white at 72% on ink, 10.3:1) and `--inverse-border` (white at 15%), `--width-subhead` (36ch), `--phone-width` and `--phone-height` (390 × 844), `--radius-device-screen` (34px, inside the 10px bezel), and `--stagger` (60ms). Also recorded from step 0: type-scale tokens in rem, `--radius-checkbox` (5px), exit durations `--dur-exit` and `--dur-exit-sheet`, and theme selectors that match any `[data-theme]` element so a region can pin its theme.
 - **v3.1.2 (2026-09-28):** Vouch button in rows says "Add" below 768px (4.2.3). Title detail follows 4.2.2's order for now; the conflict with 5.7 is open question 9.
 - **v3.1.1 (2026-09-28):** `/styleguide` patterns (14) are added step by step as each build step builds them; step 0 covers foundations and every Section 4 component in every state.
