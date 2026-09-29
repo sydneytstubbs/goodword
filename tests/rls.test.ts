@@ -11,7 +11,8 @@ const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const enabled = Boolean(url && anon && service);
 
 describe.skipIf(!enabled)("row-level security: profiles and sign_in_requests", () => {
-  const admin = createClient(url!, service!, { auth: { persistSession: false } });
+  // Collected even when skipped, so only build a client when configured.
+  const admin = enabled ? createClient(url!, service!, { auth: { persistSession: false } }) : (null as unknown as SupabaseClient);
   const run = randomUUID().slice(0, 8);
   const users: Record<string, { id: string; client: SupabaseClient }> = {};
 

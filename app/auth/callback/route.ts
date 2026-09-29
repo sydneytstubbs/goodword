@@ -13,9 +13,12 @@ export async function GET(request: NextRequest) {
 
   if (!code) return go(`/sign-in?error=google&next=${encodeURIComponent(next)}`);
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error || !data.user) return go(`/sign-in?error=google&next=${encodeURIComponent(next)}`);
-
-  return go(await landingPath(data.user.id, next));
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error || !data.user) throw error;
+    return go(await landingPath(data.user.id, next));
+  } catch {
+    return go(`/sign-in?error=google&next=${encodeURIComponent(next)}`);
+  }
 }

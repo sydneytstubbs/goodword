@@ -14,9 +14,13 @@ export async function GET(request: NextRequest) {
 
   if (!tokenHash) return go(`/sign-in?error=expired&next=${encodeURIComponent(next)}`);
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.verifyOtp({ type: "email", token_hash: tokenHash });
-  if (error || !data.user) return go(`/sign-in?error=expired&next=${encodeURIComponent(next)}`);
-
-  return go(await landingPath(data.user.id, next));
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.verifyOtp({ type: "email", token_hash: tokenHash });
+    if (error || !data.user) throw error;
+    return go(await landingPath(data.user.id, next));
+  } catch {
+    // Expired, used, or unverifiable (including Supabase being unreachable): offer a new link.
+    return go(`/sign-in?error=expired&next=${encodeURIComponent(next)}`);
+  }
 }
