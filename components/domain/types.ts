@@ -7,15 +7,23 @@ export type { Person, Group };
 export type TitleType = "movie" | "tv";
 
 export type Title = {
+  /** "movie-550" or "tv-1396": the same in search results and the title cache. */
   id: string;
   type: TitleType;
+  tmdbId?: number;
   name: string;
-  year: number;
-  /** Minutes, for films. */
+  /** Unknown for titles without a release date yet. */
+  year?: number;
+  /** Minutes: a film's runtime, or a show's typical episode runtime (PRD F5.4). */
   runtime?: number;
+  /** Shows only. */
+  seasons?: number;
   genres: string[];
   /** Resolved once when the title is first saved (DS 4.2.1). */
   accent: GenreAccent;
+  /** TMDB poster path; the poster builds its size variants from it (DS 9). */
+  posterPath?: string;
+  /** A full image URL, for posters that don't come from TMDB. */
   posterUrl?: string;
 };
 
