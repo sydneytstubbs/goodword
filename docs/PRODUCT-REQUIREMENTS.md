@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.6 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.7 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -723,7 +723,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 - **Attribution (required):** TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB." in About.
 
 ### 9.2 JustWatch (via TMDB watch providers)
-- TMDB's where-to-watch data comes from JustWatch, and TMDB requires JustWatch attribution wherever it's shown. Show "Streaming data from JustWatch" with their logo beneath where-to-watch on title detail, and in About.
+- TMDB's where-to-watch data comes from JustWatch, and TMDB requires JustWatch attribution wherever it's shown. Show "Streaming data from JustWatch" with their logo beneath where-to-watch on title detail, and in About. Until the logo file is added, the attribution is that sentence as text, linking to JustWatch (deferred 2026-09-29).
 
 ### 9.3 Authentication
 - Supabase Auth: email magic links (15-minute, single-use) and Google OAuth. Custom, on-brand email template for the magic link.
@@ -903,6 +903,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.7 (2026-09-29):** Step 5 accepted. The JustWatch logo is deferred; the attribution is text with a link for now (9.2).
 - **v1.2.6 (2026-09-29):** Step 5. The `groups` query parameter filters My shelf by group (6.3). A streaming service means subscription, free, or free with ads, and chip counts reflect the other filters (F5.4). "Last viewed" starts at joining, and viewing All groups counts for each group (F5.5). `watch_providers` details (section 8). Title detail keeps the order in F6 (DS open question 9 decided).
 - **v1.2.5 (2026-09-29):** Step 4. `profiles.milestones` records milestone moments already shown (section 8). Putting in a good word for a title you already vouched for sets its groups to the ones picked (F4). The first-good-word prompt sits after the last card and appears only on a shelf that has cards; an empty shelf's own empty state already asks (F5.7).
 - **v1.2.4 (2026-09-29):** My shelf is a main navigation item: the You tab is renamed My shelf and leads with your good words, then your groups and a Settings link (6.1, 6.2, F5.3, J7). Routes stay under `/you`.
