@@ -162,6 +162,32 @@ test.describe("conversations", () => {
     await expectNoViolations(jonahPage);
   });
 
+  test("works from the keyboard: mention, send, reveal, and the comment menu", async ({ browser }) => {
+    const jonahPage = await signedIn(browser, jonah, `${titlePath(ferry)}/conversation?group=${crew}`);
+    const box = jonahPage.getByRole("textbox", { name: "Comment" });
+    await box.focus();
+    await jonahPage.keyboard.type("@Te");
+    await expect(jonahPage.getByRole("option", { name: "Tess" })).toHaveAttribute("aria-selected", "true");
+    await jonahPage.keyboard.press("Enter");
+    await jonahPage.keyboard.type("no spoilers please");
+    // On desktop, Enter sends and Shift+Enter adds a line.
+    await jonahPage.keyboard.press("Enter");
+    await expect(jonahPage.getByRole("article", { name: /^Jonah/ }).last()).toContainText("@Tess no spoilers please");
+    await expect(box).toHaveValue("");
+
+    const cover = jonahPage.getByRole("button", { name: "Spoiler from Tess · Tap to reveal" });
+    await cover.focus();
+    await jonahPage.keyboard.press("Enter");
+    await expect(jonahPage.getByText("you were SO right")).toBeVisible();
+
+    const more = jonahPage.getByRole("button", { name: "More actions for Jonah's comment" }).last();
+    await more.focus();
+    await jonahPage.keyboard.press("Enter");
+    await expect(jonahPage.getByRole("menuitem", { name: "Edit" })).toBeFocused();
+    await jonahPage.keyboard.press("Escape");
+    await expect(more).toBeFocused();
+  });
+
   test("a member of another group can't see or reach College crew's conversation", async ({ browser }) => {
     const beaPage = await signedIn(browser, bea, `${titlePath(ferry)}/conversation?group=${crew}`);
     await expect(beaPage.getByRole("heading", { level: 2, name: "You're not in this group" })).toBeVisible();
