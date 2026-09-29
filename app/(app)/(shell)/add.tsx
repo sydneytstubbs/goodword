@@ -11,6 +11,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
+import { useCaptureVisitSource, visitSource } from "./visit-source";
 
 // Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
 // current screen: search, then the confirm step (poster, optional note, and
@@ -90,6 +91,7 @@ type View =
 
 export function AddProvider({ children }: { children: ReactNode }) {
   const { groups, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
+  useCaptureVisitSource();
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>({ kind: "search" });
@@ -127,7 +129,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
 
   const openAdd = useCallback(
     (options: OpenAddOptions = {}) => {
-      setSource(options.source ?? "organic");
+      setSource(options.source ?? visitSource() ?? "organic");
       if (options.title) confirm(options.title);
       else {
         setRecent(readRecent());

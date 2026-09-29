@@ -14,8 +14,9 @@ import { MyShelfCards } from "./my-shelf-cards";
 export const metadata: Metadata = { title: "My shelf · Good Word" };
 
 // The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
-// groups, then account. Settings and Help arrive with step 8, which moves
-// Sign out into Settings. Filters include which of your groups it's in (F5.3).
+// groups, then account. Settings has Notifications from step 7; step 8 adds
+// the rest of Settings and Help, and moves Sign out into Settings. Filters
+// include which of your groups it's in (F5.3).
 export default async function MyShelfPage() {
   const { user, profile } = await requireOnboardedUser("/you");
   const [groups, shelf] = await Promise.all([
@@ -62,6 +63,10 @@ export default async function MyShelfPage() {
       <section className="flex max-w-reading flex-col items-start gap-3">
         <h2 className="text-title-m text-default">{t("you.accountHeading")}</h2>
         <p className="text-body text-muted">{t("you.signedInAs", { name: profile.display_name })}</p>
+        <TextLink href="/you/settings" variant="standalone" className="gap-2">
+          <Icon name="settings" size={20} />
+          {t("you.settingsLink")}
+        </TextLink>
         <form action={signOut}>
           <Button type="submit" variant="secondary" icon="signOut">
             {t("you.signOut")}
