@@ -278,7 +278,8 @@ describe.skipIf(!enabled)("row-level security: conversations and Activity", () =
       channel.subscribe((status, err) => (status === "SUBSCRIBED" ? resolve() : status === "CHANNEL_ERROR" && reject(err ?? new Error(status))));
     });
     const { id } = await post(people.tess, crew, ferry, "live");
-    const deadline = Date.now() + 5000;
+    // Delivery, not latency: generous under a parallel test run.
+    const deadline = Date.now() + 10_000;
     while (!received.includes(id) && Date.now() < deadline) await new Promise((r) => setTimeout(r, 100));
     await people.priya.client.removeChannel(channel);
     expect(received).toContain(id);

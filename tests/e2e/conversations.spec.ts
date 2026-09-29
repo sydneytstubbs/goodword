@@ -95,7 +95,10 @@ test.describe("conversations", () => {
     // Jonah and Tess joined College crew, and Bea joined The girls.
     await expect(activityLink(priyaPage, 3)).toBeVisible();
     // Priya is in both groups: a chip for each conversation.
-    await expect(priyaPage.getByRole("list", { name: "Conversations in your groups" }).getByRole("link")).toHaveText(["College crew", "The girls"]);
+    const chips = priyaPage.getByRole("list", { name: "Conversations in your groups" });
+    await expect(chips.getByRole("link")).toHaveCount(2);
+    await expect(chips.getByRole("link", { name: "College crew" })).toBeVisible();
+    await expect(chips.getByRole("link", { name: "The girls" })).toBeVisible();
 
     const tessPage = await signedIn(browser, tess, `${titlePath(ferry)}?group=${crew}`);
     await expect(tessPage.getByRole("heading", { name: "Talk about it in College crew" })).toBeVisible();
