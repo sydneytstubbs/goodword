@@ -1,9 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-// Secrets for email (PRD F7.7, 9.5), derived from the service role key so
-// there's nothing extra to configure: each purpose gets its own HMAC key.
-// Rotating the service role key invalidates old unsubscribe links and the
-// scheduled job's secret (rerun `pnpm email:setup`).
+// Unsubscribe links (PRD F7.7), signed with a key derived from the service
+// role key, so there's nothing extra to configure. Rotating the service role
+// key invalidates old unsubscribe links.
 
 export type EmailPref = "digest" | "mention_email" | "group_joins";
 export const EMAIL_PREFS: EmailPref[] = ["digest", "mention_email", "group_joins"];
@@ -14,24 +13,14 @@ function serverKey(): string {
   return key;
 }
 
-function hmac(purpose: string, value: string, key = serverKey()): string {
-  return createHmac("sha256", `${purpose}:${key}`).update(value).digest("base64url");
+function hmac(purpose: string, value: string): string {
+  return createHmac("sha256", `${purpose}:${serverKey()}`).update(value).digest("base64url");
 }
 
-function safeEqual(a: string, b: string): boolean {
+export function safeEqual(a: string, b: string): boolean {
   const x = Buffer.from(a);
   const y = Buffer.from(b);
   return x.length === y.length && timingSafeEqual(x, y);
-}
-
-/** The bearer secret pg_cron sends to /api/email/run. */
-export function emailJobSecret(key?: string): string {
-  return hmac("good-word-email-job", "v1", key);
-}
-
-export function isEmailJobRequest(authorization: string | null): boolean {
-  if (!authorization?.startsWith("Bearer ")) return false;
-  return safeEqual(authorization.slice("Bearer ".length), emailJobSecret());
 }
 
 /**

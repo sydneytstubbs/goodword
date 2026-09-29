@@ -9,9 +9,8 @@ import { mentionEmail } from "@/emails/mention";
 import { palette } from "@/emails/palette";
 import type { DigestContent, EmailTitle, MentionBatch } from "@/emails/types";
 import { runEmailJob } from "@/lib/email/job";
-import { emailJobSecret, readUnsubscribeToken, unsubscribeToken } from "@/lib/email/secrets";
+import { readUnsubscribeToken, unsubscribeToken } from "@/lib/email/secrets";
 import { isReservedAddress, type OutgoingEmail } from "@/lib/email/send";
-import { emailJobSecret as scriptSecret } from "../scripts/email-setup.mjs";
 
 // Email (PRD F7): templates, links, spoilers, tokens, and the job's claim and
 // release. Invented titles, people, and groups only.
@@ -222,10 +221,6 @@ describe("tokens and secrets", () => {
     expect(readUnsubscribeToken(`${user}.weekend_prompt.${token.split(".")[2]}`)).toBeNull();
     expect(readUnsubscribeToken("")).toBeNull();
     expect(readUnsubscribeToken(null)).toBeNull();
-  });
-
-  it("derives the job secret the same way as the setup script", () => {
-    expect(scriptSecret(process.env.SUPABASE_SERVICE_ROLE_KEY)).toBe(emailJobSecret());
   });
 
   it("never sends to reserved test domains", () => {

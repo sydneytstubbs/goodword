@@ -133,7 +133,7 @@ describe.skipIf(!enabled)("email: preferences and due lists", () => {
   });
 
   it("keeps the email job's functions and log from signed-in people", async () => {
-    for (const fn of ["digest_content", "email_digests_due", "email_mentions_due", "email_joins_due", "claim_email_items", "run_email_job", "send_test_digest"]) {
+    for (const fn of ["digest_content", "email_digests_due", "email_mentions_due", "email_joins_due", "claim_email_items", "run_email_job", "send_test_digest", "email_job_secret"]) {
       const { error } = await people.priya.client.rpc(fn, fn === "digest_content" ? { p_user: people.jonah.id } : {});
       expect(error, fn).not.toBeNull();
     }

@@ -741,7 +741,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 - No open-tracking pixels. Measure engagement by link clicks with `ref` parameters.
 
 ### 9.5 Scheduling
-- A scheduled job runs every 5 minutes and sends any digests, mention emails, join emails, or prompts due in each user's local time, respecting caps and the notification log. Supabase `pg_cron` calls the app's `/api/email/run` through `pg_net` (Vercel's free plan only runs cron once a day). The app's address and the job's secret live in Supabase Vault, set by `pnpm email:setup`.
+- A scheduled job runs every 5 minutes and sends any digests, mention emails, join emails, or prompts due in each user's local time, respecting caps and the notification log. Supabase `pg_cron` calls the app's `/api/email/run` through `pg_net` (Vercel's free plan only runs cron once a day). The app's address and a random job secret live in Supabase Vault, created by the step 7 migration; the app checks each call against it.
 
 ### 9.6 Hosting and stack
 - **Assumed stack:** Next.js (App Router) on Vercel, Supabase (Postgres, Auth, Realtime for P1 live updates), Tailwind per DS 11.

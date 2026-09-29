@@ -356,9 +356,21 @@ language sql security definer set search_path = '' as $$
 $$;
 
 -- The scheduled job (PRD 9.5): pg_cron calls the app every 5 minutes through
--- pg_net. The app's address and the job's secret live in Vault (set with
--- `pnpm email:setup`), never in this file. Without them this does nothing.
+-- pg_net. The app's address and a random secret live in Vault. The secret is
+-- made here and never written down: the app reads it through
+-- email_job_secret() to check each call. To point the job somewhere else:
+--   select vault.update_secret(id, '<https://.../api/email/run>') from vault.secrets where name = 'email_job_url';
 create extension if not exists pg_net with schema extensions;
+
+select vault.create_secret('https://www.goodwordfriends.com/api/email/run', 'email_job_url')
+  where not exists (select 1 from vault.secrets where name = 'email_job_url');
+select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'), 'email_job_secret')
+  where not exists (select 1 from vault.secrets where name = 'email_job_secret');
+
+create function public.email_job_secret() returns text
+language sql stable security definer set search_path = '' as $$
+  select decrypted_secret from vault.decrypted_secrets where name = 'email_job_secret';
+$$;
 
 create function public.run_email_job(p_body jsonb default '{}'::jsonb) returns bigint
 language plpgsql security definer set search_path = '' as $$
@@ -390,7 +402,7 @@ revoke execute on function public.set_notification_pref from public, anon;
 revoke execute on function public.email_tz, public.email_quiet, public.email_capped, public.digest_slot,
   public.email_recipients, public.email_mentions_due, public.email_joins_due, public.digest_content,
   public.email_digests_due, public.claim_email_items, public.release_email_items, public.run_email_job,
-  public.send_test_digest from public, anon, authenticated;
+  public.send_test_digest, public.email_job_secret from public, anon, authenticated;
 grant execute on function public.email_tz, public.email_quiet, public.email_capped, public.digest_slot,
   public.email_recipients, public.email_mentions_due, public.email_joins_due, public.digest_content,
-  public.email_digests_due, public.claim_email_items, public.release_email_items to service_role;
+  public.email_digests_due, public.claim_email_items, public.release_email_items, public.email_job_secret to service_role;
