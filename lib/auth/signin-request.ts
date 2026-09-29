@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
+import { siteOrigin } from "@/lib/origin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,10 +34,7 @@ export async function sendSignInLink(rawEmail: string, next: string): Promise<Se
   if (countError) return "failed";
   if ((count ?? 0) >= HOURLY_LIMIT) return "too-many";
 
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-  const proto = requestHeaders.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
-  const origin = host ? `${proto}://${host}` : process.env.APP_URL!;
+  const origin = await siteOrigin();
 
   await admin.from("sign_in_requests").insert({ email_hash: emailHash });
 

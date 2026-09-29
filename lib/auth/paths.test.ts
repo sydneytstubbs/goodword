@@ -20,6 +20,7 @@ describe("isProtectedPath", () => {
     expect(isProtectedPath("/")).toBe(false);
     expect(isProtectedPath("/sign-in")).toBe(false);
     expect(isProtectedPath("/join/abc")).toBe(false);
+    expect(isProtectedPath("/join/abc/accept")).toBe(true);
     expect(isProtectedPath("/shelfish")).toBe(false);
   });
 });

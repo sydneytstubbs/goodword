@@ -3,8 +3,22 @@
 const PROTECTED_PREFIXES = ["/shelf", "/welcome", "/you", "/groups", "/activity", "/settings", "/title", "/person", "/admin"];
 
 export function isProtectedPath(pathname: string): boolean {
+  if (/^\/join\/[^/]+\/accept$/.test(pathname)) return true;
   return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
+
+/** Routes that aren't signed-in only but still send noindex: sign-in, auth callbacks, invite landings. */
+export function isNoindexPath(pathname: string): boolean {
+  return isProtectedPath(pathname) || pathname === "/sign-in" || pathname.startsWith("/sign-in/") || pathname.startsWith("/auth/") || pathname.startsWith("/join/");
+}
+
+/** The group id in /shelf/<id>, remembered per device as the last viewed shelf (PRD 6.2). */
+export function shelfGroupId(pathname: string): string | null {
+  const match = pathname.match(/^\/shelf\/([0-9a-f-]{36})$/i);
+  return match ? match[1] : null;
+}
+
+export const LAST_SHELF_COOKIE = "gw_shelf";
 
 /**
  * Where to go after signing in. Only same-site paths are honored, so a
