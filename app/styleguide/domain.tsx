@@ -311,6 +311,23 @@ function Robot() {
   );
 }
 
+/** Someone else's spoiler whose text is fetched on reveal, as in the app. */
+function CoveredSpoiler() {
+  const [body, setBody] = useState<CommentData["body"] | undefined>(undefined);
+  return (
+    <Comment
+      comment={{ id: "cv1", author: people.luis, at: NOW, spoiler: true, body: [] }}
+      viewerId={viewer.id}
+      members={members.college}
+      now={NOW}
+      revealedBody={body}
+      onReveal={() => setTimeout(() => setBody([{ kind: "text", text: "the letters were in the lifeboat all along" }]), 400)}
+      onSave={() => {}}
+      onDelete={() => {}}
+    />
+  );
+}
+
 function Conversation() {
   const [list, setList] = useState<CommentData[]>(initialComments);
   const [sendState, setSendState] = useState<Record<string, "sending" | "failed">>({});
@@ -389,8 +406,26 @@ function Conversation() {
                 }}
               />
             </li>
+            <li>
+              <CoveredSpoiler />
+            </li>
+            <li>
+              <Comment
+                comment={{ id: "h1", author: people.jonah, at: NOW, body: [{ kind: "text", text: "Arrived at from a link: highlighted for 2 seconds (no motion when reduced)." }] }}
+                highlighted
+                viewerId={viewer.id}
+                members={members.college}
+                now={NOW}
+                onSave={() => {}}
+                onDelete={() => {}}
+              />
+            </li>
           </CommentList>
         </div>
+        <Note>
+          In the app, someone else&apos;s spoiler isn&apos;t in the page at all: revealing it fetches the text (the
+          covered comment above waits a moment to show that).
+        </Note>
       </Component>
 
       <Component id="composer" title="Composer with mentions" spec="4.2.11">
@@ -428,6 +463,8 @@ function Activity() {
         <ActivityItem kind="mention" actor={people.priya} title={titles.nightFerry} group={groups.college} quote="@Tess you have to get to ep 6 before we talk" at={new Date(NOW.getTime() - 7_200_000)} unread href="#activity-item" now={NOW} />
         <ActivityItem kind="comment" actor={people.mo} title={titles.nightFerry} group={groups.college} spoiler at={new Date(NOW.getTime() - 2_400_000)} unread href="#activity-item" now={NOW} />
         <ActivityItem kind="comment" actor={people.jonah} title={titles.lowTide} group={groups.book} quote="the lighthouse scene. I had to pause it." at={new Date(NOW.getTime() - 86_400_000 * 2)} href="#activity-item" now={NOW} />
+        <ActivityItem kind="started" actor={people.jonah} title={titles.moth} group={groups.college} quote="anyone seen this?" at={new Date(NOW.getTime() - 3_600_000 * 5)} unread href="#activity-item" now={NOW} />
+        <ActivityItem kind="comment" actor={people.bea} actorNames="Bea and Priya" title={titles.heist} group={groups.girls} quote="the grandma steals every scene" at={new Date(NOW.getTime() - 86_400_000 * 3)} href="#activity-item" now={NOW} />
         <ActivityItem kind="join" actor={people.luis} group={groups.book} at={new Date(NOW.getTime() - 86_400_000 * 9)} href="#activity-item" now={NOW} />
       </div>
     </Component>
