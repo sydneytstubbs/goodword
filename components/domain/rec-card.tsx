@@ -202,9 +202,14 @@ export function RecCardDetail({
                 <figure key={g.person.id} className="flex flex-col gap-2">
                   <figcaption className="flex items-center gap-3">
                     <Avatar person={g.person} size={32} decorative />
-                    <span className="text-body-strong text-default">
-                      {g.person.id === viewerId ? t("common.you") : g.person.name}
-                    </span>
+                    {g.person.id === viewerId ? (
+                      <span className="text-body-strong text-default">{t("common.you")}</span>
+                    ) : (
+                      // Their good words in groups you share (PRD F8).
+                      <NextLink href={`/people/${g.person.id}`} className="inline-flex min-h-target items-center rounded-control text-body-strong text-default underline-offset-4 hover:underline">
+                        {g.person.name}
+                      </NextLink>
+                    )}
                     <time dateTime={g.at.toISOString()} title={fullTime(g.at)} className="text-caption text-muted">
                       {relativeTime(g.at, now)}
                     </time>

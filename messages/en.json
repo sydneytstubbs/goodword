@@ -29,7 +29,13 @@
     "others_one": "{count} other",
     "others_other": "{count} others",
     "overflow": "+{count}",
-    "compactOverflow": "{names} +{count}"
+    "compactOverflow": "{names} +{count}",
+    "title": "{name}'s good words",
+    "shared": "In groups you share: {groups}",
+    "emptyTitle": "{name} hasn't vouched for anything here yet",
+    "emptyBody": "When they put in a good word in a group you share, it'll show up here.",
+    "notSharedTitle": "Nothing to show",
+    "notShared": "You're not in any groups with this person."
   },
   "count": {
     "cap": "99+",
