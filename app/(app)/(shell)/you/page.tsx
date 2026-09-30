@@ -9,6 +9,7 @@ import { recordEvent } from "@/lib/events/server";
 import { filterKeys } from "@/lib/events/shelf";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
+import { HomeScreenTip } from "./home-screen-tip";
 import { MyShelfCards } from "./my-shelf-cards";
 
 export const metadata: Metadata = { title: "My shelf · Good Word" };
@@ -27,6 +28,7 @@ export default async function MyShelfPage({ searchParams }: PageProps<"/you">) {
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-10 px-4 py-8">
       <h1 className="text-title-l text-default">{t("you.title")}</h1>
+      <HomeScreenTip />
 
       <MyShelfCards shelf={shelf} />
 

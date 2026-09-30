@@ -22,9 +22,13 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: "Good Word",
+  // Installed on iOS: full screen, status bar over the page (DS 8.2, 8.3).
+  appleWebApp: { capable: true, title: "Good Word", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
+  // --surface, so the status bar blends in when installed (DS 8.3).
+  themeColor: "#FAFAF9",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

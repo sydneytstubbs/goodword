@@ -100,7 +100,11 @@
     "rateLimited": "That's a lot of good words for one hour. Try again in a little while.",
     "offline": "You're offline. Good words need a connection, so try again when you're back.",
     "onlyYou": "Only you",
-    "sharedIn": "On {groups}"
+    "sharedIn": "On {groups}",
+    "queued": "Sending when you're back online",
+    "queuedHeading": "Waiting to send",
+    "queuedFailed": "That didn't send. Try again, or remove it.",
+    "queuedRemove": "Remove"
   },
   "search": {
     "label": "Search for a show or movie",
@@ -445,7 +449,7 @@
     "loading": "Loading shelf",
     "errorTitle": "This shelf didn't load",
     "errorBody": "Good Word is having a moment. Try again in a minute.",
-    "offline": "You're offline. You can keep browsing what's already loaded.",
+    "offline": "You're offline. Good words you put in now will send when you're back.",
     "joinPrompt": "What's something you'd tell these folks to watch?",
     "goodWords_one": "{count} good word",
     "goodWords_other": "{count} good words",
@@ -467,7 +471,9 @@
     "signOut": "Sign out",
     "goodWordsHeading": "Your good words",
     "settingsLink": "Settings",
-    "helpLink": "Help"
+    "helpLink": "Help",
+    "homeScreenTip": "Add Good Word to your Home Screen for one-tap access. In Safari, tap Share, then Add to Home Screen.",
+    "homeScreenDismiss": "Dismiss"
   },
   "join": {
     "invited": "{name} invited you to {group}.",

@@ -8,7 +8,6 @@ import { ConfirmGoodWord, NoteField } from "@/components/domain/confirm-good-wor
 import { GroupPickerFields, VisibilityLine, type GroupWithCount } from "@/components/domain/visibility-line";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
 import { track } from "@/lib/events/client";
@@ -95,7 +94,6 @@ type View =
 export function AddProvider({ children }: { children: ReactNode }) {
   const { groups, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
   useCaptureVisitSource();
-  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>({ kind: "search" });
   // A fresh search each time the sheet opens.
@@ -215,11 +213,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   }
 
   function submitPut(title: Title) {
-    // Without a connection, keep the sheet and the note, and say why (PRD F12 baseline).
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      showToast({ message: t("vouch.offline") });
-      return;
-    }
+    // Without a connection it's queued on this device and sent on reconnect (PRD F12).
     const typed = note;
     writeDraft(title.id, "");
     const msFromAddOpened = openedAt.current ? Date.now() - openedAt.current : undefined;
