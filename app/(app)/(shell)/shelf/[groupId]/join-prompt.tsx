@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { JoinPromptCard } from "@/components/domain/join-prompt-card";
+import { track } from "@/lib/events/client";
 import { dismissJoinPrompt } from "@/lib/good-words/actions";
 import { useAdd } from "../../add";
 
@@ -33,6 +34,11 @@ export function JoinPrompt({ groupId }: { groupId: string }) {
     };
   }, [shown]);
 
+  // Measured once when it appears, then used or dismissed (PRD 11.2, H2).
+  useEffect(() => {
+    if (shown) track("first_good_word_prompt", { action: "shown" });
+  }, [shown]);
+
   function finish() {
     setGone(true);
     void dismissJoinPrompt(groupId);
@@ -44,10 +50,14 @@ export function JoinPrompt({ groupId }: { groupId: string }) {
       {shown && (
         <JoinPromptCard
           onPut={() => {
-            openAdd({ source: "join_prompt" });
+            openAdd({ source: "join_prompt", entryPoint: "join_prompt" });
+            track("first_good_word_prompt", { action: "used" });
             finish();
           }}
-          onDismiss={finish}
+          onDismiss={() => {
+            track("first_good_word_prompt", { action: "dismissed" });
+            finish();
+          }}
         />
       )}
     </div>

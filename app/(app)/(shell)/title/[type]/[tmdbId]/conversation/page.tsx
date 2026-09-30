@@ -5,6 +5,8 @@ import { conversationHref } from "@/lib/conversations/paths";
 import { cachedTitleId, conversationPreviews, defaultGroupId, loadConversation } from "@/lib/conversations/queries";
 import { getGroup, listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
+import { recordEvent } from "@/lib/events/server";
+import { referrerPath } from "@/lib/events/referrer";
 import { createClient } from "@/lib/supabase/server";
 import { NotInGroup } from "../../../../not-in-group";
 import { TitleContent } from "../title-content";
@@ -71,6 +73,22 @@ export default async function ConversationPage({ params, searchParams }: PagePro
     supabase.from("profiles").select("spoiler_hint_seen_at").eq("user_id", user.id).maybeSingle(),
   ]);
   const linked = commentParam && page?.comments.some((c) => c.id === commentParam) ? commentParam : undefined;
+
+  // Where it was opened from, and how much was new (PRD 11.2, H7).
+  const came = await referrerPath();
+  const from =
+    one(query.ref) === "mention"
+      ? "email"
+      : came?.startsWith("/activity")
+        ? "activity"
+        : came && /^\/title\/(movie|tv)\/\d+$/.test(came)
+          ? "title"
+          : came && /^\/(shelf|you)(\/|$)/.test(came)
+            ? "card"
+            : undefined;
+  const firstUnseen = page?.firstUnseenId ? page.comments.findIndex((c) => c.id === page.firstUnseenId) : -1;
+  const unseen = firstUnseen < 0 ? 0 : page!.comments.slice(firstUnseen).filter((c) => c.author.id !== user.id).length;
+  await recordEvent("conversation_opened", { group_id: group.id, title_id: titleId, unseen_count: unseen, ...(from ? { from } : {}) }, user.id);
 
   return (
     <main className="lg:flex lg:items-start">

@@ -21,7 +21,7 @@ export function groupJoinEmail(joins: JoinBatch, links: EmailLinks): Email {
       ? t("email.groupJoin.subjectOne", { names: nameList(groups[0][1].people), group: groups[0][1].name })
       : t("email.groupJoin.subjectMany", { names: nameList(everyone) });
   const lines = groups.map(([, g]) => t("email.groupJoin.line", { names: nameList(g.people), group: g.name }));
-  const href = groups.length === 1 ? `${origin}/groups/${groups[0][0]}` : `${origin}/shelf`;
+  const href = `${groups.length === 1 ? `${origin}/groups/${groups[0][0]}` : `${origin}/shelf`}?ref=group_join`;
   const footer: Footer = {
     why: t("email.groupJoin.why", { groups: joinList(groups.map(([, g]) => g.name)) }),
     unsubscribe: { label: t("email.groupJoin.unsubscribe"), href: links.unsubscribe },

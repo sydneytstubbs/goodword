@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { recordEvent } from "@/lib/events/server";
+import { filterKeys, newCount } from "@/lib/events/shelf";
 import { siteOrigin } from "@/lib/origin";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { groupShelf, hasGoodWordIn } from "@/lib/good-words/queries";
@@ -14,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/shelf/[groupId]">
   return { title: group ? `${group.name} · Good Word` : "Good Word" };
 }
 
-export default async function GroupShelfPage({ params }: PageProps<"/shelf/[groupId]">) {
+export default async function GroupShelfPage({ params, searchParams }: PageProps<"/shelf/[groupId]">) {
   const { groupId } = await params;
   const { user, profile } = await requireOnboardedUser(`/shelf/${groupId}`);
   const [group, groups] = await Promise.all([getGroup(groupId, user.id), listMyGroups(user.id)]);
@@ -24,6 +26,7 @@ export default async function GroupShelfPage({ params }: PageProps<"/shelf/[grou
     groupShelf(groupId, user.id, profile.region),
     hasGoodWordIn(groupId, user.id),
   ]);
+  await recordEvent("shelf_viewed", { shelf: "group", filters: filterKeys(await searchParams), new_count: newCount(shelf.cards) }, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-12">

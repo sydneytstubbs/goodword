@@ -26,7 +26,7 @@ import { t } from "@/lib/messages";
 // and a toast offers Retry. Writes run one at a time, so Undo never overtakes
 // the change it undoes.
 
-export type PutInput = { note: string; groupIds: string[]; source: GoodWordSource };
+export type PutInput = { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number };
 
 type GoodWordsValue = {
   viewer: Person;

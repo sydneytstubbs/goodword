@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { landingPath } from "@/lib/auth/session";
 import { safeNext } from "@/lib/auth/paths";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 
 // Magic link landing. Verifies the token hash, so the link works in any browser
@@ -18,7 +19,9 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.verifyOtp({ type: "email", token_hash: tokenHash });
     if (error || !data.user) throw error;
-    return go(await landingPath(data.user.id, next));
+    const landing = await landingPath(data.user.id, next);
+    await recordEvent("sign_in_completed", { method: "magic_link", new_user: landing.startsWith("/welcome") }, data.user.id);
+    return go(landing);
   } catch {
     // Expired, used, or unverifiable (including Supabase being unreachable): offer a new link.
     return go(`/sign-in?error=expired&next=${encodeURIComponent(next)}`);

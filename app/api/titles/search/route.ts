@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import type { Title } from "@/components/domain/types";
 import { searchAnnotations } from "@/lib/good-words/queries";
 import { RateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 import { searchTitles } from "@/lib/tmdb/client";
 import { MAX_QUERY, MIN_QUERY, normalizeQuery } from "@/lib/tmdb/normalize";
@@ -35,11 +36,14 @@ export async function GET(request: NextRequest) {
   if (!limit.take(userId)) return Response.json({ error: "rate_limited" }, { status: 429, headers });
 
   // Annotations are a nicety: if they fail, search still works without them.
-  const respond = async (results: Title[]) =>
-    Response.json(
+  // The query's length only, never its text (PRD 11.1).
+  const respond = async (results: Title[]) => {
+    await recordEvent("search_performed", { query_length: query.length, result_count: results.length }, userId);
+    return Response.json(
       { results, annotations: await searchAnnotations(results, userId).catch(() => ({ mine: {}, friends: {} })) },
       { headers },
     );
+  };
 
   const hit = cache.get(query);
   if (hit) return respond(hit);

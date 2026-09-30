@@ -1,4 +1,5 @@
 import "server-only";
+import { recordEvent } from "@/lib/events/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { readUnsubscribeToken, type EmailPref } from "./secrets";
 
@@ -17,5 +18,6 @@ export async function setPrefFromToken(token: string | null | undefined, on: boo
     console.error("unsubscribe failed", error.code);
     return null;
   }
+  await recordEvent("notification_pref_changed", { type: parsed.pref, enabled: on }, parsed.userId);
   return parsed.pref;
 }

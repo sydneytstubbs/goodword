@@ -74,7 +74,7 @@ export function GroupShelf({
             body={t("shelf.groupEmptyBody")}
             action={
               <div className="flex flex-wrap gap-3 md:justify-center">
-                <Button variant="primary" size="lg" icon="add" onClick={() => openAdd()}>
+                <Button variant="primary" size="lg" icon="add" onClick={() => openAdd({ entryPoint: "empty_state" })}>
                   {t("vouch.put")}
                 </Button>
                 {openInvite && (

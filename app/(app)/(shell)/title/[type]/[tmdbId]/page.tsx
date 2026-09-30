@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { cachedTitleId } from "@/lib/conversations/queries";
+import { recordEvent } from "@/lib/events/server";
+import { referrerPath } from "@/lib/events/referrer";
 import { listMyGroups } from "@/lib/groups/queries";
 import { ConversationPreviewSkeleton } from "@/components/domain/conversation-preview";
 import { ConversationPreviewLoader } from "./conversation-preview-loader";
@@ -34,6 +36,10 @@ export default async function TitlePage({ params, searchParams }: PageProps<"/ti
   if (!title) notFound();
   const [groups, titleId, query] = await Promise.all([listMyGroups(user.id), cachedTitleId(parsed.type, parsed.tmdbId), searchParams]);
   const asked = typeof query.group === "string" ? query.group : null;
+  // Where the view came from (PRD 11.2): a digest link, or a shelf.
+  const came = await referrerPath();
+  const from = query.ref === "digest" ? "digest" : came && /^\/(shelf|you)(\/|$)/.test(came) ? "shelf" : undefined;
+  await recordEvent("title_viewed", from ? { from } : {}, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-detail flex-col gap-8 px-4 pt-2 pb-12">

@@ -41,7 +41,7 @@ export async function TitleContent({
       headingLevel={headingLevel}
       whereToWatch={
         <Suspense fallback={<WhereToWatchSkeleton />}>
-          <WhereToWatch type={type} tmdbId={tmdbId} region={safeRegion(region)} />
+          <WhereToWatch type={type} tmdbId={tmdbId} region={safeRegion(region)} fromGoodWord={goodWords.length > 0} />
         </Suspense>
       }
       conversation={conversation}

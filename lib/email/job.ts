@@ -4,6 +4,7 @@ import { digestEmail } from "@/emails/digest";
 import { groupJoinEmail } from "@/emails/group-join";
 import { mentionEmail } from "@/emails/mention";
 import type { EmailLinks, DigestContent, JoinBatch, MentionBatch } from "@/emails/types";
+import { recordEvent } from "@/lib/events/server";
 import { unsubscribeToken, type EmailPref } from "./secrets";
 import type { Sender } from "./send";
 
@@ -28,6 +29,8 @@ export type JobOptions = {
   /** Resend allows 2 requests a second; stay under it. */
   pauseMs?: number;
   maxPerRun?: number;
+  /** Record email_sent events (off in unit tests, which have no request). */
+  record?: boolean;
 };
 
 export type JobResult = { digests: number; mentions: number; joins: number; skipped: number; failed: number };
@@ -35,7 +38,7 @@ export type JobResult = { digests: number; mentions: number; joins: number; skip
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function runEmailJob(options: JobOptions): Promise<JobResult> {
-  const { admin, send, origin, only, digestNow = false, mentionWindowMinutes = 10, pauseMs = 550, maxPerRun = 60 } = options;
+  const { admin, send, origin, only, digestNow = false, mentionWindowMinutes = 10, pauseMs = 550, maxPerRun = 60, record = true } = options;
   const result: JobResult = { digests: 0, mentions: 0, joins: 0, skipped: 0, failed: 0 };
   let sent = 0;
   const p_only = only && only.length > 0 ? only : null;
@@ -46,8 +49,9 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
     return { unsubscribe, oneClick: `${origin}/api/unsubscribe?token=${encodeURIComponent(token)}` };
   };
 
-  // Returns true when the email went (or was deliberately skipped).
-  const deliver = async (email: Parameters<Sender>[0]): Promise<boolean> => {
+  // Returns true when the email went (or was deliberately skipped). Emails
+  // that really went are recorded (PRD 11.2); nothing about their content is.
+  const deliver = async (email: Parameters<Sender>[0], userId: string, type: "digest" | "mention" | "group_join"): Promise<boolean> => {
     if (sent > 0) await pause(pauseMs);
     const outcome = await send(email);
     sent++;
@@ -57,6 +61,10 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
       return false;
     }
     if (outcome.skipped) result.skipped++;
+    else if (record) {
+      await recordEvent("email_sent", { type }, userId);
+      if (type === "mention") await recordEvent("mention_notified", { channel: "email" }, userId);
+    }
     return true;
   };
 
@@ -73,7 +81,7 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
     if (claimed.error) continue; // Another run has it.
     const { unsubscribe, oneClick } = links(row.user_id, "digest");
     const email = digestEmail(row.content, unsubscribe);
-    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `digest:${row.user_id}:${ref}` });
+    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `digest:${row.user_id}:${ref}` }, row.user_id, "digest");
     if (ok) result.digests++;
     else await admin.from("notification_log").delete().match({ user_id: row.user_id, type: "digest", payload_ref: ref });
   }
@@ -88,7 +96,7 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
     if (claimed.error || claimed.data !== true) continue;
     const { unsubscribe, oneClick } = links(row.user_id, "mention_email");
     const email = mentionEmail(row, unsubscribe);
-    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `mention:${row.item_ids[0]}` });
+    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `mention:${row.item_ids[0]}` }, row.user_id, "mention");
     if (ok) {
       result.mentions++;
       await log(row.user_id, "mention", row.item_ids[0]);
@@ -106,7 +114,7 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
     if (claimed.error || claimed.data !== true) continue;
     const { unsubscribe, oneClick } = links(row.user_id, "group_joins");
     const email = groupJoinEmail(row.joins, unsubscribe);
-    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `join:${row.item_ids[0]}` });
+    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `join:${row.item_ids[0]}` }, row.user_id, "group_join");
     if (ok) {
       result.joins++;
       await log(row.user_id, "group_join", row.item_ids[0]);

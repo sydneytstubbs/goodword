@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import type { GoodWordSource, MyGoodWord, TitleType } from "@/components/domain/types";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 import { titleRowId } from "./queries";
 
@@ -36,7 +37,7 @@ const note = (value: string) => value.trim().slice(0, 140);
 
 export async function putGoodWord(
   ref: TitleRef,
-  input: { note: string; groupIds: string[]; source: GoodWordSource },
+  input: { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number },
 ): Promise<WriteResult> {
   const titleId = await resolve(ref);
   if (titleId === "failed") return FAILED;
@@ -52,6 +53,16 @@ export async function putGoodWord(
   if (error || !result) return FAILED;
   if (result.status === "rate_limited") return { ok: false, error: "rateLimited" };
   if (result.status !== "created" && result.status !== "updated") return FAILED;
+  // Putting in a good word you already have just changes its groups (F4).
+  if (result.status === "created") {
+    await recordEvent("good_word_created", {
+      title_id: titleId,
+      groups_count: input.groupIds.length,
+      has_note: note(input.note).length > 0,
+      source: input.source,
+      ms_from_add_opened: input.msFromAddOpened,
+    });
+  } else await recordEvent("good_word_edited", { field: "groups" });
   refresh();
   return { ok: true, ...(result.milestone ? { milestone: result.milestone } : {}) };
 }
@@ -62,6 +73,7 @@ export async function editGoodWordNote(ref: TitleRef, value: string): Promise<Wr
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("edit_good_word_note", { p_title: titleId, p_note: note(value) });
   if (error || data !== true) return FAILED;
+  await recordEvent("good_word_edited", { field: "note" });
   refresh();
   return { ok: true };
 }
@@ -72,6 +84,7 @@ export async function setGoodWordGroups(ref: TitleRef, groupIds: string[]): Prom
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("set_good_word_groups", { p_title: titleId, p_groups: groupIds });
   if (error || data !== "updated") return FAILED;
+  await recordEvent("good_word_edited", { field: "groups" });
   refresh();
   return { ok: true };
 }
@@ -82,6 +95,7 @@ export async function takeBackGoodWord(ref: TitleRef): Promise<WriteResult> {
   const supabase = await createClient();
   const { error } = await supabase.rpc("take_back_good_word", { p_title: titleId });
   if (error) return FAILED;
+  await recordEvent("good_word_taken_back", { undone: false });
   refresh();
   return { ok: true };
 }
@@ -110,6 +124,7 @@ export async function restoreGoodWord(ref: TitleRef, snapshot: MyGoodWord): Prom
     ]);
     if (edited.error || moved.error) return FAILED;
   } else if (data !== "restored") return FAILED;
+  else await recordEvent("good_word_taken_back", { undone: true });
   refresh();
   return { ok: true };
 }

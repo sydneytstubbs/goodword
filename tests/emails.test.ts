@@ -170,7 +170,7 @@ describe("mention email", () => {
 
   it("lands on the first mentioning comment", () => {
     const { html } = mentionEmail(batch([{ id: "c1", author: "Priya", body: "@Mo hi", is_spoiler: false, created_at: "" }]), LINKS);
-    expect(hrefs(html)).toContain(`${ORIGIN}/title/tv/201/conversation?group=${CREW}&comment=c1`);
+    expect(hrefs(html)).toContain(`${ORIGIN}/title/tv/201/conversation?group=${CREW}&comment=c1&ref=mention`);
   });
 
   it("never shows a spoiler's text", () => {
@@ -189,7 +189,7 @@ describe("group join email", () => {
     const one = groupJoinEmail([{ group_id: CREW, group_name: "College crew", name: "Jonah", at: "" }], LINKS);
     expect(one.subject).toBe("Jonah joined College crew");
     expect(one.text).toContain("Jonah joined College crew.");
-    expect(hrefs(one.html)).toContain(`${ORIGIN}/groups/${CREW}`);
+    expect(hrefs(one.html)).toContain(`${ORIGIN}/groups/${CREW}?ref=group_join`);
 
     const many = groupJoinEmail(
       [
@@ -277,7 +277,7 @@ describe("the email job", () => {
   it("claims, sends, and logs a mention batch", async () => {
     const { admin, calls, logged } = fakeAdmin({ mentions: [mentionRow] });
     const sent: OutgoingEmail[] = [];
-    const result = await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, send: async (e) => (sent.push(e), { ok: true }) });
+    const result = await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async (e) => (sent.push(e), { ok: true }) });
     expect(result.mentions).toBe(1);
     expect(calls).toContain("claim_email_items");
     expect(calls).not.toContain("release_email_items");
@@ -290,7 +290,7 @@ describe("the email job", () => {
   it("releases the claim when sending fails, so the next run retries", async () => {
     const { admin, calls, logged } = fakeAdmin({ mentions: [mentionRow] });
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const result = await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, send: async () => ({ ok: false, error: "down" }) });
+    const result = await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async () => ({ ok: false, error: "down" }) });
     expect(result.failed).toBe(1);
     expect(calls).toContain("release_email_items");
     expect(logged).toEqual([]);
@@ -299,13 +299,13 @@ describe("the email job", () => {
   it("skips what another run already claimed", async () => {
     const { admin } = fakeAdmin({ mentions: [mentionRow] }, false);
     const send = vi.fn();
-    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, send });
+    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send });
     expect(send).not.toHaveBeenCalled();
   });
 
   it("sends digests before join emails, so the daily cap favors the digest", async () => {
     const { admin, calls } = fakeAdmin({});
-    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, send: async () => ({ ok: true }) });
+    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async () => ({ ok: true }) });
     expect(calls.indexOf("email_digests_due")).toBeLessThan(calls.indexOf("email_joins_due"));
   });
 
@@ -313,7 +313,7 @@ describe("the email job", () => {
     const row = { user_id: mentionRow.user_id, email: mentionRow.email, slot: "2026-10-01", content: digest() };
     const { admin, calls, logged } = fakeAdmin({ digests: [row] });
     vi.spyOn(console, "error").mockImplementation(() => {});
-    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, send: async () => ({ ok: false, error: "down" }) });
+    await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async () => ({ ok: false, error: "down" }) });
     expect(logged).toContainEqual({ user_id: row.user_id, type: "digest", payload_ref: "2026-10-01" });
     expect(calls.some((c) => c.startsWith("unlog:"))).toBe(true);
   });

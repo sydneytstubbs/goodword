@@ -18,7 +18,8 @@ export function AppNav({ groups }: { groups: Group[] }) {
   const { openAdd } = useAdd();
   const { counts } = useShelfNews();
   const { count: activityCount } = useActivityCount();
-  const add = () => openAdd();
+  const addFromTab = () => openAdd({ entryPoint: "tab" });
+  const addFromRail = () => openAdd({ entryPoint: "rail" });
   const current = pathname.startsWith("/shelf") ? "shelf" : pathname.startsWith("/you") ? "you" : undefined;
   const railCurrent = pathname === "/activity" ? "activity" : current;
 
@@ -26,7 +27,7 @@ export function AppNav({ groups }: { groups: Group[] }) {
     <>
       <KeyboardShortcuts />
       {!isConversationPath(pathname) && (
-        <TabBar current={current} onAdd={add} shelfDot={Object.values(counts).some((n) => n > 0)} />
+        <TabBar current={current} onAdd={addFromTab} shelfDot={Object.values(counts).some((n) => n > 0)} />
       )}
       <Rail
         current={railCurrent}
@@ -34,7 +35,7 @@ export function AppNav({ groups }: { groups: Group[] }) {
         groups={groups}
         newCounts={counts}
         currentGroupId={shelfGroupId(pathname) ?? undefined}
-        onAdd={add}
+        onAdd={addFromRail}
       />
     </>
   );
