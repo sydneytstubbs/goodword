@@ -19,12 +19,6 @@ test("the app is installable: a manifest and its icons", async ({ request }) => 
   }
 });
 
-test("a share link that doesn't exist is a plain 404, and noindex", async ({ request }) => {
-  const response = await request.get("/s/not-a-real-link-at-all");
-  expect(response.status()).toBe(404);
-  expect(response.headers()["x-robots-tag"]).toContain("noindex");
-});
-
 test.describe("P1 extras", () => {
   test.skip(!live, "needs the Supabase environment variables");
   test.describe.configure({ mode: "serial" });
@@ -77,6 +71,12 @@ test.describe("P1 extras", () => {
     await openMagicLink(page, user, next);
     return page;
   }
+
+  test("a share link that doesn't exist is a plain 404, and noindex", async ({ request }) => {
+    const response = await request.get("/s/not-a-real-link-at-all");
+    expect(response.status()).toBe(404);
+    expect(response.headers()["x-robots-tag"]).toContain("noindex");
+  });
 
   test("share my shelf: off by default, read-only for anyone with the link, and off stops it", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/you/settings#share");
