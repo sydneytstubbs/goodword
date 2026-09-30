@@ -1,5 +1,6 @@
 "use client";
 
+import NextLink from "next/link";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { fullTime, relativeTime, relativeTimeLong } from "@/lib/format";
@@ -202,7 +203,18 @@ export function Comment({
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         {!grouped && (
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <span className="text-body-strong text-default">{comment.author.name}</span>
+            {isAuthor ? (
+              <span className="text-body-strong text-default">{comment.author.name}</span>
+            ) : (
+              // Their good words in groups you share (PRD F8). Padding makes the
+              // 44px target; the negative margin keeps the header row's height.
+              <NextLink
+                href={`/people/${comment.author.id}`}
+                className="-my-2.5 inline-flex min-h-target items-center rounded-control text-body-strong text-default underline-offset-4 hover:underline"
+              >
+                {comment.author.name}
+              </NextLink>
+            )}
             <time dateTime={comment.at.toISOString()} title={fullTime(comment.at)} className="text-caption text-muted">
               {time}
             </time>
