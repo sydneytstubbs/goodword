@@ -93,8 +93,8 @@ test.describe("P1 extras", () => {
     const response = await visitor.goto(link);
     expect(response?.headers()["x-robots-tag"]).toContain("noindex");
     await expect(visitor.getByRole("heading", { level: 1 })).toHaveText("Priya's good words");
-    await expect(visitor.getByText("The Night Ferry")).toBeVisible();
-    await expect(visitor.getByText("“ep 3 is where it gets you”")).toBeVisible();
+    await expect(visitor.getByRole("listitem").first()).toContainText("The Night Ferry");
+    await expect(visitor.getByText("“ep 3 is where it gets you”").filter({ visible: true })).toBeVisible();
     await expect(visitor.getByText("lighthouse")).toHaveCount(0);
     await expect(visitor.getByText("College crew")).toHaveCount(0);
     await expect(visitor.getByRole("link", { name: "Made with Good Word" })).toHaveAttribute("href", "/");
@@ -102,7 +102,7 @@ test.describe("P1 extras", () => {
 
     // Priya sees it was opened, then turns it off: the link stops at once.
     await page.reload();
-    await expect(page.getByText("Opened 1 time")).toBeVisible();
+    await expect(page.getByText("Opened 1 time").filter({ visible: true })).toBeVisible();
     await page.getByRole("switch", { name: "Share my shelf" }).click();
     await expect(page.getByRole("textbox", { name: "Your link" })).toHaveCount(0);
     await expect.poll(async () => (await admin().from("share_links").select("enabled").eq("user_id", priya.id).single()).data?.enabled).toBe(false);
@@ -112,7 +112,7 @@ test.describe("P1 extras", () => {
   test("person view: someone's good words in groups you share, and nothing otherwise", async ({ browser }) => {
     const page = await signedIn(browser, jonah, `/people/${priya.id}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Priya's good words");
-    await expect(page.getByText("The Night Ferry")).toBeVisible();
+    await expect(page.getByRole("main").getByRole("link", { name: /^The Night Ferry/ })).toBeVisible();
     await expectNoViolations(page);
 
     const outsider = await signedIn(browser, tess, `/people/${priya.id}`);

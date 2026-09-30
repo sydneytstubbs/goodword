@@ -21,7 +21,7 @@ for (const theme of ["light", "dark"] as const) {
 
   test(`every contrast pairing passes (${theme})`, async ({ page }) => {
     await open(page, theme);
-    await expect(page.getByText(/^All \d+ pairings pass$/)).toBeVisible();
+    await expect(page.getByText(/^All \d+ pairings pass$/).filter({ visible: true })).toBeVisible();
   });
 }
 
@@ -69,7 +69,7 @@ test("spoilers aren't in the DOM until revealed", async ({ page }) => {
   await open(page, "light");
   expect(await page.content()).not.toContain("never actually leaves the harbor");
   await page.getByRole("button", { name: "Spoiler from Priya · Tap to reveal" }).click();
-  await expect(page.getByText("the ferry never actually leaves the harbor")).toBeVisible();
+  await expect(page.getByText("the ferry never actually leaves the harbor").filter({ visible: true })).toBeVisible();
 });
 
 test("composer offers only this group's members, and inserts a mention", async ({ page }) => {
@@ -89,9 +89,9 @@ test("title search: results, no results, and error", async ({ page }) => {
   await search.fill("night");
   await expect(page.getByRole("option", { name: /The Night Ferry/ })).toBeVisible();
   await search.fill("zzz");
-  await expect(page.getByText("Nothing for “zzz”. Check the spelling, or try the original title.")).toBeVisible();
+  await expect(page.getByText("Nothing for “zzz”. Check the spelling, or try the original title.").filter({ visible: true })).toBeVisible();
   await search.fill("error");
-  await expect(page.getByText("Search isn't working right now. Try again.")).toBeVisible();
+  await expect(page.getByText("Search isn't working right now. Try again.").filter({ visible: true })).toBeVisible();
 });
 
 // Visual regression (DS 12.3): each section, in both themes, at 390 and 1440.

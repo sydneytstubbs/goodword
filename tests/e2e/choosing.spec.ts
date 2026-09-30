@@ -188,7 +188,7 @@ test.describe("choosing", () => {
     await expect(cards(page)).toHaveCount(24);
     await page.getByRole("button", { name: "Load more" }).scrollIntoViewIfNeeded();
     await expect(cards(page)).toHaveCount(31);
-    await expect(page.getByText("That's the whole shelf.")).toBeVisible();
+    await expect(page.getByText("That's the whole shelf.").filter({ visible: true })).toBeVisible();
   });
 
   test("title detail: good words with your groups, where to watch, and JustWatch", async ({ browser }) => {
@@ -211,6 +211,6 @@ test.describe("choosing", () => {
   test("title detail: nothing streaming in your region", async ({ browser }) => {
     const page = await signedIn(browser, priya, `/title/movie/${byKey.extra0.tmdbId}`);
     // Scoped to main: a streamed section briefly has a hidden copy outside it.
-    await expect(page.getByRole("main").getByText("Not streaming in your region right now.")).toBeVisible();
+    await expect(page.getByRole("main").getByText("Not streaming in your region right now.").filter({ visible: true })).toBeVisible();
   });
 });

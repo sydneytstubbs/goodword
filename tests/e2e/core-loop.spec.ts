@@ -102,7 +102,7 @@ test.describe("the core loop", () => {
 
     await expect(sheet).toBeHidden();
     // Names follow group order, which the docs leave open.
-    await expect(page.getByText(/On your shelf\. (Jonah and Tess|Tess and Jonah) will see it\./)).toBeVisible();
+    await expect(page.getByText(/On your shelf\. (Jonah and Tess|Tess and Jonah) will see it\./).filter({ visible: true })).toBeVisible();
     const card = page.getByRole("link", { name: "The Night Ferry, series, 2024. Vouched for by You." });
     await expect(card).toBeVisible();
     await expect(card).toContainText("“ep 3 is where it gets you”");
@@ -127,13 +127,13 @@ test.describe("the core loop", () => {
     await page.getByRole("link", { name: /^The Night Ferry/ }).click();
 
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("The Night Ferry");
-    await expect(page.getByText("“ep 3 is where it gets you”")).toBeVisible();
+    await expect(page.getByText("“ep 3 is where it gets you”").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = page.getByRole("dialog", { name: "Put in a good word" });
     await expect(sheet.getByRole("button", { name: /Visible to College crew · 2 people/ })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("On your shelf. Priya will see it.")).toBeVisible();
+    await expect(page.getByText("On your shelf. Priya will see it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Your good word" })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto(`/shelf/${crew}`);
@@ -152,7 +152,7 @@ test.describe("the core loop", () => {
     await expectNoViolations(page);
 
     const tessPage = await signedIn(browser, tess, `/title/tv/${base}`);
-    await expect(tessPage.getByText("Priya", { exact: true })).toBeVisible();
+    await expect(tessPage.getByText("Priya", { exact: true }).filter({ visible: true })).toBeVisible();
     await expect(tessPage.getByText("Jonah")).toHaveCount(0);
   });
 
@@ -165,15 +165,15 @@ test.describe("the core loop", () => {
     const edit = page.getByRole("dialog", { name: "Edit note" });
     await edit.getByLabel("Anything to add? (optional)").fill("the ferry scene");
     await edit.getByRole("button", { name: "Save note" }).click();
-    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”").filter({ visible: true })).toBeVisible();
     await page.reload();
-    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”").filter({ visible: true })).toBeVisible();
 
     await vouch.click();
     await page.getByRole("menuitem", { name: "Change groups" }).click();
     const picker = page.getByRole("dialog", { name: "Who can see it" });
     await picker.getByRole("checkbox", { name: /The girls/ }).uncheck();
-    await expect(picker.getByText("Visible to College crew · 2 people")).toBeVisible();
+    await expect(picker.getByText("Visible to College crew · 2 people").filter({ visible: true })).toBeVisible();
     await picker.getByRole("button", { name: "Done" }).click();
     await page.goto(`/shelf/${girls}`);
     await expect(page.getByRole("heading", { level: 2, name: "Nothing here yet" })).toBeVisible();
@@ -181,12 +181,12 @@ test.describe("the core loop", () => {
     await page.goto(`/title/tv/${base}`);
     await vouch.click();
     await page.getByRole("menuitem", { name: "Take it back" }).click();
-    await expect(page.getByText("Taken back.")).toBeVisible();
+    await expect(page.getByText("Taken back.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("main").getByRole("button", { name: "Put in a good word" })).toBeVisible();
     await page.getByRole("button", { name: "Undo" }).click();
     await expect(vouch).toBeVisible();
     await page.reload();
-    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”").filter({ visible: true })).toBeVisible();
     const { data } = await admin().from("good_words").select("note, good_word_groups(group_id)").eq("user_id", priya.id).single();
     expect(data).toEqual({ note: "the ferry scene", good_word_groups: [{ group_id: crew }] });
   });
@@ -196,9 +196,9 @@ test.describe("the core loop", () => {
     await expect(page.getByRole("heading", { level: 2, name: "Your shelf is empty" })).toBeVisible();
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = await pick(page, "Moth Season");
-    await expect(sheet.getByText("Only you, for now")).toBeVisible();
+    await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("On your shelf. Invite friends to share it.")).toBeVisible();
+    await expect(page.getByText("On your shelf. Invite friends to share it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Invite" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Moth Season, film. Vouched for by You. Only you." })).toBeVisible();
     await expectNoViolations(page);
@@ -212,7 +212,7 @@ test.describe("the core loop", () => {
     const sheet = await pick(page, "Low Tide Club");
     await sheet.getByLabel("Anything to add? (optional)").fill("so funny");
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("That didn't save. Check your connection and try again.")).toBeVisible();
+    await expect(page.getByText("That didn't save. Check your connection and try again.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Retry" })).toBeVisible();
     await expect(page.getByRole("link", { name: /^Low Tide Club/ })).toHaveCount(0);
 

@@ -77,7 +77,7 @@ test.describe("titles", () => {
 
     mode = "none";
     await search.fill("zzz");
-    await expect(sheet.getByText("Nothing for “zzz”. Check the spelling, or try the original title.")).toBeVisible();
+    await expect(sheet.getByText("Nothing for “zzz”. Check the spelling, or try the original title.").filter({ visible: true })).toBeVisible();
 
     mode = "error";
     await search.fill("nite ferry");
@@ -143,8 +143,8 @@ test.describe("titles", () => {
 
     // Step 4: a result opens the confirm step in the same sheet (DS 5.4).
     await expect(sheet.getByLabel("Anything to add? (optional)")).toBeFocused();
-    await expect(sheet.getByText(name, { exact: true })).toBeVisible();
-    await expect(sheet.getByText("Only you, for now")).toBeVisible();
+    await expect(sheet.getByText(name, { exact: true }).filter({ visible: true })).toBeVisible();
+    await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
     await expect(page).toHaveURL(/\/shelf$/);
 
     // Back returns to where Add was opened, with the sheet closed.
@@ -156,7 +156,7 @@ test.describe("titles", () => {
     await page.goto(`/title/${type}/${tmdbId}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
     await expect(page).toHaveTitle(`${name} · Good Word`);
-    await expect(page.getByText("None of your groups have vouched for this yet.")).toBeVisible();
+    await expect(page.getByText("None of your groups have vouched for this yet.").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
     const { data } = await admin().from("titles").select("title, accent").eq("media_type", type).eq("tmdb_id", tmdbId).single();
     expect(data?.title).toBe(name);

@@ -102,12 +102,12 @@ test.describe("conversations", () => {
 
     const tessPage = await signedIn(browser, tess, `${titlePath(ferry)}?group=${crew}`);
     await expect(tessPage.getByRole("heading", { name: "Talk about it in College crew" })).toBeVisible();
-    await expect(tessPage.getByText("No one's said anything about this yet. Start the conversation.")).toBeVisible();
+    await expect(tessPage.getByText("No one's said anything about this yet. Start the conversation.").filter({ visible: true })).toBeVisible();
     await tessPage.getByRole("link", { name: "Add a comment…" }).click();
     await expect(tessPage).toHaveURL(/\/conversation\?group=.*compose=1/);
     await expect(tessPage.getByRole("textbox", { name: "Comment" })).toBeFocused();
     // A series: the one-time spoiler hint.
-    await expect(tessPage.getByText("Talking about a specific episode? Mark it as a spoiler.")).toBeVisible();
+    await expect(tessPage.getByText("Talking about a specific episode? Mark it as a spoiler.").filter({ visible: true })).toBeVisible();
 
     await tessPage.getByRole("textbox", { name: "Comment" }).pressSequentially("just finished ep 6, ");
     await tessPage.getByRole("textbox", { name: "Comment" }).pressSequentially("@Pri");
@@ -119,7 +119,7 @@ test.describe("conversations", () => {
     await tessPage.getByRole("button", { name: "Spoiler" }).click();
     await tessPage.getByRole("button", { name: "Send", exact: true }).click();
     await expect(tessPage.getByRole("article", { name: /^Tess/ })).toContainText("you were SO right");
-    await expect(tessPage.getByText("Marked as spoiler")).toBeVisible();
+    await expect(tessPage.getByText("Marked as spoiler").filter({ visible: true })).toBeVisible();
     await expect(tessPage.getByText("Sending…")).toHaveCount(0);
 
     // Priya's bell updates live, without a reload.
@@ -178,7 +178,7 @@ test.describe("conversations", () => {
     const cover = jonahPage.getByRole("button", { name: "Spoiler from Tess · Tap to reveal" });
     await cover.focus();
     await jonahPage.keyboard.press("Enter");
-    await expect(jonahPage.getByText("you were SO right")).toBeVisible();
+    await expect(jonahPage.getByText("you were SO right").filter({ visible: true })).toBeVisible();
 
     const more = jonahPage.getByRole("button", { name: "More actions for Jonah's comment" }).last();
     await more.focus();
@@ -199,12 +199,12 @@ test.describe("conversations", () => {
     await expect(beaPage.getByRole("heading", { name: "Talk about it in The girls" })).toBeVisible();
     await expect(beaPage.getByRole("list", { name: "Conversations in your groups" })).toHaveCount(0);
     expect(await beaPage.content()).not.toContain("College crew");
-    await expect(beaPage.getByText("No one's said anything about this yet. Start the conversation.")).toBeVisible();
+    await expect(beaPage.getByText("No one's said anything about this yet. Start the conversation.").filter({ visible: true })).toBeVisible();
   });
 
   test("any title can have a conversation: the first comment tells the rest of the group", async ({ browser }) => {
     const jonahPage = await signedIn(browser, jonah, titlePath(moth));
-    await expect(jonahPage.getByText("None of your groups have vouched for this yet.")).toBeVisible();
+    await expect(jonahPage.getByText("None of your groups have vouched for this yet.").filter({ visible: true })).toBeVisible();
     await jonahPage.getByRole("link", { name: "Add a comment…" }).click();
     await jonahPage.getByRole("textbox", { name: "Comment" }).fill("anyone seen this?");
     await jonahPage.getByRole("button", { name: "Send", exact: true }).click();
@@ -240,12 +240,12 @@ test.describe("conversations", () => {
     await jonahPage.context().setOffline(true);
     await jonahPage.getByRole("textbox", { name: "Comment" }).fill("ok starting it tonight");
     await jonahPage.getByRole("button", { name: "Send", exact: true }).click();
-    await expect(jonahPage.getByText("Didn't send.")).toBeVisible();
+    await expect(jonahPage.getByText("Didn't send.").filter({ visible: true })).toBeVisible();
     await jonahPage.context().setOffline(false);
     await jonahPage.getByRole("button", { name: "Retry" }).click();
     await expect(jonahPage.getByText("Didn't send.")).toHaveCount(0);
     await jonahPage.reload();
-    await expect(jonahPage.getByText("ok starting it tonight")).toBeVisible();
+    await expect(jonahPage.getByText("ok starting it tonight").filter({ visible: true })).toBeVisible();
     await expectNoViolations(jonahPage);
   });
 });

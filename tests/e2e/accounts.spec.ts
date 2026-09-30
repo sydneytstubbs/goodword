@@ -39,7 +39,7 @@ test.describe("signed out", () => {
     await page.goto("/sign-in");
     await page.getByLabel("Email").fill("priya@example");
     await page.getByRole("button", { name: "Email me a sign-in link" }).click();
-    await expect(page.getByText("That email looks incomplete. Check for a missing @ or dot.")).toBeVisible();
+    await expect(page.getByText("That email looks incomplete. Check for a missing @ or dot.").filter({ visible: true })).toBeVisible();
     await expect(page.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
     await expectNoViolations(page);
   });
@@ -47,7 +47,7 @@ test.describe("signed out", () => {
   test("an expired link shows the banner, with no axe violations", async ({ page }) => {
     await page.goto("/auth/confirm?token_hash=not-a-real-token&next=%2Fshelf");
     await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Fshelf$/);
-    await expect(page.getByText("This sign-in link has expired. We can send a new one.")).toBeVisible();
+    await expect(page.getByText("This sign-in link has expired. We can send a new one.").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
   });
 
@@ -66,8 +66,8 @@ test.describe("signed out", () => {
     ]);
     await page.goto("/sign-in/check-email?next=%2Fshelf");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Check your email");
-    await expect(page.getByText("priya@example.com")).toBeVisible();
-    await expect(page.getByText("It works for 15 minutes.")).toBeVisible();
+    await expect(page.getByText("priya@example.com").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("It works for 15 minutes.").filter({ visible: true })).toBeVisible();
     const resend = page.getByRole("button", { name: /Resend link in \d+s/ });
     await expect(resend).toHaveAttribute("aria-disabled", "true");
     await expectNoViolations(page);
@@ -114,7 +114,7 @@ test.describe("signed in", () => {
 
     await page.getByLabel("Your name").fill("");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText("Add a name so friends know who's vouching.")).toBeVisible();
+    await expect(page.getByText("Add a name so friends know who's vouching.").filter({ visible: true })).toBeVisible();
 
     await page.getByLabel("Your name").fill("Tess");
     await page.getByRole("button", { name: "Continue" }).click();
@@ -139,7 +139,7 @@ test.describe("signed in", () => {
     if (link.error) throw link.error;
     await page.goto(`/auth/confirm?token_hash=${link.data.properties.hashed_token}&next=%2Fyou`);
     await expect(page).toHaveURL(/\/you$/);
-    await expect(page.getByText("Signed in as Tess")).toBeVisible();
+    await expect(page.getByText("Signed in as Tess").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
 
     await page.goto("/sign-in");
