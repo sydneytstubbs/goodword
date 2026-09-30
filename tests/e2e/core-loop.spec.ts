@@ -165,9 +165,9 @@ test.describe("the core loop", () => {
     const edit = page.getByRole("dialog", { name: "Edit note" });
     await edit.getByLabel("Anything to add? (optional)").fill("the ferry scene");
     await edit.getByRole("button", { name: "Save note" }).click();
-    await expect(page.getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
     await page.reload();
-    await expect(page.getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
 
     await vouch.click();
     await page.getByRole("menuitem", { name: "Change groups" }).click();
@@ -186,7 +186,7 @@ test.describe("the core loop", () => {
     await page.getByRole("button", { name: "Undo" }).click();
     await expect(vouch).toBeVisible();
     await page.reload();
-    await expect(page.getByText("“the ferry scene”")).toBeVisible();
+    await expect(page.getByRole("main").getByText("“the ferry scene”")).toBeVisible();
     const { data } = await admin().from("good_words").select("note, good_word_groups(group_id)").eq("user_id", priya.id).single();
     expect(data).toEqual({ note: "the ferry scene", good_word_groups: [{ group_id: crew }] });
   });

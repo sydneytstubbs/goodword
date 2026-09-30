@@ -210,6 +210,7 @@ test.describe("choosing", () => {
 
   test("title detail: nothing streaming in your region", async ({ browser }) => {
     const page = await signedIn(browser, priya, `/title/movie/${byKey.extra0.tmdbId}`);
-    await expect(page.getByText("Not streaming in your region right now.")).toBeVisible();
+    // Scoped to main: a streamed section briefly has a hidden copy outside it.
+    await expect(page.getByRole("main").getByText("Not streaming in your region right now.")).toBeVisible();
   });
 });
