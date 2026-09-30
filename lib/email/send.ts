@@ -10,8 +10,9 @@ export const EMAIL_FROM = "Good Word <hello@mail.goodwordfriends.com>";
 
 export type OutgoingEmail = Email & {
   to: string;
-  /** RFC 8058 one-click unsubscribe URL (POST). */
-  oneClickUnsubscribe: string;
+  /** RFC 8058 one-click unsubscribe URL (POST). Every product email has one; internal notes (feedback) don't. */
+  oneClickUnsubscribe?: string;
+  replyTo?: string;
   /** Resend drops a repeat with the same key within 24 hours. */
   idempotencyKey: string;
 };
@@ -44,10 +45,15 @@ export const sendWithResend: Sender = async (email) => {
         subject: email.subject,
         html: email.html,
         text: email.text,
-        headers: {
-          "List-Unsubscribe": `<${email.oneClickUnsubscribe}>`,
-          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-        },
+        ...(email.replyTo ? { reply_to: email.replyTo } : {}),
+        ...(email.oneClickUnsubscribe
+          ? {
+              headers: {
+                "List-Unsubscribe": `<${email.oneClickUnsubscribe}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+              },
+            }
+          : {}),
       }),
     });
     if (response.ok) return { ok: true };
