@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/events/client";
 import { t } from "@/lib/messages";
 import { AvatarStack } from "../ui/avatar";
 import { Banner } from "../ui/banner";
@@ -33,6 +34,7 @@ export function InviteCard({
     try {
       await navigator.clipboard.writeText(link);
       showToast({ message: t("invite.copied") });
+      track("invite_shared", { group_id: group.id, method: "copy" });
     } catch {
       showToast({ message: t("invite.copyFailed") });
     }
@@ -42,6 +44,7 @@ export function InviteCard({
     if (navigator.share) {
       try {
         await navigator.share({ title: t("invite.shareText", { group: group.name }), url: link });
+        track("invite_shared", { group_id: group.id, method: "share_sheet" });
       } catch {
         // Dismissing the share sheet isn't an error.
       }
