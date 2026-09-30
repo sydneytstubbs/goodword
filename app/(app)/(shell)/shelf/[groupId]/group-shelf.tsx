@@ -2,6 +2,7 @@
 
 import NextLink from "next/link";
 import { useState } from "react";
+import { LiveShelf } from "../live-shelf";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { InviteCard } from "@/components/domain/invite-card";
 import type { Shelf } from "@/components/domain/types";
@@ -50,6 +51,7 @@ export function GroupShelf({
   return (
     <>
       <ShelfBar groups={groups} currentId={group.id} onInvite={openInvite} />
+      <LiveShelf groupIds={[group.id]} />
       {showWelcome && <WelcomeBanner groupId={group.id} groupName={group.name} />}
       <header className="flex flex-col gap-3">
         <h1 className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{group.name}</h1>

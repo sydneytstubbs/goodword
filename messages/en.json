@@ -458,7 +458,9 @@
     "end": "That's the whole shelf.",
     "newCount_one": "{count} new good word",
     "newCount_other": "{count} new good words",
-    "hasNew": "New good words"
+    "hasNew": "New good words",
+    "newGoodWords_one": "{count} new good word",
+    "newGoodWords_other": "{count} new good words"
   },
   "you": {
     "title": "Your shelf",
