@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.13 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.14 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-30
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -800,7 +800,7 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `group_created` | `group_id` | J1 |
 | `group_joined` | `group_id`, `via` (`invite`) | H1 |
 | `sign_in_completed` | `method` (`magic_link`, `google`), `new_user` | Funnel |
-| `add_opened` | `entry_point` (`tab`, `rail`, `shortcut`, `title`, `search_row`, `join_prompt`, `empty_state`) | H3 |
+| `add_opened` | `entry_point` (`tab`, `rail`, `shortcut`, `title`, `search_row`, `join_prompt`, `empty_state`, `email`) | H3 |
 | `search_performed` | `query_length`, `result_count` | H3 |
 | `good_word_created` | `title_id`, `groups_count`, `has_note`, `source`, `ms_from_add_opened` | H2, H3, H4 |
 | `good_word_edited` | `field` (`note`, `groups`) | |
@@ -910,6 +910,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.14 (2026-09-30):** Step 10. Streaming services are saved per region (a service's id can differ by country); Settings lists the region's services from TMDB, most popular first, with "Show all". A title whose services aren't known yet never matches "On my services". Share links are 144-bit tokens, and a link turned back on is always a new one. The shared page lists up to 500 good words and shows no title detail link, since title detail needs sign-in. The weekend prompt's button links to `/shelf?add=1&ref=nudge_email`, which opens Add once; `add_opened` gains the `email` entry point for it (11.2). The weekend prompt counts toward the one-a-day email cap after the digest and join emails, and a held prompt goes within 24 hours of Sunday 10am or not at all. Offline good words are kept on the device per person and sent on reconnect; the service worker keeps up to 6 shelves for offline. Live new good words are counted per shelf, never the viewer's own.
 - **v1.2.13 (2026-09-30):** Open question 2 decided: Share my shelf is allowed (F9, DS 5.14). The privacy and terms pages name Sydney Stubbs as the contact, and the marketing page footer links to them.
 - **v1.2.12 (2026-09-30):** Step 9. Events are checked against a fixed schema before they're stored, so no free text can get in (11.1); browser events go through `/api/events`, the rest are recorded where they happen, after the response is sent. `app_admins` decides who sees `/admin/metrics` (section 8, 11.4). Mention and join emails carry `ref=mention` and `ref=group_join` so `email_clicked` covers every email (11.2). `title_viewed.from` is `shelf` or `digest` for now: search, person view, and share links don't open title detail yet. `add_opened` has no `search_row` entry yet, since no search row opens Add. The metrics page also shows comments and commenters for H7. Weeks start Monday, UTC.
 - **v1.2.11 (2026-09-30):** Step 8. Settings has Account (name, email, region, sign out), Notifications, and Your data; Sign out moves there from My shelf (F11). Download my data is a JSON file of profile, groups, and good words from `/api/me/export` (F1). Deleting an account leaves each group the way leaving does, so ownership passes to the earliest member and solo groups are deleted, then removes the auth user and everything of theirs (F1, section 8). `feedback` table, messages up to 2,000 characters, 10 a day, emailed to Sydney (F11, 10.4). Help has the FAQ, the DS 3.9 shortcuts (now all built), feedback, and About with the TMDB and JustWatch logos, which also replace the JustWatch text under where-to-watch (9.1, 9.2). `/privacy` and `/terms` are plain-language drafts (10.4). The Content Security Policy allows inline scripts, since nonces would make every page render on demand (10.4).

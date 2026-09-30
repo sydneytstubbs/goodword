@@ -38,7 +38,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 7 | Email | PRD 12, slice 7 | Done (email polish deferred; see PRD changelog v1.2.10) |
 | 8 | Settings and trust | PRD 12, slice 8 | In review |
 | 9 | Measurement | PRD 12, slice 9 | In review |
-| 10 | P1 extras | PRD 12, slice 10 | Not started |
+| 10 | P1 extras | PRD 12, slice 10 | In review |
 
 Before starting a step, check PRD Section 15 for open questions that step depends on, and ask about any that are still open.
 

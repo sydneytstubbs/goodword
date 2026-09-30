@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.6 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.7 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-30
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -952,7 +952,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 ### 5.16 Help and settings
 - **Consistent help location:** Help lives in My shelf › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
 - **Contextual help** appears in empty states and helper text at the moment of need, never as a tour.
-- **Settings** take effect immediately (switches), are grouped by topic (Account, Notifications, About), and confirm with a toast only when the effect isn't visible.
+- **Settings** take effect immediately (switches and checkboxes), are grouped by topic (Account, Streaming services, Notifications, Share my shelf, Your data; About lives in Help), and confirm with a toast only when the effect isn't visible. Resetting a share link asks first, like resetting an invite link.
 
 ### 5.17 Conversations, mentions, and activity
 **User problem:** people want to talk about what they're watching with the friends who recommended it ("wait until ep 6", "@Tess you'd love the ending"), without moving to the group chat and losing the thread.
@@ -1438,6 +1438,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.7 (2026-09-30):** Step 10: Settings groups (5.16) gain Streaming services and Share my shelf; About moved to Help in step 8.
 - **v3.2.6 (2026-09-30):** Share my shelf allowed (PRD open question 2): 5.14 now reads "Nothing is public unless you turn on a share link".
 - **v3.2.5 (2026-09-29):** Step 6. Any title can have a conversation in any of your groups; the first comment tells the group with a "started a conversation" Activity item, and title detail's chip row lists all your groups (4.2.13, 5.17). Open question 8 decided: comments from people who leave stay attributed. Below 1024px, the header holds the wordmark and the Activity bell, and the conversation screen hides the tab bar (4.2.8, 5.17). Microcopy for the new activity types (6.6).
 - **v3.2.4 (2026-09-29):** Step 5. Open question 9 decided: title detail is friends first (4.2.2, 5.7), and each good word shows chips for which of your groups it's in. The chip button for More filters (4.1.9). New counts in the group switcher and rail, and a dot on the Shelf tab (4.2.5). Filter bar layout, sort placement, and active filters on the bar (5.6). Where to watch links, loading, and error (5.7). Microcopy for filters, no results, paging, and where to watch (6.6). Utility `scrollbar-none` for the chip row. `/styleguide` gains the browsing pattern, where-to-watch states, and New counts.
