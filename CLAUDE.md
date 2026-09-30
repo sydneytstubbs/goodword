@@ -35,7 +35,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 4 | The core loop | PRD 12, slice 4 | Done |
 | 5 | Choosing | PRD 12, slice 5 | Done |
 | 6 | Conversations | PRD 12, slice 6 | In review |
-| 7 | Email | PRD 12, slice 7 | In review |
+| 7 | Email | PRD 12, slice 7 | Done (email polish deferred; see PRD changelog v1.2.10) |
 | 8 | Settings and trust | PRD 12, slice 8 | Not started |
 | 9 | Measurement | PRD 12, slice 9 | Not started |
 | 10 | P1 extras | PRD 12, slice 10 | Not started |
