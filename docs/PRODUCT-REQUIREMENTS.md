@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.11 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.12 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -691,6 +691,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
 | `feedback` | `user_id`, `message`, `may_contact` | |
 | `events` | `user_id` (nullable), `name`, `properties` (json), `occurred_at` | First-party analytics (Section 11) |
+| `app_admins` | `user_id` | Who can open `/admin/metrics` (11.4). Seeded with Sydney's account |
 
 **Derived views**
 - **Shelf card:** for a given group, group `good_word_groups` joined to `good_words` by `title_id`, returning the title, the list of vouchers (ordered by `shared_at` desc), the most recent note, voucher count, and most recent `shared_at` (for sorting and New badges).
@@ -909,6 +910,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.12 (2026-09-30):** Step 9. Events are checked against a fixed schema before they're stored, so no free text can get in (11.1); browser events go through `/api/events`, the rest are recorded where they happen, after the response is sent. `app_admins` decides who sees `/admin/metrics` (section 8, 11.4). Mention and join emails carry `ref=mention` and `ref=group_join` so `email_clicked` covers every email (11.2). `title_viewed.from` is `shelf` or `digest` for now: search, person view, and share links don't open title detail yet. `add_opened` has no `search_row` entry yet, since no search row opens Add. The metrics page also shows comments and commenters for H7. Weeks start Monday, UTC.
 - **v1.2.11 (2026-09-30):** Step 8. Settings has Account (name, email, region, sign out), Notifications, and Your data; Sign out moves there from My shelf (F11). Download my data is a JSON file of profile, groups, and good words from `/api/me/export` (F1). Deleting an account leaves each group the way leaving does, so ownership passes to the earliest member and solo groups are deleted, then removes the auth user and everything of theirs (F1, section 8). `feedback` table, messages up to 2,000 characters, 10 a day, emailed to Sydney (F11, 10.4). Help has the FAQ, the DS 3.9 shortcuts (now all built), feedback, and About with the TMDB and JustWatch logos, which also replace the JustWatch text under where-to-watch (9.1, 9.2). `/privacy` and `/terms` are plain-language drafts (10.4). The Content Security Policy allows inline scripts, since nonces would make every page render on demand (10.4).
 - **v1.2.10 (2026-09-30):** Step 7 accepted. Verified on a phone: the join email and the test digest (posters, notes, `ref=digest` links). Deferred to a later polish pass, by Sydney's call: a live mention email and signed-out unsubscribe checked on a phone (both pass automated tests), inbox placement for the digest (the first one landed in Spam; check SPF, DKIM, and DMARC in Gmail's Show original and add a `_dmarc` record if missing), and email wording and layout details.
 - **v1.2.9 (2026-09-29):** Step 7. Open question 4 (digest Thursday 5pm local) built as proposed, pending confirmation. `/unsubscribe` route (6.1). Mention batching timed so the email arrives within 15 minutes (F7.4). Unsubscribe page, cap priority, and reserved test domains (F7.7). The scheduler is Supabase `pg_cron` every 5 minutes (9.5). `activity_items.email_handled_at` (section 8). Settings has Notifications from step 7; step 8 adds the rest.

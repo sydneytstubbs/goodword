@@ -5,6 +5,8 @@ import { GroupDot } from "@/components/ui/chip";
 import { TextLink } from "@/components/ui/text-link";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { myShelf } from "@/lib/good-words/queries";
+import { recordEvent } from "@/lib/events/server";
+import { filterKeys } from "@/lib/events/shelf";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { MyShelfCards } from "./my-shelf-cards";
@@ -14,12 +16,13 @@ export const metadata: Metadata = { title: "My shelf · Good Word" };
 // The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
 // groups, then Settings and Help (Sign out lives in Settings). Filters
 // include which of your groups it's in (F5.3).
-export default async function MyShelfPage() {
+export default async function MyShelfPage({ searchParams }: PageProps<"/you">) {
   const { user, profile } = await requireOnboardedUser("/you");
   const [groups, shelf] = await Promise.all([
     listMyGroups(user.id),
     myShelf(user.id, profile.display_name, profile.region),
   ]);
+  await recordEvent("shelf_viewed", { shelf: "mine", filters: filterKeys(await searchParams), new_count: 0 }, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-10 px-4 py-8">

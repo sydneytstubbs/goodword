@@ -15,7 +15,7 @@ export function mentionEmail(batch: MentionBatch, links: EmailLinks): Email {
   const names = nameList([...new Set(batch.comments.map((c) => c.author))]);
   const subject = t("email.mention.subject", { names, title: batch.title.title });
   const inGroup = t("email.mention.inGroup", { group: batch.group_name });
-  const href = `${origin}${conversationHref({ type: batch.title.type, tmdbId: batch.title.tmdb_id }, batch.group_id, { comment: batch.comments[0]?.id })}`;
+  const href = `${origin}${conversationHref({ type: batch.title.type, tmdbId: batch.title.tmdb_id }, batch.group_id, { comment: batch.comments[0]?.id })}&ref=mention`;
   const footer: Footer = {
     why: t("email.mention.why", { group: batch.group_name }),
     unsubscribe: { label: t("email.mention.unsubscribe"), href: links.unsubscribe },

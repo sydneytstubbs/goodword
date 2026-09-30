@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { recordEvent } from "@/lib/events/server";
 import { setNotice } from "@/lib/notice";
 import { getInvitePreview } from "./queries";
 
@@ -37,7 +38,7 @@ export async function joinWithCode(code: string): Promise<string> {
 
   switch (result?.status) {
     case "joined":
-      // The owner's join email (F7.3) arrives with step 7.
+      await recordEvent("group_joined", { group_id: result.group_id ?? undefined, via: "invite" });
       return `/shelf/${result.group_id}`;
     case "already_member": {
       const preview = await getInvitePreview(code);

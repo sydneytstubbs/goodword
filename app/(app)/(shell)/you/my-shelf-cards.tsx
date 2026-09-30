@@ -23,7 +23,7 @@ export function MyShelfCards({ shelf }: { shelf: Shelf }) {
           title={t("you.emptyTitle")}
           body={t("you.emptyBody")}
           action={
-            <Button variant="primary" size="lg" icon="add" onClick={() => openAdd()}>
+            <Button variant="primary" size="lg" icon="add" onClick={() => openAdd({ entryPoint: "empty_state" })}>
               {t("vouch.put")}
             </Button>
           }

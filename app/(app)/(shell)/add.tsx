@@ -11,6 +11,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
+import { track } from "@/lib/events/client";
 import { useCaptureVisitSource, visitSource } from "./visit-source";
 
 // Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
@@ -23,7 +24,9 @@ import { useCaptureVisitSource, visitSource } from "./visit-source";
 const RECENT_KEY = "gw:recent-searches";
 const DRAFT_KEY = "gw:draft:";
 
-export type OpenAddOptions = { title?: Title; source?: GoodWordSource };
+/** Where Add was opened from, for measurement (PRD 11.2). */
+export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state";
+export type OpenAddOptions = { title?: Title; source?: GoodWordSource; entryPoint?: AddEntryPoint };
 
 type AddContextValue = {
   openAdd: (options?: OpenAddOptions) => void;
@@ -99,6 +102,8 @@ export function AddProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState(0);
   const [recent, setRecent] = useState<string[]>([]);
   const [source, setSource] = useState<GoodWordSource>("organic");
+  // When Add opened, for the time to put in a good word (PRD 2.2, H3).
+  const openedAt = useRef(0);
   const [note, setNote] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [annotations, setAnnotations] = useState<ServerAnnotations>({ mine: {}, friends: {} });
@@ -130,6 +135,8 @@ export function AddProvider({ children }: { children: ReactNode }) {
   const openAdd = useCallback(
     (options: OpenAddOptions = {}) => {
       setSource(options.source ?? visitSource() ?? "organic");
+      openedAt.current = Date.now();
+      if (options.entryPoint) track("add_opened", { entry_point: options.entryPoint });
       if (options.title) confirm(options.title);
       else {
         setRecent(readRecent());
@@ -172,7 +179,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
       if ((e.key !== "n" && e.key !== "/") || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || isTyping(e.target)) return;
       if (document.querySelector("dialog[open], [role='menu']")) return;
       e.preventDefault();
-      openAdd();
+      openAdd({ entryPoint: "shortcut" });
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -215,7 +222,8 @@ export function AddProvider({ children }: { children: ReactNode }) {
     }
     const typed = note;
     writeDraft(title.id, "");
-    put(title, { note: typed, groupIds: selected, source }, mineOf(title), () => writeDraft(title.id, typed));
+    const msFromAddOpened = openedAt.current ? Date.now() - openedAt.current : undefined;
+    put(title, { note: typed, groupIds: selected, source, msFromAddOpened }, mineOf(title), () => writeDraft(title.id, typed));
     close();
   }
 

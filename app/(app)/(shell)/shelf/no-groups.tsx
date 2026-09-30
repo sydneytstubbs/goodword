@@ -25,7 +25,7 @@ export function NoGroups() {
               <ButtonLink href="/groups/new" variant="primary" size="lg" icon="add">
                 {t("shelf.startGroup")}
               </ButtonLink>
-              <Button variant="secondary" size="lg" onClick={() => openAdd()}>
+              <Button variant="secondary" size="lg" onClick={() => openAdd({ entryPoint: "empty_state" })}>
                 {t("vouch.put")}
               </Button>
             </div>

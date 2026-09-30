@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { peopleTone } from "@/lib/people-color";
 import { setNotice } from "@/lib/notice";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 
 export type CreateState = { error?: "nameRequired" | "tooManyGroups" | "failed"; name?: string };
@@ -20,6 +21,7 @@ export async function createGroup(_prev: CreateState, formData: FormData): Promi
   const { data, error } = await supabase.rpc("create_group", { p_id: id, p_name: name, p_color: peopleTone(id) });
   if (error) return { error: "failed", name };
   if (data === "too_many_groups") return { error: "tooManyGroups", name };
+  await recordEvent("group_created", { group_id: id });
   redirect(`/groups/${id}`);
 }
 

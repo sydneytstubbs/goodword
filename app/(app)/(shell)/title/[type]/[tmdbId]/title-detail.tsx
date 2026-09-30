@@ -61,7 +61,7 @@ export function TitleDetail({
           vouched={mine !== null}
           size="lg"
           emphasis="primary"
-          onPut={() => openAdd({ title })}
+          onPut={() => openAdd({ title, entryPoint: "title" })}
           onEditNote={() => mine && openEditNote(title, mine)}
           onChangeGroups={() => mine && openChangeGroups(title, mine)}
           onTakeBack={() => mine && takeBack(title, mine)}

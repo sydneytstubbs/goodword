@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { TextLink } from "@/components/ui/text-link";
 import { getInvitePreview } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "You're invited · Good Word" };
@@ -43,6 +44,7 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/joi
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   const signedIn = Boolean(data.user);
+  if (!error) await recordEvent("invite_link_opened", { group_id: preview.groupId, signed_in: signedIn }, data.user?.id ?? null);
   if (signedIn) {
     const { data: member } = await supabase.from("group_members").select("id").eq("group_id", preview.groupId).eq("user_id", data.user!.id).maybeSingle();
     // Already a member: straight to the shelf, with a toast.

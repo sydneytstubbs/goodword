@@ -30,7 +30,7 @@ export function AllGroupsShelf({ groups, shelf }: { groups: SwitcherGroup[]; she
             title={t("shelf.allEmptyTitle")}
             body={t("shelf.allEmptyBody")}
             action={
-              <Button variant="primary" size="lg" icon="add" onClick={() => openAdd()}>
+              <Button variant="primary" size="lg" icon="add" onClick={() => openAdd({ entryPoint: "empty_state" })}>
                 {t("vouch.put")}
               </Button>
             }

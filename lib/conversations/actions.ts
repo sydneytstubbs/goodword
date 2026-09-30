@@ -1,6 +1,8 @@
 "use server";
 
 import type { CommentSegment } from "@/components/domain/types";
+import { lengthBucket } from "@/lib/events/schema";
+import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 import { COMMENT_MAX, decodeBody, encodeBody, plainText, trimSegments } from "./body";
 import { newerComments, olderComments as loadOlder, toComment, unreadActivityCount, type CommentRow } from "./queries";
@@ -48,10 +50,32 @@ export async function postComment(input: {
     p_spoiler: input.spoiler,
   });
   if (error) return { ok: false, error: "failed" };
+  if (data === "created") await recordComment(supabase, input, plainText(trimSegments(input.body)).length);
   if (data === "created" || data === "exists") return { ok: true };
   if (data === "rate_limited") return { ok: false, error: "rateLimited" };
   if (data === "too_long") return { ok: false, error: "tooLong" };
   return { ok: false, error: "failed" };
+}
+
+/**
+ * comment_created, and a mention_notified (in Activity) for each person the
+ * database kept as mentioned (PRD 11.2, H7). Never the comment's text.
+ */
+async function recordComment(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  input: { id: string; groupId: string; titleId: string; spoiler: boolean },
+  length: number,
+) {
+  const { data: mentions } = await supabase.from("comment_mentions").select("mentioned_user_id").eq("comment_id", input.id);
+  const mentioned = (mentions ?? []).map((m) => m.mentioned_user_id as string);
+  await recordEvent("comment_created", {
+    group_id: input.groupId,
+    title_id: input.titleId,
+    length_bucket: lengthBucket(length),
+    mention_count: mentioned.length,
+    is_spoiler: input.spoiler,
+  });
+  for (const person of mentioned) await recordEvent("mention_notified", { channel: "activity" }, person);
 }
 
 export async function editComment(id: string, body: CommentSegment[], spoiler: boolean): Promise<CommentWriteResult> {
@@ -61,6 +85,7 @@ export async function editComment(id: string, body: CommentSegment[], spoiler: b
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("edit_comment", { p_id: id, p_body: cleaned, p_spoiler: spoiler });
   if (error || data !== "updated") return { ok: false, error: data === "too_long" ? "tooLong" : "failed" };
+  await recordEvent("comment_edited");
   return { ok: true };
 }
 
@@ -68,14 +93,18 @@ export async function deleteComment(id: string): Promise<CommentWriteResult> {
   if (!valid(id)) return { ok: false, error: "failed" };
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("delete_comment", { p_id: id });
-  return error || data !== true ? { ok: false, error: "failed" } : { ok: true };
+  if (error || data !== true) return { ok: false, error: "failed" };
+  await recordEvent("comment_deleted", { undone: false });
+  return { ok: true };
 }
 
 export async function restoreComment(id: string): Promise<CommentWriteResult> {
   if (!valid(id)) return { ok: false, error: "failed" };
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("restore_comment", { p_id: id });
-  return error || data !== true ? { ok: false, error: "failed" } : { ok: true };
+  if (error || data !== true) return { ok: false, error: "failed" };
+  await recordEvent("comment_deleted", { undone: true });
+  return { ok: true };
 }
 
 type LiveRow = CommentRow & { group_id: string; title_id: string };
@@ -100,6 +129,7 @@ export async function revealComment(id: string): Promise<CommentSegment[] | null
   const { data, error } = await supabase.rpc("conversation_comment", { p_id: id, p_reveal: true });
   const row = (data as CommentRow[] | null)?.[0];
   if (error || !row || row.body === null) return null;
+  await recordEvent("spoiler_revealed");
   return decodeBody(row.body, row.mentions ?? []);
 }
 

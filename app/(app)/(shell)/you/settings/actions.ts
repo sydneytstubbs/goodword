@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import type { EmailPref } from "@/lib/email/secrets";
+import { recordEvent } from "@/lib/events/server";
 import { setNotice } from "@/lib/notice";
 import { isRegion } from "@/lib/regions";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -11,7 +12,9 @@ import { createClient } from "@/lib/supabase/server";
 export async function setNotificationPref(pref: EmailPref, on: boolean): Promise<boolean> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("set_notification_pref", { p_key: pref, p_on: on });
-  return !error && data === true;
+  const ok = !error && data === true;
+  if (ok) await recordEvent("notification_pref_changed", { type: pref, enabled: on });
+  return ok;
 }
 
 export type SaveResult = { ok: true } | { ok: false; error: "nameRequired" | "failed" };
