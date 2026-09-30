@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.7 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-30
+**Version** 3.2.8 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-30
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -615,7 +615,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 - **Accessibility:** menu button pattern (`aria-haspopup`, `aria-expanded`), arrow keys move, Esc closes and returns focus. Destructive items sit last, in `--danger`, separated by a divider.
 
 #### 4.1.13 Sheet and dialog
-- **Sheet (mobile tasks and pickers):** slides from the bottom, `--surface-raised`, `--radius-sheet` top corners, `--shadow-lg`, a 36×4 drag handle in `--border-subtle`, a visible close button, `--scrim` behind. Title in `title-m`. Max 90% of viewport height; content scrolls inside, header and primary action stay pinned. On desktop it becomes a centered modal up to 480px wide.
+- **Sheet (mobile tasks and pickers):** slides from the bottom, `--surface-raised`, `--radius-sheet` top corners, `--shadow-lg`, a 36×4 drag handle in `--border-subtle`, a visible close button, `--scrim` behind. Title in `title-m`. Max 90% of the visible height (above the keyboard when it's open, so the title and fields never slide off the top); content scrolls inside, header and primary action stay pinned. The Add sheet is always that full height on phones, so the search field stays put as results come and go and steps don't jump in size. On desktop it becomes a centered modal up to 480px wide.
 - **Dialog (decisions only):** centered, up to 400px, `--surface-raised`, `--radius-card`, `--shadow-lg`, 24px padding, a title that asks the specific question, one sentence of consequence, then actions: the safe action first in reading order, the committing action last. Destructive commit uses the `danger` button.
 - **Both:** focus moves to the first meaningful element (the title for dialogs, the first field for sheets), focus is trapped, Esc and scrim tap close (except dialogs guarding irreversible actions, where the scrim does nothing), focus returns to the trigger, body scroll locks. Use native `<dialog>` where possible, with `aria-labelledby` pointing at the title.
 - **Don't:** stack a sheet on a sheet (replace the content instead), or use a dialog to confirm something that has Undo.
@@ -1438,6 +1438,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.8 (2026-09-30):** Sheets (4.1.13) cap at 90% of the visible height, so an open keyboard can't push a sheet's top off screen; the Add sheet is full height on phones.
 - **v3.2.7 (2026-09-30):** Step 10: Settings groups (5.16) gain Streaming services and Share my shelf; About moved to Help in step 8.
 - **v3.2.6 (2026-09-30):** Share my shelf allowed (PRD open question 2): 5.14 now reads "Nothing is public unless you turn on a share link".
 - **v3.2.5 (2026-09-29):** Step 6. Any title can have a conversation in any of your groups; the first comment tells the group with a "started a conversation" Activity item, and title detail's chip row lists all your groups (4.2.13, 5.17). Open question 8 decided: comments from people who leave stay attributed. Below 1024px, the header holds the wordmark and the Activity bell, and the conversation screen hides the tab bar (4.2.8, 5.17). Microcopy for the new activity types (6.6).

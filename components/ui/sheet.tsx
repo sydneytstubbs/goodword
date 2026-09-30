@@ -18,12 +18,14 @@ export type SheetProps = {
   children: ReactNode;
   /** Pinned to the bottom, e.g. the sheet's primary action. */
   footer?: ReactNode;
+  /** Full height on phones, so the content (a search field, say) stays put as results come and go. */
+  tall?: boolean;
   className?: string;
 };
 
 const DISMISS_DISTANCE = 96;
 
-export function Sheet({ open, onClose, title, children, footer, className }: SheetProps) {
+export function Sheet({ open, onClose, title, children, footer, tall = false, className }: SheetProps) {
   const titleId = useId();
   const bodyRef = useRef<HTMLDivElement>(null);
   const initialFocus = useCallback(
@@ -32,7 +34,8 @@ export function Sheet({ open, onClose, title, children, footer, className }: She
   );
   const { dialogProps, ref } = useModal({ open, onClose, initialFocus });
 
-  // Keep the sheet above the iOS keyboard (8.2).
+  // Keep the sheet above the iOS keyboard, and no taller than what's visible
+  // above it, so its title and fields never slide off the top (8.2).
   useEffect(() => {
     const viewport = window.visualViewport;
     const dialog = ref.current;
@@ -40,6 +43,7 @@ export function Sheet({ open, onClose, title, children, footer, className }: She
     const update = () => {
       const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
       dialog.style.setProperty("--keyboard-inset", `${inset}px`);
+      dialog.style.setProperty("--visible-height", `${viewport.height}px`);
     };
     update();
     viewport.addEventListener("resize", update);
@@ -79,6 +83,7 @@ export function Sheet({ open, onClose, title, children, footer, className }: She
         "fixed inset-x-0 top-auto bottom-0 m-0 mx-auto mb-keyboard flex w-full max-w-none max-h-sheet flex-col overflow-hidden p-0",
         "rounded-t-sheet bg-surface-raised text-default shadow-lg fc-edge backdrop:bg-scrim",
         "not-open:hidden overscroll-contain md:max-w-140",
+        tall && "max-lg:h-sheet",
         "lg:top-0 lg:mb-auto lg:mt-auto lg:max-w-120 lg:rounded-card",
         "motion-ok:open:animate-sheet-in motion-ok:data-closing:animate-sheet-out",
         "lg:motion-ok:open:animate-dialog-in lg:motion-ok:data-closing:animate-dialog-out",
@@ -87,7 +92,7 @@ export function Sheet({ open, onClose, title, children, footer, className }: She
       )}
     >
       <div
-        className="shrink-0 touch-none px-5 pt-2 pb-3 lg:pt-5"
+        className="shrink-0 touch-none px-5 pt-2 pb-2 lg:pt-5"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerEnd}
@@ -101,7 +106,8 @@ export function Sheet({ open, onClose, title, children, footer, className }: She
           <IconButton icon="close" label={t("common.close")} onClick={onClose} className="-me-3" />
         </div>
       </div>
-      <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-5">
+      {/* pt-1 leaves room for a first field's focus ring, which the scrolling body would otherwise clip. */}
+      <div ref={bodyRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-1 pb-5">
         {children}
       </div>
       {footer && <div className="shrink-0 border-t border-subtle px-5 pt-3 pb-safe-footer">{footer}</div>}

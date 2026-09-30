@@ -326,7 +326,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   return (
     <AddContext.Provider value={{ openAdd, openEditNote, openChangeGroups }}>
       {children}
-      <Sheet open={open} onClose={close} title={sheetTitle} footer={footer}>
+      <Sheet open={open} onClose={close} title={sheetTitle} footer={footer} tall>
         <ViewFocus viewKey={view.kind} open={open}>
           {body}
         </ViewFocus>

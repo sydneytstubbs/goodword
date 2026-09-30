@@ -136,7 +136,9 @@
 @utility min-h-target { min-height: var(--target-min); }
 @utility min-w-target { min-width: var(--target-min); }
 @utility size-target { width: var(--target-min); height: var(--target-min); }
-@utility max-h-sheet { max-height: var(--sheet-max-height); }
+/* Sheets cap at 90% of what's visible, so an open keyboard never pushes their top off screen (DS 4.1.13, 8.2). */
+@utility max-h-sheet { max-height: min(var(--sheet-max-height), calc(var(--visible-height, 100dvh) * 0.9)); }
+@utility h-sheet { height: min(var(--sheet-max-height), calc(var(--visible-height, 100dvh) * 0.9)); }
 @utility h-topbar { height: var(--topbar-height); }
 @utility h-tabbar { height: var(--tabbar-height); }
 /* Room under content for the fixed tab bar (DS 4.2.8). */
