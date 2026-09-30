@@ -39,6 +39,8 @@ export type QueuedGoodWord = { title: Title; input: PutInput; mine: MyGoodWord; 
 type GoodWordsValue = {
   viewer: Person;
   groups: SwitcherGroup[];
+  /** Your streaming services in your region (TMDB provider ids), for "On my services". */
+  myServices: number[];
   overlays: Overlay[];
   queued: QueuedGoodWord[];
   retryQueued: (titleId: string) => void;
@@ -75,10 +77,12 @@ function withGroups(mine: MyGoodWord, groupIds: string[], now: string): MyGoodWo
 export function GoodWordsProvider({
   viewer,
   groups,
+  myServices,
   children,
 }: {
   viewer: Person;
   groups: SwitcherGroup[];
+  myServices: number[];
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -314,6 +318,7 @@ export function GoodWordsProvider({
       value={{
         viewer,
         groups,
+        myServices,
         overlays: shown,
         queued,
         retryQueued,

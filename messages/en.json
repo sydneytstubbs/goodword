@@ -549,7 +549,10 @@
     "movie": "movie",
     "show": "show",
     "aNoun": "a {noun}",
-    "anNoun": "an {noun}"
+    "anNoun": "an {noun}",
+    "myServices": "Your services",
+    "onMyServices": "On my services",
+    "pickServices": "Pick your streaming services in Settings"
   },
   "settings": {
     "title": "Settings",
@@ -561,6 +564,8 @@
     "mentionsHint": "An email when someone mentions you in a conversation",
     "groupJoins": "Someone joined your group",
     "groupJoinsHint": "For groups you're the owner of, at most once a day",
+    "weekend": "Weekend prompt",
+    "weekendHint": "Sunday morning, if you haven't put in a good word in two weeks",
     "didntSave": "That didn't save. Check your connection and try again.",
     "loadFailed": "Check your connection and try again.",
     "errorTitle": "Settings didn't load",
@@ -583,14 +588,35 @@
     "deleteTitle": "Delete your account?",
     "deleteBody": "All your good words and comments are removed everywhere, and you leave every group. Groups you own pass to the member who's been there longest. This can't be undone.",
     "deleteConfirm": "Delete my account",
-    "deleteFailed": "Your account wasn't deleted. Check your connection and try again."
+    "deleteFailed": "Your account wasn't deleted. Check your connection and try again.",
+    "servicesHeading": "Streaming services",
+    "servicesIntro": "Tick the ones you have. On a shelf, “On my services” then shows only what you can watch now.",
+    "servicesAll": "Show all {count} services",
+    "servicesUnavailable": "Services didn't load. Check your connection and try again.",
+    "shareHeading": "Share my shelf",
+    "shareIntro": "A read-only page of your good words and your notes, for people outside your groups. It never shows your groups or anyone else.",
+    "shareSwitch": "Share my shelf",
+    "shareHint": "Anyone with the link can see it. Off by default.",
+    "shareLinkLabel": "Your link",
+    "shareCopy": "Copy link",
+    "shareCopied": "Link copied.",
+    "shareShare": "Share",
+    "shareShareText": "My good words on Good Word",
+    "shareReset": "Reset link",
+    "shareResetDone": "New link made. The old one doesn't work anymore.",
+    "shareResetTitle": "Reset your share link?",
+    "shareResetBody": "Anyone with the old link won't be able to open it. You'll get a new link to share.",
+    "shareResetConfirm": "Reset link",
+    "shareViews_one": "Opened 1 time",
+    "shareViews_other": "Opened {count} times"
   },
   "unsubscribe": {
     "pageTitle": "Unsubscribe",
     "kind": {
       "digest": "the weekly digest",
       "mention_email": "mention emails",
-      "group_joins": "emails when someone joins your group"
+      "group_joins": "emails when someone joins your group",
+      "weekend_prompt": "weekend prompts"
     },
     "working": "Unsubscribing you from {kind}…",
     "confirm": "Unsubscribe from {kind}",
@@ -639,6 +665,13 @@
       "open": "Open Good Word",
       "why": "You're getting this because you're the owner of {groups} on Good Word.",
       "unsubscribe": "Unsubscribe from join emails"
+    },
+    "weekend": {
+      "subject": "What did you watch this weekend?",
+      "body": "If something was good, your groups would like to know.",
+      "button": "Put in a good word",
+      "why": "You're getting this because you haven't put in a good word in a couple of weeks. It comes at most every two weeks.",
+      "unsubscribe": "Unsubscribe from weekend prompts"
     }
   },
   "help": {
@@ -687,6 +720,11 @@
     "justWatchLogo": "JustWatch",
     "justWatchNotice": "Streaming data from JustWatch."
   },
+  "share": {
+    "title": "{name}'s good words",
+    "empty": "{name} hasn't put in any good words yet.",
+    "madeWith": "Made with Good Word"
+  },
   "legal": {
     "updated": "Last updated September 30, 2026",
     "backHome": "Good Word home",
@@ -698,7 +736,7 @@
       "s2h": "Why we collect it",
       "s2b": "Only to run Good Word: to sign you in, show your good words to your groups, send the emails you've chosen, show where to watch in your region, and improve the app. We don't sell your data, show ads, or use it to recommend anything on our own.",
       "s3h": "Who can see it",
-      "s3b": "Members of a group see that group's members, the good words shared into it, and its conversations. Nobody outside your groups can see any of it, and nothing on Good Word is public or indexed by search engines. Your email address is never shown to other people.",
+      "s3b": "Members of a group see that group's members, the good words shared into it, and its conversations. Nobody outside your groups can see any of it, unless you turn on Share my shelf in Settings: that makes a read-only page of your own good words and notes for anyone with its link, never your groups or anyone else. Turn it off or reset it and the old link stops working. Nothing on Good Word is indexed by search engines. Your email address is never shown to other people.",
       "s4h": "Services we use",
       "s4b": "Supabase stores the app's data and handles sign-in. Vercel hosts the app. Resend sends our emails. Google handles sign-in if you choose Continue with Google. Title details and posters come from TMDB, with streaming data from JustWatch; they don't receive your personal data. There are no third-party analytics or advertising trackers.",
       "s5h": "Emails",

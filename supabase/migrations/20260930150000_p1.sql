@@ -89,8 +89,9 @@ begin
   update public.share_links set view_count = view_count + 1 where id = link.id;
   return query
     select coalesce(p.display_name, ''),
-      jsonb_build_object('tmdb_id', t.tmdb_id, 'type', t.media_type, 'title', t.title, 'year', t.year,
-        'poster_path', t.poster_path, 'accent', t.accent, 'genres', t.genres),
+      jsonb_build_object('tmdb_id', t.tmdb_id, 'media_type', t.media_type, 'title', t.title, 'year', t.year,
+        'poster_path', t.poster_path, 'accent', t.accent, 'genres', t.genres,
+        'runtime_minutes', t.runtime_minutes, 'seasons', t.seasons),
       gw.note, gw.created_at
     from public.profiles p
     left join public.good_words gw on gw.user_id = p.user_id

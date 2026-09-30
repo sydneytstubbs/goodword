@@ -6,14 +6,14 @@ import { filterKeys } from "./shelf";
 // and never text that could hold a note, a search, or an email address.
 
 describe("event schema", () => {
-  it("covers every event in PRD 11.2 except the P1 share link", () => {
+  it("covers every event in PRD 11.2", () => {
     expect(Object.keys(EVENTS).sort()).toEqual(
       [
         "invite_link_opened", "invite_shared", "group_created", "group_joined", "sign_in_completed", "add_opened",
         "search_performed", "good_word_created", "good_word_edited", "good_word_taken_back", "shelf_viewed", "title_viewed",
         "where_to_watch_clicked", "email_sent", "email_clicked", "notification_pref_changed", "first_good_word_prompt",
         "conversation_opened", "comment_created", "comment_edited", "comment_deleted", "mention_notified", "activity_opened",
-        "spoiler_revealed",
+        "spoiler_revealed", "share_link_toggled",
       ].sort(),
     );
   });

@@ -7,9 +7,9 @@ export function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-/** Routes that aren't signed-in only but still send noindex: sign-in, auth callbacks, invite landings, unsubscribe. */
+/** Routes that aren't signed-in only but still send noindex: sign-in, auth callbacks, invite landings, unsubscribe, shared shelves. */
 export function isNoindexPath(pathname: string): boolean {
-  return isProtectedPath(pathname) || pathname === "/sign-in" || pathname.startsWith("/sign-in/") || pathname.startsWith("/auth/") || pathname.startsWith("/join/") || pathname === "/unsubscribe";
+  return isProtectedPath(pathname) || pathname === "/sign-in" || pathname.startsWith("/sign-in/") || pathname.startsWith("/auth/") || pathname.startsWith("/join/") || pathname === "/unsubscribe" || pathname.startsWith("/s/");
 }
 
 /** The group id in /shelf/<id>, remembered per device as the last viewed shelf (PRD 6.2). */

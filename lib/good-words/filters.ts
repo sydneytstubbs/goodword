@@ -18,9 +18,13 @@ export type Filters = {
   sort: Sort;
   /** My shelf only: group ids it's shared into. OR within groups. */
   groups: string[];
+  /** On my services (P1): only titles on a streaming service the viewer has. */
+  mine: boolean;
+  /** The viewer's services in their region, from Settings. Not part of the URL. */
+  myServices: number[];
 };
 
-export const DEFAULT_FILTERS: Filters = { type: "all", services: [], genres: [], length: null, sort: "newest", groups: [] };
+export const DEFAULT_FILTERS: Filters = { type: "all", services: [], genres: [], length: null, sort: "newest", groups: [], mine: false, myServices: [] };
 
 export const PAGE_SIZE = 24;
 export const TOP_SERVICES = 5;
@@ -42,6 +46,8 @@ export function parseFilters(params: Params): Filters {
     length: length === 30 || length === 120 ? length : null,
     sort: sort === "vouched" ? "vouched" : "newest",
     groups: unique(list(params.get("groups")).filter((v) => /^[0-9a-f-]{36}$/i.test(v))),
+    mine: params.get("mine") === "1",
+    myServices: [],
   };
 }
 
@@ -54,24 +60,32 @@ export function filtersToQuery(filters: Filters): string {
   if (filters.length) params.set("length", String(filters.length));
   if (filters.sort !== "newest") params.set("sort", filters.sort);
   if (filters.groups.length) params.set("groups", filters.groups.join(","));
+  if (filters.mine) params.set("mine", "1");
   const query = params.toString().replace(/%2C/g, ",");
   return query ? `?${query}` : "";
 }
 
 /** Anything narrowing the shelf (sort doesn't). */
 export function isFiltered(filters: Filters): boolean {
-  return filters.type !== "all" || filters.services.length > 0 || filters.genres.length > 0 || filters.length !== null || filters.groups.length > 0;
+  return (
+    filters.type !== "all" ||
+    filters.services.length > 0 ||
+    filters.genres.length > 0 ||
+    filters.length !== null ||
+    filters.groups.length > 0 ||
+    filters.mine
+  );
 }
 
 export function clearFilters(filters: Filters): Filters {
-  return { ...DEFAULT_FILTERS, sort: filters.sort };
+  return { ...DEFAULT_FILTERS, sort: filters.sort, myServices: filters.myServices };
 }
 
 export function toggle<T>(values: T[], value: T): T[] {
   return values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
 }
 
-type Category = "type" | "services" | "genres" | "length" | "groups";
+type Category = "type" | "services" | "genres" | "length" | "groups" | "mine";
 
 const test: Record<Category, (card: ShelfCard, f: Filters) => boolean> = {
   type: (card, f) => f.type === "all" || card.title.type === f.type,
@@ -80,6 +94,8 @@ const test: Record<Category, (card: ShelfCard, f: Filters) => boolean> = {
   // Unknown runtime never matches a length filter (F5.4).
   length: (card, f) => f.length === null || (card.title.runtime !== undefined && card.title.runtime <= f.length),
   groups: (card, f) => f.groups.length === 0 || f.groups.some((id) => card.groupIds?.includes(id)),
+  // A title whose providers aren't known yet matches no service (F5.4).
+  mine: (card, f) => !f.mine || f.myServices.some((id) => card.services?.includes(id)),
 };
 
 /** AND across categories, OR within one (DS 5.6). `except` leaves one category out, for its chip counts. */
@@ -154,7 +170,7 @@ export function noResultsSubject(
   serviceName: (id: number) => string | undefined,
   words: { movie: string; tv: string; anythingOn: (services: string) => string; a: (noun: string) => string },
 ): string | null {
-  if (filters.genres.length || filters.length !== null || filters.groups.length) return null;
+  if (filters.genres.length || filters.length !== null || filters.groups.length || filters.mine) return null;
   const names = filters.services.map(serviceName).filter((n): n is string => Boolean(n));
   if (names.length !== filters.services.length) return null;
   const services = orList(names);

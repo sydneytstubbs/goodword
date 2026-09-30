@@ -6,6 +6,7 @@ vi.mock("server-only", () => ({}));
 import { digestEmail } from "@/emails/digest";
 import { groupJoinEmail } from "@/emails/group-join";
 import { mentionEmail } from "@/emails/mention";
+import { weekendPromptEmail } from "@/emails/weekend-prompt";
 import { palette } from "@/emails/palette";
 import type { DigestContent, EmailTitle, MentionBatch } from "@/emails/types";
 import { runEmailJob } from "@/lib/email/job";
@@ -205,6 +206,18 @@ describe("group join email", () => {
   });
 });
 
+describe("weekend prompt", () => {
+  it("asks one question, with one button that opens Add from the email", () => {
+    const email = weekendPromptEmail({ origin: ORIGIN, unsubscribe: `${ORIGIN}/unsubscribe?token=x` });
+    expect(email.subject).toBe("What did you watch this weekend?");
+    expect(email.html).toContain("Put in a good word");
+    expect(email.html).toContain(`${ORIGIN}/shelf?add=1&amp;ref=nudge_email`);
+    expect(email.text).toContain(`${ORIGIN}/shelf?add=1&ref=nudge_email`);
+    expect(email.html).toContain(`${ORIGIN}/unsubscribe?token=x`);
+    expect(email.text).not.toContain("!");
+  });
+});
+
 describe("tokens and secrets", () => {
   const user = "33333333-3333-4333-8333-333333333333";
 
@@ -234,7 +247,7 @@ describe("tokens and secrets", () => {
 
 // A stand-in for the service-role client: the due lists, and a record of
 // claims, releases, and log writes.
-function fakeAdmin(due: { digests?: unknown[]; mentions?: unknown[]; joins?: unknown[] }, claimable = true) {
+function fakeAdmin(due: { digests?: unknown[]; mentions?: unknown[]; joins?: unknown[]; weekend?: unknown[] }, claimable = true) {
   const calls: string[] = [];
   const logged: unknown[] = [];
   const admin = {
@@ -243,6 +256,7 @@ function fakeAdmin(due: { digests?: unknown[]; mentions?: unknown[]; joins?: unk
       if (name === "email_digests_due") return { data: due.digests ?? [], error: null };
       if (name === "email_mentions_due") return { data: due.mentions ?? [], error: null };
       if (name === "email_joins_due") return { data: due.joins ?? [], error: null };
+      if (name === "email_weekend_due") return { data: due.weekend ?? [], error: null };
       if (name === "claim_email_items") return { data: claimable, error: null };
       if (name === "release_email_items") return { data: null, error: null, args };
       throw new Error(name);
@@ -303,10 +317,22 @@ describe("the email job", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("sends digests before join emails, so the daily cap favors the digest", async () => {
+  it("sends digests before join emails and the weekend prompt, so the daily cap favors the digest", async () => {
     const { admin, calls } = fakeAdmin({});
     await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async () => ({ ok: true }) });
     expect(calls.indexOf("email_digests_due")).toBeLessThan(calls.indexOf("email_joins_due"));
+    expect(calls.indexOf("email_joins_due")).toBeLessThan(calls.indexOf("email_weekend_due"));
+  });
+
+  it("sends the weekend prompt once per Sunday, with its own unsubscribe", async () => {
+    const row = { user_id: mentionRow.user_id, email: mentionRow.email, slot: "2026-10-04" };
+    const { admin, logged } = fakeAdmin({ weekend: [row] });
+    const sent: OutgoingEmail[] = [];
+    const result = await runEmailJob({ admin, origin: ORIGIN, pauseMs: 0, record: false, send: async (e) => (sent.push(e), { ok: true }) });
+    expect(result.weekend).toBe(1);
+    expect(logged).toContainEqual({ user_id: row.user_id, type: "weekend_prompt", payload_ref: "2026-10-04" });
+    expect(sent[0].idempotencyKey).toBe(`weekend:${row.user_id}:2026-10-04`);
+    expect(readUnsubscribeToken(decodeURIComponent(sent[0].oneClickUnsubscribe!.split("token=")[1]))?.pref).toBe("weekend_prompt");
   });
 
   it("logs a digest before sending and removes the log if it fails", async () => {

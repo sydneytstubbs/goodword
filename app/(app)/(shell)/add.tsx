@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Poster } from "@/components/domain/poster";
 import { TitleSearch, type SearchAnnotations } from "@/components/domain/title-search";
 import type { GoodWordSource, MyGoodWord, Person, Title } from "@/components/domain/types";
@@ -24,7 +25,7 @@ const RECENT_KEY = "gw:recent-searches";
 const DRAFT_KEY = "gw:draft:";
 
 /** Where Add was opened from, for measurement (PRD 11.2). */
-export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state";
+export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state" | "email";
 export type OpenAddOptions = { title?: Title; source?: GoodWordSource; entryPoint?: AddEntryPoint };
 
 type AddContextValue = {
@@ -169,6 +170,18 @@ export function AddProvider({ children }: { children: ReactNode }) {
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
+
+  // The weekend prompt's button links to ?add=1 (PRD F7.2): open Add once,
+  // then drop the parameter so Back or a reload doesn't open it again.
+  const pathname = usePathname();
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("add") !== "1") return;
+    url.searchParams.delete("add");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    openAdd({ entryPoint: "email" });
+  }, [pathname, openAdd]);
 
   // `n` (put in a good word) and `/` (search) open Add on desktop (PRD F4, DS
   // 3.9), unless you're typing or a sheet is open.
