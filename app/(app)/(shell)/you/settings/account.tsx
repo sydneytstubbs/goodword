@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState, useTransition, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { fieldBase, TextField } from "@/components/ui/text-field";
 import { useToast } from "@/components/ui/toast";
@@ -22,10 +23,11 @@ export function AccountSettings({
   region: string;
   regions: Array<{ code: string; name: string }>;
 }) {
+  const router = useRouter();
   const { showToast } = useToast();
   const [name, setName] = useState(initialName);
   const [nameError, setNameError] = useState<string | null>(null);
-  const [savingName, startSaving] = useTransition();
+  const [savingName, setSavingName] = useState(false);
   const [region, setRegion] = useState(initialRegion);
   const regionId = useId();
 
@@ -36,12 +38,18 @@ export function AccountSettings({
       return;
     }
     setNameError(null);
-    startSaving(async () => {
-      const result = await saveName(name).catch(() => ({ ok: false as const, error: "failed" as const }));
-      if (result.ok) showToast({ message: t("settings.nameSaved") });
-      else if (result.error === "nameRequired") setNameError(t("settings.nameRequired"));
-      else showToast({ message: t("settings.didntSave"), action: { label: t("common.retry"), onAction: () => submitName() } });
-    });
+    setSavingName(true);
+    saveName(name)
+      .catch(() => ({ ok: false as const, error: "failed" as const }))
+      .then((result) => {
+        setSavingName(false);
+        if (result.ok) {
+          showToast({ message: t("settings.nameSaved") });
+          // Everywhere else that shows your name catches up in the background.
+          router.refresh();
+        } else if (result.error === "nameRequired") setNameError(t("settings.nameRequired"));
+        else showToast({ message: t("settings.didntSave"), action: { label: t("common.retry"), onAction: () => submitName() } });
+      });
   };
 
   const changeRegion = async (next: string, previous: string) => {
@@ -49,6 +57,7 @@ export function AccountSettings({
     const ok = await saveRegion(next).catch(() => false);
     if (ok) {
       showToast({ message: t("settings.regionSaved") });
+      router.refresh();
       return;
     }
     setRegion(previous);
@@ -66,8 +75,12 @@ export function AccountSettings({
           value={name}
           maxLength={30}
           autoComplete="nickname"
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => name.trim() && setNameError(null)}
+          onChange={(e) => {
+            setName(e.target.value);
+            // Remove the error as soon as it's fixed (DS 5.9), not on blur,
+            // so the Save button doesn't move out from under a click.
+            if (nameError && e.target.value.trim()) setNameError(null);
+          }}
           className="w-full"
         />
         <Button type="submit" variant="secondary" loading={savingName}>

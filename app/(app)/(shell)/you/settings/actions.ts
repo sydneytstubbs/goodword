@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { EmailPref } from "@/lib/email/secrets";
 import { setNotice } from "@/lib/notice";
@@ -26,7 +25,6 @@ export async function saveName(raw: string): Promise<SaveResult> {
   if (!data.user) return { ok: false, error: "failed" };
   const { error } = await supabase.from("profiles").update({ display_name: name }).eq("user_id", data.user.id);
   if (error) return { ok: false, error: "failed" };
-  revalidatePath("/", "layout");
   return { ok: true };
 }
 
@@ -37,7 +35,6 @@ export async function saveRegion(region: string): Promise<boolean> {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return false;
   const { error } = await supabase.from("profiles").update({ region }).eq("user_id", data.user.id);
-  if (!error) revalidatePath("/", "layout");
   return !error;
 }
 
