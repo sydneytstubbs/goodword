@@ -6,13 +6,13 @@ import type { Group } from "@/components/domain/types";
 import { shelfGroupId } from "@/lib/auth/paths";
 import { isConversationPath } from "@/lib/conversations/paths";
 import { useActivityCount } from "./activity-count";
+import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { useAdd } from "./add";
 import { useShelfNews } from "./shelf-news";
 
 // The tab bar (below 1024px) and the rail (from 1024px), DS 4.2.8. Add opens
 // the search sheet. The conversation screen hides the tab bar so its composer
-// sits at the bottom (PRD 6.2). The rail leaves out Help until its screen
-// exists (step 8).
+// sits at the bottom (PRD 6.2). Help sits in the rail's footer (DS 5.16).
 export function AppNav({ groups }: { groups: Group[] }) {
   const pathname = usePathname();
   const { openAdd } = useAdd();
@@ -24,6 +24,7 @@ export function AppNav({ groups }: { groups: Group[] }) {
 
   return (
     <>
+      <KeyboardShortcuts />
       {!isConversationPath(pathname) && (
         <TabBar current={current} onAdd={add} shelfDot={Object.values(counts).some((n) => n > 0)} />
       )}
@@ -34,7 +35,6 @@ export function AppNav({ groups }: { groups: Group[] }) {
         newCounts={counts}
         currentGroupId={shelfGroupId(pathname) ?? undefined}
         onAdd={add}
-        hide={["help"]}
       />
     </>
   );

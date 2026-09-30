@@ -147,7 +147,8 @@ test.describe("signed in", () => {
     await page.goto("/welcome");
     await expect(page).toHaveURL(/\/shelf$/);
 
-    await page.goto("/you");
+    // Sign out lives in Settings (PRD F11).
+    await page.goto("/you/settings");
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/sign-in$/);
     await page.goto("/shelf");

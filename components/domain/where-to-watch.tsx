@@ -1,9 +1,9 @@
+import Image from "next/image";
 import { t } from "@/lib/messages";
 import { logoSrc } from "@/lib/tmdb/images";
 import type { Provider, WatchProviders } from "@/lib/tmdb/normalize";
 import { Icon } from "../icon";
 import { Skeleton, SkeletonRegion } from "../ui/skeleton";
-import { TextLink } from "../ui/text-link";
 
 // Where to watch (PRD F6, DS 5.7): the viewer's region, grouped Stream / Rent
 // / Buy, provider logos and names linking out through TMDB's watch link.
@@ -81,11 +81,11 @@ export function WhereToWatchList({
           </div>
         ))
       )}
-      <p className="text-caption text-muted">
+      <p className="flex flex-wrap items-center gap-x-2 text-caption text-muted">
         {t("whereToWatch.attributionBefore")}
-        <TextLink href={JUSTWATCH_URL} newTab>
-          {t("whereToWatch.justWatch")}
-        </TextLink>
+        <a href={JUSTWATCH_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-control">
+          <Image src="/attribution/justwatch.webp" alt={t("whereToWatch.justWatchLogo")} width={98} height={16} className="h-4 w-auto" />
+        </a>
       </p>
     </div>
   );
