@@ -165,10 +165,11 @@ export function AddProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  // `n` opens Add on desktop (PRD F4), unless you're typing or a sheet is open.
+  // `n` (put in a good word) and `/` (search) open Add on desktop (PRD F4, DS
+  // 3.9), unless you're typing or a sheet is open.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "n" || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || isTyping(e.target)) return;
+      if ((e.key !== "n" && e.key !== "/") || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || isTyping(e.target)) return;
       if (document.querySelector("dialog[open], [role='menu']")) return;
       e.preventDefault();
       openAdd();

@@ -283,7 +283,7 @@ describe("the email job", () => {
     expect(calls).not.toContain("release_email_items");
     expect(sent[0].subject).toBe("Luis mentioned you on Grandma's Heist");
     expect(sent[0].oneClickUnsubscribe).toMatch(/^https:\/\/goodword\.test\/api\/unsubscribe\?token=/);
-    expect(readUnsubscribeToken(decodeURIComponent(sent[0].oneClickUnsubscribe.split("token=")[1]))?.pref).toBe("mention_email");
+    expect(readUnsubscribeToken(decodeURIComponent(sent[0].oneClickUnsubscribe!.split("token=")[1]))?.pref).toBe("mention_email");
     expect(logged).toContainEqual({ user_id: mentionRow.user_id, type: "mention", payload_ref: "a1" });
   });
 

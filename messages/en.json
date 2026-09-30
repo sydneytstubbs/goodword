@@ -463,7 +463,8 @@
     "signedInAs": "Signed in as {name}",
     "signOut": "Sign out",
     "goodWordsHeading": "Your good words",
-    "settingsLink": "Settings"
+    "settingsLink": "Settings",
+    "helpLink": "Help"
   },
   "join": {
     "invited": "{name} invited you to {group}.",
@@ -483,7 +484,8 @@
   "notice": {
     "alreadyMember": "You're already in {group}.",
     "left": "You left {group}.",
-    "deleted": "{group} was deleted."
+    "deleted": "{group} was deleted.",
+    "accountDeleted": "Your account is deleted. Thanks for being part of Good Word."
   },
   "whereToWatch": {
     "stream": "Stream",
@@ -491,10 +493,10 @@
     "buy": "Buy",
     "none": "Not streaming in your region right now.",
     "attributionBefore": "Streaming data from ",
-    "justWatch": "JustWatch",
     "loading": "Loading where to watch",
     "errorTitle": "Where to watch didn't load",
-    "errorBody": "Good Word is having a moment. Try again in a minute."
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "justWatchLogo": "JustWatch"
   },
   "filters": {
     "typeLabel": "Movies or shows",
@@ -544,7 +546,27 @@
     "groupJoinsHint": "For groups you're the owner of, at most once a day",
     "didntSave": "That didn't save. Check your connection and try again.",
     "loadFailed": "Check your connection and try again.",
-    "errorTitle": "Settings didn't load"
+    "errorTitle": "Settings didn't load",
+    "accountHeading": "Account",
+    "name": "Name",
+    "nameHint": "It's what friends see on your good words and comments.",
+    "nameRequired": "Add a name so friends know it's you.",
+    "saveName": "Save name",
+    "nameSaved": "Name saved.",
+    "email": "Email",
+    "emailHint": "You sign in with this address. It isn't shown to anyone.",
+    "region": "Region",
+    "regionHint": "Sets where-to-watch to the services in your country.",
+    "regionSaved": "Region saved.",
+    "signOut": "Sign out",
+    "dataHeading": "Your data",
+    "download": "Download my data",
+    "downloadHint": "A file with your profile, groups, and good words.",
+    "deleteAccount": "Delete account",
+    "deleteTitle": "Delete your account?",
+    "deleteBody": "All your good words and comments are removed everywhere, and you leave every group. Groups you own pass to the member who's been there longest. This can't be undone.",
+    "deleteConfirm": "Delete my account",
+    "deleteFailed": "Your account wasn't deleted. Check your connection and try again."
   },
   "unsubscribe": {
     "pageTitle": "Unsubscribe",
@@ -600,6 +622,98 @@
       "open": "Open Good Word",
       "why": "You're getting this because you're the owner of {groups} on Good Word.",
       "unsubscribe": "Unsubscribe from join emails"
+    }
+  },
+  "help": {
+    "title": "Help",
+    "faqHeading": "Questions",
+    "faq": {
+      "whatQ": "What's a good word?",
+      "whatA": "It's a show or movie you'd vouch for, with an optional note. It goes on the shelf of each group you pick, with your name on it.",
+      "whoQ": "Who can see my good words?",
+      "whoA": "Only members of the groups you share them with. The visibility line tells you who before you put one in. Nothing on Good Word is public.",
+      "groupsQ": "How do groups and invites work?",
+      "groupsA": "Anyone in a group can share its invite link. Whoever opens it can join after signing in. The owner can reset the link, which stops the old one working.",
+      "leaveQ": "How do I leave a group?",
+      "leaveA": "Open the group from your shelf, then choose Leave group at the bottom of its details. Your good words leave that shelf too.",
+      "deleteQ": "How do I delete my account?",
+      "deleteA": "Go to Settings, then Delete account. Your good words and comments are removed everywhere, and this can't be undone."
+    },
+    "shortcutsHeading": "Keyboard shortcuts",
+    "shortcutsIntro": "On a computer with a keyboard. They never fire while you're typing.",
+    "shortcuts": {
+      "search": "Search",
+      "add": "Put in a good word",
+      "shelf": "Go to your shelf",
+      "myShelf": "Go to My shelf",
+      "activity": "Go to Activity",
+      "help": "Show these shortcuts",
+      "then": "then"
+    },
+    "feedbackHeading": "Send feedback",
+    "feedbackIntro": "Something confusing, broken, or missing? It goes straight to Sydney, who builds Good Word.",
+    "feedbackLabel": "Your feedback",
+    "feedbackContact": "OK to follow up by email",
+    "feedbackSend": "Send feedback",
+    "feedbackSent": "Thanks. Sydney reads every one.",
+    "feedbackEmpty": "Write something first, then send.",
+    "feedbackTooLong": "That's over 2,000 characters. Shorten it a little and send again.",
+    "feedbackLimit": "You've sent a lot of feedback today. Try again tomorrow.",
+    "feedbackFailed": "That didn't send. Check your connection and try again.",
+    "aboutHeading": "About",
+    "version": "Version {version}",
+    "privacySummary": "Good Word keeps your email, name, region, groups, good words, and comments so the app can work. Only members of your groups see what you share. There are no ads and no trackers, and you can download or delete your data any time in Settings.",
+    "privacyLink": "Privacy",
+    "termsLink": "Terms",
+    "tmdbLogo": "The Movie Database (TMDB)",
+    "tmdbNotice": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "justWatchLogo": "JustWatch",
+    "justWatchNotice": "Streaming data from JustWatch."
+  },
+  "legal": {
+    "updated": "Last updated September 30, 2026",
+    "backHome": "Good Word home",
+    "privacy": {
+      "title": "Privacy",
+      "intro": "Good Word is a small, private app for sharing what you'd watch with friends. This page says what we collect, why, who can see it, and how to delete it. We is Sydney Stubbs, who makes Good Word.",
+      "s1h": "What we collect",
+      "s1b": "Your email address, so you can sign in. The name you choose, your region, and your timezone. The groups you start or join. Your good words and notes, your comments and mentions, and your email settings. Feedback you send us. Basic records of how the app is used, like when a good word is put in, kept on our own systems.",
+      "s2h": "Why we collect it",
+      "s2b": "Only to run Good Word: to sign you in, show your good words to your groups, send the emails you've chosen, show where to watch in your region, and improve the app. We don't sell your data, show ads, or use it to recommend anything on our own.",
+      "s3h": "Who can see it",
+      "s3b": "Members of a group see that group's members, the good words shared into it, and its conversations. Nobody outside your groups can see any of it, and nothing on Good Word is public or indexed by search engines. Your email address is never shown to other people.",
+      "s4h": "Services we use",
+      "s4b": "Supabase stores the app's data and handles sign-in. Vercel hosts the app. Resend sends our emails. Google handles sign-in if you choose Continue with Google. Title details and posters come from TMDB, with streaming data from JustWatch; they don't receive your personal data. There are no third-party analytics or advertising trackers.",
+      "s5h": "Emails",
+      "s5b": "We send sign-in links, and, if you leave them on, a weekly digest, mention emails, and a note when someone joins your group. Every email has a one-click unsubscribe, and you can change them any time in Settings. We don't track whether you open our emails.",
+      "s6h": "Keeping and deleting your data",
+      "s6b": "We keep your data while you have an account. You can download a copy any time in Settings. When you delete your account, it's removed from the app straight away, and fully purged from our systems, including backups, within 30 days.",
+      "s7h": "Children",
+      "s7b": "Good Word is for people 13 and older. We don't knowingly collect data from anyone younger; if you think we have, tell us and we'll delete it.",
+      "s8h": "Changes",
+      "s8b": "If this page changes in a way that matters, we'll tell you in the app or by email before it takes effect.",
+      "s9h": "Contact",
+      "s9b": "Questions or requests: use Send feedback in Help, or email sydneytstubbs@gmail.com."
+    },
+    "terms": {
+      "title": "Terms",
+      "intro": "These terms are the agreement between you and Good Word (Sydney Stubbs, who makes it) when you use the app. By using Good Word, you agree to them.",
+      "s1h": "Who can use Good Word",
+      "s1b": "You need to be 13 or older. You're responsible for your account and for keeping access to your email address safe, since that's how you sign in.",
+      "s2h": "What you share",
+      "s2b": "You own the good words, notes, and comments you share. You give Good Word permission to store them and show them to the members of the groups you share them with, which is what the app is for. Delete something, or your account, and that permission ends.",
+      "s3h": "Being a good member",
+      "s3b": "Don't use Good Word to harass anyone, share anything illegal, impersonate someone, send spam, or try to get into groups, accounts, or data that aren't yours. Group owners can remove members, and we may suspend accounts that break these rules.",
+      "s4h": "Titles and streaming data",
+      "s4b": "Title details and posters come from TMDB, and where-to-watch data comes from JustWatch. They're provided as they are, and may be incomplete or out of date. Good Word isn't endorsed or certified by TMDB or JustWatch.",
+      "s5h": "The service",
+      "s5b": "Good Word is new and still changing. We work to keep it running and your data safe, but it's provided as it is, without guarantees that it will always be available or free of errors. As far as the law allows, we aren't liable for indirect losses from using it.",
+      "s6h": "Ending",
+      "s6b": "You can delete your account any time in Settings. We may close accounts that break these terms, or end the service; if we end it, we'll tell you first and give you time to download your data.",
+      "s7h": "Changes",
+      "s7b": "If these terms change in a way that matters, we'll tell you in the app or by email before the change takes effect.",
+      "s8h": "Contact",
+      "s8b": "Questions: use Send feedback in Help, or email sydneytstubbs@gmail.com."
     }
   }
 }

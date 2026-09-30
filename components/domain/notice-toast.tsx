@@ -7,7 +7,7 @@ import { useToast } from "../ui/toast";
 
 // Shows a one-time notice set by the server before a redirect (lib/notice.ts).
 const COOKIE = "gw_notice";
-const KEYS = new Set(["alreadyMember", "left", "deleted"]);
+const KEYS = new Set(["alreadyMember", "left", "deleted", "accountDeleted"]);
 
 export function NoticeToast() {
   const { showToast } = useToast();
@@ -19,7 +19,7 @@ export function NoticeToast() {
     document.cookie = `${COOKIE}=; path=/; max-age=0`;
     try {
       const { key, vars } = JSON.parse(decodeURIComponent(raw)) as { key: string; vars: Record<string, string> };
-      if (KEYS.has(key)) showToast({ message: t(`notice.${key as "alreadyMember" | "left" | "deleted"}`, vars) });
+      if (KEYS.has(key)) showToast({ message: t(`notice.${key as "alreadyMember" | "left" | "deleted" | "accountDeleted"}`, vars) });
     } catch {
       // A malformed cookie is dropped.
     }

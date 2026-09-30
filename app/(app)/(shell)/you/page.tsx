@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
 import NextLink from "next/link";
 import { Icon } from "@/components/icon";
-import { Button } from "@/components/ui/button";
 import { GroupDot } from "@/components/ui/chip";
 import { TextLink } from "@/components/ui/text-link";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { myShelf } from "@/lib/good-words/queries";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
-import { signOut } from "./actions";
 import { MyShelfCards } from "./my-shelf-cards";
 
 export const metadata: Metadata = { title: "My shelf · Good Word" };
 
 // The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
-// groups, then account. Settings has Notifications from step 7; step 8 adds
-// the rest of Settings and Help, and moves Sign out into Settings. Filters
+// groups, then Settings and Help (Sign out lives in Settings). Filters
 // include which of your groups it's in (F5.3).
 export default async function MyShelfPage() {
   const { user, profile } = await requireOnboardedUser("/you");
@@ -67,11 +64,10 @@ export default async function MyShelfPage() {
           <Icon name="settings" size={20} />
           {t("you.settingsLink")}
         </TextLink>
-        <form action={signOut}>
-          <Button type="submit" variant="secondary" icon="signOut">
-            {t("you.signOut")}
-          </Button>
-        </form>
+        <TextLink href="/you/help" variant="standalone" className="gap-2">
+          <Icon name="help" size={20} />
+          {t("you.helpLink")}
+        </TextLink>
       </section>
     </main>
   );
