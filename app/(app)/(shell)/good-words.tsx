@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createContext, startTransition, useCallback, useContext, useOptimistic, useRef, useState, type ReactNode } from "react";
+import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useOptimistic, useRef, useState, type ReactNode } from "react";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import type { GoodWordSource, MyGoodWord, Person, Title } from "@/components/domain/types";
 import { useToast } from "@/components/ui/toast";
@@ -28,10 +28,23 @@ import { t } from "@/lib/messages";
 
 export type PutInput = { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number };
 
+/**
+ * A good word put in offline (PRD F12, DS 5.12): kept on this device, shown
+ * everywhere as if it were saved, captioned "Sending when you're back
+ * online", and sent on reconnect. If the server turns it down, it stays with
+ * Retry and Remove.
+ */
+export type QueuedGoodWord = { title: Title; input: PutInput; mine: MyGoodWord; status: "waiting" | "failed" };
+
 type GoodWordsValue = {
   viewer: Person;
   groups: SwitcherGroup[];
+  /** Your streaming services in your region (TMDB provider ids), for "On my services". */
+  myServices: number[];
   overlays: Overlay[];
+  queued: QueuedGoodWord[];
+  retryQueued: (titleId: string) => void;
+  removeQueued: (titleId: string) => void;
   /** The viewer's good word on a title right now: pending changes over what the server said. */
   mineFor: (titleId: string, server: MyGoodWord | null) => MyGoodWord | null;
   put: (title: Title, input: PutInput, previous: MyGoodWord | null, onFail?: () => void) => void;
@@ -64,10 +77,12 @@ function withGroups(mine: MyGoodWord, groupIds: string[], now: string): MyGoodWo
 export function GoodWordsProvider({
   viewer,
   groups,
+  myServices,
   children,
 }: {
   viewer: Person;
   groups: SwitcherGroup[];
+  myServices: number[];
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -78,6 +93,72 @@ export function GoodWordsProvider({
   ]);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const [milestone, setMilestone] = useState<Milestone | null>(null);
+
+  // Offline good words, kept per person on this device.
+  const storageKey = `gw:queued:${viewer.id}`;
+  const [queued, setQueued] = useState<QueuedGoodWord[]>([]);
+  const loaded = useRef(false);
+  useEffect(() => {
+    try {
+      const saved: unknown = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (Array.isArray(saved)) setQueued(saved as QueuedGoodWord[]);
+    } catch {
+      // Storage unavailable: nothing was queued on this device.
+    }
+    loaded.current = true;
+  }, [storageKey]);
+  useEffect(() => {
+    if (!loaded.current) return;
+    try {
+      if (queued.length === 0) localStorage.removeItem(storageKey);
+      else localStorage.setItem(storageKey, JSON.stringify(queued));
+    } catch {
+      // Storage full or unavailable: the queue lasts as long as the page.
+    }
+  }, [queued, storageKey]);
+
+  // Send what's waiting, one at a time. A dropped connection leaves the rest
+  // waiting; a refusal from the server marks that one failed.
+  const sending = useRef(false);
+  const flush = useCallback(async () => {
+    if (sending.current || !navigator.onLine) return;
+    sending.current = true;
+    let sent = false;
+    try {
+      const waiting = queued.filter((q) => q.status === "waiting");
+      for (const item of waiting) {
+        let result: WriteResult;
+        try {
+          result = await putGoodWord(ref(item.title), item.input);
+        } catch {
+          break;
+        }
+        if (result.ok) {
+          sent = true;
+          setQueued((q) => q.filter((x) => x.title.id !== item.title.id));
+          if (result.milestone) setMilestone(result.milestone);
+        } else {
+          setQueued((q) => q.map((x) => (x.title.id === item.title.id ? { ...x, status: "failed" } : x)));
+        }
+      }
+    } finally {
+      sending.current = false;
+      if (sent) router.refresh();
+    }
+  }, [queued, router]);
+  useEffect(() => {
+    if (queued.some((q) => q.status === "waiting")) void flush();
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [flush, queued]);
+
+  const retryQueued = useCallback((titleId: string) => {
+    setQueued((q) => q.map((x) => (x.title.id === titleId ? { ...x, status: "waiting" } : x)));
+  }, []);
+  const removeQueued = useCallback((titleId: string) => {
+    setQueued((q) => q.filter((x) => x.title.id !== titleId));
+  }, []);
 
   /** Shows `overlay` now, runs `write` after any earlier writes, then reports. */
   const run = useCallback(
@@ -151,6 +232,12 @@ export function GoodWordsProvider({
         input.groupIds,
         now,
       );
+      // Offline: keep it on this device and send it on reconnect (PRD F12).
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        setQueued((q) => [...q.filter((x) => x.title.id !== title.id), { title, input, mine, status: "waiting" }]);
+        showToast({ message: t("vouch.queued") });
+        return;
+      }
       // "On your shelf. Priya, Jonah, and 4 others will see it." with Undo, or,
       // with nobody else to see it yet, an Invite action (F4).
       const message = audienceToast(input.groupIds);
@@ -209,12 +296,21 @@ export function GoodWordsProvider({
     [showToast, revert, run, failed],
   );
 
+  // Queued good words show like saved ones; a change in flight wins over them.
+  const shown: Overlay[] = useMemo(
+    () => [
+      ...queued.filter((q) => !overlays.some((o) => o.title.id === q.title.id)).map((q) => ({ title: q.title, mine: q.mine })),
+      ...overlays,
+    ],
+    [queued, overlays],
+  );
+
   const mineFor = useCallback(
     (titleId: string, server: MyGoodWord | null) => {
-      const overlay = overlays.find((o) => o.title.id === titleId);
+      const overlay = shown.find((o) => o.title.id === titleId);
       return overlay ? overlay.mine : server;
     },
-    [overlays],
+    [shown],
   );
 
   return (
@@ -222,7 +318,11 @@ export function GoodWordsProvider({
       value={{
         viewer,
         groups,
-        overlays,
+        myServices,
+        overlays: shown,
+        queued,
+        retryQueued,
+        removeQueued,
         mineFor,
         put,
         editNote,

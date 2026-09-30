@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { RateLimit } from "@/lib/rate-limit";
 import { posterSrc, posterSrcSet } from "./images";
-import { detailsToRecord, normalizeQuery, providersForRegion, recordToTitle, searchResultsToTitles, yearOf } from "./normalize";
+import { detailsToRecord, normalizeQuery, providersForRegion, recordToTitle, regionProviders, searchResultsToTitles, yearOf } from "./normalize";
 import { SearchCache } from "./search-cache";
 
 // TMDB shapes are invented here, with the project's sample titles (CLAUDE.md).
@@ -187,5 +187,23 @@ describe("watch providers", () => {
     expect(providersForRegion(raw, "FR")).toEqual({ stream: [], rent: [], buy: [], link: null });
     expect(providersForRegion(raw, "GB")).toMatchObject({ link: null, buy: [{ id: 10, name: "Amazon Video" }] });
     expect(providersForRegion({}, "US").stream).toEqual([]);
+  });
+});
+
+describe("streaming services in a region (P1)", () => {
+  it("merges movie and TV lists, keeps only the region's services, in its order", () => {
+    const movie = {
+      results: [
+        { provider_id: 8, provider_name: "Netflix", logo_path: "/n.png", display_priorities: { US: 2, GB: 1 } },
+        { provider_id: 15, provider_name: "Hulu", logo_path: "/h.png", display_priorities: { US: 1 } },
+        { provider_id: 99, provider_name: "Elsewhere", logo_path: null, display_priorities: { GB: 3 } },
+      ],
+    };
+    const tv = { results: [{ provider_id: 8, provider_name: "Netflix", logo_path: "/n.png", display_priorities: { US: 2 } }, { provider_id: "x" }] };
+    expect(regionProviders("US", movie, tv)).toEqual([
+      { id: 15, name: "Hulu", logo: "/h.png" },
+      { id: 8, name: "Netflix", logo: "/n.png" },
+    ]);
+    expect(regionProviders("US", {}, { results: null })).toEqual([]);
   });
 });

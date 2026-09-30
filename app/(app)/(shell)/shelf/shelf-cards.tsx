@@ -94,10 +94,10 @@ export function ShelfCards({
   /** Below the cards: the first-good-word prompt. */
   after?: ReactNode;
 }) {
-  const { overlays, viewer, groups } = useGoodWords();
+  const { overlays, viewer, groups, myServices } = useGoodWords();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const filters = useMemo(() => parseFilters(searchParams), [searchParams]);
+  const filters = useMemo(() => ({ ...parseFilters(searchParams), myServices }), [searchParams, myServices]);
   const query = filtersToQuery(filters);
   const key = `${pathname}${query}`;
 
@@ -155,6 +155,7 @@ export function ShelfCards({
         options={{
           services: serviceCounts(cards, services, filters),
           genres: genreCounts(cards, filters),
+          hasMyServices: myServices.length > 0,
           ...(scope.kind === "mine" ? { groups: groups.map(({ id, name }) => ({ id, name })) } : {}),
         }}
       />

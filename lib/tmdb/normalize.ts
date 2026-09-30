@@ -190,3 +190,27 @@ export function providersForRegion(raw: Raw, region: string): WatchProviders {
     link: link && /^https:\/\//.test(link) ? link : null,
   };
 }
+
+/**
+ * Every streaming service TMDB lists in one region, from
+ * `/watch/providers/{movie,tv}`, in that region's display order (Settings ›
+ * Streaming services, P1).
+ */
+export function regionProviders(region: string, ...raws: Raw[]): Provider[] {
+  const seen = new Map<number, Provider & { priority: number }>();
+  for (const raw of raws) {
+    if (!Array.isArray(raw?.results)) continue;
+    for (const entry of raw.results as Raw[]) {
+      const id = num(entry?.provider_id);
+      const name = str(entry?.provider_name);
+      if (!id || !name) continue;
+      const priorities = entry.display_priorities as Record<string, unknown> | undefined;
+      const local = priorities && typeof priorities[region] === "number" ? (priorities[region] as number) : null;
+      if (priorities && local === null) continue;
+      const priority = local ?? (typeof entry.display_priority === "number" ? entry.display_priority : Number.MAX_SAFE_INTEGER);
+      const known = seen.get(id);
+      if (!known || priority < known.priority) seen.set(id, { id, name, logo: str(entry.logo_path), priority });
+    }
+  }
+  return [...seen.values()].sort((a, b) => a.priority - b.priority || a.name.localeCompare(b.name)).map(({ id, name, logo }) => ({ id, name, logo }));
+}

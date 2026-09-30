@@ -19,7 +19,7 @@ export const EVENTS = {
   sign_in_completed: { client: false, props: { method: ["magic_link", "google"], new_user: "bool" } },
   add_opened: {
     client: true,
-    props: { entry_point: ["tab", "rail", "shortcut", "title", "search_row", "join_prompt", "empty_state"] },
+    props: { entry_point: ["tab", "rail", "shortcut", "title", "search_row", "join_prompt", "empty_state", "email"] },
   },
   search_performed: { client: false, props: { query_length: "int", result_count: "int" } },
   good_word_created: {
@@ -37,9 +37,10 @@ export const EVENTS = {
   shelf_viewed: { client: false, props: { shelf: ["group", "all", "mine", "person"], filters: "keys", new_count: "int" } },
   title_viewed: { client: false, props: { from: ["shelf", "search", "digest", "person", "share"] } },
   where_to_watch_clicked: { client: true, props: { title_id: "uuid", provider_id: "int", from_good_word: "bool" } },
-  email_sent: { client: false, props: { type: ["digest", "mention", "group_join"] } },
+  email_sent: { client: false, props: { type: ["digest", "mention", "group_join", "weekend_prompt"] } },
   email_clicked: { client: true, props: { type: ["digest", "mention", "group_join", "nudge_email"], target: ["title", "shelf", "conversation", "group", "other"] } },
-  notification_pref_changed: { client: false, props: { type: ["digest", "mention_email", "group_joins"], enabled: "bool" } },
+  notification_pref_changed: { client: false, props: { type: ["digest", "mention_email", "group_joins", "weekend_prompt"], enabled: "bool" } },
+  share_link_toggled: { client: false, props: { enabled: "bool" } },
   first_good_word_prompt: { client: true, props: { action: ["shown", "used", "dismissed"] } },
   conversation_opened: {
     client: false,

@@ -1,3 +1,4 @@
+import { safeRegion } from "@/lib/titles/providers";
 import { unreadActivityCount } from "@/lib/conversations/queries";
 import { listMyGroups, newGoodWordCounts } from "@/lib/groups/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -20,15 +21,21 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
   const [groups, profile, newCounts, activityCount] = userId
     ? await Promise.all([
         listMyGroups(userId),
-        supabase.from("profiles").select("display_name").eq("user_id", userId).maybeSingle(),
+        supabase.from("profiles").select("display_name, region").eq("user_id", userId).maybeSingle(),
         newGoodWordCounts(),
         unreadActivityCount(),
       ])
     : [[], null, {}, 0];
   const viewer = { id: userId ?? "", name: (profile?.data?.display_name as string | null | undefined) ?? "" };
+  // Your streaming services in your region, for "On my services" (P1).
+  const region = safeRegion(profile?.data?.region as string | null | undefined);
+  const { data: services } = userId
+    ? await supabase.from("streaming_services").select("provider_ids").eq("user_id", userId).eq("region", region).maybeSingle()
+    : { data: null };
+  const myServices = (services?.provider_ids as number[] | null | undefined) ?? [];
 
   return (
-    <GoodWordsProvider viewer={viewer} groups={groups}>
+    <GoodWordsProvider viewer={viewer} groups={groups} myServices={myServices}>
       <ShelfNewsProvider counts={newCounts}>
         <ActivityCountProvider userId={viewer.id} initialCount={activityCount}>
           <AddProvider>

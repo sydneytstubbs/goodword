@@ -41,6 +41,31 @@ export async function saveRegion(region: string): Promise<boolean> {
   return !error;
 }
 
+/** Settings › Streaming services (P1): the whole set for your region, saved on each tick. */
+export async function saveStreamingServices(region: string, providerIds: number[]): Promise<boolean> {
+  if (!isRegion(region) || !Array.isArray(providerIds) || providerIds.length > 100) return false;
+  const ids = providerIds.filter((id) => Number.isInteger(id) && id > 0);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("set_streaming_services", { p_region: region, p_providers: ids });
+  return !error && data === true;
+}
+
+/** Settings › Share my shelf (F9): on makes a new link, off stops the old one at once. */
+export async function setShareLink(on: boolean): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("set_share_link", { p_on: on });
+  if (error || typeof data !== "string") return null;
+  await recordEvent("share_link_toggled", { enabled: on });
+  return data;
+}
+
+/** Settings › Share my shelf › Reset link (F9): a new link; the old one stops working. */
+export async function resetShareLink(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("reset_share_link");
+  return error || typeof data !== "string" ? null : data;
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

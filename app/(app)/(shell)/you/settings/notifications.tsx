@@ -13,6 +13,7 @@ const SWITCHES: Array<{ pref: EmailPref; label: MessageKey; hint: MessageKey }> 
   { pref: "digest", label: "settings.digest", hint: "settings.digestHint" },
   { pref: "mention_email", label: "settings.mentions", hint: "settings.mentionsHint" },
   { pref: "group_joins", label: "settings.groupJoins", hint: "settings.groupJoinsHint" },
+  { pref: "weekend_prompt", label: "settings.weekend", hint: "settings.weekendHint" },
 ];
 
 // Switches take effect immediately (DS 5.16). Each flips at once and rolls

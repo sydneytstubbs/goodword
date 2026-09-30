@@ -78,7 +78,7 @@ test.describe("email preferences", () => {
     await expect(mentions).toHaveAttribute("aria-checked", "true");
     await page.context().setOffline(true);
     await mentions.click();
-    await expect(page.getByText("That didn't save. Check your connection and try again.")).toBeVisible();
+    await expect(page.getByText("That didn't save. Check your connection and try again.").filter({ visible: true })).toBeVisible();
     await expect(mentions).toHaveAttribute("aria-checked", "true");
     await page.context().setOffline(false);
     await page.getByRole("button", { name: "Retry" }).click();

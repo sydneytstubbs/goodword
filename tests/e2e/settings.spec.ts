@@ -89,13 +89,13 @@ test.describe("settings and help", () => {
     const name = page.getByRole("textbox", { name: "Name" });
     await name.fill("");
     await page.getByRole("button", { name: "Save name" }).click();
-    await expect(page.getByText("Add a name so friends know it's you.")).toBeVisible();
+    await expect(page.getByText("Add a name so friends know it's you.").filter({ visible: true })).toBeVisible();
     await name.fill("Tess B");
     await page.getByRole("button", { name: "Save name" }).click();
-    await expect(page.getByText("Name saved.")).toBeVisible();
+    await expect(page.getByText("Name saved.").filter({ visible: true })).toBeVisible();
 
     await page.getByRole("combobox", { name: "Region" }).selectOption("GB");
-    await expect(page.getByText("Region saved.")).toBeVisible();
+    await expect(page.getByText("Region saved.").filter({ visible: true })).toBeVisible();
     await expect
       .poll(async () => (await admin().from("profiles").select("display_name, region").eq("user_id", tess.id).single()).data)
       .toEqual({ display_name: "Tess B", region: "GB" });
@@ -124,17 +124,17 @@ test.describe("settings and help", () => {
     await expect(page).toHaveURL(/\/you\/help$/);
     await expect(page.getByRole("heading", { name: "What's a good word?" })).toBeVisible();
     await expect(page.getByRole("img", { name: "The Movie Database (TMDB)" })).toBeVisible();
-    await expect(page.getByText("This product uses the TMDB API but is not endorsed or certified by TMDB.")).toBeVisible();
+    await expect(page.getByText("This product uses the TMDB API but is not endorsed or certified by TMDB.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("img", { name: "JustWatch" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
     await expectNoViolations(page);
 
     await page.getByRole("button", { name: "Send feedback" }).click();
-    await expect(page.getByText("Write something first, then send.")).toBeVisible();
+    await expect(page.getByText("Write something first, then send.").filter({ visible: true })).toBeVisible();
     await page.getByRole("textbox", { name: "Your feedback" }).fill("The shelf is lovely");
     await page.getByRole("checkbox", { name: "OK to follow up by email" }).check();
     await page.getByRole("button", { name: "Send feedback" }).click();
-    await expect(page.getByText("Thanks. Sydney reads every one.")).toBeVisible();
+    await expect(page.getByText("Thanks. Sydney reads every one.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Your feedback" })).toHaveValue("");
     await expect
       .poll(async () => (await admin().from("feedback").select("message, may_contact").eq("user_id", tess.id)).data)
@@ -160,7 +160,7 @@ test.describe("settings and help", () => {
     await expectNoViolations(page);
     await dialog.getByRole("button", { name: "Delete my account" }).click();
     await expect(page).toHaveURL(/\/sign-in$/);
-    await expect(page.getByText("Your account is deleted.")).toBeVisible();
+    await expect(page.getByText("Your account is deleted.").filter({ visible: true })).toBeVisible();
 
     const { data: group } = await admin().from("groups").select("owner_id").eq("id", crew).single();
     expect(group?.owner_id).toBe(jonah.id);

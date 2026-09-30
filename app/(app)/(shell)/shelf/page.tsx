@@ -16,9 +16,11 @@ export default async function ShelfPage({ searchParams }: PageProps<"/shelf">) {
   const groups = await listMyGroups(user.id);
   const last = (await cookies()).get(LAST_SHELF_COOKIE)?.value;
   const target = groups.find((g) => g.id === last) ?? groups[0];
-  // Keep ref=digest from an email's "Open Good Word" through the redirect.
-  const { ref } = await searchParams;
-  if (target) redirect(`/shelf/${target.id}${typeof ref === "string" ? `?${new URLSearchParams({ ref })}` : ""}`);
+  // Keep an email's ref=digest (and the weekend prompt's add=1, which opens
+  // Add) through the redirect.
+  const { ref, add } = await searchParams;
+  const keep = new URLSearchParams({ ...(add === "1" ? { add } : {}), ...(typeof ref === "string" ? { ref } : {}) }).toString();
+  if (target) redirect(`/shelf/${target.id}${keep ? `?${keep}` : ""}`);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 py-12">

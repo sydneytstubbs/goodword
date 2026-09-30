@@ -19,6 +19,7 @@ import { ChipButton, FilterChip } from "../ui/chip";
 import { Menu } from "../ui/menu";
 import { SegmentedControl } from "../ui/segmented-control";
 import { Sheet } from "../ui/sheet";
+import { TextLink } from "../ui/text-link";
 import type { Group, Service } from "./types";
 
 // The shelf's filter bar (DS 5.6, PRD F5.4): All / Movies / Shows, then the
@@ -39,6 +40,8 @@ export type FilterOptions = {
   genres: Array<Counted<{ name: string }>>;
   /** My shelf only: filter by the groups a good word is shared into (F5.3). */
   groups?: Group[];
+  /** Whether the viewer has picked their streaming services, for "On my services" (P1). */
+  hasMyServices?: boolean;
 };
 
 const LENGTHS: Array<{ value: Length; key: "filters.length30" | "filters.length120" }> = [
@@ -54,7 +57,8 @@ function moreCount(filters: Filters, barIds: number[]): number {
     filters.services.filter((id) => !barIds.includes(id)).length +
     filters.genres.length +
     (filters.length ? 1 : 0) +
-    filters.groups.length
+    filters.groups.length +
+    (filters.mine ? 1 : 0)
   );
 }
 
@@ -126,6 +130,9 @@ export function FilterBar({
             selected
             onClick={() => onChange({ ...filters, length: null }, "replace")}
           />
+        )}
+        {filters.mine && (
+          <FilterChip label={t("filters.onMyServices")} selected onClick={() => onChange({ ...filters, mine: false }, "replace")} />
         )}
         {filters.groups.map((id) => (
           <FilterChip
@@ -229,6 +236,15 @@ export function MoreFilters({ filters, options, onChange }: { filters: Filters; 
               onClick={() => set({ groups: toggle(filters.groups, group.id) })}
             />
           ))}
+        </SheetSection>
+      )}
+      {options.hasMyServices !== undefined && (
+        <SheetSection title={t("filters.myServices")}>
+          {options.hasMyServices ? (
+            <FilterChip label={t("filters.onMyServices")} selected={filters.mine} onClick={() => set({ mine: !filters.mine })} />
+          ) : (
+            <TextLink href="/you/settings#services">{t("filters.pickServices")}</TextLink>
+          )}
         </SheetSection>
       )}
       <SheetSection title={t("filters.services")}>

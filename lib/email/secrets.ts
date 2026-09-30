@@ -4,8 +4,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 // role key, so there's nothing extra to configure. Rotating the service role
 // key invalidates old unsubscribe links.
 
-export type EmailPref = "digest" | "mention_email" | "group_joins";
-export const EMAIL_PREFS: EmailPref[] = ["digest", "mention_email", "group_joins"];
+export type EmailPref = "digest" | "mention_email" | "group_joins" | "weekend_prompt";
+export const EMAIL_PREFS: EmailPref[] = ["digest", "mention_email", "group_joins", "weekend_prompt"];
 
 function serverKey(): string {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

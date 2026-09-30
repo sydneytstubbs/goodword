@@ -1,6 +1,7 @@
 "use client";
 
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
+import { LiveShelf } from "../live-shelf";
 import type { Shelf } from "@/components/domain/types";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -18,6 +19,7 @@ export function AllGroupsShelf({ groups, shelf }: { groups: SwitcherGroup[]; she
   return (
     <>
       <ShelfBar groups={groups} currentId="all" />
+      <LiveShelf groupIds={groups.map((g) => g.id)} />
       <h1 className="text-title-l text-default">{t("groups.allGroups")}</h1>
       <ShelfCards
         cards={shelf.cards}

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Poster } from "@/components/domain/poster";
 import { TitleSearch, type SearchAnnotations } from "@/components/domain/title-search";
 import type { GoodWordSource, MyGoodWord, Person, Title } from "@/components/domain/types";
@@ -8,7 +9,6 @@ import { ConfirmGoodWord, NoteField } from "@/components/domain/confirm-good-wor
 import { GroupPickerFields, VisibilityLine, type GroupWithCount } from "@/components/domain/visibility-line";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/toast";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
 import { track } from "@/lib/events/client";
@@ -25,7 +25,7 @@ const RECENT_KEY = "gw:recent-searches";
 const DRAFT_KEY = "gw:draft:";
 
 /** Where Add was opened from, for measurement (PRD 11.2). */
-export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state";
+export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state" | "email";
 export type OpenAddOptions = { title?: Title; source?: GoodWordSource; entryPoint?: AddEntryPoint };
 
 type AddContextValue = {
@@ -95,7 +95,6 @@ type View =
 export function AddProvider({ children }: { children: ReactNode }) {
   const { groups, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
   useCaptureVisitSource();
-  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>({ kind: "search" });
   // A fresh search each time the sheet opens.
@@ -172,6 +171,18 @@ export function AddProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
+  // The weekend prompt's button links to ?add=1 (PRD F7.2): open Add once,
+  // then drop the parameter so Back or a reload doesn't open it again.
+  const pathname = usePathname();
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("add") !== "1") return;
+    url.searchParams.delete("add");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    openAdd({ entryPoint: "email" });
+  }, [pathname, openAdd]);
+
   // `n` (put in a good word) and `/` (search) open Add on desktop (PRD F4, DS
   // 3.9), unless you're typing or a sheet is open.
   useEffect(() => {
@@ -215,11 +226,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   }
 
   function submitPut(title: Title) {
-    // Without a connection, keep the sheet and the note, and say why (PRD F12 baseline).
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      showToast({ message: t("vouch.offline") });
-      return;
-    }
+    // Without a connection it's queued on this device and sent on reconnect (PRD F12).
     const typed = note;
     writeDraft(title.id, "");
     const msFromAddOpened = openedAt.current ? Date.now() - openedAt.current : undefined;

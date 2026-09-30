@@ -101,6 +101,16 @@ describe("filter logic (DS 5.6)", () => {
     expect(names(filterShelf(shelf, f({ services: [337] })).cards)).toEqual([]);
   });
 
+  it("shows only titles on one of your services with On my services (P1)", () => {
+    const mine = f({ mine: true, myServices: [HULU] });
+    expect(names(filterShelf(shelf, mine).cards)).toEqual(["Low Tide Club", "Grandma's Heist"]);
+    expect(names(filterShelf(shelf, f({ mine: true, myServices: [] })).cards)).toEqual([]);
+    expect(isFiltered(mine)).toBe(true);
+    expect(filtersToQuery(mine)).toBe("?mine=1");
+    expect(parseFilters(params("mine=1")).mine).toBe(true);
+    expect(clearFilters(mine)).toEqual(f({ myServices: [HULU] }));
+  });
+
   it("filters My shelf by the groups a good word is shared into", () => {
     expect(names(filterShelf(shelf, f({ groups: ["g2"] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
   });
@@ -162,6 +172,7 @@ describe("no-results copy (DS 6.6)", () => {
     expect(noResultsSubject(f({ type: "movie", genres: ["Comedy"] }), name, words)).toBeNull();
     expect(noResultsSubject(f({ length: 30 }), name, words)).toBeNull();
     expect(noResultsSubject(f({ services: [999] }), name, words)).toBeNull();
+    expect(noResultsSubject(f({ type: "movie", mine: true }), name, words)).toBeNull();
   });
 
   it("picks a or an", () => {

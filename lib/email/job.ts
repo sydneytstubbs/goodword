@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { digestEmail } from "@/emails/digest";
 import { groupJoinEmail } from "@/emails/group-join";
 import { mentionEmail } from "@/emails/mention";
+import { weekendPromptEmail } from "@/emails/weekend-prompt";
 import type { EmailLinks, DigestContent, JoinBatch, MentionBatch } from "@/emails/types";
 import { recordEvent } from "@/lib/events/server";
 import { unsubscribeToken, type EmailPref } from "./secrets";
@@ -14,7 +15,8 @@ import type { Sender } from "./send";
 // before sending and released if sending fails, so overlapping runs never
 // send twice and a failure is retried on the next run.
 //
-// Digests go before join emails so the one-a-day cap favors the digest.
+// Digests go before join emails and the weekend prompt, so the one-a-day cap
+// favors the digest.
 // Mentions are exempt from the cap.
 
 export type JobOptions = {
@@ -33,13 +35,13 @@ export type JobOptions = {
   record?: boolean;
 };
 
-export type JobResult = { digests: number; mentions: number; joins: number; skipped: number; failed: number };
+export type JobResult = { digests: number; mentions: number; joins: number; weekend: number; skipped: number; failed: number };
 
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function runEmailJob(options: JobOptions): Promise<JobResult> {
   const { admin, send, origin, only, digestNow = false, mentionWindowMinutes = 10, pauseMs = 550, maxPerRun = 60, record = true } = options;
-  const result: JobResult = { digests: 0, mentions: 0, joins: 0, skipped: 0, failed: 0 };
+  const result: JobResult = { digests: 0, mentions: 0, joins: 0, weekend: 0, skipped: 0, failed: 0 };
   let sent = 0;
   const p_only = only && only.length > 0 ? only : null;
 
@@ -51,7 +53,7 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
 
   // Returns true when the email went (or was deliberately skipped). Emails
   // that really went are recorded (PRD 11.2); nothing about their content is.
-  const deliver = async (email: Parameters<Sender>[0], userId: string, type: "digest" | "mention" | "group_join"): Promise<boolean> => {
+  const deliver = async (email: Parameters<Sender>[0], userId: string, type: "digest" | "mention" | "group_join" | "weekend_prompt"): Promise<boolean> => {
     if (sent > 0) await pause(pauseMs);
     const outcome = await send(email);
     sent++;
@@ -121,6 +123,20 @@ export async function runEmailJob(options: JobOptions): Promise<JobResult> {
     } else {
       await admin.rpc("release_email_items", { p_ids: row.item_ids });
     }
+  }
+
+  // 4. The weekend prompt (F7.2), claimed by its Sunday like the digest.
+  const weekend = await admin.rpc("email_weekend_due", { p_only });
+  if (weekend.error) throw new Error(`email_weekend_due: ${weekend.error.message}`);
+  for (const row of (weekend.data ?? []) as Array<{ user_id: string; email: string; slot: string }>) {
+    if (sent >= maxPerRun) break;
+    const claimed = await log(row.user_id, "weekend_prompt", row.slot);
+    if (claimed.error) continue;
+    const { unsubscribe, oneClick } = links(row.user_id, "weekend_prompt");
+    const email = weekendPromptEmail(unsubscribe);
+    const ok = await deliver({ ...email, to: row.email, oneClickUnsubscribe: oneClick, idempotencyKey: `weekend:${row.user_id}:${row.slot}` }, row.user_id, "weekend_prompt");
+    if (ok) result.weekend++;
+    else await admin.from("notification_log").delete().match({ user_id: row.user_id, type: "weekend_prompt", payload_ref: row.slot });
   }
 
   return result;

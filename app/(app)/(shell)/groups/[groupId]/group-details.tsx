@@ -1,5 +1,6 @@
 "use client";
 
+import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { InviteCard, type InviteState } from "@/components/domain/invite-card";
@@ -206,7 +207,14 @@ function MemberRow({ member, isMe, onRemove, groupName }: { member: Member; isMe
       <Avatar person={member} size={40} decorative />
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-body text-default">
-          {member.name}
+          {isMe ? (
+            member.name
+          ) : (
+            // Their good words in groups you share (PRD F8).
+            <NextLink href={`/people/${member.id}`} className="inline-flex min-h-target items-center rounded-control underline-offset-4 hover:underline">
+              {member.name}
+            </NextLink>
+          )}
           {labels.length > 0 && <span className="text-muted"> · {labels.join(" · ")}</span>}
         </span>
         <span className="text-caption text-muted">

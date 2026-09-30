@@ -10,6 +10,7 @@ import { isConversationPath } from "@/lib/conversations/paths";
 import { t } from "@/lib/messages";
 import { useActivityCount } from "./activity-count";
 import { OfflineBanner } from "./offline-banner";
+import { QueuedGoodWords } from "./queued-good-words";
 
 // The page frame below 1024px (PRD 6.2, DS 4.2.8): the header with the
 // wordmark and the Activity bell, and room for the tab bar. The conversation
@@ -32,6 +33,7 @@ export function ShellChrome({ children }: { children: ReactNode }) {
       )}
       <div className={cn(!immersive && "lg:pt-8")}>
         {!immersive && <OfflineBanner />}
+        {!immersive && <QueuedGoodWords />}
         {children}
       </div>
     </div>

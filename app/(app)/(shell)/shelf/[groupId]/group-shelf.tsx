@@ -2,6 +2,7 @@
 
 import NextLink from "next/link";
 import { useState } from "react";
+import { LiveShelf } from "../live-shelf";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { InviteCard } from "@/components/domain/invite-card";
 import type { Shelf } from "@/components/domain/types";
@@ -41,6 +42,10 @@ export function GroupShelf({
   const { openAdd } = useAdd();
   const { overlays } = useGoodWords();
   const [inviteOpen, setInviteOpen] = useState(false);
+  // The welcome shows for the group you arrived in and stays for this visit,
+  // even when the page refreshes from the server after it's marked seen.
+  const [welcomeFor, setWelcomeFor] = useState(showWelcome ? group.id : null);
+  if (showWelcome && welcomeFor !== group.id) setWelcomeFor(group.id);
   useMarkViewed([group.id]);
   const openInvite = inviteLink ? () => setInviteOpen(true) : undefined;
   // Putting one in here, from anywhere, answers the prompt.
@@ -50,7 +55,8 @@ export function GroupShelf({
   return (
     <>
       <ShelfBar groups={groups} currentId={group.id} onInvite={openInvite} />
-      {showWelcome && <WelcomeBanner groupId={group.id} groupName={group.name} />}
+      <LiveShelf groupIds={[group.id]} />
+      {welcomeFor === group.id && <WelcomeBanner groupId={group.id} groupName={group.name} />}
       <header className="flex flex-col gap-3">
         <h1 className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{group.name}</h1>
         <NextLink

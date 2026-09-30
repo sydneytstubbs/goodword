@@ -36,7 +36,7 @@ test("FAQ opens and closes from the keyboard", async ({ page }) => {
   const question = page.locator("summary", { hasText: "Is it public?" });
   await question.focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByText("No. Groups are private and invite-only.", { exact: false })).toBeVisible();
+  await expect(page.getByText("No. Groups are private and invite-only.", { exact: false }).filter({ visible: true })).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page.getByText("No. Groups are private and invite-only.", { exact: false })).toBeHidden();
 });
