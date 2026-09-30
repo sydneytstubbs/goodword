@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.5 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
+**Version** 3.2.6 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-29
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -936,7 +936,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - **Record the source** of each good word (organic, digest, nudge) so the team can tell whether people log on their own (12.4).
 
 ### 5.14 Privacy and trust
-- **Nothing is public.** No public profiles, no discoverable groups, no search engine indexing of app routes (`noindex`).
+- **Nothing is public unless you turn on a share link.** No public profiles, no discoverable groups, no search engine indexing of app routes (`noindex`). The one exception is Share my shelf (PRD F9): off by default, turned on only by you, revocable at any time, `noindex`, and showing only your own good words and notes, never your groups, other people, or their notes.
 - **Audience is shown before sharing,** always, via the visibility line (4.2.6).
 - **No read receipts or "who viewed"** of any kind.
 - **Membership is visible to members:** anyone in a group can see who else is in it.
@@ -1438,6 +1438,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.6 (2026-09-30):** Share my shelf allowed (PRD open question 2): 5.14 now reads "Nothing is public unless you turn on a share link".
 - **v3.2.5 (2026-09-29):** Step 6. Any title can have a conversation in any of your groups; the first comment tells the group with a "started a conversation" Activity item, and title detail's chip row lists all your groups (4.2.13, 5.17). Open question 8 decided: comments from people who leave stay attributed. Below 1024px, the header holds the wordmark and the Activity bell, and the conversation screen hides the tab bar (4.2.8, 5.17). Microcopy for the new activity types (6.6).
 - **v3.2.4 (2026-09-29):** Step 5. Open question 9 decided: title detail is friends first (4.2.2, 5.7), and each good word shows chips for which of your groups it's in. The chip button for More filters (4.1.9). New counts in the group switcher and rail, and a dot on the Shelf tab (4.2.5). Filter bar layout, sort placement, and active filters on the bar (5.6). Where to watch links, loading, and error (5.7). Microcopy for filters, no results, paging, and where to watch (6.6). Utility `scrollbar-none` for the chip row. `/styleguide` gains the browsing pattern, where-to-watch states, and New counts.
 - **v3.2.3 (2026-09-29):** Step 4. The visibility line with no groups picked reads "Only you, for now" and isn't an error (4.2.6). Microcopy for the log flow's other toasts, the 10th good word milestone, the first-good-word prompt, a shelf that didn't load, and an offline banner that doesn't promise queued writes until PRD F12 builds them (6.6). `/styleguide` gains a Patterns section for 5.4 and the shelf states.

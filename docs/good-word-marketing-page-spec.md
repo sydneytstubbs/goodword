@@ -1,6 +1,6 @@
 # Good Word: Marketing Page Spec (v2, Editorial)
 
-**Version** 2.1 · **Last updated** 2026-09-29
+**Version** 2.2 · **Last updated** 2026-09-29
 
 Design and UX requirements for the single-page marketing site that explains Good Word. This version replaces the playful v1 direction with a calm, modern, editorial one. Written to be handed to Claude Code as the build brief.
 
@@ -184,7 +184,7 @@ Order is fixed. All sections sit on `--surface` unless noted. Content max width 
   - "Coming soon" as a `overline` label with the cobalt dot. No button, no form.
 
 ### 6.11 Footer
-- Hairline top border. Wordmark left; right side: "Made by people who ask their friends what to watch." in `caption`, then © year. No social links unless provided.
+- Hairline top border. Wordmark left; right side: "Made by people who ask their friends what to watch." in `caption`, then © year, then links to Privacy (`/privacy`) and Terms (`/terms`). No social links unless provided.
 
 ---
 
@@ -290,4 +290,5 @@ Follow BRAND 3 and DS 6. On this page specifically:
 
 ## 12. Changelog
 
+- **v2.2 (2026-09-30):** The footer links to the Privacy and Terms pages (6.11).
 - **v2.1 (2026-09-29):** The sticky nav turns solid `--surface` after scrolling, not 90% (it read grey over the ink section). Two more invented titles, Borrowed Weather and The Tuesday Choir, so the Groups columns (6.5) don't repeat titles other than Low Tide Club. The simulated mobile LCP of 2.3–2.7s is accepted (8.4).

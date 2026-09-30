@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.12 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
+**Version** 1.2.13 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-29
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -574,7 +574,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 - The shared page is read-only and shows the owner's display name, their good words (poster, title, year, their own note only), newest first, and a small "Made with Good Word" link to the marketing page. It never shows groups, other people, or other people's notes.
 - Toggle off or **Reset link** invalidates the old link immediately.
 - The page sends `noindex` and carries no analytics beyond a view count visible to the owner.
-- **Design system impact:** DS 5.14 says "Nothing is public." This feature needs that rule amended to "Nothing is public unless you turn on a share link" (Section 15).
+- **Design system impact:** DS 5.14 now reads "Nothing is public unless you turn on a share link" (open question 2, decided 2026-09-30).
 
 ---
 
@@ -894,7 +894,7 @@ Decide before the slice that needs them.
 | # | Question | Proposal | Needed by |
 |---|---|---|---|
 | 1 | Marketing page framework: Next.js or Astro? | **Decided (2026-09-28): Next.js.** Marketing and app share one Next.js app | Slice 0 |
-| 2 | Share-my-shelf conflicts with DS 5.14 ("Nothing is public") | Amend DS 5.14 to "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
+| 2 | Share-my-shelf conflicts with DS 5.14 ("Nothing is public") | **Decided (2026-09-30): allowed.** DS 5.14 now reads "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
 | 3 | The marketing page promises "Ask, and pull from people you trust" with the example "Something funny, under 30 minutes" | For the MVP, filters (Comedy + Under 30 minutes) fulfill this; either keep the copy or change the example until Ask ships | Beta launch |
 | 4 | Digest day and time | Thursday, 5pm local. Built this way in slice 7 (one setting in `digest_slot`); still to confirm | Slice 7 |
 | 5 | When someone leaves, their good words leave that shelf | Confirm (currently specified) | Slice 2 |
@@ -910,6 +910,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.2.13 (2026-09-30):** Open question 2 decided: Share my shelf is allowed (F9, DS 5.14). The privacy and terms pages name Sydney Stubbs as the contact, and the marketing page footer links to them.
 - **v1.2.12 (2026-09-30):** Step 9. Events are checked against a fixed schema before they're stored, so no free text can get in (11.1); browser events go through `/api/events`, the rest are recorded where they happen, after the response is sent. `app_admins` decides who sees `/admin/metrics` (section 8, 11.4). Mention and join emails carry `ref=mention` and `ref=group_join` so `email_clicked` covers every email (11.2). `title_viewed.from` is `shelf` or `digest` for now: search, person view, and share links don't open title detail yet. `add_opened` has no `search_row` entry yet, since no search row opens Add. The metrics page also shows comments and commenters for H7. Weeks start Monday, UTC.
 - **v1.2.11 (2026-09-30):** Step 8. Settings has Account (name, email, region, sign out), Notifications, and Your data; Sign out moves there from My shelf (F11). Download my data is a JSON file of profile, groups, and good words from `/api/me/export` (F1). Deleting an account leaves each group the way leaving does, so ownership passes to the earliest member and solo groups are deleted, then removes the auth user and everything of theirs (F1, section 8). `feedback` table, messages up to 2,000 characters, 10 a day, emailed to Sydney (F11, 10.4). Help has the FAQ, the DS 3.9 shortcuts (now all built), feedback, and About with the TMDB and JustWatch logos, which also replace the JustWatch text under where-to-watch (9.1, 9.2). `/privacy` and `/terms` are plain-language drafts (10.4). The Content Security Policy allows inline scripts, since nonces would make every page render on demand (10.4).
 - **v1.2.10 (2026-09-30):** Step 7 accepted. Verified on a phone: the join email and the test digest (posters, notes, `ref=digest` links). Deferred to a later polish pass, by Sydney's call: a live mention email and signed-out unsubscribe checked on a phone (both pass automated tests), inbox placement for the digest (the first one landed in Spam; check SPF, DKIM, and DMARC in Gmail's Show original and add a `_dmarc` record if missing), and email wording and layout details.

@@ -312,6 +312,14 @@ function Footer() {
         <div className="flex flex-col gap-1 text-caption text-muted md:flex-row md:gap-4">
           <p>{t("marketing.footer.madeBy")}</p>
           <p>{t("marketing.footer.copyright", { year: String(new Date().getFullYear()) })}</p>
+          <nav aria-label={t("marketing.footer.legal")} className="flex gap-4">
+            <a href="/privacy" className="inline-flex min-h-11 items-center rounded-control underline-offset-4 hover:text-default hover:underline">
+              {t("marketing.footer.privacy")}
+            </a>
+            <a href="/terms" className="inline-flex min-h-11 items-center rounded-control underline-offset-4 hover:text-default hover:underline">
+              {t("marketing.footer.terms")}
+            </a>
+          </nav>
         </div>
       </div>
     </footer>

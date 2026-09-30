@@ -388,7 +388,10 @@
     },
     "footer": {
       "madeBy": "Made by people who ask their friends what to watch.",
-      "copyright": "© {year} Good Word"
+      "copyright": "© {year} Good Word",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "legal": "Legal"
     }
   },
   "auth": {
@@ -675,7 +678,7 @@
     "backHome": "Good Word home",
     "privacy": {
       "title": "Privacy",
-      "intro": "Good Word is a small, private app for sharing what you'd watch with friends. This page says what we collect, why, who can see it, and how to delete it. We is Sydney Stubbs, who makes Good Word.",
+      "intro": "Good Word is a small, private app for sharing what you'd watch with friends. This page says what we collect, why, who can see it, and how to delete it. “We” means Sydney Stubbs, who makes Good Word.",
       "s1h": "What we collect",
       "s1b": "Your email address, so you can sign in. The name you choose, your region, and your timezone. The groups you start or join. Your good words and notes, your comments and mentions, and your email settings. Feedback you send us. Basic records of how the app is used, like when a good word is put in, kept on our own systems.",
       "s2h": "Why we collect it",
@@ -693,7 +696,7 @@
       "s8h": "Changes",
       "s8b": "If this page changes in a way that matters, we'll tell you in the app or by email before it takes effect.",
       "s9h": "Contact",
-      "s9b": "Questions or requests: use Send feedback in Help, or email sydneytstubbs@gmail.com."
+      "s9b": "Sydney Stubbs is responsible for Good Word and your data. For questions or requests, use Send feedback in Help, or email sydneytstubbs@gmail.com."
     },
     "terms": {
       "title": "Terms",
@@ -713,7 +716,7 @@
       "s7h": "Changes",
       "s7b": "If these terms change in a way that matters, we'll tell you in the app or by email before the change takes effect.",
       "s8h": "Contact",
-      "s8b": "Questions: use Send feedback in Help, or email sydneytstubbs@gmail.com."
+      "s8b": "Sydney Stubbs runs Good Word. For questions, use Send feedback in Help, or email sydneytstubbs@gmail.com."
     }
   },
   "metrics": {
