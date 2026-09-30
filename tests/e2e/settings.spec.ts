@@ -49,12 +49,14 @@ test.describe("settings and help", () => {
     tess = await createUser("Tess");
     users.push(priya, jonah, tess);
     await admin().from("groups").insert({ id: crew, name: "College crew", owner_id: priya.id, color: 1 });
-    await admin()
+    // Every row names the same columns (a bulk insert uses one column list).
+    const members = await admin()
       .from("group_members")
       .insert([
         { group_id: crew, user_id: priya.id, role: "owner", welcome_seen_at: new Date().toISOString(), joined_at: new Date(Date.now() - 60_000).toISOString() },
-        { group_id: crew, user_id: jonah.id, role: "member", welcome_seen_at: new Date().toISOString() },
+        { group_id: crew, user_id: jonah.id, role: "member", welcome_seen_at: new Date().toISOString(), joined_at: new Date().toISOString() },
       ]);
+    if (members.error) throw members.error;
     await admin().from("invites").insert({ group_id: crew, code: randomUUID().replaceAll("-", ""), created_by: priya.id });
     const { data: title, error } = await admin()
       .from("titles")
@@ -63,7 +65,8 @@ test.describe("settings and help", () => {
       .single();
     if (error) throw error;
     const { data: gw } = await admin().from("good_words").insert({ user_id: priya.id, title_id: title.id, note: "ep 3 is where it gets you" }).select("id").single();
-    await admin().from("good_word_groups").insert({ good_word_id: gw!.id, group_id: crew });
+    const shared = await admin().from("good_word_groups").insert({ good_word_id: gw!.id, group_id: crew });
+    if (shared.error) throw shared.error;
   });
 
   test.afterAll(async () => {
