@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.3.0 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
+**Version** 1.3.1 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -879,6 +879,7 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `spoiler_revealed` | | |
 | `import_started` | `method` (`text`, `screenshots`, `both`), `screenshot_count`, `text_length_bucket` | F15 |
 | `import_parsed` | `found_count`, `duplicate_count`, `high_confidence_count`, `ai_used`, `reused`, `ai_input_tokens`, `ai_output_tokens`, `ai_cost_microdollars`, `ms_elapsed` | F15 cost and speed |
+| `import_failed` | `stage` (`parse`, `save`), `reason` (`config`, `auth`, `rate_limited`, `bad_request`, `unavailable`, `refused`, `unparsed`, `failed`) | F15 reliability |
 | `import_card_decided` | `decision` (`added`, `skipped`), `opened_alternatives`, `bulk` | F15 match accuracy |
 | `import_finished` | `added_count`, `skipped_count`, `duplicate_count`, `ms_from_start` | F15: time to a list of 10 |
 
@@ -973,6 +974,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.3.1 (2026-10-01):** `import_failed` (11.2) records why an import failed (a missing or rejected API key, limits, the API rejecting the request), never the text, so failures can be diagnosed from the events table.
 - **v1.3.0 (2026-10-01):** Build your list (F15, slice 11), from Sydney's "Build Your Recs List" spec. Decisions: keep the word "recs" and rename My shelf to **My Recs**; imported recs go into all your groups by default; Claude Haiku 4.5 only, with no larger-model escalation; limits of 5 screenshots, 5,000 characters, 100 titles per import, and 10 imports a day; unreviewed cards are saved privately so a review can be resumed. The share sheet path is Android only; iPhone uses paste. New routes (6.1), tables (section 8), and events (11.2). A site-wide 404 for unknown URLs.
 - **v1.2.14 (2026-09-30):** Step 10. Streaming services are saved per region (a service's id can differ by country); Settings lists the region's services from TMDB, most popular first, with "Show all". A title whose services aren't known yet never matches "On my services". Share links are 144-bit tokens, and a link turned back on is always a new one. The shared page lists up to 500 good words and shows no title detail link, since title detail needs sign-in. The weekend prompt's button links to `/shelf?add=1&ref=nudge_email`, which opens Add once; `add_opened` gains the `email` entry point for it (11.2). The weekend prompt counts toward the one-a-day email cap after the digest and join emails, and a held prompt goes within 24 hours of Sunday 10am or not at all. Offline good words are kept on the device per person and sent on reconnect; the service worker keeps up to 6 shelves for offline. Live new good words are counted per shelf, never the viewer's own.
 - **v1.2.13 (2026-09-30):** Open question 2 decided: Share my shelf is allowed (F9, DS 5.14). The privacy and terms pages name Sydney Stubbs as the contact, and the marketing page footer links to them.

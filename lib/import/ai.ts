@@ -15,8 +15,11 @@ export type ImageInput = { mediaType: "image/jpeg" | "image/png" | "image/webp";
 export type Extraction = { candidates: Candidate[]; inputTokens: number; outputTokens: number };
 export type Extract = (input: { text: string; images: ImageInput[] }, signal?: AbortSignal) => Promise<Extraction>;
 
+/** Why the model call failed, for logs and the import_failed event (never the text). */
+export type ExtractFailure = "config" | "auth" | "rate_limited" | "bad_request" | "unavailable" | "refused" | "unparsed" | "failed";
+
 export class ExtractError extends Error {
-  constructor(readonly reason: "config" | "refused" | "failed") {
+  constructor(readonly reason: ExtractFailure) {
     super(`Couldn't read titles: ${reason}`);
     this.name = "ExtractError";
   }
@@ -74,11 +77,22 @@ export const extractTitles: Extract = async ({ text, images }, signal) => {
     );
   } catch (error) {
     if (signal?.aborted) throw error;
+    // Most specific first (shared/error-codes): a bad or missing key, limits, a
+    // request the API rejects, then anything else from the API or the network.
+    if (error instanceof Anthropic.AuthenticationError || error instanceof Anthropic.PermissionDeniedError) {
+      throw new ExtractError("auth");
+    }
+    if (error instanceof Anthropic.RateLimitError) throw new ExtractError("rate_limited");
+    if (error instanceof Anthropic.BadRequestError || error instanceof Anthropic.NotFoundError) {
+      console.error("import: the API rejected the request", error.status, error.message.slice(0, 200));
+      throw new ExtractError("bad_request");
+    }
+    if (error instanceof Anthropic.APIError) throw new ExtractError("unavailable");
     throw new ExtractError("failed");
   }
   if (response.stop_reason === "refusal") throw new ExtractError("refused");
   const parsed = response.parsed_output;
-  if (!parsed) throw new ExtractError("failed");
+  if (!parsed) throw new ExtractError("unparsed");
   const candidates = parsed.titles
     .map(tidyCandidate)
     .filter((c): c is Candidate => c !== null)
