@@ -1,4 +1,5 @@
 import type { Title } from "@/components/domain/types";
+import { resolveGenreAccent } from "@/lib/genre-accent";
 import { normalizeTitle, type Candidate } from "./text";
 
 // Picking TMDB's best match for one written title (PRD F15.2). Pure, so the
@@ -59,4 +60,19 @@ export function scoreResults(candidate: Pick<Candidate, "title" | "year" | "type
   );
   const high = candidate.confident && top.exact && fitsYear(top.title) && !rival;
   return { candidates, confidence: high ? "high" : "low" };
+}
+
+/** A card candidate as a Title, for Poster and the meta line. */
+export function candidateTitle(candidate: CardCandidate): Title {
+  const id = `${candidate.type}-${candidate.tmdbId}`;
+  return {
+    id,
+    type: candidate.type,
+    tmdbId: candidate.tmdbId,
+    name: candidate.name,
+    ...(candidate.year ? { year: candidate.year } : {}),
+    genres: [],
+    accent: resolveGenreAccent([], id),
+    ...(candidate.posterPath ? { posterPath: candidate.posterPath } : {}),
+  };
 }

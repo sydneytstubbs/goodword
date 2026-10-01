@@ -5,6 +5,7 @@ import { Rail, TabBar } from "@/components/domain/app-bars";
 import type { Group } from "@/components/domain/types";
 import { shelfGroupId } from "@/lib/auth/paths";
 import { isConversationPath } from "@/lib/conversations/paths";
+import { isImportDeckPath } from "@/lib/import/paths";
 import { useActivityCount } from "./activity-count";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { useAdd } from "./add";
@@ -26,7 +27,7 @@ export function AppNav({ groups }: { groups: Group[] }) {
   return (
     <>
       <KeyboardShortcuts />
-      {!isConversationPath(pathname) && (
+      {!isConversationPath(pathname) && !isImportDeckPath(pathname) && (
         <TabBar current={current} onAdd={addFromTab} shelfDot={Object.values(counts).some((n) => n > 0)} />
       )}
       <Rail

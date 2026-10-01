@@ -439,7 +439,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Help | `Question` | Robot guess | `Robot` |
 | Sign out | `SignOut` | Conversation, comment count | `ChatCircle` |
 | Mention | `At` | Spoiler | `EyeSlash` |
-| Send comment | `PaperPlaneRight` | | |
+| Send comment | `PaperPlaneRight` | Add screenshots (5.18) | `Images` |
 
 ### 3.6 Imagery
 - **Posters are the color.** Real TMDB images in product mode, with a typographic fallback (4.2.1). Never crop, filter, tint, or invert them, in either theme. Show them large enough to enjoy.
@@ -1460,7 +1460,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
-- **v3.3.0 (2026-10-01):** Adding recs in bulk (5.18, PRD F15). Sydney kept the word **rec**: the My shelf tab is now **My Recs** (glossary 1.4, tab bar, rail, shortcuts, and every "My shelf ›" path), and its empty state reads "No recs yet". Import microcopy (6.6).
+- **v3.3.0 (2026-10-01):** Adding recs in bulk (5.18, PRD F15). Sydney kept the word **rec**: the My shelf tab is now **My Recs** (glossary 1.4, tab bar, rail, shortcuts, and every "My shelf ›" path), and its empty state reads "No recs yet". Import microcopy (6.6). The `Images` icon for Add screenshots (3.5).
 - **v3.2.9 (2026-10-01):** A site-wide 404 for unknown URLs, with copy approved by Sydney (6.6): "We couldn't find that page", linking to your shelf when signed in and to the home page when signed out. Sends noindex.
 - **v3.2.8 (2026-09-30):** Sheets (4.1.13) cap at 90% of the visible height, so an open keyboard can't push a sheet's top off screen; the Add sheet is full height on phones.
 - **v3.2.7 (2026-09-30):** Step 10: Settings groups (5.16) gain Streaming services and Share my shelf; About moved to Help in step 8.

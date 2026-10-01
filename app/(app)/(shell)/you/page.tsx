@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import NextLink from "next/link";
 import { Icon } from "@/components/icon";
 import { GroupDot } from "@/components/ui/chip";
+import { Banner } from "@/components/ui/banner";
+import { ButtonLink } from "@/components/ui/button-link";
 import { TextLink } from "@/components/ui/text-link";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { myShelf } from "@/lib/good-words/queries";
 import { recordEvent } from "@/lib/events/server";
 import { filterKeys } from "@/lib/events/shelf";
 import { listMyGroups } from "@/lib/groups/queries";
+import { unfinishedImport } from "@/lib/import/queries";
+import { deckHref } from "@/lib/import/paths";
 import { t } from "@/lib/messages";
 import { HomeScreenTip } from "./home-screen-tip";
 import { MyShelfCards } from "./my-shelf-cards";
@@ -19,15 +23,33 @@ export const metadata: Metadata = { title: "My Recs · Good Word" };
 // include which of your groups it's in (F5.3).
 export default async function MyShelfPage({ searchParams }: PageProps<"/you">) {
   const { user, profile } = await requireOnboardedUser("/you");
-  const [groups, shelf] = await Promise.all([
+  const [groups, shelf, unfinished] = await Promise.all([
     listMyGroups(user.id),
     myShelf(user.id, profile.display_name, profile.region),
+    unfinishedImport(),
   ]);
   await recordEvent("shelf_viewed", { shelf: "mine", filters: filterKeys(await searchParams), new_count: 0 }, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-10 px-4 py-8">
-      <h1 className="text-title-l text-default">{t("you.title")}</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <h1 className="text-title-l text-default">{t("you.title")}</h1>
+        <ButtonLink href="/you/import" icon="add" className="self-start sm:self-auto">
+          {t("importRecs.openButton")}
+        </ButtonLink>
+      </div>
+      {unfinished && (
+        <Banner
+          icon="edit"
+          action={
+            <TextLink href={deckHref(unfinished.importId, unfinished.position)} variant="standalone">
+              {t("importRecs.finish")}
+            </TextLink>
+          }
+        >
+          {t("importRecs.resume", { count: unfinished.left })}
+        </Banner>
+      )}
       <HomeScreenTip />
 
       <MyShelfCards shelf={shelf} />

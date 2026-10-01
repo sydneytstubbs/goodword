@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import type { TitleType } from "@/components/domain/types";
 import { putGoodWord, takeBackGoodWord, type Milestone, type TitleRef } from "@/lib/good-words/actions";
 import { recordEvent } from "@/lib/events/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { CardCandidate } from "./match";
 
@@ -20,6 +21,9 @@ type CardRow = {
   id: string;
   import_id: string;
   candidates: CardCandidate[];
+  added_type: TitleType | null;
+  added_tmdb_id: number | null;
+  created_good_word: boolean;
   imports: { group_ids: string[]; created_at: string; duplicate_count: number };
 };
 
@@ -29,7 +33,7 @@ async function loadCard(cardId: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("import_cards")
-    .select("id, import_id, candidates, imports!inner(group_ids, created_at, duplicate_count)")
+    .select("id, import_id, candidates, added_type, added_tmdb_id, created_good_word, imports!inner(group_ids, created_at, duplicate_count)")
     .eq("id", cardId)
     .maybeSingle<CardRow>();
   return { supabase, card: data };
@@ -109,6 +113,12 @@ export async function addImportCard(
   }
   const left = await decide(supabase, card, "added", input.searched ? 0 : input.chosen, input.note, input.opened || Boolean(input.searched));
   if (left === null) return FAILED;
+  // What was added, so Undo takes back only a good word this import created.
+  // The card was read through RLS above, so it's this person's.
+  await createAdminClient()
+    .from("import_cards")
+    .update({ added_type: ref.type, added_tmdb_id: ref.tmdbId, created_good_word: !already })
+    .eq("id", card.id);
   await recordEvent("import_card_decided", { decision: "added", opened_alternatives: input.opened, bulk: input.bulk ?? false });
   if (left === 0) await finishedEvent(supabase, card);
   if (already) refresh();
@@ -126,16 +136,20 @@ export async function skipImportCard(cardId: string, input: { chosen: number; no
   return { ok: true, left, created: false };
 }
 
-/** Undo: takes back the good word Add created (if it did), and the card is pending again. */
-export async function undoImportCard(cardId: string, input: { created: boolean; ref?: TitleRef }): Promise<DeckResult> {
+/** Undo: takes back the good word Add created (only if it created one), and the card is pending again. */
+export async function undoImportCard(cardId: string): Promise<DeckResult> {
   const { supabase, card } = await loadCard(cardId);
   if (!card) return { ok: false, error: "notFound" };
-  if (input.created && input.ref) {
-    const back = await takeBackGoodWord(input.ref);
+  if (card.created_good_word && card.added_type && card.added_tmdb_id) {
+    const back = await takeBackGoodWord({ type: card.added_type, tmdbId: card.added_tmdb_id });
     if (!back.ok) return back;
   }
-  const left = await decide(supabase, card, "pending", 0, null, false);
+  const left = await decide(supabase, card, "pending", -1, null, false);
   if (left === null) return FAILED;
+  await createAdminClient()
+    .from("import_cards")
+    .update({ added_type: null, added_tmdb_id: null, created_good_word: false })
+    .eq("id", card.id);
   refresh();
   return { ok: true, left, created: false };
 }

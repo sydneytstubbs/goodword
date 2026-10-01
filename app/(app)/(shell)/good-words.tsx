@@ -52,6 +52,8 @@ type GoodWordsValue = {
   setGroups: (title: Title, mine: MyGoodWord, groupIds: string[]) => void;
   takeBack: (title: Title, mine: MyGoodWord) => void;
   milestone: Milestone | null;
+  /** A milestone reached elsewhere (the review deck), shown on the next shelf. */
+  showMilestone: (milestone: Milestone) => void;
   dismissMilestone: () => void;
 };
 
@@ -329,6 +331,7 @@ export function GoodWordsProvider({
         setGroups,
         takeBack,
         milestone,
+        showMilestone: setMilestone,
         dismissMilestone: () => setMilestone(null),
       }}
     >

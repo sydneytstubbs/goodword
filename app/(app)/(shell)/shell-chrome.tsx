@@ -7,6 +7,7 @@ import { ActivityBell } from "@/components/domain/app-bars";
 import { Wordmark } from "@/components/domain/wordmark";
 import { cn } from "@/lib/cn";
 import { isConversationPath } from "@/lib/conversations/paths";
+import { isImportDeckPath } from "@/lib/import/paths";
 import { t } from "@/lib/messages";
 import { useActivityCount } from "./activity-count";
 import { OfflineBanner } from "./offline-banner";
@@ -15,11 +16,11 @@ import { QueuedGoodWords } from "./queued-good-words";
 // The page frame below 1024px (PRD 6.2, DS 4.2.8): the header with the
 // wordmark and the Activity bell, and room for the tab bar. The conversation
 // screen has its own compact header and composer instead, like a messaging
-// screen, so it gets neither.
+// screen, so it gets neither; nor does the review deck, with its action bar.
 export function ShellChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { count } = useActivityCount();
-  const immersive = isConversationPath(pathname);
+  const immersive = isConversationPath(pathname) || isImportDeckPath(pathname);
 
   return (
     <div className={cn("lg:ps-rail lg:pb-0", !immersive && "pb-tabbar-safe")}>

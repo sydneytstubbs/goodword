@@ -8,6 +8,7 @@ import type { GoodWordSource, MyGoodWord, Person, Title } from "@/components/dom
 import { ConfirmGoodWord, NoteField } from "@/components/domain/confirm-good-word";
 import { GroupPickerFields, VisibilityLine, type GroupWithCount } from "@/components/domain/visibility-line";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Sheet } from "@/components/ui/sheet";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
@@ -249,6 +250,12 @@ export function AddProvider({ children }: { children: ReactNode }) {
         recent={recent}
         onRecentChange={writeRecent}
       />
+    );
+    // A list to add in bulk goes to Add recs (PRD F15).
+    footer = (
+      <ButtonLink href="/you/import" variant="ghost" icon="screenshots" fullWidth onClick={() => setOpen(false)}>
+        {t("importRecs.fromSheet")}
+      </ButtonLink>
     );
   } else if (view.kind === "confirm") {
     const { title } = view;
