@@ -1002,7 +1002,7 @@ How someone turns a list they already have into recs (PRD F15). One decision per
 - **Review deck:** a progress line ("3 of 14") and **Back** (tertiary, `ArrowLeft`) at the top. The card shows the poster (342w), title (`title-m`), and meta line ("Series · 2024"), then the note field when opened or prefilled. Low-confidence cards and Edit show **alternatives**: up to 3 rows (poster, title, meta) as radio choices, plus **Search instead**. On phones the alternatives replace the note area; at 1024px and up they sit in a column beside the card.
 - **Action bar:** fixed to the bottom on phones (above the safe area, and above the keyboard when it's open), inline under the card on desktop. **Skip** (secondary), **Edit** (secondary), **Add** (primary), each at least 44px tall with 12px between. On desktop each shows its shortcut as a `kbd` hint (A, E, S; ← for Back). **Add all remaining (N)** is a tertiary button above the bar when there are high-confidence cards left.
 - **Swipe:** dragging the card right adds and left skips once it passes 96px; it follows the finger and springs back otherwise. Reduced motion: no follow, the action still happens. Buttons always do the same thing (2.5.7).
-- **Toasts:** "Added · Undo" and "Skipped · Undo", 4 seconds.
+- **Toasts:** "Added" and "Skipped", each with Undo, timed per 4.1.15.
 - **Done:** `title-l` "Your recs are in", a summary line, then **View My Recs** (primary) and **Add more** (secondary).
 - **Resume:** My Recs shows a `Banner` ("You have 6 recs left to review" · **Finish**) while an import has unreviewed cards.
 

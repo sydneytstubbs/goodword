@@ -86,7 +86,8 @@ test.describe("Add recs and the review deck", () => {
   });
 
   async function signedIn(browser: Browser, user: TestUser, next: string): Promise<Page> {
-    const page = await (await browser.newContext()).newPage();
+    // The app's service worker would answer /api/import before page.route could stub it.
+    const page = await (await browser.newContext({ serviceWorkers: "block" })).newPage();
     await openMagicLink(page, user, next);
     await expect(page).toHaveURL(new RegExp(`${next.replace(/[?/]/g, "\\$&")}`));
     return page;

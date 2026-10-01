@@ -695,7 +695,7 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - **Phones:** Add, Edit, and Skip sit in a bar at the bottom, at least 44px tall with space between, and the bar stays visible when the keyboard opens. Swiping the card right adds and left skips; swipe is a shortcut, never the only way.
 - **Desktop:** keyboard shortcuts A (add), E (edit), S (skip), and ← (back), shown as hints on the buttons, never while typing in a field. The alternatives sit beside the card, so Edit doesn't open a new view.
 - **Resume:** unreviewed cards are saved (private to you, never on a shelf), and My Recs offers to finish them.
-- **Done:** "Added 11 recs. 2 were already in My Recs." with **Add more** and **View My Recs**.
+- **Done:** "Your recs are in", then "Added 11 recs. 2 were already in My Recs." with **View My Recs** and **Add more**.
 
 #### F15.4 Limits and cost
 - Per import: 5 screenshots, 5,000 characters, and the first 100 titles found. Per person: 10 imports a day. The existing limit of 100 good words an hour still applies.
