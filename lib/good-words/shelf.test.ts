@@ -90,7 +90,7 @@ describe("applyOverlays", () => {
     expect(cards.find((c) => c.title.id === ferry.id)!.goodWords.map((g) => g.person.name)).toEqual(["Jonah"]);
   });
 
-  it("shows zero-group good words on My shelf with no groups", () => {
+  it("shows zero-group good words on My Recs with no groups", () => {
     const cards = applyOverlays([], [{ title: moth, mine: mine([]) }], { kind: "mine" }, priya);
     expect(cards).toHaveLength(1);
     expect(cards[0].groupIds).toEqual([]);

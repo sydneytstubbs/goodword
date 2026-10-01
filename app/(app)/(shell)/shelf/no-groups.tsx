@@ -8,7 +8,7 @@ import { useAdd } from "../add";
 import { ShelfMilestone } from "./shelf-cards";
 
 // No groups yet (PRD F10, F5.7): start one, or put in a good word just for
-// you, which lives on My shelf until friends join.
+// you, which lives on My Recs until friends join.
 export function NoGroups() {
   const { openAdd } = useAdd();
   return (

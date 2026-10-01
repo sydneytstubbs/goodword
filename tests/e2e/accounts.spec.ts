@@ -155,3 +155,13 @@ test.describe("signed in", () => {
     await expect(page).toHaveURL(/\/sign-in\?next=%2Fshelf$/);
   });
 });
+
+test("an unknown URL shows the 404 page, noindex, with no axe violations", async ({ page }) => {
+  const response = await page.goto("/no-such-page");
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 2 })).toHaveText("We couldn't find that page");
+  await expect(page.getByText("The link may be broken, or the page has moved.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Go to Good Word" })).toHaveAttribute("href", "/");
+  await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
+  await expectNoViolations(page);
+});

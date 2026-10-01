@@ -70,7 +70,7 @@ const TYPE: Array<{ token: string; sample: string; spec: string }> = [
   { token: "quote", sample: "“ep 3 is where it gets you”", spec: "Instrument Serif italic · 24 / 1.25" },
   { token: "title-m", sample: "Who can see it", spec: "Inter 600 · 20 / 1.3" },
   { token: "heading", sample: "Where to watch", spec: "Inter 600 · 17 / 1.35" },
-  { token: "body", sample: "Your shelf is empty. What's something you'd tell a friend to watch?", spec: "Inter · 16 / 1.5" },
+  { token: "body", sample: "No recs yet. What's something you'd tell a friend to watch?", spec: "Inter · 16 / 1.5" },
   { token: "body-strong", sample: "Priya", spec: "Inter 600 · 16 / 1.5" },
   { token: "label", sample: "Put in a good word", spec: "Inter 500 (600 on buttons) · 15 / 1.3" },
   { token: "card-title", sample: "The Night Ferry", spec: "Inter 600 · 15 / 1.3" },

@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export type Profile = {
@@ -26,6 +26,22 @@ const getProfile = cache(async (userId: string) => {
     .maybeSingle();
   return data as Profile | null;
 });
+
+/**
+ * The signed-in user, or null. For pages anyone can see that change for
+ * signed-in people (the 404), so it never throws: without Supabase configured
+ * (CI builds, a fresh checkout) or if auth fails, nobody is signed in.
+ */
+export async function currentUser() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return null;
+  try {
+    return await getUser();
+  } catch (error) {
+    // Next's own signals (rendering per request because of cookies) must pass through.
+    unstable_rethrow(error);
+    return null;
+  }
+}
 
 /** A signed-in user, or a redirect to sign-in that returns to `next`. */
 export async function requireUser(next: string) {

@@ -55,7 +55,7 @@ export function RecCardGrid({
   commentCount?: number;
   unseenComments?: boolean;
   eager?: boolean;
-  /** My shelf: the groups it's shared into; empty means "Only you" (PRD F5.3). */
+  /** My Recs: the groups it's shared into; empty means "Only you" (PRD F5.3). */
   shelves?: Group[];
   className?: string;
 }) {

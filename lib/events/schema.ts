@@ -55,6 +55,26 @@ export const EVENTS = {
   mention_notified: { client: false, props: { channel: ["activity", "email"] } },
   activity_opened: { client: false, props: { unread_count: "int" } },
   spoiler_revealed: { client: false, props: {} },
+  import_started: {
+    client: false,
+    props: { method: ["text", "screenshots", "both"], screenshot_count: "int", text_length_bucket: ["none", "short", "medium", "long"] },
+  },
+  import_parsed: {
+    client: false,
+    props: {
+      found_count: "int",
+      duplicate_count: "int",
+      high_confidence_count: "int",
+      ai_used: "bool",
+      reused: "bool",
+      ai_input_tokens: "int",
+      ai_output_tokens: "int",
+      ai_cost_microdollars: "int",
+      ms_elapsed: "int",
+    },
+  },
+  import_card_decided: { client: false, props: { decision: ["added", "skipped"], opened_alternatives: "bool", bulk: "bool" } },
+  import_finished: { client: false, props: { added_count: "int", skipped_count: "int", duplicate_count: "int", ms_from_start: "int" } },
 } as const satisfies Record<string, Definition>;
 
 export type EventName = keyof typeof EVENTS;

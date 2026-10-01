@@ -65,7 +65,7 @@ export type MyGoodWord = {
 export type ShelfCard = {
   title: Title;
   goodWords: GoodWord[];
-  /** My shelf only: the viewer's groups it's shared into. */
+  /** My Recs only: the viewer's groups it's shared into. */
   groupIds?: string[];
   /** A good word from someone else since the viewer last looked at this shelf (PRD F5.5). */
   isNew?: boolean;

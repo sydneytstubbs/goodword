@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.2.14 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-09-30
+**Version** 1.3.0 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -139,7 +139,7 @@ The same person moves between these roles. Design for all four in every flow.
 | Titles | Title search (movies and shows, via TMDB) | P0 |
 | Good words | Put in a good word with optional note and group selection | P0 |
 | Good words | Edit note, change groups, take it back (with Undo) | P0 |
-| Shelves | Group shelf, All groups shelf, My shelf | P0 |
+| Shelves | Group shelf, All groups shelf, My Recs | P0 |
 | Shelves | Filters (type, streaming service, genre, length) and sort | P0 |
 | Shelves | "New since your last visit" indicators | P0 |
 | Titles | Title detail with everyone's good words, notes, and where to watch | P0 |
@@ -168,7 +168,7 @@ Ordered by likely value. Each needs its own spec before building.
 2. **"Watched it because of you":** tell a friend their good word worked. Measures the product's real value (DS 16, open question 5).
 3. **Push notifications** for the installed web app (requires Home Screen install on iOS 16.4+).
 4. **Text a good word in** (SMS to a Good Word number, parsed and confirmed). Requires US A2P 10DLC registration.
-5. **Import:** Letterboxd RSS, Netflix viewing history upload, and screenshot reading, each ending in a confirm step where the user picks what to vouch for.
+5. **Import:** pasted or dictated lists and Letterboxd screenshots are now specified as F15 (slice 11). Letterboxd RSS and Netflix viewing history upload stay here, each ending in a confirm step where the user picks what to vouch for.
 6. **Reactions on comments** (a single "same" or heart), and mentions inside notes.
 7. **Ask:** natural-language requests ("something funny, under 30 minutes") answered only from friends' good words, with an opt-in, clearly labeled robot guess when nothing matches (DS 5.15).
 8. **Point a good word at a friend** ("this is so you"). Mentions in comments cover part of this job in the MVP.
@@ -181,7 +181,7 @@ Ordered by likely value. Each needs its own spec before building.
 - Conversations that span groups, or that include anyone outside the group.
 - Typing indicators and read receipts.
 - Star ratings, scores, or long-form reviews.
-- Any algorithmic or AI-generated recommendations.
+- Any algorithmic or AI-generated recommendations. (Reading someone's own list during an import, F15, isn't recommending.)
 - Tracking viewing history or connecting streaming accounts.
 - Direct messages or chat.
 - Monetization, ads, or affiliate links.
@@ -246,7 +246,7 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 **Success:** a mention reaches the right person within 15 minutes, and nobody outside College crew can see or search any of it.
 
 ### J7. Sharing my shelf with someone outside Good Word (P1)
-1. A coworker asks Sydney what to watch. She goes to **My shelf › Settings › Share my shelf**, turns it on, and copies the link.
+1. A coworker asks Sydney what to watch. She goes to **My Recs › Settings › Share my shelf**, turns it on, and copies the link.
 2. The coworker opens a read-only page: "Sydney's good words", with posters, titles, and Sydney's notes, and a small "Made with Good Word" link.
 3. Later, Sydney turns the link off, and it stops working immediately.
 
@@ -271,7 +271,9 @@ Extends DS 5.1.
 | `/title/[type]/[tmdbId]` | Title detail (`type` is `movie` or `tv`) | Signed in | P0 |
 | `/title/[type]/[tmdbId]/conversation?group=[groupId]` | A group's conversation about a title (on desktop, a panel beside title detail) | Member of that group | P0 |
 | `/activity` | Activity: mentions, new comments in your conversations, joins | Signed in | P0 |
-| `/you` | My shelf (a main tab): your good words, your groups, settings entry | Signed in | P0 |
+| `/you` | My Recs (a main tab): your good words, your groups, settings entry | Signed in | P0 |
+| `/you/import` | Add recs: paste, dictate, or upload screenshots (F15) | Signed in | P1 |
+| `/you/import/[importId]` | Review deck and done screen for one import (`?card=` is the card shown) | Signed in, own import | P1 |
 | `/you/settings` | Account, region, notifications, services (P1), share link (P1) | Signed in | P0 |
 | `/you/help` | Help, FAQ, shortcuts, send feedback, about and attributions | Signed in | P0 |
 | `/groups/new` | Create a group | Signed in | P0 |
@@ -285,7 +287,7 @@ Extends DS 5.1.
 **Sheets over the current route (no navigation):** Add (search and confirm), group switcher, filters, vouch menu, confirm dialogs. Opening a sheet pushes a history entry so the Back gesture closes it (DS 5.1).
 
 ### 6.2 Navigation model
-- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My shelf** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a shelf, the shelf's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
+- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My Recs** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a shelf, the shelf's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
 - **Desktop (1024px and up):** left rail with the same destinations plus the group list.
 - **Shelf tab** shows the last viewed shelf (a group or All groups), remembered per device.
 - **Add** opens the log sheet over whatever screen you're on, and returns you there afterward.
@@ -293,7 +295,7 @@ Extends DS 5.1.
 - **Conversations** open from title detail, a card's comment count, Activity, or a mention email. Back from a conversation returns to wherever you came from.
 
 ### 6.3 URL state
-Query parameters on shelf routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list of TMDB genre names), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `groups` (My shelf only: comma list of group ids, F5.3), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
+Query parameters on shelf routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list of TMDB genre names), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `groups` (My Recs only: comma list of group ids, F5.3), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
 
 ### 6.4 Access rules
 - Signed-out visitors to any signed-in route go to `/sign-in?next=<route>` and return there after signing in.
@@ -375,7 +377,7 @@ Each feature lists user stories, rules, acceptance criteria, states, and edge ca
 Sections, in order: invite card; members list (avatar, name, "Owner" label, "You" label, joined date); group settings (owner only: rename, reset invite link); danger zone (leave group; owner: remove members via each member's menu, delete group).
 
 #### F2.6 Leaving and removal
-- **Leave:** dialog per DS 5.8. Your good words are removed from that group's shelf (they stay on My shelf and in your other groups). Your past comments in that group's conversations stay, attributed to you, so conversations still make sense (confirm, Section 15).
+- **Leave:** dialog per DS 5.8. Your good words are removed from that group's shelf (they stay on My Recs and in your other groups). Your past comments in that group's conversations stay, attributed to you, so conversations still make sense (confirm, Section 15).
 - **Owner leaving:** the dialog names who becomes owner (the longest-standing member). If the owner is the only member, leaving deletes the group, and the dialog says so.
 - **Remove member (owner):** dialog naming the person. Their good words leave that shelf; their past comments stay attributed. They are not notified in the MVP, and they can rejoin only with a new or unreset link, so the dialog suggests resetting the link if needed.
 - **Delete group (owner):** irreversible dialog stating the number of members and good words affected (DS 5.8). Members' good words stay on their own shelves and other groups.
@@ -419,7 +421,7 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Rules**
 - **One good word per person per title.** A person's good word has one note and can be shared into any number of their groups. Adding the same title again means editing the existing good word (DS 5.4, "already vouched").
 - **Note:** optional, up to 140 characters, plain text, no links rendered as links, emoji allowed.
-- **Group selection:** defaults to **all your groups**. The visibility line (DS 4.2.6) shows the audience and opens the group picker. A good word may have **zero groups** ("Only you, for now"), in which case it lives only on My shelf. This keeps Good Word useful before friends join.
+- **Group selection:** defaults to **all your groups**. The visibility line (DS 4.2.6) shows the audience and opens the group picker. A good word may have **zero groups** ("Only you, for now"), in which case it lives only on My Recs. This keeps Good Word useful before friends join.
 - **One card per title per group.** When several members vouch for the same title, the shelf shows one card with a growing vouched-by row and their notes (most recent note on the grid card, all notes on detail).
 - **Take it back** removes the good word from all groups immediately with an 8-second Undo toast (DS 5.11). Undo restores the note and groups exactly.
 - **Edits** to the note or groups are saved immediately, optimistically, with no "edited" label.
@@ -430,7 +432,7 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Entry points:** the Add tab, the rail's Add button, the `n` shortcut on desktop, the vouch button on any title detail or search row, the first-good-word prompt, and empty-state actions.
 
 **Acceptance**
-- Given a user in 2 groups, when they put in a good word without changing groups, then it appears on both shelves and My shelf, and the toast names up to 2 people plus "and N others".
+- Given a user in 2 groups, when they put in a good word without changing groups, then it appears on both shelves and My Recs, and the toast names up to 2 people plus "and N others".
 - Given a user with no groups, when they put in a good word, then the visibility line reads "Only you, for now" and the toast reads "On your shelf. Invite friends to share it." with an Invite action.
 - Given a friend already vouched for the title in a shared group, when the user adds theirs, then the shelf shows one card with both people in the vouched-by row.
 - Given a user taps Undo within 8 seconds of taking a good word back, then it's restored to every group it was in, with its note.
@@ -451,8 +453,8 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 - Titled "All groups". Combines every group you're in, deduplicated: one card per title, with the vouched-by row merging all people across your groups (each person once).
 - Group chips on the detail screen show which of **your** groups each good word is in.
 
-#### F5.3 My shelf (the My shelf tab, `/you`)
-- A main navigation destination, labeled **My shelf** in the tab bar and rail. The page is titled "Your shelf". Below your good words: your groups, then links to Settings and Help. Shows only your own good words, including ones with zero groups.
+#### F5.3 My Recs (the My Recs tab, `/you`)
+- A main navigation destination, labeled **My Recs** in the tab bar and rail. The page is titled "My Recs". Below your good words: your groups, then links to Settings and Help. Shows only your own good words, including ones with zero groups.
 - Each card shows group chips for where it's shared, or "Only you".
 - A group filter lets you see what you've shared into a specific group.
 
@@ -474,7 +476,7 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 - While you're viewing a shelf, new good words from others don't insert themselves (content never jumps). A pill appears at the top: "2 new good words". Tapping it scrolls to top and inserts them. Your own good words insert immediately.
 
 #### F5.7 States (DS 5.12)
-| State | Group shelf | All groups | My shelf |
+| State | Group shelf | All groups | My Recs |
 |---|---|---|---|
 | Empty, first use | "Nothing here yet. Be the first to put in a good word." + Put in a good word + Invite friends | "No groups yet" + Start a group + "Got an invite link? Open it to join." | DS 6.6 empty personal shelf copy + Put in a good word |
 | No results | "Nobody's vouched for a Netflix movie yet." + Clear filters | Same | "You haven't vouched for anything like that." + Clear filters |
@@ -664,6 +666,55 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - Given a comment that mentions you is deleted before you open Activity, then its item is gone.
 - Given the user leaves a group, then its Activity items disappear.
 
+### F15. Build your list: add recs in bulk (P1)
+
+People's recs already live somewhere else: phone notes, Letterboxd, their heads. Typing them in one at a time kills momentum. Add recs lets someone dump what they have, in whatever form, and confirm clean, matched titles one card at a time. Source: "Good Word PRD: Build Your Recs List" (2026-09-30).
+
+**Words.** A **rec** is one of your own good words, seen as your collection. The My shelf tab is now **My Recs** (DS 1.4). In a group it's still a good word on a shelf.
+
+#### F15.1 Add recs (`/you/import`)
+- One screen with a large text box (label "List everything you'd recommend", helper tip below it, never placeholder-only) and an **Add screenshots** control. Search stays one tap away (the Add sheet).
+- **Type, paste, or dictate.** Device dictation is the voice path; we build no audio recording. The tip reads, on phones, "Tip: tap the mic on your keyboard and just start listing shows." and on desktop, "Tip: use your computer's dictation (Mac: Edit > Start Dictation, Windows: Win + H)."
+- **Letterboxd screenshots.** Up to 5 images (grid, list, or diary views) through the native photo picker, multiple at once. Desktop also takes drag and drop and paste (Cmd/Ctrl + V). Images are shrunk in the browser (longest side 1568px, JPEG) before upload, read once, and never stored.
+- **Who sees them.** One visibility line applies to the whole import. It defaults to all your groups, the same smart default as a single good word (F4).
+- **Find my titles** is disabled until there's text or a screenshot. iOS Safari can't receive the share sheet into a web app, so on iPhone the path from Notes is copy and paste.
+
+#### F15.2 Parsing
+- **Text that's already one title per line** is searched on TMDB directly. Only lines that don't match cleanly, and free-form text, go to the AI model. Bullets, numbering, emoji, and commentary are ignored; a reaction said alongside a title ("Severance, so good") becomes that rec's note.
+- **One AI call per import**, returning compact JSON (title, year guess, type guess, note, confidence) for text and screenshots together. The model is Claude Haiku 4.5, with no escalation to a larger model in v1. Its fixed instructions are prompt-cached.
+- **TMDB confirms every title** and supplies the poster, year, type, and up to 3 alternatives. A match is **high confidence** when the model was confident and TMDB's title matches exactly (and the year, when one was given). Confirmed matches are cached in a shared table, and each import's input is hashed so re-sending the same input doesn't call the AI again.
+- **Duplicates** of titles already on your list, and repeats within the import, are dropped and counted.
+- **Progress** streams as titles are found ("Found 14 so far"), with Cancel.
+
+#### F15.3 Review deck (`/you/import/[importId]`)
+- Nothing lands until it's confirmed. One card at a time: poster, title, year, and type, with "3 of 14" at the top.
+- **Add** puts in the good word (source `import`) into the import's groups. **Edit** shows the next 2 to 3 likely matches, plus search. **Skip** leaves it out. Each action shows a brief toast with Undo, and **Back** revisits the previous card.
+- **Low-confidence** cards open with the alternatives already visible.
+- **Note:** a one-line "why I recommend it" on any card (140 characters), prefilled from the input.
+- **Add all remaining** adds every remaining high-confidence card.
+- **Phones:** Add, Edit, and Skip sit in a bar at the bottom, at least 44px tall with space between, and the bar stays visible when the keyboard opens. Swiping the card right adds and left skips; swipe is a shortcut, never the only way.
+- **Desktop:** keyboard shortcuts A (add), E (edit), S (skip), and ← (back), shown as hints on the buttons, never while typing in a field. The alternatives sit beside the card, so Edit doesn't open a new view.
+- **Resume:** unreviewed cards are saved (private to you, never on a shelf), and My Recs offers to finish them.
+- **Done:** "Your recs are in", then "Added 11 recs. 2 were already in My Recs." with **View My Recs** and **Add more**.
+
+#### F15.4 Limits and cost
+- Per import: 5 screenshots, 5,000 characters, and the first 100 titles found. Per person: 10 imports a day. The existing limit of 100 good words an hour still applies.
+- The API keys stay server-side; only signed-in people can start an import. Sydney sets a monthly spend cap and usage alerts in the Anthropic console.
+- Posters load from TMDB's image CDN at small sizes; nothing is copied.
+
+#### F15.5 States (DS 5.12)
+- **Empty:** the input screen. **Loading:** "Found N so far" with Cancel. **No results:** "We couldn't find titles in that" with Try again and Search instead. **Error:** "Good Word is having a moment. Try again in a minute." (the input is kept). **Offline:** "You're offline. Finding titles needs a connection." (the input is kept). **Limit:** "You've added a lot today. Try again tomorrow, or search for titles one at a time."
+
+**Acceptance criteria**
+- Given a pasted list of 12 titles one per line that all match TMDB exactly, when the user taps Find my titles, then no AI call is made and 12 cards appear.
+- Given "Severance, so good" in the input, then its card is Severance (TV) with the note "so good" prefilled.
+- Given a title already on the user's list, then it gets no card and the done screen counts it.
+- Given the user taps Add, then Undo within the toast, then the good word is gone from every shelf and the card is back.
+- Given the user leaves after 5 of 14 cards, when they open My Recs, then they can resume at card 6.
+- Given the same text is submitted twice, then the second import makes no AI call.
+- Given an 11th import in a day, then the limit message shows and nothing is parsed.
+- No uploaded image is stored, and no AI or TMDB key reaches the browser.
+
 ---
 
 ## 8. Data model
@@ -690,6 +741,9 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `streaming_services` (P1) | `user_id`, `region`, `provider_ids` (array) | |
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
 | `feedback` | `user_id`, `message`, `may_contact` | |
+| `imports` (F15) | `user_id`, `status` (`parsing`, `reviewing`, `done`, `cancelled`, `failed`), `method` (`text`, `screenshots`, `both`), `input_hash`, `group_ids`, `found_count`, `duplicate_count`, `extracted` (the parsed candidates, for reuse), `ai_input_tokens`, `ai_output_tokens`, `completed_at` | Readable and writable only by its owner. Started through a server function that enforces 10 a day |
+| `import_cards` (F15) | `import_id`, `user_id`, `position`, `query`, `note`, `confidence` (`high`, `low`), `candidates` (json: up to 4 TMDB matches), `chosen` (index), `decision` (`pending`, `added`, `skipped`), `decided_at`, `opened_alternatives` | Owner only. Never shown on a shelf |
+| `title_matches` (F15) | `query_key` (normalized title, year, type), `media_type`, `tmdb_id` | Shared match cache. Server only (no policies) |
 | `events` | `user_id` (nullable), `name`, `properties` (json), `occurred_at` | First-party analytics (Section 11) |
 | `app_admins` | `user_id` | Who can open `/admin/metrics` (11.4). Seeded with Sydney's account |
 
@@ -747,6 +801,10 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 ### 9.6 Hosting and stack
 - **Assumed stack:** Next.js (App Router) on Vercel, Supabase (Postgres, Auth, Realtime for P1 live updates), Tailwind per DS 11.
 - **Decided (open question 1):** Next.js. The marketing page and the app live in one Next.js app, the marketing page in the `(marketing)` route group.
+
+### 9.7 Anthropic (F15)
+- Claude Haiku 4.5 reads pasted text and screenshots during an import and returns candidate titles. It never recommends anything (4.3): it only reads what the person wrote.
+- Server-side only, through the official SDK, with `ANTHROPIC_API_KEY`. Only signed-in people can trigger a call. The privacy page names Anthropic as a processor for import text and screenshots, which Good Word doesn't keep.
 
 ---
 
@@ -819,6 +877,10 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `mention_notified` | `channel` (`activity`, `email`) | H7 |
 | `activity_opened` | `unread_count` | H7 |
 | `spoiler_revealed` | | |
+| `import_started` | `method` (`text`, `screenshots`, `both`), `screenshot_count`, `text_length_bucket` | F15 |
+| `import_parsed` | `found_count`, `duplicate_count`, `high_confidence_count`, `ai_used`, `reused`, `ai_input_tokens`, `ai_output_tokens`, `ai_cost_microdollars`, `ms_elapsed` | F15 cost and speed |
+| `import_card_decided` | `decision` (`added`, `skipped`), `opened_alternatives`, `bulk` | F15 match accuracy |
+| `import_finished` | `added_count`, `skipped_count`, `duplicate_count`, `ms_from_start` | F15: time to a list of 10 |
 
 ### 11.3 Source attribution
 - `ref` query parameters from emails (`digest`, `nudge_email`) and the join prompt are stored for the session. A good word created in that session records that source; otherwise `organic`.
@@ -839,13 +901,14 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | **1. Accounts** | Supabase setup; sign-in (magic link, Google); check-email; welcome/name; sign out; access rules and redirects | A new user can sign in on an iPhone and set their name; signed-out access redirects correctly |
 | **2. Groups** | Create, invite card and sharing, join landing, join flow through sign-in, group details, members, rename, reset link, leave, remove, delete; RLS | Two test accounts on two phones: one creates and invites, the other joins from the link in under 90 seconds |
 | **3. Titles** | TMDB server routes; search sheet with all states; title cache with genre accent; typographic fallback posters | Searching "night" returns movies and shows with posters in under a second; fallback posters render |
-| **4. The core loop** | Confirm sheet with note and visibility line; create, edit, take back, Undo; group shelf, All groups, My shelf; one card per title per group; milestones; first-good-word prompt; empty states | J1, J2, and J3 work end to end; log time under 10 seconds in a stopwatch test |
+| **4. The core loop** | Confirm sheet with note and visibility line; create, edit, take back, Undo; group shelf, All groups, My Recs; one card per title per group; milestones; first-good-word prompt; empty states | J1, J2, and J3 work end to end; log time under 10 seconds in a stopwatch test |
 | **5. Choosing** | Title detail with good words and notes; where to watch with JustWatch attribution; filters, sort, URL state, paging; New badges and counts | J4 works end to end; filters survive refresh and Back |
 | **6. Conversations** | Comments table and RLS; conversation preview on title detail; full conversation screen; composer with mention autocomplete; spoilers; edit, delete, Undo; live new comments (Supabase Realtime); comment counts on cards; Activity list and bell badge | J6 works end to end on two phones: a mention shows in Activity within seconds, a spoiler stays covered, and a member of another group can't see or reach the conversation |
 | **7. Email** | Email provider and domain; digest (including conversation summary); mention emails; group-join emails; preferences; unsubscribe; scheduler; caps | A test digest arrives with correct content, links carry `ref=digest`, a mention email arrives within 15 minutes, and unsubscribe works signed out |
 | **8. Settings and trust** | Settings, help, FAQ, feedback, about and attributions, download my data, delete account with ownership transfer, privacy and terms pages, security headers, rate limits | Account deletion and data download verified; all attribution present |
 | **9. Measurement** | Events per Section 11; source attribution; `/admin/metrics` | Every event fires from its flow; metrics page shows real numbers from test use |
 | **10. P1 (in order)** | Installable app and offline queue; live new-good-words pill; person view; streaming services filter; share my shelf; weekend prompt | Each P1 item meets its acceptance criteria |
+| **11. Build your list** | My shelf renamed My Recs; Add recs from text, dictation, and Letterboxd screenshots; review deck; done screen; resume; limits and cost events (F15) | F15's acceptance criteria pass, with the AI faked in tests and checked once live |
 
 **Across every slice:** each new screen meets DS 12.1 before the slice is called done, and is checked on iOS Safari first.
 
@@ -874,7 +937,7 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | Risk | Impact | Mitigation |
 |---|---|---|
 | People browse but don't contribute (the classic recommendation-app failure) | High | Ten-second logging; first-good-word prompt; audience-naming success toast; weekend prompt; source tracking to measure it early |
-| Empty shelves on arrival | High | Seed groups before inviting; useful-alone My shelf; honest empty states with one clear action |
+| Empty shelves on arrival | High | Seed groups before inviting; useful-alone My Recs; honest empty states with one clear action |
 | Invite friction (email sign-in on phones) | High | Google option; invite context kept throughout; link-on-another-device handling; test J2 on real iPhones |
 | Notifications feel spammy | Medium | Never send empty digests; one non-transactional email per day max; quiet hours; one-click unsubscribe |
 | Privacy mistakes (leaking groups or people across groups) | High | RLS in the database; explicit acceptance tests for cross-group visibility; never show group names the viewer isn't in |
@@ -910,6 +973,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.3.0 (2026-10-01):** Build your list (F15, slice 11), from Sydney's "Build Your Recs List" spec. Decisions: keep the word "recs" and rename My shelf to **My Recs**; imported recs go into all your groups by default; Claude Haiku 4.5 only, with no larger-model escalation; limits of 5 screenshots, 5,000 characters, 100 titles per import, and 10 imports a day; unreviewed cards are saved privately so a review can be resumed. The share sheet path is Android only; iPhone uses paste. New routes (6.1), tables (section 8), and events (11.2). A site-wide 404 for unknown URLs.
 - **v1.2.14 (2026-09-30):** Step 10. Streaming services are saved per region (a service's id can differ by country); Settings lists the region's services from TMDB, most popular first, with "Show all". A title whose services aren't known yet never matches "On my services". Share links are 144-bit tokens, and a link turned back on is always a new one. The shared page lists up to 500 good words and shows no title detail link, since title detail needs sign-in. The weekend prompt's button links to `/shelf?add=1&ref=nudge_email`, which opens Add once; `add_opened` gains the `email` entry point for it (11.2). The weekend prompt counts toward the one-a-day email cap after the digest and join emails, and a held prompt goes within 24 hours of Sunday 10am or not at all. Offline good words are kept on the device per person and sent on reconnect; the service worker keeps up to 6 shelves for offline. Live new good words are counted per shelf, never the viewer's own.
 - **v1.2.13 (2026-09-30):** Open question 2 decided: Share my shelf is allowed (F9, DS 5.14). The privacy and terms pages name Sydney Stubbs as the contact, and the marketing page footer links to them.
 - **v1.2.12 (2026-09-30):** Step 9. Events are checked against a fixed schema before they're stored, so no free text can get in (11.1); browser events go through `/api/events`, the rest are recorded where they happen, after the response is sent. `app_admins` decides who sees `/admin/metrics` (section 8, 11.4). Mention and join emails carry `ref=mention` and `ref=group_join` so `email_clicked` covers every email (11.2). `title_viewed.from` is `shelf` or `digest` for now: search, person view, and share links don't open title detail yet. `add_opened` has no `search_row` entry yet, since no search row opens Add. The metrics page also shows comments and commenters for H7. Weeks start Monday, UTC.

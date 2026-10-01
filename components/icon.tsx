@@ -11,6 +11,7 @@ import {
   DotsThree,
   EyeSlash,
   GoogleLogo,
+  Images,
   GearSix,
   LinkSimple,
   LockSimple,
@@ -61,6 +62,7 @@ export const icons = {
   spoiler: EyeSlash,
   send: PaperPlaneRight,
   google: GoogleLogo,
+  screenshots: Images,
   // External links that open a new tab (DS 4.1.3)
   external: ArrowSquareOut,
 } as const;

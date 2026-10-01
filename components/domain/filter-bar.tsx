@@ -38,7 +38,7 @@ export type FilterOptions = {
   services: Array<Counted<Service>>;
   /** Genres on the shelf, most common first. */
   genres: Array<Counted<{ name: string }>>;
-  /** My shelf only: filter by the groups a good word is shared into (F5.3). */
+  /** My Recs only: filter by the groups a good word is shared into (F5.3). */
   groups?: Group[];
   /** Whether the viewer has picked their streaming services, for "On my services" (P1). */
   hasMyServices?: boolean;
@@ -221,7 +221,7 @@ function SheetSection({ title, children }: { title: string; children: React.Reac
   );
 }
 
-/** Everything in the More filters sheet: all services, genres, length, and groups on My shelf. */
+/** Everything in the More filters sheet: all services, genres, length, and groups on My Recs. */
 export function MoreFilters({ filters, options, onChange }: { filters: Filters; options: FilterOptions; onChange: FilterChange }) {
   const set = (next: Partial<Filters>) => onChange({ ...filters, ...next }, "replace");
   return (
