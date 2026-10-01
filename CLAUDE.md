@@ -75,7 +75,7 @@ Before starting a step, check PRD Section 15 for open questions that step depend
 Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 
 **Environment variables** (never commit values; keep `.env.example` current):
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, and `EMAIL_API_KEY` (Resend, from step 1). For database migrations and auth settings: `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`. If one is missing, tell Sydney which one and where to get it; don't work around it.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, `EMAIL_API_KEY` (Resend, from step 1), and `ANTHROPIC_API_KEY` (Add recs, from step 11). For database migrations and auth settings: `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`. If one is missing, tell Sydney which one and where to get it; don't work around it.
 
 ---
 
