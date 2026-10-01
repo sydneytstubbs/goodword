@@ -73,6 +73,13 @@ export const EVENTS = {
       ms_elapsed: "int",
     },
   },
+  import_failed: {
+    client: false,
+    props: {
+      stage: ["parse", "save"],
+      reason: ["config", "auth", "rate_limited", "bad_request", "unavailable", "refused", "unparsed", "failed"],
+    },
+  },
   import_card_decided: { client: false, props: { decision: ["added", "skipped"], opened_alternatives: "bool", bulk: "bool" } },
   import_finished: { client: false, props: { added_count: "int", skipped_count: "int", duplicate_count: "int", ms_from_start: "int" } },
 } as const satisfies Record<string, Definition>;

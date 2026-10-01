@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { ImageInput } from "@/lib/import/ai";
+import { ExtractError, type ImageInput } from "@/lib/import/ai";
 import { costMicrodollars } from "@/lib/import/cost";
 import { runImport } from "@/lib/import/pipeline";
 import { existingKeys, importDeps } from "@/lib/import/server";
@@ -144,6 +144,11 @@ export async function POST(request: Request) {
         } else {
           console.error("import failed", (err as Error).name, (err as Error).message.slice(0, 80));
           await admin.from("imports").update({ status: "failed" }).eq("id", importId);
+          await recordEvent(
+            "import_failed",
+            err instanceof ExtractError ? { stage: "parse", reason: err.reason } : { stage: "save", reason: "failed" },
+            userId,
+          );
           send({ type: "error", reason: "failed" });
         }
       } finally {
