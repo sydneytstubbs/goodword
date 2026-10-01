@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.8 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-09-30
+**Version** 3.2.9 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -1076,6 +1076,7 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Search offline | You're offline. Search needs a connection, so try again when you're back. |
 | Title didn't load | This title didn't load · Good Word is having a moment. Try again in a minute. |
 | Title not found | We couldn't find that title · The link may be broken, or the title was removed. Try searching for it with Add. |
+| Page not found (any unknown URL) | We couldn't find that page · The link may be broken, or the page has moved. Action: Go to your shelf (signed in) or Go to Good Word (signed out). |
 | Offline banner | You're offline. We'll send your changes when you're back. |
 | Queued item | Sending when you're back online |
 | End of shelf | That's the whole shelf. |
@@ -1438,6 +1439,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.2.9 (2026-10-01):** A site-wide 404 for unknown URLs, with copy approved by Sydney (6.6): "We couldn't find that page", linking to your shelf when signed in and to the home page when signed out. Sends noindex.
 - **v3.2.8 (2026-09-30):** Sheets (4.1.13) cap at 90% of the visible height, so an open keyboard can't push a sheet's top off screen; the Add sheet is full height on phones.
 - **v3.2.7 (2026-09-30):** Step 10: Settings groups (5.16) gain Streaming services and Share my shelf; About moved to Help in step 8.
 - **v3.2.6 (2026-09-30):** Share my shelf allowed (PRD open question 2): 5.14 now reads "Nothing is public unless you turn on a share link".

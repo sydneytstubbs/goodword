@@ -18,6 +18,12 @@
     "you": "You",
     "skipToContent": "Skip to content"
   },
+  "notFound": {
+    "title": "We couldn't find that page",
+    "body": "The link may be broken, or the page has moved.",
+    "goToShelf": "Go to your shelf",
+    "goHome": "Go to Good Word"
+  },
   "field": {
     "optional": "(optional)",
     "charactersLeft": "{count} left",

@@ -27,6 +27,11 @@ const getProfile = cache(async (userId: string) => {
   return data as Profile | null;
 });
 
+/** The signed-in user, or null. For pages anyone can see that change for signed-in people. */
+export async function currentUser() {
+  return getUser();
+}
+
 /** A signed-in user, or a redirect to sign-in that returns to `next`. */
 export async function requireUser(next: string) {
   const user = await getUser();
