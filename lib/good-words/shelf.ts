@@ -10,7 +10,7 @@ export type VouchRow = {
   name: string;
   note: string | null;
   at: string;
-  /** My shelf only: the groups it's shared into. */
+  /** My Recs only: the groups it's shared into. */
   groupIds?: string[];
 };
 

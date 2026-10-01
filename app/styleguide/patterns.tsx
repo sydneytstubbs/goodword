@@ -130,7 +130,7 @@ function Shelves() {
           </ul>
         </div>
       </Frame>
-      <Frame label="My shelf: each card says where it's shared, or Only you">
+      <Frame label="My Recs: each card says where it's shared, or Only you">
         <div className="p-4">
           <ul className={GRID}>
             <li>
@@ -203,7 +203,7 @@ function Shelves() {
             }
           />
         </Specimen>
-        <Specimen label="Empty My shelf">
+        <Specimen label="Empty My Recs">
           <EmptyState
             showShelf
             headingLevel={4}
@@ -306,7 +306,7 @@ function Browsing() {
             action={<Button variant="secondary">{t("filters.clearFilters")}</Button>}
           />
         </Specimen>
-        <Specimen label="No results on My shelf">
+        <Specimen label="No results on My Recs">
           <EmptyState
             headingLevel={4}
             title={t("filters.noResultsMine")}

@@ -96,7 +96,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     expect(data).toEqual([{ note: "ep 3" }]);
   });
 
-  it("allows zero groups: it lives only on My shelf", async () => {
+  it("allows zero groups: it lives only on My Recs", async () => {
     expect((await put(people.priya, moth, "", [])).status).toBe("created");
     const { data } = await people.priya.client.from("good_words").select("note, good_word_groups(group_id)").eq("title_id", moth).single();
     expect(data).toEqual({ note: null, good_word_groups: [] });
@@ -182,7 +182,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     });
   });
 
-  it("takes a member's good words off a shelf when they leave, and keeps them on My shelf", async () => {
+  it("takes a member's good words off a shelf when they leave, and keeps them on My Recs", async () => {
     await put(people.tess, ferry, "agree", [girls], "join_prompt");
     const { data: seen } = await people.priya.client.from("good_words").select("user_id").eq("user_id", people.tess.id);
     expect(seen).toHaveLength(1);

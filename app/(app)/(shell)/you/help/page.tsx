@@ -23,7 +23,7 @@ const SHORTCUTS: Array<{ keys: string[]; label: MessageKey }> = [
   { keys: ["?"], label: "help.shortcuts.help" },
 ];
 
-// Help (PRD F11, DS 5.16): the same place on every screen (My shelf › Help,
+// Help (PRD F11, DS 5.16): the same place on every screen (My Recs › Help,
 // and the rail's footer). A short FAQ, shortcuts, send feedback, and About
 // with the privacy summary and the TMDB and JustWatch attributions (PRD 9).
 export default async function HelpPage() {

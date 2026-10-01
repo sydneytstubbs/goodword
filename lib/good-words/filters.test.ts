@@ -111,7 +111,7 @@ describe("filter logic (DS 5.6)", () => {
     expect(clearFilters(mine)).toEqual(f({ myServices: [HULU] }));
   });
 
-  it("filters My shelf by the groups a good word is shared into", () => {
+  it("filters My Recs by the groups a good word is shared into", () => {
     expect(names(filterShelf(shelf, f({ groups: ["g2"] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
   });
 

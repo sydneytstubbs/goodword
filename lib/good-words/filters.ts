@@ -16,7 +16,7 @@ export type Filters = {
   genres: string[];
   length: Length | null;
   sort: Sort;
-  /** My shelf only: group ids it's shared into. OR within groups. */
+  /** My Recs only: group ids it's shared into. OR within groups. */
   groups: string[];
   /** On my services (P1): only titles on a streaming service the viewer has. */
   mine: boolean;

@@ -12,9 +12,9 @@ import { t } from "@/lib/messages";
 import { HomeScreenTip } from "./home-screen-tip";
 import { MyShelfCards } from "./my-shelf-cards";
 
-export const metadata: Metadata = { title: "My shelf · Good Word" };
+export const metadata: Metadata = { title: "My Recs · Good Word" };
 
-// The My shelf tab (PRD F5.3, DS 4.2.8): your own good words first, then your
+// The My Recs tab (PRD F5.3, DS 4.2.8): your own good words first, then your
 // groups, then Settings and Help (Sign out lives in Settings). Filters
 // include which of your groups it's in (F5.3).
 export default async function MyShelfPage({ searchParams }: PageProps<"/you">) {

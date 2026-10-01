@@ -129,7 +129,7 @@ function toMine(row: Omit<MineRow, "titles">): MyGoodWord {
   };
 }
 
-/** My shelf: only your own good words, including ones in no group (F5.3). */
+/** My Recs: only your own good words, including ones in no group (F5.3). */
 export async function myShelf(userId: string, name: string, region: string): Promise<Shelf> {
   const supabase = await createClient();
   const { data, error } = await supabase

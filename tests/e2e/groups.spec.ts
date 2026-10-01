@@ -59,10 +59,10 @@ test.describe("groups", () => {
     await expect(page.getByText("Priya · You · Owner").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
 
-    // My shelf is a main nav item, listing your groups (PRD F5.3).
-    await page.getByRole("link", { name: "My shelf" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your shelf");
-    await expect(page.getByRole("heading", { level: 2, name: "Your shelf is empty" })).toBeVisible();
+    // My Recs is a main nav item, listing your groups (PRD F5.3).
+    await page.getByRole("link", { name: "My Recs" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("My Recs");
+    await expect(page.getByRole("heading", { level: 2, name: "No recs yet" })).toBeVisible();
     await expect(page.getByRole("link", { name: /College crew/ })).toHaveAttribute("href", `/shelf/${groupId}`);
     await expectNoViolations(page);
   });

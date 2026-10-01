@@ -193,7 +193,7 @@ test.describe("the core loop", () => {
 
   test("with no groups: only you, for now, and an Invite action", async ({ browser }) => {
     const page = await signedIn(browser, mo, "/you");
-    await expect(page.getByRole("heading", { level: 2, name: "Your shelf is empty" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "No recs yet" })).toBeVisible();
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = await pick(page, "Moth Season");
     await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();

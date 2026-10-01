@@ -211,7 +211,7 @@
     "main": "Main",
     "shelf": "Shelf",
     "add": "Add",
-    "you": "My shelf",
+    "you": "My Recs",
     "activity": "Activity",
     "activityWithCount": "Activity, {count} unread",
     "invite": "Invite to {group}",
@@ -475,8 +475,8 @@
     "newGoodWords_other": "{count} new good words"
   },
   "you": {
-    "title": "Your shelf",
-    "emptyTitle": "Your shelf is empty",
+    "title": "My Recs",
+    "emptyTitle": "No recs yet",
     "emptyBody": "What's something you'd tell a friend to watch?",
     "groupsHeading": "Your groups",
     "noGroups": "You're not in any groups yet.",
@@ -701,7 +701,7 @@
       "search": "Search",
       "add": "Put in a good word",
       "shelf": "Go to your shelf",
-      "myShelf": "Go to My shelf",
+      "myShelf": "Go to My Recs",
       "activity": "Go to Activity",
       "help": "Show these shortcuts",
       "then": "then"
