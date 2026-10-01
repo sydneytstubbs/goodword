@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.2.9 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
+**Version** 3.3.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -100,7 +100,8 @@ Use these words exactly, in UI and in code comments. Consistency of language is 
 | **good word** | A recommendation someone vouched for | post, item, entry, review, rating, like |
 | **put in a good word** | The act of recommending | submit, add item, rate, log (in UI copy) |
 | **vouch / vouched for** | Having put in a good word | liked, favorited, starred |
-| **shelf** | The collection of good words in a group, or yours | feed, list, board, library (in UI) |
+| **shelf** | The collection of good words in a group | feed, list, board, library (in UI) |
+| **rec**, **My Recs** | Your own good words as a collection: the My Recs tab, and adding recs in bulk (5.18) | list (except "recs list" in import copy), favorites, watchlist |
 | **group** | A private circle of people | community, channel, server, network |
 | **member** | Someone in a group | follower, user, connection |
 | **note** | The optional one-liner on a good word | review, caption |
@@ -344,7 +345,7 @@ Computed with the WCAG 2.x relative luminance formula. `/styleguide` must recomp
 | `display-xl` | Instrument Serif | `clamp(56px, 10vw, 144px)` / 0.95 | 400, -0.02em | Marketing hero |
 | `display-l` | Instrument Serif | `clamp(40px, 6vw, 80px)` / 1.0 | 400, -0.015em | Marketing section headlines |
 | `display-m` | Instrument Serif | `clamp(28px, 3.5vw, 44px)` / 1.1 | 400 (often italic), -0.01em | Marketing pull quotes, milestone lines |
-| `title-l` | Instrument Serif | 56 / 0.92 (44 / 0.95 step-down) | 400, -0.025em | App page title (group name, "Your shelf", title name). Big editorial |
+| `title-l` | Instrument Serif | 56 / 0.92 (44 / 0.95 step-down) | 400, -0.025em | App page title (group name, "My Recs", title name). Big editorial |
 | `quote` | Instrument Serif | 24 / 1.25 | 400 italic | A friend's note on title detail |
 | `title-m` | Inter | 20 / 1.3 | 600, -0.01em | Sheet and dialog titles, empty-state headings |
 | `heading` | Inter | 17 / 1.35 | 600, -0.005em | Section headings, card titles on detail |
@@ -432,7 +433,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Settings | `GearSix` | Group | `UsersThree` |
 | Activity | `Bell` | More actions | `DotsThree` |
 | Where to watch | `MonitorPlay` | Shelf tab | `BookmarksSimple` |
-| My shelf tab | `UserCircle` | Private / visibility | `LockSimple` |
+| My Recs tab | `UserCircle` | Private / visibility | `LockSimple` |
 | Edit | `PencilSimple` | Remove | `Trash` |
 | Error | `WarningCircle` | Offline | `WifiSlash` |
 | Help | `Question` | Robot guess | `Robot` |
@@ -498,7 +499,7 @@ Every interactive component expresses these states the same way. This table is t
 - **Desktop shortcuts** (shown in a shortcuts sheet under Help, never required):
   - `/` focuses search
   - `n` opens "Put in a good word"
-  - `g` then `s` goes to the shelf, `g` then `y` goes to My shelf, `g` then `a` goes to Activity
+  - `g` then `s` goes to the shelf, `g` then `y` goes to My Recs, `g` then `a` goes to Activity
   - `?` shows shortcuts
 
   Shortcuts never fire while typing in a field.
@@ -672,7 +673,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
   - Unmapped or missing genres fall back to a tone picked deterministically from the title id.
   - The tone is resolved once when the title is first saved and stored on the title record, so it never changes later.
   - Color is decoration only. The genre is always shown as text on the detail screen.
-- **TMDB attribution is required**, persistently, in About (under My shelf › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
+- **TMDB attribution is required**, persistently, in About (under My Recs › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
 
 #### 4.2.2 Rec card
 One component, three variants.
@@ -721,8 +722,8 @@ One component, three variants.
 #### 4.2.8 App bars and navigation
 - **Top bar:** 52px, `--surface` fill. Group switcher on the left (group name in `heading` with `CaretDown`); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
 - **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the group switcher, group details, and invite button sit in the shelf's own bar on shelf screens. The conversation screen has its own compact header (5.17) and no tab bar.
-- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **My shelf**. Shelf and My shelf are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
-- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and My shelf as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
+- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **My Recs**. Shelf and My Recs are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
+- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and My Recs as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
 - Add is a command, not a destination: it opens the log sheet over the current screen rather than navigating away.
 
 #### 4.2.9 Robot guess card
@@ -789,7 +790,7 @@ Each pattern names the user problem, the solution, and the rules. Screens in the
 /title/[type]/[id]     title detail
 /title/[type]/[id]/conversation?group=[groupId]   a group's conversation about a title
 /activity              mentions, replies, and joins (Bell in the top bar)
-/you                   your shelf, groups, settings, help (My shelf tab)
+/you                   your shelf, groups, settings, help (My Recs tab)
 /you/settings          account, notifications, about
 /groups/new            create a group
 /groups/[id]           group details, members, invite
@@ -823,7 +824,7 @@ Most people will meet Good Word through an invite link. This is the most importa
 - **Check-your-email step:** shows the address the link went to, a "Use a different email" link, and "Resend link" that becomes available after 30 seconds with a visible countdown. States that the link works for 15 minutes.
 - **Link opened on a different device or browser:** sign the user in there and continue, rather than erroring.
 - **Expired or used link:** a banner explaining it plus a one-tap resend, prefilled with the email.
-- **Session length:** stay signed in for 90 days on a device. Signing out is in My shelf › Settings.
+- **Session length:** stay signed in for 90 days on a device. Signing out is in My Recs › Settings.
 - **Name:** asked once, after the first sign-in, as a single field: "What should friends call you?" Prefilled from Google when available. It's the name shown on every good word.
 
 ### 5.4 Putting in a good word (the core flow)
@@ -850,7 +851,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 ### 5.6 Browsing and filtering the shelf
 - **Default sort:** newest good word first. Alternative: "Most vouched".
-- **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My shelf) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the shelf scrolls beneath them.
+- **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My Recs) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the shelf scrolls beneath them.
 - **Active filters are always visible**, with a single "Clear" action and a result count ("12 good words").
 - **Filters combine** with AND across types (Movies + Netflix) and OR within a type (Netflix OR Hulu), and the UI says so implicitly by grouping chips by type.
 - **Empty result:** "Nobody's vouched for a Netflix movie yet." with Clear filters, plus the robot-guess offer where it applies (5.15).
@@ -950,7 +951,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - A robot guess never appears unrequested, never sends a notification, and is never counted as a good word.
 
 ### 5.16 Help and settings
-- **Consistent help location:** Help lives in My shelf › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
+- **Consistent help location:** Help lives in My Recs › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
 - **Contextual help** appears in empty states and helper text at the moment of need, never as a tour.
 - **Settings** take effect immediately (switches and checkboxes), are grouped by topic (Account, Streaming services, Notifications, Share my shelf, Your data; About lives in Help), and confirm with a toast only when the effect isn't visible. Resetting a share link asks first, like resetting an invite link.
 
@@ -993,6 +994,18 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 **Moderation (small private groups)**
 - Authors can edit and delete their comments; group owners can delete any comment in their group. Removing a member leaves their past comments visible, attributed to them, but they can no longer read or post. The same goes for people who leave (decided 2026-09-29). Reporting is out of scope for the MVP.
 
+### 5.18 Adding recs in bulk
+How someone turns a list they already have into recs (PRD F15). One decision per card; nothing lands until it's confirmed.
+
+- **Input screen:** page title "Add recs" (`title-l`). A `Textarea` with a visible label and helper text (the dictation tip, per platform), never placeholder-only. Below it, **Add screenshots** (secondary) opens the native picker; thumbnails show in a row of up to 5, each with a Remove icon button. On desktop the textarea's card is also a drop zone, and paste takes images. The visibility line sits above the one primary button, **Find my titles**, which is disabled until there's input.
+- **Finding:** the input stays on screen, dimmed and read-only, under a live region reading "Found 14 so far" with a `Spinner` and a secondary **Cancel**.
+- **Review deck:** a progress line ("3 of 14") and **Back** (tertiary, `ArrowLeft`) at the top. The card shows the poster (342w), title (`title-m`), and meta line ("Series · 2024"), then the note field when opened or prefilled. Low-confidence cards and Edit show **alternatives**: up to 3 rows (poster, title, meta) as radio choices, plus **Search instead**. On phones the alternatives replace the note area; at 1024px and up they sit in a column beside the card.
+- **Action bar:** fixed to the bottom on phones (above the safe area, and above the keyboard when it's open), inline under the card on desktop. **Skip** (secondary), **Edit** (secondary), **Add** (primary), each at least 44px tall with 12px between. On desktop each shows its shortcut as a `kbd` hint (A, E, S; ← for Back). **Add all remaining (N)** is a tertiary button above the bar when there are high-confidence cards left.
+- **Swipe:** dragging the card right adds and left skips once it passes 96px; it follows the finger and springs back otherwise. Reduced motion: no follow, the action still happens. Buttons always do the same thing (2.5.7).
+- **Toasts:** "Added · Undo" and "Skipped · Undo", 4 seconds.
+- **Done:** `title-l` "Your recs are in", a summary line, then **View My Recs** (primary) and **Add more** (secondary).
+- **Resume:** My Recs shows a `Banner` ("You have 6 recs left to review" · **Finish**) while an import has unreviewed cards.
+
 ---
 
 ## 6. Content design
@@ -1014,7 +1027,7 @@ Voice stays constant; tone adapts to the user's state.
 | Situation | Tone | Example |
 |---|---|---|
 | Success | Warm, brief | "On your shelf. Priya and Jonah will see it." |
-| Empty, first use | Inviting | "Your shelf is empty. What's something you'd tell a friend to watch?" |
+| Empty, first use | Inviting | "No recs yet. What's something you'd tell a friend to watch?" |
 | Error | Calm, plain, no jokes | "That didn't save. Check your connection and try again." |
 | Destructive | Clear, serious, specific | "Delete College crew? This removes 42 good words for 6 people and can't be undone." |
 | Waiting | Reassuring | "Sending when you're back online." |
@@ -1067,13 +1080,21 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Log success | On your shelf. Priya, Jonah, and 4 others will see it. |
 | Already on shelf | Your good word is already on these shelves. |
 | Empty group shelf | Nothing here yet. Be the first to put in a good word. |
-| Empty personal shelf | Your shelf is empty. What's something you'd tell a friend to watch? |
+| Empty personal shelf | No recs yet. What's something you'd tell a friend to watch? |
 | Empty filter result | Nobody's vouched for a Netflix movie yet. |
 | Robot offer | Want a robot's guess? It won't be from your friends. |
 | Search empty | Search for a show or movie |
 | Search no results | Nothing for "nite ferry". Check the spelling, or try the original title. |
 | Search error | Search isn't working right now. Try again. |
 | Search offline | You're offline. Search needs a connection, so try again when you're back. |
+| Add recs, label | List everything you'd recommend |
+| Add recs, tip (phone) | Tip: tap the mic on your keyboard and just start listing shows. |
+| Add recs, tip (desktop) | Tip: use your computer's dictation (Mac: Edit > Start Dictation, Windows: Win + H). |
+| Add recs, finding | Found 14 so far |
+| Add recs, nothing found | We couldn't find titles in that · Try rewording it, or search for titles one at a time. |
+| Add recs, offline | You're offline. Finding titles needs a connection. |
+| Add recs, daily limit | You've added a lot today. Try again tomorrow, or search for titles one at a time. |
+| Add recs, done | Added 11 recs. 2 were already in My Recs. |
 | Title didn't load | This title didn't load · Good Word is having a moment. Try again in a minute. |
 | Title not found | We couldn't find that title · The link may be broken, or the title was removed. Try searching for it with Add. |
 | Page not found (any unknown URL) | We couldn't find that page · The link may be broken, or the page has moved. Action: Go to your shelf (signed in) or Go to Good Word (signed out). |
@@ -1100,7 +1121,7 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Empty filter result, with genres or length | Nobody's vouched for anything like that yet. |
 | Empty filter result, body | Clear filters to see the whole shelf. |
 | Empty filter result, length on, some runtimes unknown | Titles without a known length are left out while a length filter is on. |
-| Empty filter result, My shelf | You haven't vouched for anything like that. |
+| Empty filter result, My Recs | You haven't vouched for anything like that. |
 | More filters, no services | None of these are streaming in your region yet. |
 | Load more | Load more |
 | New good words in the switcher | 3 new good words |
@@ -1439,6 +1460,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.3.0 (2026-10-01):** Adding recs in bulk (5.18, PRD F15). Sydney kept the word **rec**: the My shelf tab is now **My Recs** (glossary 1.4, tab bar, rail, shortcuts, and every "My shelf ›" path), and its empty state reads "No recs yet". Import microcopy (6.6).
 - **v3.2.9 (2026-10-01):** A site-wide 404 for unknown URLs, with copy approved by Sydney (6.6): "We couldn't find that page", linking to your shelf when signed in and to the home page when signed out. Sends noindex.
 - **v3.2.8 (2026-09-30):** Sheets (4.1.13) cap at 90% of the visible height, so an open keyboard can't push a sheet's top off screen; the Add sheet is full height on phones.
 - **v3.2.7 (2026-09-30):** Step 10: Settings groups (5.16) gain Streaming services and Share my shelf; About moved to Help in step 8.
