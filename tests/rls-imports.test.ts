@@ -4,7 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // Build your list (PRD F15, slice 11), against the real project: imports and
 // their cards are private to their owner, groups are narrowed to ones you're
-// in, the daily limit holds, the same input is reused, and decisions keep the
+// in, there's no daily limit, the same input is reused, and decisions keep the
 // import's status in step. Priya owns College crew; Jonah is in no group.
 // Invented people and titles only. Skipped without the Supabase env vars.
 // Needs the step 11 migration applied.
@@ -153,14 +153,12 @@ describe.skipIf(!enabled)("imports: private cards, limits, reuse", () => {
     expect(byJonah).toBe(true);
   });
 
-  it("allows 10 imports a day", async () => {
-    // Jonah has started 2 so far.
-    for (let i = 0; i < 8; i++) {
+  it("has no daily limit, and stays signed-in only", async () => {
+    // Jonah has started 2 so far; 10 more all start (PRD F15.4, v1.3.2).
+    for (let i = 0; i < 10; i++) {
       const { data } = await people.jonah.client.rpc("start_import", { p_method: "text", p_hash: hash(`${run} ${i}`), p_groups: [] });
       expect(data[0].status).toBe("started");
     }
-    const { data: limited } = await people.jonah.client.rpc("start_import", { p_method: "text", p_hash: hash(`${run} 11`), p_groups: [] });
-    expect(limited[0]).toEqual({ status: "limited", import_id: null, reuse: null });
     const signedOut = createClient(url!, anon!, { auth: { persistSession: false } });
     const { error } = await signedOut.rpc("start_import", { p_method: "text", p_hash: hash("x"), p_groups: [] });
     expect(error).not.toBeNull();
