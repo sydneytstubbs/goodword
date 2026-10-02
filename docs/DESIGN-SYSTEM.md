@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.3.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
+**Version** 3.3.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -1093,7 +1093,6 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Add recs, finding | Found 14 so far |
 | Add recs, nothing found | We couldn't find titles in that · Try rewording it, or search for titles one at a time. |
 | Add recs, offline | You're offline. Finding titles needs a connection. |
-| Add recs, daily limit | You've added a lot today. Try again tomorrow, or search for titles one at a time. |
 | Add recs, done | Added 11 recs. 2 were already in My Recs. |
 | Title didn't load | This title didn't load · Good Word is having a moment. Try again in a minute. |
 | Title not found | We couldn't find that title · The link may be broken, or the title was removed. Try searching for it with Add. |
@@ -1460,6 +1459,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.3.1 (2026-10-02):** The Add recs daily-limit message is gone with the limit (PRD v1.3.2).
 - **v3.3.0 (2026-10-01):** Adding recs in bulk (5.18, PRD F15). Sydney kept the word **rec**: the My shelf tab is now **My Recs** (glossary 1.4, tab bar, rail, shortcuts, and every "My shelf ›" path), and its empty state reads "No recs yet". Import microcopy (6.6). The `Images` icon for Add screenshots (3.5).
 - **v3.2.9 (2026-10-01):** A site-wide 404 for unknown URLs, with copy approved by Sydney (6.6): "We couldn't find that page", linking to your shelf when signed in and to the home page when signed out. Sends noindex.
 - **v3.2.8 (2026-09-30):** Sheets (4.1.13) cap at 90% of the visible height, so an open keyboard can't push a sheet's top off screen; the Add sheet is full height on phones.

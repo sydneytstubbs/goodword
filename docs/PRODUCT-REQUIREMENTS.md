@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.3.1 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
+**Version** 1.3.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -698,12 +698,12 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - **Done:** "Your recs are in", then "Added 11 recs. 2 were already in My Recs." with **View My Recs** and **Add more**.
 
 #### F15.4 Limits and cost
-- Per import: 5 screenshots, 5,000 characters, and the first 100 titles found. Per person: 10 imports a day. The existing limit of 100 good words an hour still applies.
+- Per import: 5 screenshots, 5,000 characters, and the first 100 titles found. No daily limit per person (removed by Sydney, v1.3.2); spend is capped in the Anthropic console. The existing limit of 100 good words an hour still applies.
 - The API keys stay server-side; only signed-in people can start an import. Sydney sets a monthly spend cap and usage alerts in the Anthropic console.
 - Posters load from TMDB's image CDN at small sizes; nothing is copied.
 
 #### F15.5 States (DS 5.12)
-- **Empty:** the input screen. **Loading:** "Found N so far" with Cancel. **No results:** "We couldn't find titles in that" with Try again and Search instead. **Error:** "Good Word is having a moment. Try again in a minute." (the input is kept). **Offline:** "You're offline. Finding titles needs a connection." (the input is kept). **Limit:** "You've added a lot today. Try again tomorrow, or search for titles one at a time."
+- **Empty:** the input screen. **Loading:** "Found N so far" with Cancel. **No results:** "We couldn't find titles in that" with Try again and Search instead. **Error:** "Good Word is having a moment. Try again in a minute." (the input is kept). **Offline:** "You're offline. Finding titles needs a connection." (the input is kept).
 
 **Acceptance criteria**
 - Given a pasted list of 12 titles one per line that all match TMDB exactly, when the user taps Find my titles, then no AI call is made and 12 cards appear.
@@ -712,7 +712,6 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - Given the user taps Add, then Undo within the toast, then the good word is gone from every shelf and the card is back.
 - Given the user leaves after 5 of 14 cards, when they open My Recs, then they can resume at card 6.
 - Given the same text is submitted twice, then the second import makes no AI call.
-- Given an 11th import in a day, then the limit message shows and nothing is parsed.
 - No uploaded image is stored, and no AI or TMDB key reaches the browser.
 
 ---
@@ -974,6 +973,7 @@ Decide before the slice that needs them.
 
 ## 16. Changelog
 
+- **v1.3.2 (2026-10-02):** No daily import limit (F15.4): Sydney removed it after failed tries, caused by an API key problem, used up her day. The per-import caps stay (5 screenshots, 5,000 characters, 100 titles), and spend is capped in the Anthropic console.
 - **v1.3.1 (2026-10-01):** `import_failed` (11.2) records why an import failed (a missing or rejected API key, limits, the API rejecting the request), never the text, so failures can be diagnosed from the events table.
 - **v1.3.0 (2026-10-01):** Build your list (F15, slice 11), from Sydney's "Build Your Recs List" spec. Decisions: keep the word "recs" and rename My shelf to **My Recs**; imported recs go into all your groups by default; Claude Haiku 4.5 only, with no larger-model escalation; limits of 5 screenshots, 5,000 characters, 100 titles per import, and 10 imports a day; unreviewed cards are saved privately so a review can be resumed. The share sheet path is Android only; iPhone uses paste. New routes (6.1), tables (section 8), and events (11.2). A site-wide 404 for unknown URLs.
 - **v1.2.14 (2026-09-30):** Step 10. Streaming services are saved per region (a service's id can differ by country); Settings lists the region's services from TMDB, most popular first, with "Show all". A title whose services aren't known yet never matches "On my services". Share links are 144-bit tokens, and a link turned back on is always a new one. The shared page lists up to 500 good words and shows no title detail link, since title detail needs sign-in. The weekend prompt's button links to `/shelf?add=1&ref=nudge_email`, which opens Add once; `add_opened` gains the `email` entry point for it (11.2). The weekend prompt counts toward the one-a-day email cap after the digest and join emails, and a held prompt goes within 24 hours of Sunday 10am or not at all. Offline good words are kept on the device per person and sent on reconnect; the service worker keeps up to 6 shelves for offline. Live new good words are counted per shelf, never the viewer's own.
