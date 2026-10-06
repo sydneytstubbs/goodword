@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTitle } from "@/lib/titles/cache";
 import { safeRegion, listProviders } from "@/lib/titles/providers";
 import { recordToTitle, titleKey, type TitleRecord } from "@/lib/tmdb/normalize";
-import { cardsFromRows } from "./list";
+import { cardsFromCardRows, type CardRow } from "./list";
 
 // Good word reads (PRD F4, F5, F6). Everything here runs as the signed-in
 // user, under row-level security: someone else's good word shows only if it's
@@ -28,24 +28,6 @@ async function names(supabase: Supabase, userIds: string[]): Promise<Map<string,
   return new Map((data ?? []).map((p) => [p.user_id as string, (p.display_name as string | null) ?? ""]));
 }
 
-type ListRow = {
-  shared_at: string;
-  group_id: string;
-  good_words: { user_id: string; note: string | null; titles: TitleRow };
-};
-
-/** When the viewer last looked at each group's list, or joined it if never (F5.5). */
-async function lastViewed(supabase: Supabase, userId: string, groupIds: string[]): Promise<Map<string, number>> {
-  const { data } = await supabase
-    .from("group_members")
-    .select("group_id, last_viewed_at, joined_at")
-    .eq("user_id", userId)
-    .in("group_id", groupIds);
-  return new Map(
-    (data ?? []).map((m) => [m.group_id as string, new Date((m.last_viewed_at ?? m.joined_at) as string).getTime()]),
-  );
-}
-
 /** Cards with their streaming services in the viewer's region, and every service on the list. */
 async function withServices(cards: ListCard[], rowIds: Map<string, string>, region: string): Promise<List> {
   const refs = cards.flatMap((c) => {
@@ -63,52 +45,60 @@ async function withServices(cards: ListCard[], rowIds: Map<string, string>, regi
   return { cards: withIds, services: [...services.values()] };
 }
 
-async function groupsList(groupIds: string[], viewerId: string, region: string): Promise<List> {
-  if (groupIds.length === 0) return { cards: [], services: [] };
+type CardScope = { kind: "group"; groupId: string } | { kind: "groups" } | { kind: "mine" } | { kind: "person"; userId: string };
+
+type TitleCardRow = TitleRow & {
+  vouchers: CardRow["vouchers"];
+  latest_at: string;
+  is_new: boolean;
+  group_ids: string[] | null;
+  friends: boolean | null;
+};
+
+/**
+ * The one card query (PRD F16.11): title_cards builds every list's cards in
+ * the database, under row-level security. Returns the cards and, by card,
+ * the title's row id (for comment counts and streaming services).
+ */
+async function titleCards(scope: CardScope): Promise<{ cards: ListCard[]; rowIds: Map<string, string> }> {
   const supabase = await createClient();
-  const [{ data, error }, since, comments] = await Promise.all([
-    supabase
-      .from("good_word_groups")
-      .select(`shared_at, group_id, good_words!inner(user_id, note, titles!inner(${TITLE_COLUMNS}))`)
-      .in("group_id", groupIds)
-      .order("shared_at", { ascending: false })
-      .returns<ListRow[]>(),
-    lastViewed(supabase, viewerId, groupIds),
-    commentCounts(groupIds),
-  ]);
-  if (error) throw new Error(`list: ${error.code}`);
-  const rows = data ?? [];
-  const nameOf = await names(supabase, rows.map((r) => r.good_words.user_id));
-  const rowIds = new Map(rows.map((r) => [toTitle(r.good_words.titles).id, r.good_words.titles.id]));
-  // New: someone else's good word went on this list since you last looked (F5.5).
-  const fresh = new Set(
-    rows
-      .filter((r) => r.good_words.user_id !== viewerId && new Date(r.shared_at).getTime() > (since.get(r.group_id) ?? Infinity))
-      .map((r) => toTitle(r.good_words.titles).id),
-  );
-  const cards = cardsFromRows(
-    rows.map((r) => ({
-      title: toTitle(r.good_words.titles),
-      userId: r.good_words.user_id,
-      name: nameOf.get(r.good_words.user_id) ?? "",
-      note: r.good_words.note,
-      at: r.shared_at,
-    })),
-  ).map((card) => {
-    const counted = comments.get(rowIds.get(card.title.id) ?? "");
-    return { ...card, ...(fresh.has(card.title.id) ? { isNew: true } : {}), ...(counted ? { comments: counted } : {}) };
+  const { data, error } = await supabase.rpc("title_cards", {
+    p_scope: scope.kind,
+    ...(scope.kind === "group" ? { p_group: scope.groupId } : {}),
+    ...(scope.kind === "person" ? { p_person: scope.userId } : {}),
   });
-  return withServices(cards, rowIds, region);
+  if (error) throw new Error(`title cards (${scope.kind}): ${error.code}`);
+  const rows = (data ?? []) as TitleCardRow[];
+  const cards = cardsFromCardRows(
+    rows.map((r) => ({ title: toTitle(r), vouchers: r.vouchers, isNew: r.is_new, groupIds: r.group_ids, friends: r.friends })),
+  );
+  return { cards, rowIds: new Map(rows.map((r) => [toTitle(r).id, r.id])) };
+}
+
+/** A list from the card query, with comment counts for `commentGroupIds` and streaming services. */
+async function listFor(scope: CardScope, commentGroupIds: string[], region: string): Promise<List> {
+  const [{ cards, rowIds }, comments] = await Promise.all([titleCards(scope), commentCounts(commentGroupIds)]);
+  const counted = cards.map((card) => {
+    const count = comments.get(rowIds.get(card.title.id) ?? "");
+    return count ? { ...card, comments: count } : card;
+  });
+  return withServices(counted, rowIds, region);
 }
 
 /** A group's list: every title vouched for into it, one card per title (F5.1). */
-export async function groupList(groupId: string, viewerId: string, region: string): Promise<List> {
-  return groupsList([groupId], viewerId, region);
+export async function groupList(groupId: string, _viewerId: string, region: string): Promise<List> {
+  return listFor({ kind: "group", groupId }, [groupId], region);
 }
 
 /** All groups: every group you're in, one card per title, each person once (F5.2). */
-export async function allGroupsList(groupIds: string[], viewerId: string, region: string): Promise<List> {
-  return groupsList(groupIds, viewerId, region);
+export async function allGroupsList(groupIds: string[], _viewerId: string, region: string): Promise<List> {
+  if (groupIds.length === 0) return { cards: [], services: [] };
+  return listFor({ kind: "groups" }, groupIds, region);
+}
+
+/** Person view (F8): their good words you can see, with comments from the groups you share. */
+export async function personList(userId: string, sharedGroupIds: string[], region: string): Promise<List> {
+  return listFor({ kind: "person", userId }, sharedGroupIds, region);
 }
 
 type MineRow = {
@@ -132,28 +122,9 @@ function toMine(row: Omit<MineRow, "titles">): MyGoodWord {
 }
 
 /** My list: only your own good words, including ones in no group (F5.3). */
-export async function myList(userId: string, name: string, region: string): Promise<List> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("good_words")
-    .select(`note, source, created_at, friends_shared_at, titles!inner(${TITLE_COLUMNS}), good_word_groups(group_id, shared_at)`)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .returns<MineRow[]>();
-  if (error) throw new Error(`my list: ${error.code}`);
-  const rows = data ?? [];
-  const cards = cardsFromRows(
-    rows.map((r) => ({
-      title: toTitle(r.titles),
-      userId,
-      name,
-      note: r.note,
-      at: r.created_at,
-      groupIds: r.good_word_groups.map((g) => g.group_id),
-      friends: r.friends_shared_at !== null,
-    })),
-  );
-  return withServices(cards, new Map(rows.map((r) => [toTitle(r.titles).id, r.titles.id])), region);
+export async function myList(_userId: string, _name: string, region: string): Promise<List> {
+  const { cards, rowIds } = await titleCards({ kind: "mine" });
+  return withServices(cards, rowIds, region);
 }
 
 /** Whether you've put in a good word into this group yet (the first-good-word prompt, F5.7). */

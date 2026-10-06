@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MyGoodWord, Title } from "@/components/domain/types";
 import { audienceNames } from "@/lib/format";
-import { applyOverlays, cardsFromRows, type VouchRow } from "./list";
+import { applyOverlays, cardsFromCardRows, cardsFromRows, type VouchRow } from "./list";
 
 const ferry: Title = { id: "tv-101", type: "tv", tmdbId: 101, name: "The Night Ferry", year: 2024, genres: ["Drama"], accent: "plum" };
 const moth: Title = { id: "movie-202", type: "movie", tmdbId: 202, name: "Moth Season", genres: ["Horror"], accent: "clay" };
@@ -44,6 +44,40 @@ describe("cardsFromRows", () => {
   it("leaves out empty notes", () => {
     const [card] = cardsFromRows([row(moth, "tess", "Tess", "2026-09-25T10:00:00Z", null)]);
     expect(card.goodWords[0]).not.toHaveProperty("note");
+  });
+});
+
+describe("cardsFromCardRows (title_cards, PRD F16.11)", () => {
+  const card = (title: Title, vouchers: Array<[string, string, string, string | null]>, extra: { isNew?: boolean; groupIds?: string[]; friends?: boolean } = {}) => ({
+    title,
+    vouchers: vouchers.map(([user_id, name, at, note]) => ({ user_id, name, at, note })),
+    isNew: extra.isNew ?? false,
+    groupIds: extra.groupIds ?? null,
+    friends: extra.friends ?? null,
+  });
+
+  it("orders cards by their newest good word, and good words newest first", () => {
+    const cards = cardsFromCardRows([
+      card(moth, [["tess", "Tess", "2026-09-25T10:00:00Z", null]]),
+      card(ferry, [
+        ["jonah", "Jonah", "2026-09-20T10:00:00Z", "the ferry scene"],
+        ["priya", "Priya", "2026-09-28T10:00:00Z", "ep 3 is where it gets you"],
+      ]),
+    ]);
+    expect(cards.map((c) => c.title.name)).toEqual(["The Night Ferry", "Moth Season"]);
+    expect(cards[0].goodWords.map((g) => g.person.name)).toEqual(["Priya", "Jonah"]);
+    expect(cards[1].goodWords[0]).not.toHaveProperty("note");
+  });
+
+  it("carries New, and My list's groups and friends, only when set", () => {
+    const [plain, mineCard] = cardsFromCardRows([
+      card(heist, [["tess", "Tess", "2026-09-29T10:00:00Z", null]], { isNew: true }),
+      card(moth, [["priya", "Priya", "2026-09-28T10:00:00Z", null]], { groupIds: ["crew"], friends: true }),
+    ]);
+    expect(plain).toMatchObject({ isNew: true });
+    expect(plain).not.toHaveProperty("groupIds");
+    expect(mineCard).toMatchObject({ groupIds: ["crew"], friends: true });
+    expect(mineCard).not.toHaveProperty("isNew");
   });
 });
 

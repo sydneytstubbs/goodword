@@ -47,6 +47,29 @@ export function cardsFromRows(rows: VouchRow[]): ListCard[] {
   );
 }
 
+/** One row from title_cards (PRD F16.11): a title, who vouched, and what's new. */
+export type CardRow = {
+  title: Title;
+  vouchers: Array<{ user_id: string; name: string; note: string | null; at: string }>;
+  isNew: boolean;
+  /** Scope mine only. */
+  groupIds: string[] | null;
+  friends: boolean | null;
+};
+
+/** Cards from title_cards rows, in the same order and shape as cardsFromRows. */
+export function cardsFromCardRows(rows: CardRow[]): ListCard[] {
+  return sortCards(
+    rows.map((row) => ({
+      title: row.title,
+      goodWords: row.vouchers.map((v) => goodWord({ id: v.user_id, name: v.name }, v.note, v.at)),
+      ...(row.isNew ? { isNew: true } : {}),
+      ...(row.groupIds ? { groupIds: row.groupIds } : {}),
+      ...(row.friends ? { friends: true } : {}),
+    })),
+  );
+}
+
 function goodWord(person: Person, note: string | null, at: string): GoodWord {
   return { person, ...(note ? { note } : {}), at: new Date(at) };
 }
