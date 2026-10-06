@@ -70,7 +70,7 @@ Grounded in Nielsen Norman Group's ten usability heuristics. Every design review
 | # | Heuristic | How Good Word enforces it |
 |---|---|---|
 | 1 | Visibility of system status | Optimistic updates with immediate feedback (5.10). A visibility line on every share action says who will see it (4.2.6). Offline and sync state are always shown (5.12). |
-| 2 | Match between system and real world | Real-world metaphors: shelf, putting in a good word, friends' names. Never system words like post, item, entry, feed, or rating (1.4). |
+| 2 | Match between system and real world | Real-world metaphors: list, putting in a good word, friends' names. Never system words like post, item, entry, feed, or rating (1.4). |
 | 3 | User control and freedom | Undo over confirm (5.11). Back always works, and filters live in the URL (5.1). Every sheet and dialog can be dismissed. Unsent notes survive accidental dismissal. |
 | 4 | Consistency and standards | One component per job (Section 4). One word per concept (1.4). Platform conventions for navigation, sharing, and keyboards (Section 8). |
 | 5 | Error prevention | Duplicate detection when logging (5.4). The audience is shown before posting. Only irreversible actions get a confirm step, and it names the consequence. |
@@ -100,8 +100,8 @@ Use these words exactly, in UI and in code comments. Consistency of language is 
 | **good word** | A recommendation someone vouched for | post, item, entry, review, rating, like |
 | **put in a good word** | The act of recommending | submit, add item, rate, log (in UI copy) |
 | **vouch / vouched for** | Having put in a good word | liked, favorited, starred |
-| **shelf** | The collection of good words in a group | feed, list, board, library (in UI) |
-| **rec**, **My Recs** | Your own good words as a collection: the My Recs tab, and adding recs in bulk (5.18) | list (except "recs list" in import copy), favorites, watchlist |
+| **list** | The collection of good words in a group | feed, list, board, library (in UI) |
+| **rec**, **My list** | Your own good words as a collection: the My list tab, and adding recs in bulk (5.18) | list (except "recs list" in import copy), favorites, watchlist |
 | **group** | A private circle of people | community, channel, server, network |
 | **member** | Someone in a group | follower, user, connection |
 | **note** | The optional one-liner on a good word | review, caption |
@@ -345,7 +345,7 @@ Computed with the WCAG 2.x relative luminance formula. `/styleguide` must recomp
 | `display-xl` | Instrument Serif | `clamp(56px, 10vw, 144px)` / 0.95 | 400, -0.02em | Marketing hero |
 | `display-l` | Instrument Serif | `clamp(40px, 6vw, 80px)` / 1.0 | 400, -0.015em | Marketing section headlines |
 | `display-m` | Instrument Serif | `clamp(28px, 3.5vw, 44px)` / 1.1 | 400 (often italic), -0.01em | Marketing pull quotes, milestone lines |
-| `title-l` | Instrument Serif | 56 / 0.92 (44 / 0.95 step-down) | 400, -0.025em | App page title (group name, "My Recs", title name). Big editorial |
+| `title-l` | Instrument Serif | 56 / 0.92 (44 / 0.95 step-down) | 400, -0.025em | App page title (group name, "My list", title name). Big editorial |
 | `quote` | Instrument Serif | 24 / 1.25 | 400 italic | A friend's note on title detail |
 | `title-m` | Inter | 20 / 1.3 | 600, -0.01em | Sheet and dialog titles, empty-state headings |
 | `heading` | Inter | 17 / 1.35 | 600, -0.005em | Section headings, card titles on detail |
@@ -379,7 +379,7 @@ Computed with the WCAG 2.x relative luminance formula. `/styleguide` must recomp
 - **Proximity carries meaning.** Related elements 4 to 8px apart, list items 12 to 16px, sections 32 to 48px in the app, 96 to 128px on marketing.
 
 #### 3.3.2 Grid
-| Breakpoint | Viewport | Columns | Outer margin | Gutter | Shelf grid |
+| Breakpoint | Viewport | Columns | Outer margin | Gutter | List grid |
 |---|---|---|---|---|---|
 | base | 360 to 767 | 4 | 20px | 12px | 2 columns |
 | `md` | 768 to 1023 | 8 | 32px | 20px | 3 columns |
@@ -387,7 +387,7 @@ Computed with the WCAG 2.x relative luminance formula. `/styleguide` must recomp
 | `xl` | 1440 and up | 12 | auto (centered) | 24px | 5 columns, capped at `--width-content` |
 
 - Design baseline is 390px wide. Verify at 360, 390, 768, 1024, and 1440.
-- Content widths: detail screens `--width-detail`, shelves `--width-content`, paragraphs `--width-reading`.
+- Content widths: detail screens `--width-detail`, lists `--width-content`, paragraphs `--width-reading`.
 
 #### 3.3.3 Layout rules
 - Left-align by default. Center only short, single-purpose blocks (empty states, dialogs).
@@ -432,8 +432,8 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Share | `ShareNetwork` | Copy link | `LinkSimple` |
 | Settings | `GearSix` | Group | `UsersThree` |
 | Activity | `Bell` | More actions | `DotsThree` |
-| Where to watch | `MonitorPlay` | Shelf tab | `BookmarksSimple` |
-| My Recs tab | `UserCircle` | Private / visibility | `LockSimple` |
+| Where to watch | `MonitorPlay` | List tab | `BookmarksSimple` |
+| My list tab | `UserCircle` | Private / visibility | `LockSimple` |
 | Edit | `PencilSimple` | Remove | `Trash` |
 | Error | `WarningCircle` | Offline | `WifiSlash` |
 | Help | `Question` | Robot guess | `Robot` |
@@ -462,7 +462,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Press | `--dur-fast` | standard | Background to `--surface-pressed` or `--action-hover`; buttons scale to 0.98 |
 | Toggle and selection | `--dur-fast` | standard | Color, weight, and icon swap |
 | Toast in / out | `--dur-base` / 120ms | enter / exit | 6px rise with fade |
-| New card on shelf | `--dur-base` | enter | Fade in from 6px above |
+| New card on list | `--dur-base` | enter | Fade in from 6px above |
 | Sheet in / out | `--dur-slow` / 200ms | enter / exit | From the bottom edge |
 | Dialog in / out | `--dur-base` / 120ms | enter / exit | Fade with scale 0.98 to 1 |
 | Vouch success | `--dur-base` | enter | Icon cross-fades from `Plus` to `Check` |
@@ -499,7 +499,7 @@ Every interactive component expresses these states the same way. This table is t
 - **Desktop shortcuts** (shown in a shortcuts sheet under Help, never required):
   - `/` focuses search
   - `n` opens "Put in a good word"
-  - `g` then `s` goes to the shelf, `g` then `y` goes to My Recs, `g` then `a` goes to Activity
+  - `g` then `s` goes to the list, `g` then `y` goes to My list, `g` then `a` goes to Activity
   - `?` shows shortcuts
 
   Shortcuts never fire while typing in a field.
@@ -595,7 +595,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 - Implemented as a radio group (`role="radiogroup"`), arrow keys move selection. Changes apply immediately and update the URL. The selected segment slides between positions in `--dur-fast` (instant under reduced motion).
 
 #### 4.1.9 Chips
-- **Group chip:** shows which shelf something is on. Pill, `--surface-sunken` fill, 8px dot in the group's people tone, name in `caption` weight 500. Not interactive unless it's a link to that shelf.
+- **Group chip:** shows which list something is on. Pill, `--surface-sunken` fill, 8px dot in the group's people tone, name in `caption` weight 500. Not interactive unless it's a link to that list.
 - **Filter chip:** toggle for narrowing. Unselected: `--surface-raised`, `--border-subtle` hairline, `label` weight 500. Selected: `--inverse-surface` fill, `--inverse-text`, leading `Check` 16px. `aria-pressed`. Optional count in tabular figures ("Netflix 12").
 - Visual height 32px; hit area 44px.
 - Show at most five filter chips, then a "More filters" chip that opens a sheet.
@@ -637,12 +637,12 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 - `role="status"`, or `role="alert"` only for errors that block the current task.
 
 #### 4.1.17 Skeleton and spinner
-- **Skeleton** for content regions: `--surface-sunken` blocks matching the final layout's shapes and sizes exactly, with a slow opacity pulse (static under reduced motion). The region has `aria-busy="true"` and a visually hidden "Loading shelf".
+- **Skeleton** for content regions: `--surface-sunken` blocks matching the final layout's shapes and sizes exactly, with a slow opacity pulse (static under reduced motion). The region has `aria-busy="true"` and a visually hidden "Loading list".
 - **Spinner** only inside buttons and small inline actions, never for a content region. 16 to 20px, `currentColor`.
 - **Show loading indicators only if loading takes more than 300ms**, and once shown, keep them for at least 500ms to avoid flicker.
 
 #### 4.1.18 Empty state
-- Left-aligned on mobile, centered on wide screens, max `--width-reading`: a `title-m` heading, one sentence of body in `--text-muted`, and one primary action. The only visual is optional: a row of three empty poster-shaped outlines in `--border-subtle` (dashed), suggesting a shelf waiting to be filled.
+- Left-aligned on mobile, centered on wide screens, max `--width-reading`: a `title-m` heading, one sentence of body in `--text-muted`, and one primary action. The only visual is optional: a row of three empty poster-shaped outlines in `--border-subtle` (dashed), suggesting a list waiting to be filled.
 - Must say **why** it's empty and **what to do next**. Never blank, never "No data". No illustrations or mascots.
 
 #### 4.1.19 Error state
@@ -650,7 +650,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 
 #### 4.1.20 Milestone moment
 - For the few moments worth marking: first good word, first group created, first friend joins, 10th good word.
-- A quiet card at the top of the shelf (level 1): a `display-m` line in Instrument Serif ("Your first good word."), one sentence in `--text-muted`, and a close button. It fades and rises into place once (3.7.2) and stays until dismissed or the next visit.
+- A quiet card at the top of the list (level 1): a `display-m` line in Instrument Serif ("Your first good word."), one sentence in `--text-muted`, and a close button. It fades and rises into place once (3.7.2) and stays until dismissed or the next visit.
 - No confetti, stickers, achievement badges, or sounds.
 - Announced once via a polite live region ("Milestone: your first good word").
 
@@ -673,11 +673,11 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
   - Unmapped or missing genres fall back to a tone picked deterministically from the title id.
   - The tone is resolved once when the title is first saved and stored on the title record, so it never changes later.
   - Color is decoration only. The genre is always shown as text on the detail screen.
-- **TMDB attribution is required**, persistently, in About (under My Recs › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
+- **TMDB attribution is required**, persistently, in About (under My list › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
 
 #### 4.2.2 Rec card
 One component, three variants.
-- **`grid`** (shelves): no card box. The poster (level 1) is the object; beneath it, 10px apart: title (`card-title`, 2 lines max), meta (`caption`, `--text-muted`, "Series · 2024"), the vouched-by row, and, if there is one, the most recent friend note as a quote (`caption` in `--text-muted`, in curly quotes, 2 lines max). When the group's conversation has comments, a comment count sits at the end of the meta line (`ChatCircle` 16px and the number), with a 6px `--action` dot when there are comments you haven't seen. A "New" label badge (4.1.11) sits on the poster's top-left corner, 8px in.
+- **`grid`** (lists): no card box. The poster (level 1) is the object; beneath it, 10px apart: title (`card-title`, 2 lines max), meta (`caption`, `--text-muted`, "Series · 2024"), the vouched-by row, and, if there is one, the most recent friend note as a quote (`caption` in `--text-muted`, in curly quotes, 2 lines max). When the group's conversation has comments, a comment count sits at the end of the meta line (`ChatCircle` 16px and the number), with a 6px `--action` dot when there are comments you haven't seen. A "New" label badge (4.1.11) sits on the poster's top-left corner, 8px in.
 - **`row`** (search results, dense lists): 48×72 poster left; title, meta, and vouched-by right; vouch button trailing. Level 0, hairline `--border-subtle` dividers between rows, 12px vertical padding.
 - **`detail`** (title screen): large poster, title as `title-l`, meta, genres, then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote` (Instrument Serif italic 24px), and group chips for which of **your** groups it's in ("Only you" for your own with none); then where to watch (5.7), the vouch button (`lg`), the conversation preview (5.17), and the overview.
 - **Vouched-by row:** avatar stack (24px) plus names in `caption` ("Priya, Jonah +1"). Always visible. Your own good word is listed as "You".
@@ -699,14 +699,14 @@ One component, three variants.
 #### 4.2.4 Title search
 - Full-width field with `MagnifyingGlass` icon and a clear button. Autofocus when opened from Add.
 - Debounce 250ms; minimum 2 characters. Results render as `row` rec cards.
-- **Result annotations** prevent duplicates: "On your shelf" for titles you already vouched for; friends' avatars for titles they vouched for ("Priya vouched for this").
+- **Result annotations** prevent duplicates: "On your list" for titles you already vouched for; friends' avatars for titles they vouched for ("Priya vouched for this").
 - **States:** empty (recent searches, up to 5, clearable), loading (3 skeleton rows), results, no results ("Nothing for 'nite ferry'. Check the spelling, or try the original title."), error ("Search isn't working right now. Try again." with Retry), offline ("You're offline. Search needs a connection, so try again when you're back." with Retry).
 - **Accessibility:** combobox pattern with a listbox (`role="combobox"`, `aria-expanded`, `aria-activedescendant`). Arrow keys move, Enter selects, Esc clears then closes. Result count announced politely ("6 results").
 
 #### 4.2.5 Group switcher
 - Top-bar control: current group name plus `CaretDown`. Opens a sheet listing groups (sorted by recent activity, each with avatar stack and member count), an "All groups" option, and "Create a group".
-- The current shelf is always named on screen. "All groups" is an explicit, labeled choice, never an unlabeled default.
-- Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The Shelf tab shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
+- The current list is always named on screen. "All groups" is an explicit, labeled choice, never an unlabeled default.
+- Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The List tab shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
 
 #### 4.2.6 Visibility line
 - A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus "Visible to College crew · 6 people", or "Visible to 3 groups · 14 people".
@@ -721,15 +721,15 @@ One component, three variants.
 
 #### 4.2.8 App bars and navigation
 - **Top bar:** 52px, `--surface` fill. Group switcher on the left (group name in `heading` with `CaretDown`); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
-- **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the group switcher, group details, and invite button sit in the shelf's own bar on shelf screens. The conversation screen has its own compact header (5.17) and no tab bar.
-- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Shelf**, **Add**, **My Recs**. Shelf and My Recs are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
-- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Shelf, Activity, and My Recs as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
+- **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the group switcher, group details, and invite button sit in the list's own bar on list screens. The conversation screen has its own compact header (5.17) and no tab bar.
+- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **List**, **Add**, **My list**. List and My list are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
+- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then List, Activity, and My list as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
 - Add is a command, not a destination: it opens the log sheet over the current screen rather than navigating away.
 
 #### 4.2.9 Robot guess card
 - Only shown after the user explicitly asks for a robot guess (5.15).
 - **Must be visually unmistakable from human good words:** `--surface-sunken` fill, `--radius-card`, a **1px dashed `--border-strong`** border, a `Robot` icon with the label "Robot guess" in `caption` weight 600, no avatars, no quote, no vouched-by row. Level 0, no shadow.
-- Never appears inside a shelf or mixed into a list of human good words. It can be converted into a real good word only if a human vouches for it, at which point it becomes a normal card.
+- Never appears inside a list or mixed into a list of human good words. It can be converted into a real good word only if a human vouches for it, at which point it becomes a normal card.
 
 #### 4.2.10 Comment
 - **Purpose:** one message in a title's conversation within a group (5.17).
@@ -782,15 +782,15 @@ Each pattern names the user problem, the solution, and the rules. Screens in the
 
 **MVP sitemap**
 ```
-/                      marketing page (signed out) or redirect to last shelf (signed in)
+/                      marketing page (signed out) or redirect to last list (signed in)
 /sign-in               sign in
 /join/[code]           invite landing
-/shelf/[groupId]       a group's shelf        (Shelf tab)
-/shelf/all             all groups, labeled
+/list/[groupId]       a group's list        (List tab)
+/list/all             all groups, labeled
 /title/[type]/[id]     title detail
 /title/[type]/[id]/conversation?group=[groupId]   a group's conversation about a title
 /activity              mentions, replies, and joins (Bell in the top bar)
-/you                   your shelf, groups, settings, help (My Recs tab)
+/you                   your list, groups, settings, help (My list tab)
 /you/settings          account, notifications, about
 /groups/new            create a group
 /groups/[id]           group details, members, invite
@@ -800,23 +800,23 @@ Add is a sheet over the current screen, reachable from anywhere.
 **Rules**
 - **Every meaningful state has a URL.** Filters, sort, and the selected group live in the query string, so Back undoes a filter change, links can be shared, and refresh keeps your place.
 - **Back does what users expect.** It closes the top sheet first, then returns to the previous screen. Never trap the user or skip a step.
-- **Scroll position is restored** when returning to a shelf from a detail screen.
+- **Scroll position is restored** when returning to a list from a detail screen.
 - **Deep links always land somewhere useful.** A signed-out user following a deep link signs in and then lands exactly where the link pointed.
-- **Maximum depth of two** from any tab (shelf → title → back). No nested navigation stacks.
+- **Maximum depth of two** from any tab (list → title → back). No nested navigation stacks.
 
 ### 5.2 Joining a group (first run for invitees)
 Most people will meet Good Word through an invite link. This is the most important first impression.
 
-1. **Invite landing (`/join/[code]`), signed out.** Shows: who invited you (avatar and first name), group name, member count, and one sentence about Good Word. The shelf's contents stay hidden until you join (privacy). Primary action: "Join College crew". Secondary: "What's Good Word?" (links to the marketing page).
+1. **Invite landing (`/join/[code]`), signed out.** Shows: who invited you (avatar and first name), group name, member count, and one sentence about Good Word. The list's contents stay hidden until you join (privacy). Primary action: "Join College crew". Secondary: "What's Good Word?" (links to the marketing page).
 2. **Sign in** (5.3). The invite context stays visible at the top ("Joining College crew") so the user never loses the thread.
-3. **Land on the group's shelf**, not a tutorial. A one-time welcome banner: "You're in. Here's what College crew vouches for."
+3. **Land on the group's list**, not a tutorial. A one-time welcome banner: "You're in. Here's what College crew vouches for."
 4. **First-good-word prompt** after the user has looked around (on first scroll end or after 20 seconds, whichever comes first), as a small inline card, not a modal: "What's something you'd tell these folks to watch?" with a button to Put in a good word.
 
 **Rules**
 - **No tutorial carousels, no multi-step onboarding, no taste quiz** in the MVP. Teach in context through empty states and the first-good-word prompt.
 - **Progressive disclosure:** name, notifications, and groups beyond this one are never asked for before they're needed.
 - **Invalid or expired link:** a friendly error state ("This invite link has expired. Ask Priya for a new one.") with a way to learn about Good Word.
-- **Already a member:** skip straight to the shelf with a toast ("You're already in College crew").
+- **Already a member:** skip straight to the list with a toast ("You're already in College crew").
 
 ### 5.3 Signing in
 - **Passwordless:** email magic link, plus "Continue with Google". No passwords, no puzzles, no memory tests (meets WCAG 3.3.8 Accessible Authentication).
@@ -824,7 +824,7 @@ Most people will meet Good Word through an invite link. This is the most importa
 - **Check-your-email step:** shows the address the link went to, a "Use a different email" link, and "Resend link" that becomes available after 30 seconds with a visible countdown. States that the link works for 15 minutes.
 - **Link opened on a different device or browser:** sign the user in there and continue, rather than erroring.
 - **Expired or used link:** a banner explaining it plus a one-tap resend, prefilled with the email.
-- **Session length:** stay signed in for 90 days on a device. Signing out is in My Recs › Settings.
+- **Session length:** stay signed in for 90 days on a device. Signing out is in My list › Settings.
 - **Name:** asked once, after the first sign-in, as a single field: "What should friends call you?" Prefilled from Google when available. It's the name shown on every good word.
 
 ### 5.4 Putting in a good word (the core flow)
@@ -833,11 +833,11 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 1. **Tap Add** (tab bar, rail, `n` on desktop, or the vouch button on any title). The search sheet opens with the keyboard up.
 2. **Pick a result.** Annotations prevent duplicates (4.2.4).
 3. **Confirm sheet:** poster, title, year; the note field (optional, placeholder "ep 3 is where it gets you"); the visibility line, defaulting to **all your groups**; and the primary button "Put in a good word".
-4. **Tap the button.** The sheet closes, the card appears at the top of the shelf with the insert animation, and a toast names the audience: "On your shelf. Priya, Jonah, and 4 others will see it." with Undo.
+4. **Tap the button.** The sheet closes, the card appears at the top of the list with the insert animation, and a toast names the audience: "On your list. Priya, Jonah, and 4 others will see it." with Undo.
 
 **Rules**
 - The note is skippable with zero extra taps. The primary button is reachable one-handed with the keyboard open.
-- **Already vouched in all selected groups:** the confirm sheet shows "Your good word is already on these shelves" and offers Edit note instead.
+- **Already vouched in all selected groups:** the confirm sheet shows "Your good word is already on these lists" and offers Edit note instead.
 - **A friend already vouched:** your good word joins theirs on the same card. One card per title per group, with a growing vouched-by row. Never a duplicate card.
 - **Draft protection:** dismissing the sheet with a typed note asks nothing; the note is kept, and reopening the same title restores it for the session.
 - **Offline:** the good word is queued, shown with a "Sending when you're back online" caption, and sent automatically (5.12).
@@ -849,13 +849,13 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 - Queries of 2+ characters search as you type (250ms debounce). Pressing Enter selects the highlighted result.
 - Every no-results message suggests a concrete next step.
 
-### 5.6 Browsing and filtering the shelf
+### 5.6 Browsing and filtering the list
 - **Default sort:** newest good word first. Alternative: "Most vouched".
-- **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My Recs) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the shelf scrolls beneath them.
+- **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My list) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the list scrolls beneath them.
 - **Active filters are always visible**, with a single "Clear" action and a result count ("12 good words").
 - **Filters combine** with AND across types (Movies + Netflix) and OR within a type (Netflix OR Hulu), and the UI says so implicitly by grouping chips by type.
 - **Empty result:** "Nobody's vouched for a Netflix movie yet." with Clear filters, plus the robot-guess offer where it applies (5.15).
-- **Pagination:** infinite scroll with a visible "Load more" fallback button and a footer ("That's the whole shelf") so users know when they've reached the end. Screen readers get the result count and the load-more button.
+- **Pagination:** infinite scroll with a visible "Load more" fallback button and a footer ("That's the whole list") so users know when they've reached the end. Screen readers get the result count and the load-more button.
 
 ### 5.7 Title detail
 - Order of content, most to least important: poster and title, who vouched and their notes, where to watch, the vouch button, the conversation preview (5.17), then metadata (genre, runtime or seasons, year, overview).
@@ -866,7 +866,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 ### 5.8 Groups
 - **Create:** one field ("Name your group", with examples like "College crew") and a Create button. Then land directly on the invite card. Nothing else is asked.
 - **Roles (MVP):** the creator is the owner and can rename the group, remove members, reset the invite link, and delete the group. Everyone else is a member and can invite and leave.
-- **Leave group:** dialog ("Leave College crew? Your good words will leave this shelf too. You can rejoin with an invite.") with Cancel and a danger "Leave group".
+- **Leave group:** dialog ("Leave College crew? Your good words will leave this list too. You can rejoin with an invite.") with Cancel and a danger "Leave group".
 - **Remove member (owner):** dialog naming the person and the consequence.
 - **Delete group (owner):** dialog stating it can't be undone and how many good words and members are affected. The danger button repeats the specific action: "Delete College crew".
 - **Reset invite link:** the old link stops working immediately; the confirm dialog says so.
@@ -921,7 +921,7 @@ Never use a dialog for success. Never use a toast for something the user must ac
 | **Error** | Nothing could load | Plain-language error state with Retry (4.1.19) |
 | **Offline** | No connection | Banner; show cached content; queue writes; disable nothing silently |
 
-**Offline specifics:** reads show the last cached shelf with a caption ("Last updated 2h ago"). Writes (good words, note edits, comments) queue locally and send on reconnect, with the item captioned "Sending when you're back online". Actions that can't work offline (inviting, joining) explain why when tapped.
+**Offline specifics:** reads show the last cached list with a caption ("Last updated 2h ago"). Writes (good words, note edits, comments) queue locally and send on reconnect, with the item captioned "Sending when you're back online". Actions that can't work offline (inviting, joining) explain why when tapped.
 
 ### 5.13 Notifications and email
 Nudges are a core part of the strategy, so they have to feel like a friend, not a marketer.
@@ -937,31 +937,31 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - **Record the source** of each good word (organic, digest, nudge) so the team can tell whether people log on their own (12.4).
 
 ### 5.14 Privacy and trust
-- **Nothing is public unless you turn on a share link.** No public profiles, no discoverable groups, no search engine indexing of app routes (`noindex`). The one exception is Share my shelf (PRD F9): off by default, turned on only by you, revocable at any time, `noindex`, and showing only your own good words and notes, never your groups, other people, or their notes.
+- **Nothing is public unless you turn on a share link.** No public profiles, no discoverable groups, no search engine indexing of app routes (`noindex`). The one exception is Share my list (PRD F9): off by default, turned on only by you, revocable at any time, `noindex`, and showing only your own good words and notes, never your groups, other people, or their notes.
 - **Audience is shown before sharing,** always, via the visibility line (4.2.6).
 - **No read receipts or "who viewed"** of any kind.
 - **Membership is visible to members:** anyone in a group can see who else is in it.
 - **Conversations stay inside their group.** A comment is only ever visible to members of the group it was written in, and you can only mention members of that group. The same title can have separate conversations in different groups, and no group ever sees another group's conversation or even whether one exists.
-- **Account controls** in Settings: download my data, delete my account (irreversible dialog, 5.11). Deleting an account removes that person's good words from every shelf.
+- **Account controls** in Settings: download my data, delete my account (irreversible dialog, 5.11). Deleting an account removes that person's good words from every list.
 - Plain-language privacy summary in About, above the legal text.
 
 ### 5.15 Robot guess (opt-in, if and when built)
 - Offered **only** when a request or filter has no human results, as a secondary action below the empty state: "Want a robot's guess?"
-- Results render as robot guess cards (4.2.9) in their own labeled section, never inside a shelf.
+- Results render as robot guess cards (4.2.9) in their own labeled section, never inside a list.
 - A robot guess never appears unrequested, never sends a notification, and is never counted as a good word.
 
 ### 5.16 Help and settings
-- **Consistent help location:** Help lives in My Recs › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
+- **Consistent help location:** Help lives in My list › Help and in the desktop rail footer, in the same place on every screen (WCAG 3.2.6). It includes a short FAQ, keyboard shortcuts, and a way to contact Sydney.
 - **Contextual help** appears in empty states and helper text at the moment of need, never as a tour.
-- **Settings** take effect immediately (switches and checkboxes), are grouped by topic (Account, Streaming services, Notifications, Share my shelf, Your data; About lives in Help), and confirm with a toast only when the effect isn't visible. Resetting a share link asks first, like resetting an invite link.
+- **Settings** take effect immediately (switches and checkboxes), are grouped by topic (Account, Streaming services, Notifications, Share my list, Your data; About lives in Help), and confirm with a toast only when the effect isn't visible. Resetting a share link asks first, like resetting an invite link.
 
 ### 5.17 Conversations, mentions, and activity
 **User problem:** people want to talk about what they're watching with the friends who recommended it ("wait until ep 6", "@Tess you'd love the ending"), without moving to the group chat and losing the thread.
 
 **Where conversations live**
-- A conversation belongs to **one title in one group**. Any title can have one, whether or not it's on that group's shelf. The first comment gives every other member an Activity item ("**Tess** started a conversation about **The Night Ferry** in College crew"), so a conversation is discoverable even when the title isn't on the shelf.
-- **Entry points:** the conversation preview on title detail, the comment count on shelf cards, Activity items, and mention emails.
-- **On title detail**, the conversation preview shows the group's name, the 3 most recent comments, "See all 12 comments", and a tappable "Add a comment" field that opens the full conversation with the composer focused. If you're in several groups, a group chip row above the preview lists all of them and switches between their conversations (`?group=`). The default is the group you arrived from (`?group=`), then the one with the most recent comment, then one whose shelf the title is on, then your most recently joined group.
+- A conversation belongs to **one title in one group**. Any title can have one, whether or not it's on that group's list. The first comment gives every other member an Activity item ("**Tess** started a conversation about **The Night Ferry** in College crew"), so a conversation is discoverable even when the title isn't on the list.
+- **Entry points:** the conversation preview on title detail, the comment count on list cards, Activity items, and mention emails.
+- **On title detail**, the conversation preview shows the group's name, the 3 most recent comments, "See all 12 comments", and a tappable "Add a comment" field that opens the full conversation with the composer focused. If you're in several groups, a group chip row above the preview lists all of them and switches between their conversations (`?group=`). The default is the group you arrived from (`?group=`), then the one with the most recent comment, then one whose list the title is on, then your most recently joined group.
 - **The full conversation** (`/title/[type]/[id]/conversation?group=`) is its own screen: a compact header (poster thumbnail, title, group name, and back), the comment list, and the composer pinned to the bottom (4.2.11). Below 1024px it hides the tab bar, like a messaging screen, and Back leaves it. On desktop it's a panel beside the title detail rather than a separate page.
 
 **How the list behaves** (standard messaging patterns)
@@ -1003,8 +1003,8 @@ How someone turns a list they already have into recs (PRD F15). One decision per
 - **Action bar:** fixed to the bottom on phones (above the safe area, and above the keyboard when it's open), inline under the card on desktop. **Skip** (secondary), **Edit** (secondary), **Add** (primary), each at least 44px tall with 12px between. On desktop each shows its shortcut as a `kbd` hint (A, E, S; ← for Back). **Add all remaining (N)** is a tertiary button above the bar when there are high-confidence cards left.
 - **Swipe:** dragging the card right adds and left skips once it passes 96px; it follows the finger and springs back otherwise. Reduced motion: no follow, the action still happens. Buttons always do the same thing (2.5.7).
 - **Toasts:** "Added" and "Skipped", each with Undo, timed per 4.1.15.
-- **Done:** `title-l` "Your recs are in", a summary line, then **View My Recs** (primary) and **Add more** (secondary).
-- **Resume:** My Recs shows a `Banner` ("You have 6 recs left to review" · **Finish**) while an import has unreviewed cards.
+- **Done:** `title-l` "Your recs are in", a summary line, then **View My list** (primary) and **Add more** (secondary).
+- **Resume:** My list shows a `Banner` ("You have 6 recs left to review" · **Finish**) while an import has unreviewed cards.
 
 ---
 
@@ -1026,12 +1026,12 @@ Voice stays constant; tone adapts to the user's state.
 
 | Situation | Tone | Example |
 |---|---|---|
-| Success | Warm, brief | "On your shelf. Priya and Jonah will see it." |
+| Success | Warm, brief | "On your list. Priya and Jonah will see it." |
 | Empty, first use | Inviting | "No recs yet. What's something you'd tell a friend to watch?" |
 | Error | Calm, plain, no jokes | "That didn't save. Check your connection and try again." |
 | Destructive | Clear, serious, specific | "Delete College crew? This removes 42 good words for 6 people and can't be undone." |
 | Waiting | Reassuring | "Sending when you're back online." |
-| Milestone | Quietly pleased, once | "Your first good word." then "Your friends will see it on their shelves." |
+| Milestone | Quietly pleased, once | "Your first good word." then "Your friends will see it on their lists." |
 
 ### 6.3 Writing rules
 - **Front-load.** The most important words come first. People scan the first two words.
@@ -1069,18 +1069,18 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Vouched state | Your good word |
 | Take it back | Take it back |
 | Undo toast after taking back | Taken back. **Undo** |
-| Log success, nobody else yet | On your shelf. Invite friends to share it. **Invite** |
-| Log success, no groups picked | On your shelf. Only you can see it for now. |
+| Log success, nobody else yet | On your list. Invite friends to share it. **Invite** |
+| Log success, no groups picked | On your list. Only you can see it for now. |
 | Visibility line, no groups | Only you, for now |
 | Log offline | You're offline. Good words need a connection, so try again when you're back. |
 | Log rate limit | That's a lot of good words for one hour. Try again in a little while. |
 | Note label | Anything to add? (optional) |
 | Note placeholder | ep 3 is where it gets you |
 | Visibility line | Visible to College crew · 6 people |
-| Log success | On your shelf. Priya, Jonah, and 4 others will see it. |
-| Already on shelf | Your good word is already on these shelves. |
-| Empty group shelf | Nothing here yet. Be the first to put in a good word. |
-| Empty personal shelf | No recs yet. What's something you'd tell a friend to watch? |
+| Log success | On your list. Priya, Jonah, and 4 others will see it. |
+| Already on list | Your good word is already on these lists. |
+| Empty group list | Nothing here yet. Be the first to put in a good word. |
+| Empty personal list | No recs yet. What's something you'd tell a friend to watch? |
 | Empty filter result | Nobody's vouched for a Netflix movie yet. |
 | Robot offer | Want a robot's guess? It won't be from your friends. |
 | Search empty | Search for a show or movie |
@@ -1093,24 +1093,24 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Add recs, finding | Found 14 so far |
 | Add recs, nothing found | We couldn't find titles in that · Try rewording it, or search for titles one at a time. |
 | Add recs, offline | You're offline. Finding titles needs a connection. |
-| Add recs, done | Added 11 recs. 2 were already in My Recs. |
+| Add recs, done | Added 11 recs. 2 were already in My list. |
 | Title didn't load | This title didn't load · Good Word is having a moment. Try again in a minute. |
 | Title not found | We couldn't find that title · The link may be broken, or the title was removed. Try searching for it with Add. |
-| Page not found (any unknown URL) | We couldn't find that page · The link may be broken, or the page has moved. Action: Go to your shelf (signed in) or Go to Good Word (signed out). |
+| Page not found (any unknown URL) | We couldn't find that page · The link may be broken, or the page has moved. Action: Go to your list (signed in) or Go to Good Word (signed out). |
 | Offline banner | You're offline. We'll send your changes when you're back. |
 | Queued item | Sending when you're back online |
-| End of shelf | That's the whole shelf. |
+| End of list | That's the whole list. |
 | Invite copied | Link copied. Send it to someone whose taste you trust. |
 | Invite landing | Priya invited you to College crew. 6 people are already sharing what they'd watch. |
 | Expired invite | This invite link has expired. Ask Priya for a new one. |
 | Sign-in sent | Check your email. We sent a link to sam@example.com. It works for 15 minutes. |
 | Name prompt | What should friends call you? |
-| Leave group | Leave College crew? Your good words will leave this shelf too. |
+| Leave group | Leave College crew? Your good words will leave this list too. |
 | Delete group | Delete College crew? This removes 42 good words for 6 people and can't be undone. |
-| First good word milestone | Your first good word. · Your friends will see it on their shelves. |
-| 10th good word milestone | Ten good words. · That's a shelf worth browsing. |
+| First good word milestone | Your first good word. · Your friends will see it on their lists. |
+| 10th good word milestone | Ten good words. · That's a list worth browsing. |
 | First-good-word prompt | What's something you'd tell these folks to watch? |
-| Shelf didn't load | This shelf didn't load · Good Word is having a moment. Try again in a minute. |
+| List didn't load | This list didn't load · Good Word is having a moment. Try again in a minute. |
 | Offline banner (before queued writes, PRD F12) | You're offline. You can keep browsing what's already loaded. |
 | Filter bar result count | 12 good words · **Clear** |
 | Sort | Newest · Most vouched |
@@ -1118,9 +1118,9 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Length filter | Any · Under 30 minutes · Under 2 hours |
 | Empty filter result, no services or type | Nobody's vouched for anything on Netflix yet. |
 | Empty filter result, with genres or length | Nobody's vouched for anything like that yet. |
-| Empty filter result, body | Clear filters to see the whole shelf. |
+| Empty filter result, body | Clear filters to see the whole list. |
 | Empty filter result, length on, some runtimes unknown | Titles without a known length are left out while a length filter is on. |
-| Empty filter result, My Recs | You haven't vouched for anything like that. |
+| Empty filter result, My list | You haven't vouched for anything like that. |
 | More filters, no services | None of these are streaming in your region yet. |
 | Load more | Load more |
 | New good words in the switcher | 3 new good words |
@@ -1201,7 +1201,7 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Add | Center tab button, opens sheet | Same | Rail button, opens modal |
 | Sheets | Bottom sheet | Bottom sheet, max 560px wide, centered | Centered modal, max 480px |
 | Menus | Sheet | Sheet | Popover |
-| Shelf grid | 2 columns | 3 columns | 4 columns |
+| List grid | 2 columns | 3 columns | 4 columns |
 | Title detail | Stacked | Stacked, wider poster | Poster left, content right |
 | Toasts | Bottom-center above tab bar | Same | Bottom-left |
 
@@ -1405,7 +1405,7 @@ It is excluded from search indexing and from production navigation, and it's the
 - [ ] No rotation, stickers, handwriting, illustration, gradients, or hard shadows anywhere (2.3)
 - [ ] Instrument Serif appears only at 24px and up; everything else is Inter
 - [ ] Posters use TMDB images with genre-colored typographic fallback, stored on the title record
-- [ ] Robot guess cards use a dashed `--border-strong` on a sunken surface, and never appear inside a shelf
+- [ ] Robot guess cards use a dashed `--border-strong` on a sunken surface, and never appear inside a list
 
 **Patterns and screens**
 - [ ] Every screen meets 12.1, including all states in 5.12
@@ -1439,9 +1439,9 @@ It is excluded from search indexing and from production navigation, and it's the
 - Robot guess: dashed `--border-strong` on a sunken surface, so it can never be mistaken for a friend's good word (4.2.9)
 - Auth: passwordless (magic link and Google) (5.3)
 - One card per title per group; vouches accumulate on it (5.4)
-- When someone leaves a group, their good words leave that shelf (5.8)
+- When someone leaves a group, their good words leave that list (5.8)
 - Conversations belong to one title in one group, are flat (no nested replies), and allow mentions of that group's members only (5.17)
-- Any title can have a conversation in any of your groups, not only titles on the shelf; the first comment tells the group (5.17; decided 2026-09-29)
+- Any title can have a conversation in any of your groups, not only titles on the list; the first comment tells the group (5.17; decided 2026-09-29)
 - Comments from people who leave a group stay visible and attributed (5.17; decided 2026-09-29)
 - Spoilers are covered and never rendered until revealed (4.2.12)
 - Title detail order: friends first, then where to watch, the vouch button, the conversation preview, and the overview (PRD F6, 4.2.2, 5.7; decided 2026-09-29)

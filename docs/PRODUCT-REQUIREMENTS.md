@@ -36,7 +36,7 @@ The build brief for the Good Word web app. It defines **what** the product does:
 - **Don't invent features, screens, or settings** that aren't here. If something seems missing, ask. If a requirement seems wrong or contradicts the design system, flag it before building.
 - **Priority labels:** **P0** is required for the MVP. **P1** should ship in the MVP if time allows, after all P0 work in its slice. **Later** is documented for context only; do not build it.
 - **Acceptance criteria are tests.** A requirement is done only when its acceptance criteria pass and the screen meets the screen definition of done (DS 12.1).
-- **Use the glossary** (DS 1.4) in UI copy: good word, shelf, group, member, note, conversation, comment, mention, activity. Never post, item, feed, review, rating, chat, or thread.
+- **Use the glossary** (DS 1.4) in UI copy: good word, list, group, member, note, conversation, comment, mention, activity. Never post, item, feed, review, rating, chat, or thread.
 - **Invented sample content** for seeds, tests, and the styleguide: titles The Night Ferry, Low Tide Club, Grandma's Heist, Moth Season; people Priya, Jonah, Tess, Mo, Luis, Bea; groups College crew, The girls, Sunday book club. Never use real people's data in seeds.
 
 ### 0.2 Document map
@@ -56,15 +56,15 @@ If this doc and the design system conflict on **what** the product does, this do
 People trust their friends' taste more than any algorithm, but getting a recommendation from a friend is slow and lossy. You text the group chat, wait days, get one reply, and the good suggestions scroll away and are forgotten. Meanwhile, streaming algorithms recommend from viewing history and strangers' behavior, and they don't know you.
 
 ### 1.2 The product
-Good Word is a private, mobile-first web app where small groups of friends keep a shared shelf of the shows and movies they'd vouch for. Each person belongs to a few groups (college friends, the girls, a book club), and each group has its own shelf. When you finish something great, you put in a good word in about ten seconds. When you need something to watch, you pull from people whose taste you actually know, with their names on every pick.
+Good Word is a private, mobile-first web app where small groups of friends keep a shared list of the shows and movies they'd vouch for. Each person belongs to a few groups (college friends, the girls, a book club), and each group has its own list. When you finish something great, you put in a good word in about ten seconds. When you need something to watch, you pull from people whose taste you actually know, with their names on every pick.
 
 ### 1.3 Product principles
 These are the product's non-negotiables. They're expanded in DS 1.1.
 1. **People over picks.** Every good word shows the person behind it. The app never recommends on its own.
 2. **Private by default, visibly so.** You always know who will see what, before you share it.
 3. **Ten seconds to a good word.** Logging is the core habit and must be nearly effortless.
-4. **A library, not a mailbox.** You stock shelves for your groups; you don't send recommendations to individuals (for now).
-5. **Useful alone, better together.** Your own shelf is valuable even before friends join.
+4. **A library, not a mailbox.** You stock lists for your groups; you don't send recommendations to individuals (for now).
+5. **Useful alone, better together.** Your own list is valuable even before friends join.
 
 ### 1.4 What Good Word is not
 - Not a public social network. No followers, public profiles, or discovery of strangers.
@@ -88,7 +88,7 @@ The MVP exists to test this. Everything that doesn't serve it is out of scope.
 | H2 | New members will contribute, not just browse | 50%+ put in their first good word within 7 days of joining |
 | H3 | Logging is fast enough to become a habit | Median Add-to-confirmation under 10 seconds; 90%+ completion |
 | H4 | People log on their own, not only when nudged | 50%+ of good words have source `organic` |
-| H5 | Shelves actually help people choose what to watch | Where-to-watch taps and title views from shelves grow week over week; qualitative beta interviews confirm it |
+| H5 | Lists actually help people choose what to watch | Where-to-watch taps and title views from lists grow week over week; qualitative beta interviews confirm it |
 | H6 | People come back | 40%+ of members active in week 4 after joining |
 | H7 | Talking about titles with friends brings people back without crowding out good words | 30%+ of active members comment at least once in 4 weeks; members who comment show higher week-4 retention; good words per member doesn't drop after conversations launch |
 
@@ -139,26 +139,26 @@ The same person moves between these roles. Design for all four in every flow.
 | Titles | Title search (movies and shows, via TMDB) | P0 |
 | Good words | Put in a good word with optional note and group selection | P0 |
 | Good words | Edit note, change groups, take it back (with Undo) | P0 |
-| Shelves | Group shelf, All groups shelf, My Recs | P0 |
-| Shelves | Filters (type, streaming service, genre, length) and sort | P0 |
-| Shelves | "New since your last visit" indicators | P0 |
+| Lists | Group list, All groups list, My list | P0 |
+| Lists | Filters (type, streaming service, genre, length) and sort | P0 |
+| Lists | "New since your last visit" indicators | P0 |
 | Titles | Title detail with everyone's good words, notes, and where to watch | P0 |
 | Notifications | Weekly digest email; notification preferences | P0 |
 | Notifications | Owner alerts when someone joins their group (email) | P0 |
 | Notifications | Gentle weekend prompt email to members who haven't contributed in 14 days | P1 |
 | Onboarding | Invite landing, first-good-word prompt, empty states, milestones | P0 |
 | Help | Help, FAQ, send feedback, about with attributions | P0 |
-| Shelves | Person view: a member's good words in groups you share | P1 |
-| Shelves | "Your streaming services" setting and "On my services" filter | P1 |
-| Sharing | Share-my-shelf link (read-only, off by default, revocable) | P1 |
+| Lists | Person view: a member's good words in groups you share | P1 |
+| Lists | "Your streaming services" setting and "On my services" filter | P1 |
+| Sharing | Share-my-list link (read-only, off by default, revocable) | P1 |
 | Platform | Installable web app (manifest, icons, standalone mode) | P1 |
-| Platform | Offline: cached shelves and queued good words | P1 |
-| Shelves | Live "N new good words" pill while viewing a shelf | P1 |
+| Platform | Offline: cached lists and queued good words | P1 |
+| Lists | Live "N new good words" pill while viewing a list | P1 |
 | Conversations | Comment on a title within a group; see everyone's comments; edit and delete | P0 |
 | Conversations | @mentions of group members, with notifications | P0 |
 | Conversations | Spoiler marking | P0 |
 | Conversations | Live new comments while a conversation is open | P0 |
-| Conversations | Comment counts on shelf cards | P0 |
+| Conversations | Comment counts on list cards | P0 |
 | Activity | Activity list (mentions, new comments in your conversations, joins) with unread badge | P0 |
 | Notifications | Mention emails (batched over 15 minutes) | P0 |
 
@@ -200,7 +200,7 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 3. With no groups yet, she sees the empty state "Start a group, or put in a good word just for you." She taps **Start a group**.
 4. She names it "College crew" and taps **Create**. She lands on the invite card (F2.3).
 5. She taps **Share**, picks Messages, and sends the link to her group chat.
-6. She goes back to the empty shelf, which prompts her to put in the first good word, and adds two shows.
+6. She goes back to the empty list, which prompts her to put in the first good word, and adds two shows.
 
 **Success:** under 2 minutes from sign-in to invite sent.
 
@@ -209,21 +209,21 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 2. The invite landing shows "Sydney invited you to College crew. 6 people are already sharing what they'd watch." with **Join College crew** (F2.4).
 3. He taps it, enters his email, and taps **Email me a sign-in link**. The screen says "Check your email" and keeps "Joining College crew" visible.
 4. He opens the email on the same phone, taps the link, and confirms his name.
-5. He lands on College crew's shelf with the welcome banner "You're in. Here's what College crew vouches for." and browses.
+5. He lands on College crew's list with the welcome banner "You're in. Here's what College crew vouches for." and browses.
 6. After a moment, an inline card asks "What's something you'd tell these folks to watch?" He adds one.
 
-**Success:** under 90 seconds from tapping the link to seeing the shelf.
+**Success:** under 90 seconds from tapping the link to seeing the list.
 
 ### J3. Putting in a good word (contributor)
 1. Priya finishes a show she loved. She opens Good Word from her Home Screen and taps **Add**.
 2. She types "night fe" and taps The Night Ferry (2024, Series).
 3. The confirm sheet shows the poster, an optional note, and "Visible to 2 groups · 11 people". She types "ep 3 is where it gets you" and taps **Put in a good word**.
-4. The sheet closes, the card appears at the top of her shelf, and a toast says "On your shelf. Jonah, Tess, and 9 others will see it." with Undo.
+4. The sheet closes, the card appears at the top of her list, and a toast says "On your list. Jonah, Tess, and 9 others will see it." with Undo.
 
 **Success:** median under 10 seconds from tapping Add to the toast, excluding typing the note.
 
 ### J4. Choosing something to watch (browser)
-1. On a Friday night, Tess opens Good Word. College crew's shelf shows three cards marked **New** since her last visit.
+1. On a Friday night, Tess opens Good Word. College crew's list shows three cards marked **New** since her last visit.
 2. She taps **Movies**, then the **Netflix** chip. Eight good words remain. She opens **More filters**, picks **Comedy** and **Under 2 hours**. Three remain.
 3. She opens Low Tide Club, reads Priya's and Mo's notes, sees it's streaming on Netflix, and taps the provider to open it.
 
@@ -232,7 +232,7 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 ### J5. Coming back through the digest (lapsed browser)
 1. On Thursday afternoon, Luis gets "This week on Good Word: 5 new good words from College crew and The girls."
 2. The email shows posters, who vouched, and notes. He taps a title and lands on its detail screen, signed in.
-3. He sees a show he loved is missing from the shelf and puts in his own good word from there.
+3. He sees a show he loved is missing from the list and puts in his own good word from there.
 
 **Success:** a digest click leads to a title view; some digest visits lead to a new good word (source `digest`).
 
@@ -245,8 +245,8 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 
 **Success:** a mention reaches the right person within 15 minutes, and nobody outside College crew can see or search any of it.
 
-### J7. Sharing my shelf with someone outside Good Word (P1)
-1. A coworker asks Sydney what to watch. She goes to **My Recs › Settings › Share my shelf**, turns it on, and copies the link.
+### J7. Sharing my list with someone outside Good Word (P1)
+1. A coworker asks Sydney what to watch. She goes to **My list › Settings › Share my list**, turns it on, and copies the link.
 2. The coworker opens a read-only page: "Sydney's good words", with posters, titles, and Sydney's notes, and a small "Made with Good Word" link.
 3. Later, Sydney turns the link off, and it stops working immediately.
 
@@ -259,19 +259,19 @@ Extends DS 5.1.
 
 | Route | Screen | Auth | Priority |
 |---|---|---|---|
-| `/` | Marketing page (signed out); redirect to last viewed shelf (signed in) | Public | P0 |
+| `/` | Marketing page (signed out); redirect to last viewed list (signed in) | Public | P0 |
 | `/sign-in` | Sign in (optionally carrying `?next=` and invite context) | Public | P0 |
 | `/sign-in/check-email` | Check your email | Public | P0 |
 | `/auth/callback` | Magic link and OAuth callback | Public | P0 |
 | `/welcome` | Name prompt (first sign-in only) | Signed in | P0 |
 | `/join/[code]` | Invite landing | Public | P0 |
-| `/shelf` | Redirect to last viewed shelf, or the no-groups empty state | Signed in | P0 |
-| `/shelf/all` | All groups shelf | Signed in | P0 |
-| `/shelf/[groupId]` | Group shelf | Member | P0 |
+| `/list` | Redirect to last viewed list, or the no-groups empty state | Signed in | P0 |
+| `/list/all` | All groups list | Signed in | P0 |
+| `/list/[groupId]` | Group list | Member | P0 |
 | `/title/[type]/[tmdbId]` | Title detail (`type` is `movie` or `tv`) | Signed in | P0 |
 | `/title/[type]/[tmdbId]/conversation?group=[groupId]` | A group's conversation about a title (on desktop, a panel beside title detail) | Member of that group | P0 |
 | `/activity` | Activity: mentions, new comments in your conversations, joins | Signed in | P0 |
-| `/you` | My Recs (a main tab): your good words, your groups, settings entry | Signed in | P0 |
+| `/you` | My list (a main tab): your good words, your groups, settings entry | Signed in | P0 |
 | `/you/import` | Add recs: paste, dictate, or upload screenshots (F15) | Signed in | P1 |
 | `/you/import/[importId]` | Review deck and done screen for one import (`?card=` is the card shown) | Signed in, own import | P1 |
 | `/you/settings` | Account, region, notifications, services (P1), share link (P1) | Signed in | P0 |
@@ -279,7 +279,7 @@ Extends DS 5.1.
 | `/groups/new` | Create a group | Signed in | P0 |
 | `/groups/[groupId]` | Group details: invite, members, rename, leave, delete | Member | P0 |
 | `/people/[userId]` | Person view: their good words in groups you share | Signed in, shares a group | P1 |
-| `/s/[token]` | Shared shelf (read-only, public by link) | Public | P1 |
+| `/s/[token]` | Shared list (read-only, public by link) | Public | P1 |
 | `/unsubscribe?token=` | Unsubscribe from one kind of email, with Undo (F7.7) | Public (signed token) | P0 |
 | `/privacy`, `/terms` | Legal pages | Public | P0 |
 | `/styleguide` | Design system reference (DS 14) | Dev only | P0 |
@@ -287,19 +287,19 @@ Extends DS 5.1.
 **Sheets over the current route (no navigation):** Add (search and confirm), group switcher, filters, vouch menu, confirm dialogs. Opening a sheet pushes a history entry so the Back gesture closes it (DS 5.1).
 
 ### 6.2 Navigation model
-- **Mobile:** bottom tab bar with **Shelf**, **Add** (center), and **My Recs** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a shelf, the shelf's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
+- **Mobile:** bottom tab bar with **List**, **Add** (center), and **My list** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a list, the list's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
 - **Desktop (1024px and up):** left rail with the same destinations plus the group list.
-- **Shelf tab** shows the last viewed shelf (a group or All groups), remembered per device.
+- **List tab** shows the last viewed list (a group or All groups), remembered per device.
 - **Add** opens the log sheet over whatever screen you're on, and returns you there afterward.
 - **Title detail** opens from any card and returns to the exact scroll position (DS 5.1).
 - **Conversations** open from title detail, a card's comment count, Activity, or a mention email. Back from a conversation returns to wherever you came from.
 
 ### 6.3 URL state
-Query parameters on shelf routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list of TMDB genre names), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `groups` (My Recs only: comma list of group ids, F5.3), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
+Query parameters on list routes: `type` (`movie`, `tv`), `services` (comma list of provider ids), `genres` (comma list of TMDB genre names), `length` (`30`, `120`), `sort` (`newest`, `vouched`), `groups` (My list only: comma list of group ids, F5.3), `mine` (P1, `1` for "On my services"). All filter changes use `history.replaceState` for chip toggles within a session and push a new entry only when the segmented control changes, so Back feels natural rather than stepping through every chip tap.
 
 ### 6.4 Access rules
 - Signed-out visitors to any signed-in route go to `/sign-in?next=<route>` and return there after signing in.
-- A signed-in non-member visiting `/shelf/[groupId]` or `/groups/[groupId]` sees a 404-style "You're not in this group" state with a link to their shelf. It must not reveal the group's name or members.
+- A signed-in non-member visiting `/list/[groupId]` or `/groups/[groupId]` sees a 404-style "You're not in this group" state with a link to their list. It must not reveal the group's name or members.
 - All app routes send `noindex`. Only `/`, `/privacy`, and `/terms` are indexable.
 
 ---
@@ -323,7 +323,7 @@ Each feature lists user stories, rules, acceptance criteria, states, and edge ca
 - **Region** defaults from the browser locale (fallback `US`) and is editable in Settings. It controls where-to-watch data.
 - **Resend link** is available after 30 seconds (visible countdown). Sign-in emails are rate limited to 5 per email address per hour, with a clear message when hit.
 - If a magic link is opened in a different browser or device, sign the user in there.
-- The invite context (`Joining College crew`) persists through the whole sign-in flow and the user lands on that group's shelf afterward, already joined.
+- The invite context (`Joining College crew`) persists through the whole sign-in flow and the user lands on that group's list afterward, already joined.
 
 **Account deletion**
 - In Settings, "Delete account" opens a dialog stating the consequences: all your good words and comments are removed everywhere, you leave every group, and this can't be undone. The danger button reads "Delete my account".
@@ -336,11 +336,11 @@ Each feature lists user stories, rules, acceptance criteria, states, and edge ca
 **Acceptance criteria**
 - Given a new visitor, when they sign in with Google, then they reach `/welcome` with their name prefilled, and after continuing, land on the no-groups empty state.
 - Given a user who requested a magic link, when they open it after 15 minutes, then they see the expired-link banner with a one-tap "Send a new link" prefilled with their email.
-- Given an invitee who started from `/join/[code]`, when they finish signing in, then they are a member of that group and land on its shelf with the welcome banner.
+- Given an invitee who started from `/join/[code]`, when they finish signing in, then they are a member of that group and land on its list with the welcome banner.
 - Given a user requests a 6th sign-in email within an hour, then they see "Too many sign-in links. Try again in a few minutes, or continue with Google."
 - Given a group owner deletes their account, then ownership of each group transfers to the member with the earliest `joined_at`.
 
-**Edge cases:** email typos (show the address on the check-email screen with "Use a different email"); Google account without a name (leave the field empty with focus); user already signed in visiting `/sign-in` (redirect to `/shelf`).
+**Edge cases:** email typos (show the address on the check-email screen with "Use a different email"); Google account without a name (leave the field empty with focus); user already signed in visiting `/sign-in` (redirect to `/list`).
 
 ---
 
@@ -365,26 +365,26 @@ Each feature lists user stories, rules, acceptance criteria, states, and edge ca
 - The invite button in the top bar opens the current group's invite card in a sheet. On All groups, it asks which group first.
 
 #### F2.4 Join via invite link
-- `/join/[code]` follows DS 5.2. It shows the inviter's first name and avatar (the person who created the link, or the owner if unknown), the group name, member count, a one-sentence explanation, and **Join [group name]**. It does **not** show the shelf's contents before joining.
-- Signed in and not a member: one tap joins and lands on the shelf with the welcome banner.
-- Already a member: redirect to the shelf with the toast "You're already in College crew."
+- `/join/[code]` follows DS 5.2. It shows the inviter's first name and avatar (the person who created the link, or the owner if unknown), the group name, member count, a one-sentence explanation, and **Join [group name]**. It does **not** show the list's contents before joining.
+- Signed in and not a member: one tap joins and lands on the list with the welcome banner.
+- Already a member: redirect to the list with the toast "You're already in College crew."
 - Invalid or reset link: the expired-invite copy from DS 6.6 ("This invite link has expired. Ask Priya for a new one.", naming the group owner) plus a link to learn about Good Word. For a code that never existed, omit the name: "This invite link doesn't work. Ask whoever sent it for a new one."
 - Group full, or the joiner already has 20 groups: explain which limit was hit.
 - Joins are rate limited per IP and per code to prevent abuse.
-- **Acceptance:** Given a valid code and a signed-out visitor, when they tap Join and complete sign-in, then they are a member, the owner receives the join email (F7.3), and the joiner sees the group's shelf.
+- **Acceptance:** Given a valid code and a signed-out visitor, when they tap Join and complete sign-in, then they are a member, the owner receives the join email (F7.3), and the joiner sees the group's list.
 
 #### F2.5 Group details (`/groups/[groupId]`)
 Sections, in order: invite card; members list (avatar, name, "Owner" label, "You" label, joined date); group settings (owner only: rename, reset invite link); danger zone (leave group; owner: remove members via each member's menu, delete group).
 
 #### F2.6 Leaving and removal
-- **Leave:** dialog per DS 5.8. Your good words are removed from that group's shelf (they stay on My Recs and in your other groups). Your past comments in that group's conversations stay, attributed to you, so conversations still make sense (confirm, Section 15).
+- **Leave:** dialog per DS 5.8. Your good words are removed from that group's list (they stay on My list and in your other groups). Your past comments in that group's conversations stay, attributed to you, so conversations still make sense (confirm, Section 15).
 - **Owner leaving:** the dialog names who becomes owner (the longest-standing member). If the owner is the only member, leaving deletes the group, and the dialog says so.
-- **Remove member (owner):** dialog naming the person. Their good words leave that shelf; their past comments stay attributed. They are not notified in the MVP, and they can rejoin only with a new or unreset link, so the dialog suggests resetting the link if needed.
-- **Delete group (owner):** irreversible dialog stating the number of members and good words affected (DS 5.8). Members' good words stay on their own shelves and other groups.
+- **Remove member (owner):** dialog naming the person. Their good words leave that list; their past comments stay attributed. They are not notified in the MVP, and they can rejoin only with a new or unreset link, so the dialog suggests resetting the link if needed.
+- **Delete group (owner):** irreversible dialog stating the number of members and good words affected (DS 5.8). Members' good words stay on their own lists and other groups.
 
 **Acceptance**
-- Given a member leaves a group, then none of their good words appear on that group's shelf, and the title's vouched-by row on that shelf no longer includes them.
-- Given an owner removes a member, then the removed member immediately loses access to the shelf and group details, and sees "You're not in this group" if they visit.
+- Given a member leaves a group, then none of their good words appear on that group's list, and the title's vouched-by row on that list no longer includes them.
+- Given an owner removes a member, then the removed member immediately loses access to the list and group details, and sees "You're not in this group" if they visit.
 
 ---
 
@@ -397,13 +397,13 @@ Sections, in order: invite card; members list (avatar, name, "Owner" label, "You
 - Queries go to TMDB multi-search through the app's own server route (the TMDB key never reaches the browser). Only `movie` and `tv` results are shown; people are excluded; adult content excluded.
 - Minimum 2 characters, 250ms debounce, cancel in-flight requests when the query changes.
 - Results show poster, title, year, and "Film" or "Series", ordered by TMDB relevance.
-- **Duplicate annotations:** "On your shelf" if you've already put in a good word; avatars and "Priya vouched for this" if people in your groups have.
+- **Duplicate annotations:** "On your list" if you've already put in a good word; avatars and "Priya vouched for this" if people in your groups have.
 - **Recent searches** (up to 5) show when the field is empty, stored on the device, clearable.
 - Server responses are cached briefly (5 minutes per normalized query) to stay within TMDB limits.
 
 **Acceptance**
 - Given a user types "nigh", then results appear within 1 second on a normal connection, showing only movies and shows.
-- Given a title already vouched for by the user, then its row shows "On your shelf".
+- Given a title already vouched for by the user, then its row shows "On your list".
 - Given TMDB is unreachable, then the search error state from DS 4.2.4 shows with Retry, and the rest of the app still works.
 
 **Edge cases:** titles with the same name (year and type disambiguate); titles without posters (typographic fallback); non-English original titles (show TMDB's localized title for the user's language).
@@ -421,8 +421,8 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Rules**
 - **One good word per person per title.** A person's good word has one note and can be shared into any number of their groups. Adding the same title again means editing the existing good word (DS 5.4, "already vouched").
 - **Note:** optional, up to 140 characters, plain text, no links rendered as links, emoji allowed.
-- **Group selection:** defaults to **all your groups**. The visibility line (DS 4.2.6) shows the audience and opens the group picker. A good word may have **zero groups** ("Only you, for now"), in which case it lives only on My Recs. This keeps Good Word useful before friends join.
-- **One card per title per group.** When several members vouch for the same title, the shelf shows one card with a growing vouched-by row and their notes (most recent note on the grid card, all notes on detail).
+- **Group selection:** defaults to **all your groups**. The visibility line (DS 4.2.6) shows the audience and opens the group picker. A good word may have **zero groups** ("Only you, for now"), in which case it lives only on My list. This keeps Good Word useful before friends join.
+- **One card per title per group.** When several members vouch for the same title, the list shows one card with a growing vouched-by row and their notes (most recent note on the grid card, all notes on detail).
 - **Take it back** removes the good word from all groups immediately with an 8-second Undo toast (DS 5.11). Undo restores the note and groups exactly.
 - **Edits** to the note or groups are saved immediately, optimistically, with no "edited" label.
 - **Source tracking:** each good word records how the user arrived (Section 11.3): `organic`, `digest`, `nudge_email`, `join_prompt`, `share`.
@@ -432,65 +432,65 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Entry points:** the Add tab, the rail's Add button, the `n` shortcut on desktop, the vouch button on any title detail or search row, the first-good-word prompt, and empty-state actions.
 
 **Acceptance**
-- Given a user in 2 groups, when they put in a good word without changing groups, then it appears on both shelves and My Recs, and the toast names up to 2 people plus "and N others".
-- Given a user with no groups, when they put in a good word, then the visibility line reads "Only you, for now" and the toast reads "On your shelf. Invite friends to share it." with an Invite action.
-- Given a friend already vouched for the title in a shared group, when the user adds theirs, then the shelf shows one card with both people in the vouched-by row.
+- Given a user in 2 groups, when they put in a good word without changing groups, then it appears on both lists and My list, and the toast names up to 2 people plus "and N others".
+- Given a user with no groups, when they put in a good word, then the visibility line reads "Only you, for now" and the toast reads "On your list. Invite friends to share it." with an Invite action.
+- Given a friend already vouched for the title in a shared group, when the user adds theirs, then the list shows one card with both people in the vouched-by row.
 - Given a user taps Undo within 8 seconds of taking a good word back, then it's restored to every group it was in, with its note.
 - Given the network fails on submit, then the card reverts and a toast offers Retry, and the note is not lost.
 - Instrumented time from Add tap to confirmation is recorded (Section 11).
 
 ---
 
-### F5. Shelves (P0)
+### F5. Lists (P0)
 
-Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the filter bar (DS 5.6).
+Three kinds of list share one layout: a grid of rec cards (DS 4.2.2) with the filter bar (DS 5.6).
 
-#### F5.1 Group shelf (`/shelf/[groupId]`)
+#### F5.1 Group list (`/list/[groupId]`)
 - Page title is the group name (`title-l`), with member avatars and count beneath, linking to group details.
 - Shows every title vouched for by any member into that group, one card per title.
 
-#### F5.2 All groups shelf (`/shelf/all`)
+#### F5.2 All groups list (`/list/all`)
 - Titled "All groups". Combines every group you're in, deduplicated: one card per title, with the vouched-by row merging all people across your groups (each person once).
 - Group chips on the detail screen show which of **your** groups each good word is in.
 
-#### F5.3 My Recs (the My Recs tab, `/you`)
-- A main navigation destination, labeled **My Recs** in the tab bar and rail. The page is titled "My Recs". Below your good words: your groups, then links to Settings and Help. Shows only your own good words, including ones with zero groups.
+#### F5.3 My list (the My list tab, `/you`)
+- A main navigation destination, labeled **My list** in the tab bar and rail. The page is titled "My list". Below your good words: your groups, then links to Settings and Help. Shows only your own good words, including ones with zero groups.
 - Each card shows group chips for where it's shared, or "Only you".
 - A group filter lets you see what you've shared into a specific group.
 
 #### F5.4 Sorting and filtering
 - **Sort:** Newest (default, by the most recent good word on that card) and Most vouched (by number of people, ties broken by newest).
 - **Type:** segmented control All / Movies / Shows.
-- **Streaming services:** up to five chips for the services most common on the current shelf in the user's region, with counts, then "More filters". A service counts when the title is included with a subscription, free, or free with ads (TMDB's `flatrate`, `free`, and `ads`); rent and buy don't. Counts show how many cards each chip would leave, given the other filters. A title whose providers haven't been fetched yet matches no service.
-- **More filters sheet:** services (all), genres (TMDB genres present on the shelf), length (Any, Under 30 minutes, Under 2 hours), and, if P1 is built, "On my services".
+- **Streaming services:** up to five chips for the services most common on the current list in the user's region, with counts, then "More filters". A service counts when the title is included with a subscription, free, or free with ads (TMDB's `flatrate`, `free`, and `ads`); rent and buy don't. Counts show how many cards each chip would leave, given the other filters. A title whose providers haven't been fetched yet matches no service.
+- **More filters sheet:** services (all), genres (TMDB genres present on the list), length (Any, Under 30 minutes, Under 2 hours), and, if P1 is built, "On my services".
 - **Length** uses movie runtime, or typical episode runtime for shows. Titles with unknown runtime are excluded when a length filter is on, and the empty state says so.
 - **Filter logic:** AND across categories, OR within a category (DS 5.6). Active filters are always visible with a result count and a single Clear.
-- **Paging:** 24 cards per page, infinite scroll with a "Load more" fallback and an end-of-shelf footer (DS 5.6).
+- **Paging:** 24 cards per page, infinite scroll with a "Load more" fallback and an end-of-list footer (DS 5.6).
 
 #### F5.5 New since your last visit
-- Each membership stores when you last viewed that shelf. Cards whose most recent good word from **someone else** is newer than that show a **New** badge (DS 4.1.11). Before your first visit, "last viewed" is when you joined, so good words from before you joined aren't New.
-- The group switcher shows a count of new good words per group; the Shelf tab shows a dot if any group has new ones.
-- "Last viewed" updates when you leave the shelf or after 10 seconds on it, not on arrival, so badges don't vanish before you see them. Viewing All groups counts as viewing each of your groups.
+- Each membership stores when you last viewed that list. Cards whose most recent good word from **someone else** is newer than that show a **New** badge (DS 4.1.11). Before your first visit, "last viewed" is when you joined, so good words from before you joined aren't New.
+- The group switcher shows a count of new good words per group; the List tab shows a dot if any group has new ones.
+- "Last viewed" updates when you leave the list or after 10 seconds on it, not on arrival, so badges don't vanish before you see them. Viewing All groups counts as viewing each of your groups.
 
 #### F5.6 Live updates (P1)
-- While you're viewing a shelf, new good words from others don't insert themselves (content never jumps). A pill appears at the top: "2 new good words". Tapping it scrolls to top and inserts them. Your own good words insert immediately.
+- While you're viewing a list, new good words from others don't insert themselves (content never jumps). A pill appears at the top: "2 new good words". Tapping it scrolls to top and inserts them. Your own good words insert immediately.
 
 #### F5.7 States (DS 5.12)
-| State | Group shelf | All groups | My Recs |
+| State | Group list | All groups | My list |
 |---|---|---|---|
-| Empty, first use | "Nothing here yet. Be the first to put in a good word." + Put in a good word + Invite friends | "No groups yet" + Start a group + "Got an invite link? Open it to join." | DS 6.6 empty personal shelf copy + Put in a good word |
+| Empty, first use | "Nothing here yet. Be the first to put in a good word." + Put in a good word + Invite friends | "No groups yet" + Start a group + "Got an invite link? Open it to join." | DS 6.6 empty personal list copy + Put in a good word |
 | No results | "Nobody's vouched for a Netflix movie yet." + Clear filters | Same | "You haven't vouched for anything like that." + Clear filters |
 | Loading | 6 skeleton cards | Same | Same |
 | Error | Error state + Retry | Same | Same |
 | Offline | Cached content + offline banner (P0: banner and last-loaded content in memory; P1: persisted cache) | Same | Same |
 
-**First-good-word prompt:** on a group shelf, for a member with no good words in that group, show an inline card after the first scroll to the end or after 20 seconds: "What's something you'd tell these folks to watch?" with **Put in a good word**. Dismissible; doesn't return for that group once dismissed or used.
+**First-good-word prompt:** on a group list, for a member with no good words in that group, show an inline card after the first scroll to the end or after 20 seconds: "What's something you'd tell these folks to watch?" with **Put in a good word**. Dismissible; doesn't return for that group once dismissed or used.
 
 **Acceptance**
 - Given a user in 2 groups where the same title was vouched for in both, then All groups shows one card whose vouched-by row lists each person once.
 - Given filters Movies + Netflix + Hulu, then results include movies available on Netflix or Hulu in the user's region, and the URL reflects all three.
 - Given a new good word by a friend since the user's last visit, then its card shows New and the group switcher shows a count.
-- Given a shelf of 60 good words, then the first 24 load, more load on scroll, and "That's the whole shelf." shows at the end.
+- Given a list of 60 good words, then the first 24 load, more load on scroll, and "That's the whole list." shows at the end.
 
 ---
 
@@ -503,7 +503,7 @@ Three kinds of shelf share one layout: a grid of rec cards (DS 4.2.2) with the f
 2. **Good words:** every person in your groups who vouched for it, each with avatar, name, note, when, and the chips of the groups (yours only) it's shared in. Your own good word is listed first as "You" with an Edit menu.
 3. **Where to watch** for the user's region, grouped Stream / Rent / Buy, with provider logos and names, each linking out to the provider (via TMDB's watch link). JustWatch attribution beneath (Section 9.2). If nothing: "Not streaming in your region right now."
 4. **Vouch button** (`lg`, DS 4.2.3).
-5. **Conversation preview** for the current group (F13), per DS 5.17: "Talk about it in College crew", the 3 most recent comments, "See all N comments", and "Add a comment…". Any title can have a conversation in any of your groups, so if you're in several groups, a chip row of all of them switches between their conversations. The default is the group in `?group=`, then the group with the most recent comment, then a group whose shelf the title is on, then your most recently joined group. Hidden only when you're in no groups.
+5. **Conversation preview** for the current group (F13), per DS 5.17: "Talk about it in College crew", the 3 most recent comments, "See all N comments", and "Add a comment…". Any title can have a conversation in any of your groups, so if you're in several groups, a chip row of all of them switches between their conversations. The default is the group in `?group=`, then the group with the most recent comment, then a group whose list the title is on, then your most recently joined group. Hidden only when you're in no groups.
 6. Overview, collapsed to 3 lines with More.
 
 **Rules**
@@ -570,9 +570,9 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 
 ---
 
-### F9. Share my shelf (P1)
+### F9. Share my list (P1)
 
-- In Settings, "Share my shelf" is **off by default**. Turning it on creates a link `/s/[token]` and shows Copy and Share.
+- In Settings, "Share my list" is **off by default**. Turning it on creates a link `/s/[token]` and shows Copy and Share.
 - The shared page is read-only and shows the owner's display name, their good words (poster, title, year, their own note only), newest first, and a small "Made with Good Word" link to the marketing page. It never shows groups, other people, or other people's notes.
 - Toggle off or **Reset link** invalidates the old link immediately.
 - The page sends `noindex` and carries no analytics beyond a view count visible to the owner.
@@ -583,7 +583,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 ### F10. Onboarding, empty states, and first run (P0)
 - **No tutorials, carousels, or taste quizzes** (DS 5.2). Teach through the invite landing, empty states, the welcome banner, and the first-good-word prompt.
 - **New user with no invite and no groups** lands on All groups' empty state: "Start a group, or put in a good word just for you." with **Start a group** (primary) and **Put in a good word** (secondary), plus "Got an invite link? Open it to join."
-- **Welcome banner** on first arrival to a group's shelf after joining: "You're in. Here's what College crew vouches for." Dismissible; shown once per group.
+- **Welcome banner** on first arrival to a group's list after joining: "You're in. Here's what College crew vouches for." Dismissible; shown once per group.
 - **Milestones** per F4.
 
 ---
@@ -594,7 +594,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 - **Account:** display name, email (read-only), region, sign out.
 - **Notifications:** per F7.7.
 - **Streaming services (P1):** pick the services you have; enables the "On my services" filter.
-- **Share my shelf (P1):** per F9.
+- **Share my list (P1):** per F9.
 - **Your data:** download my data, delete account.
 
 **Help (`/you/help`)** — in the same place on every screen (DS 5.16):
@@ -607,7 +607,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 
 ### F12. Installable app and offline (P1)
 - Web app manifest, icons, and standalone display (DS 8.3). On iOS Safari, a one-time, dismissible tip in You after the user's third visit: "Add Good Word to your Home Screen for one-tap access." Never on first visit.
-- Service worker caches the app shell and the last viewed shelves.
+- Service worker caches the app shell and the last viewed lists.
 - Good words created offline are queued, captioned "Sending when you're back online", and sent on reconnect (DS 5.12). If sending fails permanently, the item shows an error with Retry and Remove.
 - P0 baseline without F12: an offline banner, previously loaded content stays on screen, and write actions show a toast explaining they need a connection, while keeping the user's input.
 
@@ -622,8 +622,8 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - As a member, I can edit or delete what I said.
 
 **Rules**
-- **Scope:** a conversation belongs to one title in one group. Any title can have one, whether or not it's on that group's shelf (open question 11). The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
-- **Starting a conversation:** the first comment in a group's conversation about a title gives every other member of that group an Activity item ("Tess started a conversation about The Night Ferry in College crew"), so a conversation on a title that isn't on the shelf can still be found. Later comments notify participants only.
+- **Scope:** a conversation belongs to one title in one group. Any title can have one, whether or not it's on that group's list (open question 11). The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
+- **Starting a conversation:** the first comment in a group's conversation about a title gives every other member of that group an Activity item ("Tess started a conversation about The Night Ferry in College crew"), so a conversation on a title that isn't on the list can still be found. Later comments notify participants only.
 - **Who can take part:** current members of the group. Comments are visible to every current member.
 - **Structure:** flat and chronological (oldest first), no nested replies. Replying is done by mentioning.
 - **Comment:** 1 to 500 characters, plain text. Line breaks are kept. URLs are shown as text, not links, in the MVP.
@@ -634,11 +634,11 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - **Participants:** you become a participant in a title's conversation in a group when you comment there or put in a good word for that title in that group. Participants get Activity items for new comments (not emails).
 - **People who leave:** comments from people who leave or are removed stay visible and attributed to them, so conversations still make sense (open question 10). They're deleted only if that person deletes their account.
 - **Unseen tracking:** per person, per title, per group. Opening the conversation marks comments as seen up to the bottom of what was shown.
-- **Live updates:** while a conversation is open, new comments arrive in real time (DS 5.17). The shelf's comment counts update on the next load.
+- **Live updates:** while a conversation is open, new comments arrive in real time (DS 5.17). The list's comment counts update on the next load.
 - **Moderation:** owners can delete any comment in their group. No reporting in the MVP.
 
 **Acceptance criteria**
-- Given a title on the shelves of College crew and The girls, when Priya comments in College crew, then members of College crew see it, and members of The girls who aren't in College crew cannot see it, reach it by URL, or see a comment count for it.
+- Given a title on the lists of College crew and The girls, when Priya comments in College crew, then members of College crew see it, and members of The girls who aren't in College crew cannot see it, reach it by URL, or see a comment count for it.
 - Given Tess types "@" in College crew's conversation, then the suggestions list only College crew members other than Tess.
 - Given Tess mentions Priya, then within seconds Priya's bell shows an unread count and Activity shows "Tess mentioned you on The Night Ferry in College crew", and within 15 minutes (outside quiet hours) Priya receives one mention email.
 - Given a comment marked as a spoiler, then for everyone except its author the text is absent from the page source, accessibility tree, Activity, and emails until "Tap to reveal" is pressed.
@@ -647,7 +647,7 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - Given two people have the conversation open, when one sends a comment, then it appears for the other within 2 seconds without a refresh, and without moving their scroll position if they've scrolled up.
 - Given the network drops while sending, then the comment shows "Didn't send." with Retry and Delete, and the text isn't lost.
 
-**Edge cases:** a mentioned member leaves before the email sends (don't send); a title leaves the shelf because its last good word was taken back (nothing changes: the conversation stays on title detail and in Activity, and comments continue); very long unbroken strings (wrap with `overflow-wrap: anywhere`).
+**Edge cases:** a mentioned member leaves before the email sends (don't send); a title leaves the list because its last good word was taken back (nothing changes: the conversation stays on title detail and in Activity, and comments continue); very long unbroken strings (wrap with `overflow-wrap: anywhere`).
 
 ### F14. Activity (P0)
 
@@ -670,7 +670,7 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 
 People's recs already live somewhere else: phone notes, Letterboxd, their heads. Typing them in one at a time kills momentum. Add recs lets someone dump what they have, in whatever form, and confirm clean, matched titles one card at a time. Source: "Good Word PRD: Build Your Recs List" (2026-09-30).
 
-**Words.** A **rec** is one of your own good words, seen as your collection. The My shelf tab is now **My Recs** (DS 1.4). In a group it's still a good word on a shelf.
+**Words.** A **rec** is one of your own good words, seen as your collection. The My list tab is now **My list** (DS 1.4). In a group it's still a good word on a list.
 
 #### F15.1 Add recs (`/you/import`)
 - One screen with a large text box (label "List everything you'd recommend", helper tip below it, never placeholder-only) and an **Add screenshots** control. Search stays one tap away (the Add sheet).
@@ -694,8 +694,8 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - **Add all remaining** adds every remaining high-confidence card.
 - **Phones:** Add, Edit, and Skip sit in a bar at the bottom, at least 44px tall with space between, and the bar stays visible when the keyboard opens. Swiping the card right adds and left skips; swipe is a shortcut, never the only way.
 - **Desktop:** keyboard shortcuts A (add), E (edit), S (skip), and ← (back), shown as hints on the buttons, never while typing in a field. The alternatives sit beside the card, so Edit doesn't open a new view.
-- **Resume:** unreviewed cards are saved (private to you, never on a shelf), and My Recs offers to finish them.
-- **Done:** "Your recs are in", then "Added 11 recs. 2 were already in My Recs." with **View My Recs** and **Add more**.
+- **Resume:** unreviewed cards are saved (private to you, never on a list), and My list offers to finish them.
+- **Done:** "Your recs are in", then "Added 11 recs. 2 were already in My list." with **View My list** and **Add more**.
 
 #### F15.4 Limits and cost
 - Per import: 5 screenshots, 5,000 characters, and the first 100 titles found. No daily limit per person (removed by Sydney, v1.3.2); spend is capped in the Anthropic console. The existing limit of 100 good words an hour still applies.
@@ -709,8 +709,8 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - Given a pasted list of 12 titles one per line that all match TMDB exactly, when the user taps Find my titles, then no AI call is made and 12 cards appear.
 - Given "Severance, so good" in the input, then its card is Severance (TV) with the note "so good" prefilled.
 - Given a title already on the user's list, then it gets no card and the done screen counts it.
-- Given the user taps Add, then Undo within the toast, then the good word is gone from every shelf and the card is back.
-- Given the user leaves after 5 of 14 cards, when they open My Recs, then they can resume at card 6.
+- Given the user taps Add, then Undo within the toast, then the good word is gone from every list and the card is back.
+- Given the user leaves after 5 of 14 cards, when they open My list, then they can resume at card 6.
 - Given the same text is submitted twice, then the second import makes no AI call.
 - No uploaded image is stored, and no AI or TMDB key reaches the browser.
 
@@ -728,7 +728,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `invites` | `group_id`, `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group |
 | `titles` | `tmdb_id`, `media_type` (`movie`, `tv`), `title`, `original_title`, `year`, `poster_path`, `genres` (array of TMDB genre ids and names), `runtime_minutes`, `seasons`, `overview`, `accent` (one of the four `genreAccent` values in DS 4.2.1), `fetched_at` | Unique (`tmdb_id`, `media_type`). `accent` set once on insert via `genreAccent` (DS 4.2.1) |
 | `good_words` | `user_id`, `title_id`, `note` (max 140), `source` (`organic`, `digest`, `nudge_email`, `join_prompt`, `share`, `import`) | Unique (`user_id`, `title_id`) |
-| `good_word_groups` | `good_word_id`, `group_id`, `shared_at` | Unique pair. Which shelves a good word is on |
+| `good_word_groups` | `good_word_id`, `group_id`, `shared_at` | Unique pair. Which lists a good word is on |
 | `watch_providers` | `title_id`, `region`, `providers` (json: stream, rent, buy), `link`, `fetched_at` | Cached per title per region. Unique (`title_id`, `region`). Stream is TMDB's `flatrate`, `free`, and `ads` together. A region with nothing is stored with empty lists, so it isn't fetched again for a day |
 | `notification_prefs` | `user_id`, `digest`, `mention_email`, `group_joins`, `weekend_prompt` (booleans) | Defaults: all on |
 | `comments` | `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at`, `deleted_by` | Index on (`group_id`, `title_id`, `created_at`). Mentions are stored in `body` by user id, so renamed people resolve correctly. Soft delete supports Undo; purge after the Undo window |
@@ -741,13 +741,13 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
 | `feedback` | `user_id`, `message`, `may_contact` | |
 | `imports` (F15) | `user_id`, `status` (`parsing`, `reviewing`, `done`, `cancelled`, `failed`), `method` (`text`, `screenshots`, `both`), `input_hash`, `group_ids`, `found_count`, `duplicate_count`, `extracted` (the parsed candidates, for reuse), `ai_input_tokens`, `ai_output_tokens`, `completed_at` | Readable and writable only by its owner. Started through a server function that enforces 10 a day |
-| `import_cards` (F15) | `import_id`, `user_id`, `position`, `query`, `note`, `confidence` (`high`, `low`), `candidates` (json: up to 4 TMDB matches), `chosen` (index), `decision` (`pending`, `added`, `skipped`), `decided_at`, `opened_alternatives` | Owner only. Never shown on a shelf |
+| `import_cards` (F15) | `import_id`, `user_id`, `position`, `query`, `note`, `confidence` (`high`, `low`), `candidates` (json: up to 4 TMDB matches), `chosen` (index), `decision` (`pending`, `added`, `skipped`), `decided_at`, `opened_alternatives` | Owner only. Never shown on a list |
 | `title_matches` (F15) | `query_key` (normalized title, year, type), `media_type`, `tmdb_id` | Shared match cache. Server only (no policies) |
 | `events` | `user_id` (nullable), `name`, `properties` (json), `occurred_at` | First-party analytics (Section 11) |
 | `app_admins` | `user_id` | Who can open `/admin/metrics` (11.4). Seeded with Sydney's account |
 
 **Derived views**
-- **Shelf card:** for a given group, group `good_word_groups` joined to `good_words` by `title_id`, returning the title, the list of vouchers (ordered by `shared_at` desc), the most recent note, voucher count, and most recent `shared_at` (for sorting and New badges).
+- **List card:** for a given group, group `good_word_groups` joined to `good_words` by `title_id`, returning the title, the list of vouchers (ordered by `shared_at` desc), the most recent note, voucher count, and most recent `shared_at` (for sorting and New badges).
 - **All groups:** the same across all the viewer's groups, deduplicating vouchers by `user_id`.
 
 **Deletion semantics**
@@ -810,7 +810,7 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 ## 10. Non-functional requirements
 
 ### 10.1 Performance
-Per DS 9: LCP under 2.5 seconds on a mid-tier phone on 4G, INP under 200ms, CLS under 0.1. All writes are optimistic. Shelves render their first page server-side.
+Per DS 9: LCP under 2.5 seconds on a mid-tier phone on 4G, INP under 200ms, CLS under 0.1. All writes are optimistic. Lists render their first page server-side.
 
 ### 10.2 Accessibility
 WCAG 2.2 AA per DS 7, verified by the testing protocol in DS 7.4. Every screen must pass the screen definition of done (DS 12.1).
@@ -840,7 +840,7 @@ WCAG 2.2 AA per DS 7, verified by the testing protocol in DS 7.4. Every screen m
 
 ### 10.6 SEO and sharing
 - App routes: `noindex`. Marketing, privacy, and terms: indexable.
-- Invite links (`/join/[code]`) render a link preview (Open Graph title "Join College crew on Good Word", description, and a branded image) so they look trustworthy in group chats. The preview must not show shelf contents.
+- Invite links (`/join/[code]`) render a link preview (Open Graph title "Join College crew on Good Word", description, and a branded image) so they look trustworthy in group chats. The preview must not show list contents.
 
 ---
 
@@ -862,8 +862,8 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `good_word_created` | `title_id`, `groups_count`, `has_note`, `source`, `ms_from_add_opened` | H2, H3, H4 |
 | `good_word_edited` | `field` (`note`, `groups`) | |
 | `good_word_taken_back` | `undone` (boolean) | |
-| `shelf_viewed` | `shelf` (`group`, `all`, `mine`, `person`), `filters` (keys only), `new_count` | H5 |
-| `title_viewed` | `from` (`shelf`, `search`, `digest`, `person`, `share`) | H5 |
+| `list_viewed` | `list` (`group`, `all`, `mine`, `person`), `filters` (keys only), `new_count` | H5 |
+| `title_viewed` | `from` (`list`, `search`, `digest`, `person`, `share`) | H5 |
 | `where_to_watch_clicked` | `title_id`, `provider_id`, `from_good_word` (boolean) | H5 |
 | `email_sent` | `type` | H4, H6 |
 | `email_clicked` | `type`, `target` | H4, H6 |
@@ -901,14 +901,14 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | **1. Accounts** | Supabase setup; sign-in (magic link, Google); check-email; welcome/name; sign out; access rules and redirects | A new user can sign in on an iPhone and set their name; signed-out access redirects correctly |
 | **2. Groups** | Create, invite card and sharing, join landing, join flow through sign-in, group details, members, rename, reset link, leave, remove, delete; RLS | Two test accounts on two phones: one creates and invites, the other joins from the link in under 90 seconds |
 | **3. Titles** | TMDB server routes; search sheet with all states; title cache with genre accent; typographic fallback posters | Searching "night" returns movies and shows with posters in under a second; fallback posters render |
-| **4. The core loop** | Confirm sheet with note and visibility line; create, edit, take back, Undo; group shelf, All groups, My Recs; one card per title per group; milestones; first-good-word prompt; empty states | J1, J2, and J3 work end to end; log time under 10 seconds in a stopwatch test |
+| **4. The core loop** | Confirm sheet with note and visibility line; create, edit, take back, Undo; group list, All groups, My list; one card per title per group; milestones; first-good-word prompt; empty states | J1, J2, and J3 work end to end; log time under 10 seconds in a stopwatch test |
 | **5. Choosing** | Title detail with good words and notes; where to watch with JustWatch attribution; filters, sort, URL state, paging; New badges and counts | J4 works end to end; filters survive refresh and Back |
 | **6. Conversations** | Comments table and RLS; conversation preview on title detail; full conversation screen; composer with mention autocomplete; spoilers; edit, delete, Undo; live new comments (Supabase Realtime); comment counts on cards; Activity list and bell badge | J6 works end to end on two phones: a mention shows in Activity within seconds, a spoiler stays covered, and a member of another group can't see or reach the conversation |
 | **7. Email** | Email provider and domain; digest (including conversation summary); mention emails; group-join emails; preferences; unsubscribe; scheduler; caps | A test digest arrives with correct content, links carry `ref=digest`, a mention email arrives within 15 minutes, and unsubscribe works signed out |
 | **8. Settings and trust** | Settings, help, FAQ, feedback, about and attributions, download my data, delete account with ownership transfer, privacy and terms pages, security headers, rate limits | Account deletion and data download verified; all attribution present |
 | **9. Measurement** | Events per Section 11; source attribution; `/admin/metrics` | Every event fires from its flow; metrics page shows real numbers from test use |
-| **10. P1 (in order)** | Installable app and offline queue; live new-good-words pill; person view; streaming services filter; share my shelf; weekend prompt | Each P1 item meets its acceptance criteria |
-| **11. Build your list** | My shelf renamed My Recs; Add recs from text, dictation, and Letterboxd screenshots; review deck; done screen; resume; limits and cost events (F15) | F15's acceptance criteria pass, with the AI faked in tests and checked once live |
+| **10. P1 (in order)** | Installable app and offline queue; live new-good-words pill; person view; streaming services filter; share my list; weekend prompt | Each P1 item meets its acceptance criteria |
+| **11. Build your list** | My list renamed My list; Add recs from text, dictation, and Letterboxd screenshots; review deck; done screen; resume; limits and cost events (F15) | F15's acceptance criteria pass, with the AI faked in tests and checked once live |
 
 **Across every slice:** each new screen meets DS 12.1 before the slice is called done, and is checked on iOS Safari first.
 
@@ -925,7 +925,7 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 
 ### 13.2 Private beta
 - **Who:** Sydney's friend groups, 2 to 4 groups of 4 to 10 people.
-- **Seeding:** Sydney adds 5 to 10 good words to each group before inviting, so no one arrives to an empty shelf.
+- **Seeding:** Sydney adds 5 to 10 good words to each group before inviting, so no one arrives to an empty list.
 - **Length:** 4 to 6 weeks.
 - **Feedback:** in-app Send feedback, plus short interviews with 5 to 6 beta users at week 2 and week 5 about what they used, what they wished for, and whether they watched anything because of a friend's good word.
 - **Decision at the end:** review H1 to H6 and decide what to build next from the Later list (Section 4.2).
@@ -937,14 +937,14 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | Risk | Impact | Mitigation |
 |---|---|---|
 | People browse but don't contribute (the classic recommendation-app failure) | High | Ten-second logging; first-good-word prompt; audience-naming success toast; weekend prompt; source tracking to measure it early |
-| Empty shelves on arrival | High | Seed groups before inviting; useful-alone My Recs; honest empty states with one clear action |
+| Empty lists on arrival | High | Seed groups before inviting; useful-alone My list; honest empty states with one clear action |
 | Invite friction (email sign-in on phones) | High | Google option; invite context kept throughout; link-on-another-device handling; test J2 on real iPhones |
 | Notifications feel spammy | Medium | Never send empty digests; one non-transactional email per day max; quiet hours; one-click unsubscribe |
 | Privacy mistakes (leaking groups or people across groups) | High | RLS in the database; explicit acceptance tests for cross-group visibility; never show group names the viewer isn't in |
 | TMDB outage or rate limits | Medium | Server-side caching; the app works from cached titles; clear error states |
 | Where-to-watch data is wrong or stale | Low | 24-hour refresh; attribution sets expectations; region setting |
 | Scope creep before the core loop is proven | Medium | P0/P1/Later labels; slice gates; Later items need their own spec |
-| Conversations pull attention from putting in good words | Medium | Conversations live on title detail, not the shelf; the Add button stays the primary action; watch H7's "good words per member doesn't drop" signal |
+| Conversations pull attention from putting in good words | Medium | Conversations live on title detail, not the list; the Add button stays the primary action; watch H7's "good words per member doesn't drop" signal |
 | Spoilers ruin a show for someone | Medium | Spoiler toggle with a first-time hint; covered text never rendered, previewed, or emailed |
 | Mentions feel like pressure or spam | Low | Mentions only within a group; batched emails; one-tap unsubscribe; no read receipts or typing indicators |
 
@@ -957,16 +957,16 @@ Decide before the slice that needs them.
 | # | Question | Proposal | Needed by |
 |---|---|---|---|
 | 1 | Marketing page framework: Next.js or Astro? | **Decided (2026-09-28): Next.js.** Marketing and app share one Next.js app | Slice 0 |
-| 2 | Share-my-shelf conflicts with DS 5.14 ("Nothing is public") | **Decided (2026-09-30): allowed.** DS 5.14 now reads "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
+| 2 | Share-my-list conflicts with DS 5.14 ("Nothing is public") | **Decided (2026-09-30): allowed.** DS 5.14 now reads "Nothing is public unless you turn on a share link", off by default and revocable | Slice 10 |
 | 3 | The marketing page promises "Ask, and pull from people you trust" with the example "Something funny, under 30 minutes" | For the MVP, filters (Comedy + Under 30 minutes) fulfill this; either keep the copy or change the example until Ask ships | Beta launch |
 | 4 | Digest day and time | Thursday, 5pm local. Built this way in slice 7 (one setting in `digest_slot`); still to confirm | Slice 7 |
-| 5 | When someone leaves, their good words leave that shelf | Confirm (currently specified) | Slice 2 |
+| 5 | When someone leaves, their good words leave that list | Confirm (currently specified) | Slice 2 |
 | 6 | Group size limit of 50 and 20 groups per person | Confirm, or raise after beta | Slice 2 |
 | 7 | Should removed members be told? | No for the MVP; revisit if it causes confusion | Slice 2 |
 | 8 | Email provider | **Decided (2026-09-29): Resend**, set up in slice 1 for sign-in links | Slice 1 |
 | 9 | Do we need an explicit "Watched it" action to prove H5? | Rely on where-to-watch clicks and interviews for the MVP; build "Watched it because of you" first if evidence is unclear | After beta |
 | 10 | Comments from people who leave or are removed | **Decided (2026-09-29):** stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
-| 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the shelf (F13) | Slice 6 |
+| 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the list (F13) | Slice 6 |
 | 12 | Should mentions work inside notes too? | Not in the MVP; notes travel across groups, so a mention could reach people outside the mentioned person's groups | After beta |
 
 ---
