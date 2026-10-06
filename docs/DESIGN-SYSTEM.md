@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.4.3 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
+**Version** 3.4.4 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -693,6 +693,7 @@ One component, four variants. Home uses the same component (`variant="home"`), n
   5. **Actions:** Comment (tertiary, `ChatCircle`), **Vouch too** (the vouch button, `md`, secondary; "Your good word" once vouched), Where to watch (tertiary, `MonitorPlay`). At least 44px each.
   - **Never on the card:** hearts, likes, view counts, double-tap, or a button that shares outside Good Word.
   - **Accessibility:** each card is an `<article>` named by its first line ("Jonah and Tess vouched for The Night Ferry"). Because it has several targets, the card itself isn't a link; the title row is.
+- **Friends chip** (My list cards and your own good word on title detail, PRD F16.2): the group chip's style with the `UserPlus` icon in place of the people-tone dot, labeled "Friends", before any group chips. The accessible name says "Shared with your friends."
 - **Vouched-by row:** avatar stack (24px) plus names in `caption` ("Priya, Jonah +1"). Always visible. Your own good word is listed as "You".
 - **Behavior:** the whole card is one link to the detail screen. In `row`, the vouch button is a separate target, and the rest of the row is the link. No nested interactive elements inside the card link. Desktop hover raises the poster to `--shadow-md`; nothing moves.
 - **Accessibility:** the accessible name reads as a sentence: "The Night Ferry, series, 2024. Vouched for by Priya and Jonah." 
@@ -722,10 +723,10 @@ One component, four variants. Home uses the same component (`variant="home"`), n
 - Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The switcher's button shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
 
 #### 4.2.6 Visibility line
-- A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus the audience in words: "Your friends", "Your friends and College crew", "College crew · 6 people", "College crew and The girls · 14 people". A people count shows only when the audience is groups alone; friends are never counted (5.14).
-- Tapping it opens the **audience picker**: a **Friends** switch first (on by default), then each of your groups as a switch (off by default) (PRD F16.2). It updates live.
+- A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus the audience in words: "Visible to your friends", "Visible to your friends and College crew", "Visible to your friends and 3 groups", "Visible to College crew · 6 people", "Visible to 2 groups · 14 people". A people count shows only when the audience is groups alone; friends are never counted (5.14).
+- Tapping it opens the **audience picker**: a **Your friends** checkbox first (`UserPlus`, on by default, described "Everyone you're friends with", or "No friends yet. They'll see it once you add some."), then each of your groups as a checkbox (off by default) (PRD F16.2). It updates live. Without the home_enabled flag there's no Friends option and groups default to all of them.
 - This is how the "private by default, visibly so" principle shows up in UI. It is required on the confirm sheet, the Add recs screen, the composer, and invite screens.
-- With everything off it reads "Only you, for now" in the default muted color; that's allowed (PRD F4), so it's not an error. With Friends on and no friends yet, it reads "Your friends, once you add some".
+- With everything off it reads "Only you, for now" in the default muted color; that's allowed (PRD F4), so it's not an error. With Friends on and no friends yet, it reads "Visible to your friends, once you add some".
 - **In the composer** (4.2.11) it's compact and read-only: "College crew will see this" in a group conversation, and "Everyone who can see Jonah's good word will see this" (or "your good word") under a good word. It never names groups or counts the viewer can't see (PRD F16.6, rule 4).
 
 #### 4.2.7 Invite card
@@ -1132,13 +1133,13 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Log success, nobody else yet | On your list. Invite friends to share it. **Invite** |
 | Log success, nobody picked | On your list. Only you can see it for now. |
 | Visibility line, nobody picked | Only you, for now |
-| Visibility line, friends with none yet | Your friends, once you add some |
+| Visibility line, friends with none yet | Visible to your friends, once you add some |
 | Log offline | You're offline. Good words need a connection, so try again when you're back. |
 | Log rate limit | That's a lot of good words for one hour. Try again in a little while. |
 | Note label | Anything to add? (optional) |
 | Note placeholder | ep 3 is where it gets you |
-| Visibility line | Your friends and College crew |
-| Visibility line, groups only | College crew · 6 people |
+| Visibility line | Visible to your friends and College crew |
+| Visibility line, groups only | Visible to College crew · 6 people |
 | Log success | Your friends and College crew can see this. **Undo** |
 | Composer audience, group | College crew will see this |
 | Composer audience, under a good word | Everyone who can see Jonah's good word will see this |
@@ -1539,6 +1540,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.4.4 (2026-10-06):** Step 15. The audience picker uses checkboxes, like the group picker it extends, with Your friends first (4.2.6); the line keeps the app's "Visible to …" wording ("Visible to your friends and College crew"), and 6.6 matches. The Friends chip uses the group chip's style with the `UserPlus` icon (4.2.2, Sydney's call). The vouch menu reads "Change who sees it" with the flag (4.2.3).
 - **v3.4.3 (2026-10-06):** Step 14. Tooltips (4.1.14) hide while their button's menu is open, and Esc-dismiss now also works while hovering; before, a hover tooltip could sit over the first menu item on desktop and swallow the click. Activity items (4.2.13) gain the friend request (Accept and Decline in the item, not a link) and friend accepted types. Person row (4.2.16) and the friend link card (4.2.7) are in the styleguide. The friend landing uses the 56px avatar of the group invite landing (5.20).
 - **v3.4.2 (2026-10-06):** Declining a friend request is silent, as on Instagram (5.20, PRD open question 13).
 - **v3.4.1 (2026-10-06):** Step 13. Until Home ships (PRD slice 20), the first tab reads **Groups** with the `UsersThree` icon, and the switcher sheet is titled "Your groups", so no tab reads "List" beside "My list" (4.2.5, 4.2.8 describe the end state). The `g` then `s` shortcut stays until Home replaces it.

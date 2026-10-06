@@ -189,6 +189,7 @@ export function ListCards({
                         })
                       : undefined
                   }
+                  friends={scope.kind === "mine" && card.friends}
                 />
               </li>
             ))}

@@ -46,6 +46,7 @@ export async function POST(request: Request) {
   const text = String(form.get("text") ?? "").trim();
   const files = form.getAll("image").filter((f): f is File => f instanceof File);
   const groups = form.getAll("group").map(String).slice(0, 20);
+  const friends = form.get("friends") === "1";
   if (text.length > MAX_TEXT || files.length > MAX_SCREENSHOTS) return fail("too_much", 413);
   if (!text && files.length === 0) return fail("bad_input", 400);
 
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
     p_method: method,
     p_hash: digest.digest("hex"),
     p_groups: groups,
+    p_friends: friends,
   });
   const row = (started as Array<{ status: string; import_id: string | null; reuse: Candidate[] | null }> | null)?.[0];
   if (error || !row) return fail("failed", 500);

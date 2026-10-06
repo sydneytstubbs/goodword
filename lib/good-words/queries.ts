@@ -115,6 +115,7 @@ type MineRow = {
   note: string | null;
   source: GoodWordSource;
   created_at: string;
+  friends_shared_at: string | null;
   titles: TitleRow;
   good_word_groups: Array<{ group_id: string; shared_at: string }>;
 };
@@ -126,6 +127,7 @@ function toMine(row: Omit<MineRow, "titles">): MyGoodWord {
     createdAt: row.created_at,
     groupIds: row.good_word_groups.map((g) => g.group_id),
     sharedAt: Object.fromEntries(row.good_word_groups.map((g) => [g.group_id, g.shared_at])),
+    friendsSharedAt: row.friends_shared_at,
   };
 }
 
@@ -134,7 +136,7 @@ export async function myList(userId: string, name: string, region: string): Prom
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("good_words")
-    .select(`note, source, created_at, titles!inner(${TITLE_COLUMNS}), good_word_groups(group_id, shared_at)`)
+    .select(`note, source, created_at, friends_shared_at, titles!inner(${TITLE_COLUMNS}), good_word_groups(group_id, shared_at)`)
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .returns<MineRow[]>();
@@ -148,6 +150,7 @@ export async function myList(userId: string, name: string, region: string): Prom
       note: r.note,
       at: r.created_at,
       groupIds: r.good_word_groups.map((g) => g.group_id),
+      friends: r.friends_shared_at !== null,
     })),
   );
   return withServices(cards, new Map(rows.map((r) => [toTitle(r.titles).id, r.titles.id])), region);
@@ -182,6 +185,7 @@ type TitleGoodWordRow = {
   note: string | null;
   source: GoodWordSource;
   created_at: string;
+  friends_shared_at: string | null;
   good_word_groups: Array<{ group_id: string; shared_at: string }>;
 };
 
@@ -202,7 +206,7 @@ export const titleGoodWords = cache(
     if (!title) return { goodWords: [], mine: null };
     const { data, error } = await supabase
       .from("good_words")
-      .select("user_id, note, source, created_at, good_word_groups(group_id, shared_at)")
+      .select("user_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
       .eq("title_id", title.id)
       .returns<TitleGoodWordRow[]>();
     if (error) throw new Error(`title good words: ${error.code}`);
@@ -248,7 +252,7 @@ export async function searchAnnotations(titles: Array<Pick<Title, "type" | "tmdb
   if (keyOf.size === 0) return result;
   const { data } = await supabase
     .from("good_words")
-    .select("title_id, user_id, note, source, created_at, good_word_groups(group_id, shared_at)")
+    .select("title_id, user_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
     .in("title_id", [...keyOf.keys()])
     .order("created_at", { ascending: false })
     .returns<Array<TitleGoodWordRow & { title_id: string }>>();

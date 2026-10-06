@@ -12,6 +12,8 @@ export type VouchRow = {
   at: string;
   /** My list only: the groups it's shared into. */
   groupIds?: string[];
+  /** My list only: shared with your friends too (PRD F16.2). */
+  friends?: boolean;
 };
 
 const time = (iso: string) => new Date(iso).getTime();
@@ -28,18 +30,19 @@ function sortCards(cards: ListCard[]): ListCard[] {
  * lists (All groups) appears once, at their most recent share (F5.2).
  */
 export function cardsFromRows(rows: VouchRow[]): ListCard[] {
-  const byTitle = new Map<string, { title: Title; people: Map<string, VouchRow>; groupIds?: string[] }>();
+  const byTitle = new Map<string, { title: Title; people: Map<string, VouchRow>; groupIds?: string[]; friends?: boolean }>();
   for (const row of rows) {
-    const entry = byTitle.get(row.title.id) ?? { title: row.title, people: new Map(), groupIds: row.groupIds };
+    const entry = byTitle.get(row.title.id) ?? { title: row.title, people: new Map(), groupIds: row.groupIds, friends: row.friends };
     const seen = entry.people.get(row.userId);
     if (!seen || time(row.at) > time(seen.at)) entry.people.set(row.userId, row);
     byTitle.set(row.title.id, entry);
   }
   return sortCards(
-    [...byTitle.values()].map(({ title, people, groupIds }) => ({
+    [...byTitle.values()].map(({ title, people, groupIds, friends }) => ({
       title,
       goodWords: [...people.values()].map((r) => goodWord({ id: r.userId, name: r.name }, r.note, r.at)),
       ...(groupIds ? { groupIds } : {}),
+      ...(friends ? { friends } : {}),
     })),
   );
 }
@@ -83,7 +86,7 @@ export function applyOverlays(cards: ListCard[], overlays: Overlay[], scope: Lis
       ...card,
       title: card?.title ?? title,
       goodWords,
-      ...(scope.kind === "mine" && mine ? { groupIds: mine.groupIds } : {}),
+      ...(scope.kind === "mine" && mine ? { groupIds: mine.groupIds, friends: Boolean(mine.friendsSharedAt) } : {}),
     });
   }
   return sortCards([...byTitle.values()]);

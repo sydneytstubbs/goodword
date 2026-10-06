@@ -130,7 +130,7 @@ function Lists() {
           </ul>
         </div>
       </Frame>
-      <Frame label="My list: each card says where it's shared, or Only you">
+      <Frame label="My list: each card says where it's shared (Friends, with home_enabled), or Only you">
         <div className="p-4">
           <ul className={GRID}>
             <li>
@@ -149,6 +149,16 @@ function Lists() {
                 href="#list-states"
                 viewerId={viewer.id}
                 lists={[]}
+              />
+            </li>
+            <li>
+              <RecCardGrid
+                title={titles.lowTide}
+                goodWords={[{ person: viewer, note: "the lighthouse scene", at: new Date("2026-09-25T18:00:00Z") }]}
+                href="#list-states"
+                viewerId={viewer.id}
+                lists={[groups.book]}
+                friends
               />
             </li>
           </ul>

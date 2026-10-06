@@ -6,7 +6,7 @@ import { Textarea } from "../ui/textarea";
 import { Poster } from "./poster";
 import { titleMeta } from "./title-meta";
 import type { Title } from "./types";
-import { VisibilityLine, type GroupWithCount } from "./visibility-line";
+import { VisibilityLine, type FriendsPick, type GroupWithCount } from "./visibility-line";
 
 // The confirm step of putting in a good word (DESIGN-SYSTEM.md 5.4): poster,
 // title, and year; the optional note; and the visibility line, which opens
@@ -35,6 +35,7 @@ export function ConfirmGoodWord({
   groups,
   peopleCount,
   onChangeGroups,
+  friends,
 }: {
   title: Title;
   note: string;
@@ -47,6 +48,8 @@ export function ConfirmGoodWord({
   peopleCount: number;
   /** Opens the group picker; omit when you have no groups to pick from. */
   onChangeGroups?: () => void;
+  /** Friends, with the home_enabled flag (PRD F16.2). */
+  friends?: FriendsPick;
 }) {
   return (
     <div className="flex flex-col gap-5">
@@ -65,7 +68,7 @@ export function ConfirmGoodWord({
       ) : (
         <NoteField value={note} onValueChange={onNoteChange} />
       )}
-      <VisibilityLine groups={groups} peopleCount={peopleCount} onChange={onChangeGroups} className="self-start" />
+      <VisibilityLine groups={groups} peopleCount={peopleCount} friends={friends} onChange={onChangeGroups} className="self-start" />
     </div>
   );
 }

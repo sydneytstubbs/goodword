@@ -33,6 +33,8 @@ export type GoodWord = {
   at: Date;
   /** Title detail: which of the viewer's groups it's shared into (PRD F6). Empty is "Only you". */
   groups?: Group[];
+  /** Title detail, your own: shared with your friends too (PRD F16.2). */
+  friends?: boolean;
 };
 
 /** A comment body: text with mention tokens, stored by user id (DS 4.2.11). */
@@ -59,6 +61,8 @@ export type MyGoodWord = {
   source: GoodWordSource;
   /** When it went on each list, by group id, so Undo restores it exactly. */
   sharedAt: Record<string, string>;
+  /** When it was shared with your friends, or null if it isn't (PRD F16.2). */
+  friendsSharedAt?: string | null;
 };
 
 /** One card per title per list (PRD F4): everyone who vouched, newest first. */
@@ -67,6 +71,8 @@ export type ListCard = {
   goodWords: GoodWord[];
   /** My list only: the viewer's groups it's shared into. */
   groupIds?: string[];
+  /** My list only: shared with your friends too (PRD F16.2). */
+  friends?: boolean;
   /** A good word from someone else since the viewer last looked at this list (PRD F5.5). */
   isNew?: boolean;
   /** Streaming services (TMDB provider ids) in the viewer's region. Unknown until fetched. */

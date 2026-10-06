@@ -8,7 +8,8 @@ import { Menu } from "../ui/menu";
 
 // Vouch button (DESIGN-SYSTEM.md 4.2.3), the signature component.
 // Not vouched: opens the confirm sheet. Vouched: a small menu with Edit note,
-// Change groups, and Take it back (immediate, with an Undo toast).
+// Change groups (Change who sees it, when friends are an audience: PRD F16.2),
+// and Take it back (immediate, with an Undo toast).
 // The icon cross-fades from Plus to Check on success.
 
 export type VouchButtonProps = {
@@ -21,6 +22,8 @@ export type VouchButtonProps = {
   onEditNote: () => void;
   onChangeGroups: () => void;
   onTakeBack: () => void;
+  /** Friends are an audience (the home_enabled flag): the menu says "Change who sees it". */
+  withFriends?: boolean;
   fullWidth?: boolean;
   /**
    * The title, for rows. Below 768px a row's button just says "Add", and the
@@ -54,6 +57,7 @@ export function VouchButton({
   onEditNote,
   onChangeGroups,
   onTakeBack,
+  withFriends = false,
   fullWidth,
   titleName,
 }: VouchButtonProps) {
@@ -84,7 +88,7 @@ export function VouchButton({
       align="start"
       items={[
         { label: t("vouch.editNote"), icon: "edit", onSelect: onEditNote },
-        { label: t("vouch.changeGroups"), icon: "group", onSelect: onChangeGroups },
+        { label: withFriends ? t("vouch.changeAudience") : t("vouch.changeGroups"), icon: "group", onSelect: onChangeGroups },
         { label: t("vouch.takeBack"), icon: "remove", onSelect: onTakeBack, destructive: true },
       ]}
       trigger={(props) => (

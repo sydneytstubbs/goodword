@@ -17,7 +17,8 @@ import { useCaptureVisitSource, visitSource } from "./visit-source";
 
 // Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
 // current screen: search, then the confirm step (poster, optional note, and
-// the visibility line, defaulting to all your groups). The group picker, Edit
+// the visibility line, defaulting to all your groups, or to Friends with the
+// home_enabled flag, PRD F16.2). The group picker, Edit
 // note, and Change groups replace the sheet's content rather than stacking a
 // second sheet (DS 4.1.13). Opening pushes a history entry so the Back
 // gesture closes the sheet (DS 5.1).
@@ -94,7 +95,7 @@ type View =
   | { kind: "groups"; title: Title; mine: MyGoodWord };
 
 export function AddProvider({ children }: { children: ReactNode }) {
-  const { groups, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
+  const { groups, friends, overlays, mineFor, put, editNote, setGroups } = useGoodWords();
   useCaptureVisitSource();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>({ kind: "search" });
@@ -106,6 +107,9 @@ export function AddProvider({ children }: { children: ReactNode }) {
   const openedAt = useRef(0);
   const [note, setNote] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  // With the home_enabled flag, friends are an audience too, on by default (PRD F16.2).
+  const [friendsOn, setFriendsOn] = useState(true);
+  const friendsPick = friends ? { on: friendsOn, count: friends.count } : undefined;
   const [annotations, setAnnotations] = useState<ServerAnnotations>({ mine: {}, friends: {} });
 
   const allIds = groups.map((g) => g.id);
@@ -126,10 +130,12 @@ export function AddProvider({ children }: { children: ReactNode }) {
     (title: Title) => {
       const mine = mineOf(title);
       setNote(readDraft(title.id) ?? mine?.note ?? "");
-      setSelected(groups.map((g) => g.id));
+      // Friends on and groups off with the flag (decision 5); otherwise all your groups (F4).
+      setSelected(friends ? [] : groups.map((g) => g.id));
+      setFriendsOn(true);
       setView({ kind: "confirm", title });
     },
-    [mineOf, groups],
+    [mineOf, groups, friends],
   );
 
   const openAdd = useCallback(
@@ -158,6 +164,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
 
   const openChangeGroups = useCallback((title: Title, mine: MyGoodWord) => {
     setSelected(mine.groupIds);
+    setFriendsOn(Boolean(mine.friendsSharedAt));
     setView({ kind: "groups", title, mine });
     setOpen(true);
     pushEntry();
@@ -231,7 +238,12 @@ export function AddProvider({ children }: { children: ReactNode }) {
     const typed = note;
     writeDraft(title.id, "");
     const msFromAddOpened = openedAt.current ? Date.now() - openedAt.current : undefined;
-    put(title, { note: typed, groupIds: selected, source, msFromAddOpened }, mineOf(title), () => writeDraft(title.id, typed));
+    put(
+      title,
+      { note: typed, groupIds: selected, source, msFromAddOpened, ...(friends ? { friends: friendsOn } : {}) },
+      mineOf(title),
+      () => writeDraft(title.id, typed),
+    );
     close();
   }
 
@@ -260,8 +272,9 @@ export function AddProvider({ children }: { children: ReactNode }) {
   } else if (view.kind === "confirm") {
     const { title } = view;
     const mine = mineOf(title);
-    // Already on every list picked: offer Edit note instead (DS 5.4).
-    const already = mine !== null && selected.every((id) => mine.groupIds.includes(id));
+    // Already shared with everyone picked: offer Edit note instead (DS 5.4).
+    const already =
+      mine !== null && selected.every((id) => mine.groupIds.includes(id)) && (!friends || !friendsOn || Boolean(mine.friendsSharedAt));
     const chosen = withCounts.filter((g) => selected.includes(g.id));
     body = (
       <ConfirmGoodWord
@@ -271,7 +284,8 @@ export function AddProvider({ children }: { children: ReactNode }) {
         already={already}
         groups={chosen}
         peopleCount={peopleIn(selected)}
-        onChangeGroups={groups.length > 0 ? () => setView({ kind: "picker", title }) : undefined}
+        friends={friendsPick}
+        onChangeGroups={groups.length > 0 || friends ? () => setView({ kind: "picker", title }) : undefined}
       />
     );
     footer = already ? (
@@ -285,19 +299,35 @@ export function AddProvider({ children }: { children: ReactNode }) {
     );
   } else if (view.kind === "picker" || view.kind === "groups") {
     sheetTitle = t("visibility.pickerTitle");
-    body = <GroupPickerFields groups={withCounts} selectedIds={selected} onSelectedChange={setSelected} />;
+    body = (
+      <GroupPickerFields
+        groups={withCounts}
+        selectedIds={selected}
+        onSelectedChange={setSelected}
+        friends={friendsPick}
+        onFriendsChange={setFriendsOn}
+      />
+    );
     const done = () => {
       if (view.kind === "picker") setView({ kind: "confirm", title: view.title });
       else {
         const { title, mine } = view;
-        const changed = selected.length !== mine.groupIds.length || selected.some((id) => !mine.groupIds.includes(id));
-        if (changed) setGroups(title, mine, allIds.filter((id) => selected.includes(id)));
+        const changed =
+          selected.length !== mine.groupIds.length ||
+          selected.some((id) => !mine.groupIds.includes(id)) ||
+          (friends !== null && friendsOn !== Boolean(mine.friendsSharedAt));
+        if (changed) setGroups(title, mine, allIds.filter((id) => selected.includes(id)), friends ? friendsOn : undefined);
         close();
       }
     };
     footer = (
       <div className="flex flex-col gap-3">
-        <VisibilityLine groups={withCounts.filter((g) => selected.includes(g.id))} peopleCount={peopleIn(selected)} compact />
+        <VisibilityLine
+          groups={withCounts.filter((g) => selected.includes(g.id))}
+          peopleCount={peopleIn(selected)}
+          friends={friendsPick}
+          compact
+        />
         <Button variant="primary" size="lg" fullWidth onClick={done}>
           {t("common.done")}
         </Button>

@@ -102,3 +102,14 @@ export const friendPromptPeople = cache(async (groupId: string, userId: string):
   const names = await namesOf(supabase, ids);
   return ids.map((id) => ({ id, name: names.get(id) ?? "" })).sort(byName);
 });
+
+/** How many friends you have: for the audience line (PRD F16.2). Zero if it can't be read. */
+export const friendCount = cache(async (userId: string): Promise<number> => {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("friendships")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "accepted")
+    .or(`user_low.eq.${userId},user_high.eq.${userId}`);
+  return error ? 0 : (count ?? 0);
+});

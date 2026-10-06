@@ -30,7 +30,7 @@ export function TitleDetail({
   /** Beside a conversation on desktop, the conversation has the page's h1. */
   headingLevel?: 1 | 2;
 }) {
-  const { viewer, groups, mineFor, takeBack } = useGoodWords();
+  const { viewer, groups, friends, mineFor, takeBack } = useGoodWords();
   const { openAdd, openEditNote, openChangeGroups } = useAdd();
   const mine = mineFor(title.id, serverMine);
   const others = goodWords.filter((g) => g.person.id !== viewer.id);
@@ -41,6 +41,8 @@ export function TitleDetail({
           ...(mine.note ? { note: mine.note } : {}),
           at: new Date(mine.createdAt),
           groups: groups.filter((g) => mine.groupIds.includes(g.id)).map(({ id, name }) => ({ id, name })),
+          // With the home_enabled flag: shared with your friends (PRD F16.2).
+          ...(friends && mine.friendsSharedAt ? { friends: true } : {}),
         },
         ...others,
       ]
@@ -65,6 +67,7 @@ export function TitleDetail({
           onEditNote={() => mine && openEditNote(title, mine)}
           onChangeGroups={() => mine && openChangeGroups(title, mine)}
           onTakeBack={() => mine && takeBack(title, mine)}
+          withFriends={friends !== null}
         />
       }
     />

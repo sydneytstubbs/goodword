@@ -9,6 +9,7 @@ import {
   editGoodWordNote,
   putGoodWord,
   restoreGoodWord,
+  setGoodWordAudience,
   setGoodWordGroups,
   takeBackGoodWord,
   type Milestone,
@@ -26,7 +27,17 @@ import { t } from "@/lib/messages";
 // and a toast offers Retry. Writes run one at a time, so Undo never overtakes
 // the change it undoes.
 
-export type PutInput = { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number };
+export type PutInput = {
+  note: string;
+  groupIds: string[];
+  source: GoodWordSource;
+  msFromAddOpened?: number;
+  /** Shared with your friends; only with the home_enabled flag (PRD F16.2, F16.10). */
+  friends?: boolean;
+};
+
+/** With the home_enabled flag: friends are an audience, and how many you have. Null without it. */
+export type FriendsAudience = { count: number } | null;
 
 /**
  * A good word put in offline (PRD F12, DS 5.12): kept on this device, shown
@@ -39,6 +50,7 @@ export type QueuedGoodWord = { title: Title; input: PutInput; mine: MyGoodWord; 
 type GoodWordsValue = {
   viewer: Person;
   groups: SwitcherGroup[];
+  friends: FriendsAudience;
   /** Your streaming services in your region (TMDB provider ids), for "On my services". */
   myServices: number[];
   overlays: Overlay[];
@@ -49,7 +61,8 @@ type GoodWordsValue = {
   mineFor: (titleId: string, server: MyGoodWord | null) => MyGoodWord | null;
   put: (title: Title, input: PutInput, previous: MyGoodWord | null, onFail?: () => void) => void;
   editNote: (title: Title, mine: MyGoodWord, note: string) => void;
-  setGroups: (title: Title, mine: MyGoodWord, groupIds: string[]) => void;
+  /** Change groups, or with friends given, change who sees it (PRD F16.2). */
+  setGroups: (title: Title, mine: MyGoodWord, groupIds: string[], friends?: boolean) => void;
   takeBack: (title: Title, mine: MyGoodWord) => void;
   milestone: Milestone | null;
   /** A milestone reached elsewhere (the review deck), shown on the next list. */
@@ -67,23 +80,26 @@ export function useGoodWords(): GoodWordsValue {
 
 const ref = (title: Title): TitleRef => ({ type: title.type, tmdbId: title.tmdbId ?? 0 });
 
-/** Lists it's newly on get "now"; lists it stays on keep their date. */
-function withGroups(mine: MyGoodWord, groupIds: string[], now: string): MyGoodWord {
+/** Lists it's newly on get "now"; lists it stays on keep their date. Friends likewise, when given. */
+function withGroups(mine: MyGoodWord, groupIds: string[], now: string, friends?: boolean): MyGoodWord {
   return {
     ...mine,
     groupIds,
     sharedAt: Object.fromEntries(groupIds.map((id) => [id, mine.sharedAt[id] ?? now])),
+    ...(friends !== undefined ? { friendsSharedAt: friends ? (mine.friendsSharedAt ?? now) : null } : {}),
   };
 }
 
 export function GoodWordsProvider({
   viewer,
   groups,
+  friends = null,
   myServices,
   children,
 }: {
   viewer: Person;
   groups: SwitcherGroup[];
+  friends?: FriendsAudience;
   myServices: number[];
   children: ReactNode;
 }) {
@@ -210,7 +226,14 @@ export function GoodWordsProvider({
   );
 
   const audienceToast = useCallback(
-    (groupIds: string[]) => {
+    (groupIds: string[], withFriends?: boolean) => {
+      // Friends in the audience: "Your friends and College crew can see this." (PRD F16.2).
+      if (withFriends && friends && friends.count > 0) {
+        const picked = groups.filter((g) => groupIds.includes(g.id));
+        if (picked.length === 0) return t("vouch.friendsSee");
+        if (picked.length === 1) return t("vouch.friendsAndGroupSee", { group: picked[0].name });
+        return t("vouch.friendsAndGroupsSee", { count: picked.length });
+      }
       const seen = new Set<string>();
       const names: string[] = [];
       for (const group of groups.filter((g) => groupIds.includes(g.id))) {
@@ -221,9 +244,10 @@ export function GoodWordsProvider({
         }
       }
       if (names.length > 0) return t("vouch.onListAudience", { names: audienceNames(names) });
-      return groupIds.length === 0 && groups.length > 0 ? t("vouch.onListOnlyYou") : null;
+      // Nobody picked, with groups or friends to pick from: only you.
+      return groupIds.length === 0 && !withFriends && (groups.length > 0 || (friends?.count ?? 0) > 0) ? t("vouch.onListOnlyYou") : null;
     },
-    [groups, viewer.id],
+    [groups, viewer.id, friends],
   );
 
   const put = useCallback(
@@ -233,6 +257,7 @@ export function GoodWordsProvider({
         previous ? { ...previous, note: input.note } : { note: input.note, groupIds: [], createdAt: now, source: input.source, sharedAt: {} },
         input.groupIds,
         now,
+        input.friends,
       );
       // Offline: keep it on this device and send it on reconnect (PRD F12).
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
@@ -242,7 +267,7 @@ export function GoodWordsProvider({
       }
       // "On your list. Priya, Jonah, and 4 others will see it." with Undo, or,
       // with nobody else to see it yet, an Invite action (F4).
-      const message = audienceToast(input.groupIds);
+      const message = audienceToast(input.groupIds, input.friends);
       if (message) {
         showToast({ message, action: { label: t("common.undo"), onAction: () => revert(title, previous) } });
       } else {
@@ -278,10 +303,11 @@ export function GoodWordsProvider({
   );
 
   const setGroups = useCallback(
-    (title: Title, mine: MyGoodWord, groupIds: string[]) => {
-      const next = withGroups(mine, groupIds, new Date().toISOString());
-      const attempt = () =>
-        run({ title, mine: next }, () => setGoodWordGroups(ref(title), groupIds), (result) => failed(result, attempt));
+    (title: Title, mine: MyGoodWord, groupIds: string[], withFriends?: boolean) => {
+      const next = withGroups(mine, groupIds, new Date().toISOString(), withFriends);
+      const write = () =>
+        withFriends !== undefined ? setGoodWordAudience(ref(title), groupIds, withFriends) : setGoodWordGroups(ref(title), groupIds);
+      const attempt = () => run({ title, mine: next }, write, (result) => failed(result, attempt));
       attempt();
     },
     [run, failed],
@@ -320,6 +346,7 @@ export function GoodWordsProvider({
       value={{
         viewer,
         groups,
+        friends,
         myServices,
         overlays: shown,
         queued,

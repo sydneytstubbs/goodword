@@ -24,7 +24,7 @@ type CardRow = {
   added_type: TitleType | null;
   added_tmdb_id: number | null;
   created_good_word: boolean;
-  imports: { group_ids: string[]; created_at: string; duplicate_count: number };
+  imports: { group_ids: string[]; share_with_friends: boolean; created_at: string; duplicate_count: number };
 };
 
 const FAILED: DeckResult = { ok: false, error: "failed" };
@@ -33,7 +33,7 @@ async function loadCard(cardId: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("import_cards")
-    .select("id, import_id, candidates, added_type, added_tmdb_id, created_good_word, imports!inner(group_ids, created_at, duplicate_count)")
+    .select("id, import_id, candidates, added_type, added_tmdb_id, created_good_word, imports!inner(group_ids, share_with_friends, created_at, duplicate_count)")
     .eq("id", cardId)
     .maybeSingle<CardRow>();
   return { supabase, card: data };
@@ -107,6 +107,8 @@ export async function addImportCard(
       note: input.note,
       groupIds: await currentGroups(supabase, card.imports.group_ids),
       source: "import",
+      // The import's audience (PRD F16.2); only imports started with the flag share with friends.
+      ...(card.imports.share_with_friends ? { friends: true } : {}),
     });
     if (!put.ok) return put;
     milestone = put.milestone;

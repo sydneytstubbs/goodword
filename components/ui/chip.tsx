@@ -32,6 +32,16 @@ export function GroupDot({
 const groupChipClass =
   "relative inline-flex h-8 items-center gap-2 rounded-pill bg-surface-sunken px-3 text-caption font-medium text-default fc-edge";
 
+/** "Friends", in the group chip's style (PRD F16.2): a good word shared with your friends. */
+export function FriendsChip({ label }: { label: string }) {
+  return (
+    <span className={groupChipClass}>
+      <Icon name="friends" size={16} className="text-muted" />
+      {label}
+    </span>
+  );
+}
+
 /** Not interactive, unless `href` makes it a link to that list. */
 export function GroupChip({ group, href }: { group: Group; href?: string }) {
   const content = (

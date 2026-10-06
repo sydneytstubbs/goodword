@@ -58,13 +58,25 @@ const ERRORS: Record<string, string> = {
   offline: "importRecs.offline",
 };
 
-export function AddRecsForm({ groups, peopleIn }: { groups: GroupWithCount[]; peopleIn: Record<string, string[]> }) {
+export function AddRecsForm({
+  groups,
+  peopleIn,
+  friends,
+}: {
+  groups: GroupWithCount[];
+  peopleIn: Record<string, string[]>;
+  /** With the home_enabled flag: friends are an audience, on by default (PRD F16.2). */
+  friends?: { count: number };
+}) {
   const router = useRouter();
   const { showToast } = useToast();
   const { openAdd } = useAdd();
   const [text, setText] = useState("");
   const [shots, setShots] = useState<Shrunk[]>([]);
-  const [selected, setSelected] = useState<string[]>(groups.map((g) => g.id));
+  // The same default as a single good word: all your groups, or Friends with the flag (F15.1, F16.2).
+  const [selected, setSelected] = useState<string[]>(friends ? [] : groups.map((g) => g.id));
+  const [friendsOn, setFriendsOn] = useState(true);
+  const friendsPick = friends ? { on: friendsOn, count: friends.count } : undefined;
   const [picking, setPicking] = useState(false);
   const [phase, setPhase] = useState<Phase>({ kind: "input" });
   const [dragging, setDragging] = useState(false);
@@ -127,6 +139,7 @@ export function AddRecsForm({ groups, peopleIn }: { groups: GroupWithCount[]; pe
     body.set("text", text.trim().slice(0, MAX_TEXT));
     shots.forEach((s, i) => body.append("image", s.blob, `screenshot-${i + 1}.jpg`));
     selected.forEach((id) => body.append("group", id));
+    if (friendsPick?.on) body.append("friends", "1");
     const abort = new AbortController();
     controller.current = abort;
     setPhase({ kind: "finding", count: 0 });
@@ -306,7 +319,8 @@ export function AddRecsForm({ groups, peopleIn }: { groups: GroupWithCount[]; pe
       <VisibilityLine
         groups={chosen}
         peopleCount={people}
-        onChange={groups.length > 0 && !finding ? () => setPicking(true) : undefined}
+        friends={friendsPick}
+        onChange={(groups.length > 0 || friends) && !finding ? () => setPicking(true) : undefined}
         className="self-start"
       />
 
@@ -345,7 +359,13 @@ export function AddRecsForm({ groups, peopleIn }: { groups: GroupWithCount[]; pe
           </Button>
         }
       >
-        <GroupPickerFields groups={groups} selectedIds={selected} onSelectedChange={setSelected} />
+        <GroupPickerFields
+          groups={groups}
+          selectedIds={selected}
+          onSelectedChange={setSelected}
+          friends={friendsPick}
+          onFriendsChange={setFriendsOn}
+        />
       </Sheet>
     </form>
   );

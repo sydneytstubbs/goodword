@@ -206,6 +206,11 @@ function Visibility() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(groupsWithCounts.map((g) => g.id));
   const chosen = groupsWithCounts.filter((g) => selected.includes(g.id));
+  // With friends: Friends on, groups off by default (PRD F16.2).
+  const [friendsOpen, setFriendsOpen] = useState(false);
+  const [friendsOn, setFriendsOn] = useState(true);
+  const [friendsSelected, setFriendsSelected] = useState<string[]>([]);
+  const friendsChosen = groupsWithCounts.filter((g) => friendsSelected.includes(g.id));
   const people = new Set(
     chosen.flatMap((g) => (g.id === groups.college.id ? members.college : g.id === groups.girls.id ? members.girls : members.book).map((p) => p.id)),
   ).size;
@@ -218,6 +223,15 @@ function Visibility() {
         <Specimen label="One group, compact (composer)">
           <VisibilityLine groups={[groupsWithCounts[0]]} peopleCount={6} compact />
         </Specimen>
+        <Specimen label="Friends (home_enabled): live, Friends first in the picker; friends are never counted">
+          <VisibilityLine groups={friendsChosen} peopleCount={0} friends={{ on: friendsOn, count: 4 }} onChange={() => setFriendsOpen(true)} />
+        </Specimen>
+        <Specimen label="Friends and a group">
+          <VisibilityLine groups={[groupsWithCounts[0]]} peopleCount={6} friends={{ on: true, count: 4 }} />
+        </Specimen>
+        <Specimen label="Friends on, no friends yet">
+          <VisibilityLine groups={[]} peopleCount={0} friends={{ on: true, count: 0 }} />
+        </Specimen>
       </SpecimenGrid>
       <GroupPicker
         open={open}
@@ -226,6 +240,16 @@ function Visibility() {
         selectedIds={selected}
         onSelectedChange={setSelected}
         peopleCount={people}
+      />
+      <GroupPicker
+        open={friendsOpen}
+        onClose={() => setFriendsOpen(false)}
+        groups={groupsWithCounts}
+        selectedIds={friendsSelected}
+        onSelectedChange={setFriendsSelected}
+        peopleCount={0}
+        friends={{ on: friendsOn, count: 4 }}
+        onFriendsChange={setFriendsOn}
       />
     </Component>
   );

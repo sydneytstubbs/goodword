@@ -37,7 +37,7 @@ const note = (value: string) => value.trim().slice(0, 140);
 
 export async function putGoodWord(
   ref: TitleRef,
-  input: { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number },
+  input: { note: string; groupIds: string[]; source: GoodWordSource; msFromAddOpened?: number; friends?: boolean },
 ): Promise<WriteResult> {
   const titleId = await resolve(ref);
   if (titleId === "failed") return FAILED;
@@ -48,6 +48,8 @@ export async function putGoodWord(
     p_note: note(input.note),
     p_groups: input.groupIds,
     p_source: input.source,
+    // Only with the home_enabled flag (PRD F16.2, F16.10); left out, friends sharing doesn't change.
+    ...(input.friends !== undefined ? { p_friends: input.friends } : {}),
   });
   const result = (data as Array<{ status: string; milestone: Milestone | null }> | null)?.[0];
   if (error || !result) return FAILED;
@@ -58,6 +60,7 @@ export async function putGoodWord(
     await recordEvent("good_word_created", {
       title_id: titleId,
       groups_count: input.groupIds.length,
+      ...(input.friends !== undefined ? { friends: input.friends } : {}),
       has_note: note(input.note).length > 0,
       source: input.source,
       ms_from_add_opened: input.msFromAddOpened,
@@ -89,6 +92,18 @@ export async function setGoodWordGroups(ref: TitleRef, groupIds: string[]): Prom
   return { ok: true };
 }
 
+/** Change who sees it (PRD F16.2): friends and groups together, in one save. */
+export async function setGoodWordAudience(ref: TitleRef, groupIds: string[], friends: boolean): Promise<WriteResult> {
+  const titleId = await resolve(ref);
+  if (!titleId || titleId === "failed") return FAILED;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("set_good_word_audience", { p_title: titleId, p_groups: groupIds, p_friends: friends });
+  if (error || data !== "updated") return FAILED;
+  await recordEvent("good_word_edited", { field: "friends" });
+  refresh();
+  return { ok: true };
+}
+
 export async function takeBackGoodWord(ref: TitleRef): Promise<WriteResult> {
   const titleId = await resolve(ref);
   if (!titleId || titleId === "failed") return FAILED;
@@ -115,12 +130,15 @@ export async function restoreGoodWord(ref: TitleRef, snapshot: MyGoodWord): Prom
     p_created_at: snapshot.createdAt,
     p_groups: snapshot.groupIds,
     p_shared_at: snapshot.groupIds.map((id) => snapshot.sharedAt[id] ?? snapshot.createdAt),
+    ...(snapshot.friendsSharedAt !== undefined ? { p_friends_shared_at: snapshot.friendsSharedAt } : {}),
   });
   if (error) return FAILED;
   if (data === "exists") {
     const [edited, moved] = await Promise.all([
       supabase.rpc("edit_good_word_note", { p_title: titleId, p_note: note(snapshot.note) }),
-      supabase.rpc("set_good_word_groups", { p_title: titleId, p_groups: snapshot.groupIds }),
+      snapshot.friendsSharedAt !== undefined
+        ? supabase.rpc("set_good_word_audience", { p_title: titleId, p_groups: snapshot.groupIds, p_friends: Boolean(snapshot.friendsSharedAt) })
+        : supabase.rpc("set_good_word_groups", { p_title: titleId, p_groups: snapshot.groupIds }),
     ]);
     if (edited.error || moved.error) return FAILED;
   } else if (data !== "restored") return FAILED;

@@ -8,7 +8,7 @@ import { t } from "@/lib/messages";
 import { Icon } from "../icon";
 import { Avatar, AvatarStack } from "../ui/avatar";
 import { LabelBadge, UnreadDot } from "../ui/badge";
-import { GroupChip } from "../ui/chip";
+import { GroupChip, FriendsChip } from "../ui/chip";
 import { Poster } from "./poster";
 import { cardAccessibleName, titleMeta, vouchedByCompact } from "./title-meta";
 import type { GoodWord, Group, Title } from "./types";
@@ -48,6 +48,7 @@ export function RecCardGrid({
   unseenComments = false,
   eager,
   lists,
+  friends = false,
   className,
 }: Common & {
   href: string;
@@ -57,6 +58,8 @@ export function RecCardGrid({
   eager?: boolean;
   /** My list: the groups it's shared into; empty means "Only you" (PRD F5.3). */
   lists?: Group[];
+  /** My list: shared with your friends too (PRD F16.2). */
+  friends?: boolean;
   className?: string;
 }) {
   const note = latestNote(goodWords);
@@ -65,8 +68,7 @@ export function RecCardGrid({
       href={href}
       aria-label={[
         cardAccessibleName(title, goodWords, viewerId),
-        lists &&
-          `${lists.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(lists.map((g) => g.name)) })}.`,
+        lists && sharedLabel(lists, friends),
         // The badge is inside the link, so its text goes in the name (DS 4.1.11).
         isNew && `${t("common.new")}.`,
         commentCount > 0 && `${t("title.comments", { count: commentCount })}.`,
@@ -97,13 +99,18 @@ export function RecCardGrid({
       {note && <span className="line-clamp-2 text-caption text-muted">“{note}”</span>}
       {lists && (
         <span className="flex flex-wrap gap-1">
-          {lists.length === 0 ? (
+          {lists.length === 0 && !friends ? (
             <span className="inline-flex items-center gap-1 text-caption text-muted">
               <Icon name="private" size={16} />
               {t("vouch.onlyYou")}
             </span>
           ) : (
-            lists.map((group) => <GroupChip key={group.id} group={group} />)
+            <>
+              {friends && <FriendsChip label={t("vouch.friendsChip")} />}
+              {lists.map((group) => (
+                <GroupChip key={group.id} group={group} />
+              ))}
+            </>
           )}
         </span>
       )}
@@ -215,7 +222,7 @@ export function RecCardDetail({
                     </time>
                   </figcaption>
                   {g.note && <blockquote className="text-quote text-default">“{g.note}”</blockquote>}
-                  {g.groups && <GoodWordGroups groups={g.groups} />}
+                  {g.groups && <GoodWordGroups groups={g.groups} friends={g.friends} />}
                 </figure>
               ))}
             </section>
@@ -243,9 +250,18 @@ export function RecCardDetail({
   );
 }
 
-/** Which of the viewer's groups a good word is in; "Only you" when none (PRD F6). */
-function GoodWordGroups({ groups }: { groups: Group[] }) {
-  if (groups.length === 0) {
+/** "Shared with your friends. On College crew." or "Only you." for a card's accessible name. */
+function sharedLabel(groups: Group[], friends: boolean): string {
+  const parts = [
+    friends && `${t("vouch.sharedWithFriends")}.`,
+    groups.length > 0 && `${t("vouch.sharedIn", { groups: nameList(groups.map((g) => g.name)) })}.`,
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(" ") : `${t("vouch.onlyYou")}.`;
+}
+
+/** Which of the viewer's groups a good word is in, and friends; "Only you" when none (PRD F6, F16.2). */
+function GoodWordGroups({ groups, friends = false }: { groups: Group[]; friends?: boolean }) {
+  if (groups.length === 0 && !friends) {
     return (
       <span className="inline-flex items-center gap-1 text-caption text-muted">
         <Icon name="private" size={16} />
@@ -255,7 +271,12 @@ function GoodWordGroups({ groups }: { groups: Group[] }) {
   }
   return (
     <span className="flex flex-wrap gap-1">
-      <span className="sr-only">{t("vouch.sharedIn", { groups: nameList(groups.map((g) => g.name)) })}</span>
+      <span className="sr-only">{sharedLabel(groups, friends)}</span>
+      {friends && (
+        <span aria-hidden="true">
+          <FriendsChip label={t("vouch.friendsChip")} />
+        </span>
+      )}
       {groups.map((group) => (
         <span key={group.id} aria-hidden="true">
           <GroupChip group={group} />

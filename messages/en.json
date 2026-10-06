@@ -116,7 +116,13 @@
     "queued": "Sending when you're back online",
     "queuedHeading": "Waiting to send",
     "queuedFailed": "That didn't send. Try again, or remove it.",
-    "queuedRemove": "Remove"
+    "queuedRemove": "Remove",
+    "friendsSee": "Your friends can see this.",
+    "friendsAndGroupSee": "Your friends and {group} can see this.",
+    "friendsAndGroupsSee": "Your friends and {count} groups can see this.",
+    "changeAudience": "Change who sees it",
+    "friendsChip": "Friends",
+    "sharedWithFriends": "Shared with your friends"
   },
   "search": {
     "label": "Search for a show or movie",
@@ -195,7 +201,14 @@
     "manyGroups": "Visible to {groups} groups · {people} people",
     "noGroups": "Only you, for now",
     "pickerTitle": "Who can see it",
-    "change": "Change who can see it"
+    "change": "Change who can see it",
+    "friends": "Visible to your friends",
+    "friendsNone": "Visible to your friends, once you add some",
+    "friendsAndGroup": "Visible to your friends and {group}",
+    "friendsAndGroups": "Visible to your friends and {groups} groups",
+    "friendsOption": "Your friends",
+    "friendsOptionBody": "Everyone you're friends with",
+    "friendsOptionNone": "No friends yet. They'll see it once you add some."
   },
   "invite": {
     "linkLabel": "Invite link",
