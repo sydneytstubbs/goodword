@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.3.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-01
+**Version** 3.4.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -100,19 +100,23 @@ Use these words exactly, in UI and in code comments. Consistency of language is 
 | **good word** | A recommendation someone vouched for | post, item, entry, review, rating, like |
 | **put in a good word** | The act of recommending | submit, add item, rate, log (in UI copy) |
 | **vouch / vouched for** | Having put in a good word | liked, favorited, starred |
-| **list** | The collection of good words in a group | feed, list, board, library (in UI) |
-| **rec**, **My list** | Your own good words as a collection: the My list tab, and adding recs in bulk (5.18) | list (except "recs list" in import copy), favorites, watchlist |
+| **list** | A collection of good words: a group's list, a person's list, or yours | shelf, feed, timeline, board, library |
+| **My list** | Your own good words as a collection, and the tab that holds them | My shelf, My Recs, favorites, watchlist |
+| **rec** | One of your own good words, in import copy only ("Add recs", 5.18) | |
+| **Home** | Every good word you can see from your friends and groups, newest first (5.19) | feed, timeline, stream, For you, discover |
+| **friend** | Someone you've both agreed to be friends with. Always mutual (5.20) | follower, following, connection, contact, network |
+| **vouch too** | Putting in your own good word on a title someone else vouched for | like, heart, favorite, repost, share |
 | **group** | A private circle of people | community, channel, server, network |
 | **member** | Someone in a group | follower, user, connection |
 | **note** | The optional one-liner on a good word | review, caption |
-| **conversation** | All the comments on one title within one group | chat, thread, discussion board |
+| **conversation** | The comments under one good word, or on one title within one group | chat, thread, discussion board |
 | **comment** | One message in a conversation | post, reply (as a noun), message |
-| **mention** | Tagging a group member with @ so they're notified | tag (in UI copy), ping |
-| **activity** | Your list of mentions, replies, and joins | notifications (as a screen name), inbox |
+| **mention** | Tagging someone who can see the conversation with @ so they're notified | tag (in UI copy), ping |
+| **activity** | Your list of mentions, replies, friend requests, and joins | notifications (as a screen name), inbox |
 | **spoiler** | A comment its author has covered until tapped | |
 | **robot guess** | An opt-in, clearly labeled non-human suggestion | recommendation, AI pick, for you |
 
-A **note** and a **comment** are different things: a note is part of someone's good word and travels with it to every group it's shared in. A comment belongs to one group's conversation.
+A **note** and a **comment** are different things: a note is part of someone's good word and travels with it to everyone who can see it. A comment belongs to one conversation.
 
 "Log" is fine in code and analytics, but never in UI copy.
 
@@ -432,7 +436,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Share | `ShareNetwork` | Copy link | `LinkSimple` |
 | Settings | `GearSix` | Group | `UsersThree` |
 | Activity | `Bell` | More actions | `DotsThree` |
-| Where to watch | `MonitorPlay` | List tab | `BookmarksSimple` |
+| Where to watch | `MonitorPlay` | Home tab | `House` |
 | My list tab | `UserCircle` | Private / visibility | `LockSimple` |
 | Edit | `PencilSimple` | Remove | `Trash` |
 | Error | `WarningCircle` | Offline | `WifiSlash` |
@@ -440,6 +444,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Sign out | `SignOut` | Conversation, comment count | `ChatCircle` |
 | Mention | `At` | Spoiler | `EyeSlash` |
 | Send comment | `PaperPlaneRight` | Add screenshots (5.18) | `Images` |
+| Friends, friend link | `UserPlus` | Caught up | `Check` |
 
 ### 3.6 Imagery
 - **Posters are the color.** Real TMDB images in product mode, with a typographic fallback (4.2.1). Never crop, filter, tint, or invert them, in either theme. Show them large enough to enjoy.
@@ -499,7 +504,7 @@ Every interactive component expresses these states the same way. This table is t
 - **Desktop shortcuts** (shown in a shortcuts sheet under Help, never required):
   - `/` focuses search
   - `n` opens "Put in a good word"
-  - `g` then `s` goes to the list, `g` then `y` goes to My list, `g` then `a` goes to Activity
+  - `g` then `h` goes to Home, `g` then `y` goes to My list, `g` then `a` goes to Activity
   - `?` shows shortcuts
 
   Shortcuts never fire while typing in a field.
@@ -676,10 +681,18 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 - **TMDB attribution is required**, persistently, in About (under My list › Help): the TMDB logo and "This product uses the TMDB API but is not endorsed or certified by TMDB."
 
 #### 4.2.2 Rec card
-One component, three variants.
+One component, four variants. Home uses the same component (`variant="home"`), never a separate card (PRD F16.11).
 - **`grid`** (lists): no card box. The poster (level 1) is the object; beneath it, 10px apart: title (`card-title`, 2 lines max), meta (`caption`, `--text-muted`, "Series · 2024"), the vouched-by row, and, if there is one, the most recent friend note as a quote (`caption` in `--text-muted`, in curly quotes, 2 lines max). When the group's conversation has comments, a comment count sits at the end of the meta line (`ChatCircle` 16px and the number), with a 6px `--action` dot when there are comments you haven't seen. A "New" label badge (4.1.11) sits on the poster's top-left corner, 8px in.
 - **`row`** (search results, dense lists): 48×72 poster left; title, meta, and vouched-by right; vouch button trailing. Level 0, hairline `--border-subtle` dividers between rows, 12px vertical padding.
 - **`detail`** (title screen): large poster, title as `title-l`, meta, genres, then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote` (Instrument Serif italic 24px), and group chips for which of **your** groups it's in ("Only you" for your own with none); then where to watch (5.7), the vouch button (`lg`), the conversation preview (5.17), and the overview.
+- **`home`** (Home, 5.19): leads with the friend's words, not the poster. Level 0, no card box, hairline `--border-subtle` dividers between cards, `--space-6` above and below each. Top to bottom:
+  1. **Who:** avatar stack (24) and names in `body-strong`, newest first ("Jonah", "Jonah and Tess", "Jonah, Tess and 2 more"; you're named as "You" when you've vouched), then the relative time of the newest good word (`caption`, `--text-muted`), and the group's chip (4.1.11) only when the card reached you through that group and not through friendship.
+  2. **Note:** the newest voucher's note in `quote` (Instrument Serif italic 24px), in full, exactly as typed: never truncated or auto-capitalized. With several notes, "See all 3 good words" (tertiary link) to title detail. With no note, this line is skipped.
+  3. **Title:** 48×72 poster, title (`card-title`), meta (`caption`, "Series · 2024"). This row is the link to title detail. The New badge sits on the poster.
+  4. **Conversation:** `ChatCircle` 16px, the count, and one line of the latest comment (`caption`, `--text-muted`, one line with ellipsis), or "a spoiler comment". A 6px `--action` dot marks unseen comments. With no comments it reads "Say something" in `--text-muted`, never "0". The row links to the conversation (5.17).
+  5. **Actions:** Comment (tertiary, `ChatCircle`), **Vouch too** (the vouch button, `md`, secondary; "Your good word" once vouched), Where to watch (tertiary, `MonitorPlay`). At least 44px each.
+  - **Never on the card:** hearts, likes, view counts, double-tap, or a button that shares outside Good Word.
+  - **Accessibility:** each card is an `<article>` named by its first line ("Jonah and Tess vouched for The Night Ferry"). Because it has several targets, the card itself isn't a link; the title row is.
 - **Vouched-by row:** avatar stack (24px) plus names in `caption` ("Priya, Jonah +1"). Always visible. Your own good word is listed as "You".
 - **Behavior:** the whole card is one link to the detail screen. In `row`, the vouch button is a separate target, and the rest of the row is the link. No nested interactive elements inside the card link. Desktop hover raises the poster to `--shadow-md`; nothing moves.
 - **Accessibility:** the accessible name reads as a sentence: "The Night Ferry, series, 2024. Vouched for by Priya and Jonah." 
@@ -704,26 +717,28 @@ One component, three variants.
 - **Accessibility:** combobox pattern with a listbox (`role="combobox"`, `aria-expanded`, `aria-activedescendant`). Arrow keys move, Enter selects, Esc clears then closes. Result count announced politely ("6 results").
 
 #### 4.2.5 Group switcher
-- Top-bar control: current group name plus `CaretDown`. Opens a sheet listing groups (sorted by recent activity, each with avatar stack and member count), an "All groups" option, and "Create a group".
-- The current list is always named on screen. "All groups" is an explicit, labeled choice, never an unlabeled default.
-- Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The List tab shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
+- Top-bar control on Home and on group lists: the current place ("Home" or the group name) plus `CaretDown`. Opens a sheet listing **Home** first, then your groups (sorted by recent activity, each with avatar stack and member count), then "Create a group". There is no All groups; Home replaces it (PRD F16.8).
+- The current place is always named on screen.
+- Each group row shows a count badge (4.1.11) of new good words since your last visit (PRD F5.5). The switcher's button shows an unread dot when any group has some; on desktop the rail's group rows show the counts.
 
 #### 4.2.6 Visibility line
-- A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus "Visible to College crew · 6 people", or "Visible to 3 groups · 14 people".
-- Tapping it opens the group picker. It updates live as groups are selected.
-- This is how the "private by default, visibly so" principle shows up in UI. It is required on the confirm sheet and on invite screens.
-- With no groups picked it reads "Only you, for now" in the default muted color. Zero groups is allowed (PRD F4), so it's not an error.
+- A one-line statement of audience wherever content is created or shared: `LockSimple` icon plus the audience in words: "Your friends", "Your friends and College crew", "College crew · 6 people", "College crew and The girls · 14 people". A people count shows only when the audience is groups alone; friends are never counted (5.14).
+- Tapping it opens the **audience picker**: a **Friends** switch first (on by default), then each of your groups as a switch (off by default) (PRD F16.2). It updates live.
+- This is how the "private by default, visibly so" principle shows up in UI. It is required on the confirm sheet, the Add recs screen, the composer, and invite screens.
+- With everything off it reads "Only you, for now" in the default muted color; that's allowed (PRD F4), so it's not an error. With Friends on and no friends yet, it reads "Your friends, once you add some".
+- **In the composer** (4.2.11) it's compact and read-only: "College crew will see this" in a group conversation, and "Everyone who can see Jonah's good word will see this" (or "your good word") under a good word. It never names groups or counts the viewer can't see (PRD F16.6, rule 4).
 
 #### 4.2.7 Invite card
 - Group name, avatar stack, member count, the invite link in a read-only field, "Copy link" (`secondary`), and "Share" (`primary`, uses the Web Share API with copy as fallback).
 - Copying confirms with a toast ("Link copied. Send it to someone whose taste you trust.").
 - States: link active, link reset (owner only, 5.8), expired.
+- **Friend link variant** (Friends screen, 5.20): your name and avatar instead of a group's, no member count, the heading "Your friend link", the same Copy link and Share, and Reset link in a menu. Share text: "Be friends with me on Good Word, where we share the shows and movies we'd vouch for."
 
 #### 4.2.8 App bars and navigation
-- **Top bar:** 52px, `--surface` fill. Group switcher on the left (group name in `heading` with `CaretDown`); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
-- **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the group switcher, group details, and invite button sit in the list's own bar on list screens. The conversation screen has its own compact header (5.17) and no tab bar.
-- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **List**, **Add**, **My list**. List and My list are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
-- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then List, Activity, and My list as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
+- **Top bar:** 52px, `--surface` fill. Switcher on the left ("Home" or the group name in `heading` with `CaretDown`, 4.2.5); on the right, the Activity icon button (`Bell`, with a count badge, 4.1.11) and the invite icon button. A hairline `--border-subtle` bottom border appears only once content scrolls under it. No blur or translucency. The page's `title-l` sits below the bar in content, not in it.
+- **In the app today (below 1024px):** the header holds the wordmark on the left and the Activity bell on the right; the switcher sits in Home's own bar, and the switcher, group details, and invite button sit in a group list's own bar. The conversation screen has its own compact header (5.17) and no tab bar.
+- **Tab bar (mobile):** 56px plus safe-area inset, `--surface` fill with a hairline top border. Three destinations: **Home**, **Add**, **My list**. Home and My list are 24px icons over `caption` labels; inactive in `--text-muted` with `regular` icons, active in `--text` with `fill` icons, weight 600, and `aria-current="page"`. **Add** is centered: a 44px `--action` circle with a white `Plus`, `--shadow-md`, sitting within the bar (not floating above it), labeled "Add".
+- **Rail (1024px and up):** 240px left rail on `--surface` with a hairline right border: the wordmark, a full-width primary "Put in a good word" button, then Home, Activity, and My list as 40px rows (`--surface-hover` on hover, `--surface-sunken` with weight 600 when current), then the group list with people-tone dots.
 - Add is a command, not a destination: it opens the log sheet over the current screen rather than navigating away.
 
 #### 4.2.9 Robot guess card
@@ -732,7 +747,7 @@ One component, three variants.
 - Never appears inside a list or mixed into a list of human good words. It can be converted into a real good word only if a human vouches for it, at which point it becomes a normal card.
 
 #### 4.2.10 Comment
-- **Purpose:** one message in a title's conversation within a group (5.17).
+- **Purpose:** one message in a conversation: under a good word, or on a title within a group (5.17).
 - **Anatomy:** avatar (32) · name (`body-strong`) · relative time (`caption`, in a `<time>` element) · "edited" (`caption`, if edited) · body (`body`, max `--width-reading`) · more-actions icon button (`DotsThree`) for the author, and for the group owner. Level 0 on `--surface`, no border or shadow. Comments are separated by `--space-4`.
 - **Grouping:** consecutive comments by the same person within 5 minutes collapse the avatar and name, so a burst reads as one turn (standard messaging pattern). The time shows on the first of the group.
 - **Mentions** render as `@Name` in `body-strong`. A mention of **you** is shown in `--action-text` on an `--action-wash` pill (4px horizontal padding), so it's findable at a glance; the text itself (your name) means it never relies on color alone.
@@ -744,18 +759,18 @@ One component, three variants.
 - **Don't:** nest replies, show read receipts, or show typing indicators.
 
 #### 4.2.11 Composer (with mentions)
-- **Purpose:** write a comment in the current group's conversation.
-- **Anatomy:** pinned to the bottom of the conversation screen above the safe area (and above the keyboard, via `visualViewport`, 8.2): a visibility line in compact form ("Visible to College crew · 6 people", 4.2.6), then an auto-growing textarea (1 to 5 lines, `--surface-raised`, 1px `--border-strong`, pill radius at 1 line, `--radius-card` when taller), then a row with the Mention button (`At`), the Spoiler toggle (`EyeSlash`, `aria-pressed`, label "Spoiler", shown in `--action-text` with `fill` weight when on), and the Send button (`PaperPlaneRight` in white on a 36px `--action` circle, 44px hit area). The composer sits on `--surface` with a hairline top border.
-- **Placeholder:** "Say something to College crew…" (always names the group).
+- **Purpose:** write a comment in the current conversation.
+- **Anatomy:** pinned to the bottom of the conversation screen above the safe area (and above the keyboard, via `visualViewport`, 8.2): the compact visibility line ("College crew will see this", or "Everyone who can see Jonah's good word will see this", 4.2.6), then an auto-growing textarea (1 to 5 lines, `--surface-raised`, 1px `--border-strong`, pill radius at 1 line, `--radius-card` when taller), then a row with the Mention button (`At`), the Spoiler toggle (`EyeSlash`, `aria-pressed`, label "Spoiler", shown in `--action-text` with `fill` weight when on), and the Send button (`PaperPlaneRight` in white on a 36px `--action` circle, 44px hit area). The composer sits on `--surface` with a hairline top border.
+- **Placeholder:** "Say something to College crew…" in a group conversation; "Say something about this…" under a good word.
 - **Limits:** 500 characters; counter appears at 400 (same behavior as 4.1.5).
 - **Send:** tap Send on touch; on desktop, Enter sends and Shift+Enter adds a line. On mobile, Return adds a line. Sending is optimistic (the comment appears immediately in the "sending" variant).
 - **Empty composer:** Send is `aria-disabled` with the label "Write something to send". This is the one sanctioned exception to 3.8's disabled rule, because an inactive send button is the universal messaging convention (Jakob's law) and needs no explanation.
-- **Draft protection:** an unsent draft is kept per title per group for the session, and restored when you return.
+- **Draft protection:** an unsent draft is kept per conversation for the session, and restored when you return.
 - **Mention autocomplete:**
-  - Typing `@` (or tapping the Mention button, which inserts `@`) opens a suggestion list above the composer showing members of **this group only**, excluding you, filtered by what's typed after `@` (first-name prefix match first, then contains), up to 6 rows of avatar plus name.
+  - Typing `@` (or tapping the Mention button, which inserts `@`) opens a suggestion list above the composer showing members of **this group only** (under a good word: only people who can see it **and** whom you already know: your friends, people in your groups, and people who've commented there, so the list never reveals anyone's friends), excluding you, filtered by what's typed after `@` (first-name prefix match first, then contains), up to 6 rows of avatar plus name.
   - Arrow keys move, Enter or Tab inserts, Esc closes; tapping a row inserts. The list closes on a space after no match, or when the caret leaves the token.
   - An inserted mention becomes an atomic token (`@Priya` in `body-strong`): Backspace removes the whole token. It's stored by user id, so renamed people still resolve correctly.
-  - Typing `@` followed by a name that isn't in the group stays plain text. You can't mention people outside the group, and the list never reveals anyone outside it.
+  - Typing `@` followed by a name that isn't in the list stays plain text. You can't mention people outside the conversation's audience, and the list never reveals anyone outside it.
   - **Accessibility:** combobox pattern on the textarea (`aria-autocomplete="list"`, `aria-controls`, `aria-activedescendant`), with the result count announced politely ("3 people").
 - **Don't:** add attachments, GIFs, or formatting in the MVP.
 
@@ -769,8 +784,26 @@ One component, three variants.
 - **Purpose:** one entry in the Activity list (5.17).
 - **Anatomy:** actor avatar (40) · one sentence naming the person, the action, the title, and the group ("**Priya** mentioned you on **The Night Ferry** in College crew") · a one-line quote of the comment in `caption` (or "a spoiler comment") · relative time · 64×96 poster on the trailing edge. Unread items have a leading 8px `--action` dot plus the visually hidden word "Unread" and use `body-strong` for the sentence.
 - The whole row is one link to the exact comment. Opening it marks it read.
-- Types in the MVP: mention, new comment in a conversation you're part of, a conversation started in one of your groups, someone joined your group (owners only).
+- Types: mention, new comment in a conversation you're part of (including under your good words), a conversation started in one of your groups, someone joined your group (owners only), a friend request, and a friend request accepted.
+- **Friend request** items aren't one link: the sentence ("**Mo** wants to be friends") sits beside **Accept** (secondary) and **Decline** (tertiary), each at least 44px. **Friend accepted** links to their person view.
 - Level 0 rows with hairline `--border-subtle` dividers, like `row` rec cards. Unread rows also get an `--action-wash` background.
+
+#### 4.2.14 Caught-up marker
+- **Purpose:** tells you Home has ended, so it never feels endless (5.19).
+- **Anatomy:** a centered row: hairline `--border-subtle` rules either side of `Check` (16px, `--text-muted`) and "You're all caught up" in `body-strong`, then "Show earlier good words" (tertiary button) beneath. `--space-8` above and below.
+- The text is an `<h2>`, so screen reader users can jump to where new ends. Loading earlier cards announces "24 earlier good words loaded" politely.
+- When nothing is new, it sits at the top of Home with **Put in a good word** (primary) under it.
+
+#### 4.2.15 Import roll-up line
+- **Purpose:** one quiet line on Home for a friend's import, instead of a card per title (PRD F16.3).
+- **Anatomy:** avatar (24), "**Luis** added 40 titles to their list" in `body`, relative time in `caption`. Level 0, between cards, with the same dividers. The whole row links to their person view.
+- The number counts only good words the viewer can see.
+
+#### 4.2.16 Person row
+- **Purpose:** one person on the Friends screen (5.20).
+- **Anatomy:** avatar (40), name (`body-strong`), an optional `caption` line ("In College crew", "Wants to be friends", "Requested"), and trailing actions: **Accept** (secondary) and **Decline** (tertiary) for a request to you; **Cancel** (tertiary) for one you sent; **Add** (secondary) for someone from your groups; a `DotsThree` menu with **Remove friend** for a friend. Level 0 rows with hairline dividers, at least 56px tall.
+- The name links to their person view.
+- **Never:** friend counts, mutual-friend counts, or "people you may know" beyond your own groups.
 
 ---
 
@@ -782,15 +815,17 @@ Each pattern names the user problem, the solution, and the rules. Screens in the
 
 **MVP sitemap**
 ```
-/                      marketing page (signed out) or redirect to last list (signed in)
+/                      marketing page (signed out) or redirect to Home (signed in)
 /sign-in               sign in
-/join/[code]           invite landing
-/list/[groupId]       a group's list        (List tab)
-/list/all             all groups, labeled
+/join/[code]           invite landing: a group, or a person's friend link
+/home                  Home                  (Home tab)
+/list/[groupId]        a group's list        (from the switcher)
 /title/[type]/[id]     title detail
 /title/[type]/[id]/conversation?group=[groupId]   a group's conversation about a title
+/title/[type]/[id]/conversation?word=[goodWordId] the conversation under a good word
 /activity              mentions, replies, and joins (Bell in the top bar)
-/you                   your list, groups, settings, help (My list tab)
+/you                   your list, friends, groups, settings, help (My list tab)
+/you/friends           your friend link, requests, and friends
 /you/settings          account, notifications, about
 /groups/new            create a group
 /groups/[id]           group details, members, invite
@@ -832,16 +867,16 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 1. **Tap Add** (tab bar, rail, `n` on desktop, or the vouch button on any title). The search sheet opens with the keyboard up.
 2. **Pick a result.** Annotations prevent duplicates (4.2.4).
-3. **Confirm sheet:** poster, title, year; the note field (optional, placeholder "ep 3 is where it gets you"); the visibility line, defaulting to **all your groups**; and the primary button "Put in a good word".
-4. **Tap the button.** The sheet closes, the card appears at the top of the list with the insert animation, and a toast names the audience: "On your list. Priya, Jonah, and 4 others will see it." with Undo.
+3. **Confirm sheet:** poster, title, year; the note field (optional, placeholder "ep 3 is where it gets you"); the visibility line, defaulting to **Friends on, groups off** (4.2.6); and the primary button "Put in a good word".
+4. **Tap the button.** The sheet closes, the card appears at the top of My list with the insert animation, and a toast names the audience: "Your friends and College crew can see this." with Undo.
 
 **Rules**
 - The note is skippable with zero extra taps. The primary button is reachable one-handed with the keyboard open.
-- **Already vouched in all selected groups:** the confirm sheet shows "Your good word is already on these lists" and offers Edit note instead.
+- **Already vouched:** opening the confirm sheet for a title you vouched for shows your note and audience to edit, with "Your good word is already in" above it.
 - **A friend already vouched:** your good word joins theirs on the same card. One card per title per group, with a growing vouched-by row. Never a duplicate card.
 - **Draft protection:** dismissing the sheet with a typed note asks nothing; the note is kept, and reopening the same title restores it for the session.
 - **Offline:** the good word is queued, shown with a "Sending when you're back online" caption, and sent automatically (5.12).
-- **Editing later:** Edit note and Change groups from the vouch menu. Edits are silent (no "edited" label) because the stakes are low.
+- **Editing later:** Edit note and Change who sees it from the vouch menu. Edits are silent (no "edited" label) because the stakes are low.
 
 ### 5.5 Search
 - Search is scoped to titles in TMDB, not to people or groups, in the MVP.
@@ -850,7 +885,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 - Every no-results message suggests a concrete next step.
 
 ### 5.6 Browsing and filtering the list
-- **Default sort:** newest good word first. Alternative: "Most vouched".
+- **Default sort:** newest good word first. Alternative: "Most vouched". Home has no sort: it's always newest first (5.19).
 - **Controls** stick under the top bar: segmented control (All / Movies / Shows) with sort beside it ("Newest" or "Most vouched", opening a menu), then filter chips for streaming services with counts, then the "More filters" chip. Genres, length, a service beyond the top five, and (on My list) groups picked in More filters also show as selected chips on the bar, so every active filter stays visible. A hairline appears under the controls once the list scrolls beneath them.
 - **Active filters are always visible**, with a single "Clear" action and a result count ("12 good words").
 - **Filters combine** with AND across types (Movies + Netflix) and OR within a type (Netflix OR Hulu), and the UI says so implicitly by grouping chips by type.
@@ -858,7 +893,8 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 - **Pagination:** infinite scroll with a visible "Load more" fallback button and a footer ("That's the whole list") so users know when they've reached the end. Screen readers get the result count and the load-more button.
 
 ### 5.7 Title detail
-- Order of content, most to least important: poster and title, who vouched and their notes, where to watch, the vouch button, the conversation preview (5.17), then metadata (genre, runtime or seasons, year, overview).
+- Order of content, most to least important (PRD F16.4): poster, title, meta, and where to watch; the good words you can see, newest first with yours first (or a **Put in a good word** prompt), each with its conversation collapsed beneath it (5.17); the group conversations, one labeled section per group ("In College crew"); then the overview.
+- Nothing on the page hints at good words or conversations the viewer can't see: no counts, no "more from people you don't know" (5.14).
 - Meta (type, year, runtime or seasons) and genres sit with the title as text; the overview comes last (PRD F6, 4.2.2 `detail`).
 - **Where to watch** comes from TMDB's watch provider data for the user's region, showing provider names and logos grouped by Stream / Rent / Buy. **JustWatch attribution is required** alongside this data, per TMDB's terms. If nothing is available: "Not streaming in your region right now." Each provider links to TMDB's watch page for the title and opens in a new tab, since the user is mid-choice (4.1.3). It loads after the rest of the screen, with its own skeleton and its own error state with Retry (5.12, partial).
 - The overview is collapsed to 3 lines with "More" when longer.
@@ -941,7 +977,9 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - **Audience is shown before sharing,** always, via the visibility line (4.2.6).
 - **No read receipts or "who viewed"** of any kind.
 - **Membership is visible to members:** anyone in a group can see who else is in it.
-- **Conversations stay inside their group.** A comment is only ever visible to members of the group it was written in, and you can only mention members of that group. The same title can have separate conversations in different groups, and no group ever sees another group's conversation or even whether one exists.
+- **Friends are mutual and uncounted.** Your friends are listed only on your own Friends screen. Nobody sees anyone's friend count, and there's no people search. People who comment under a friend's good word are visible to everyone who can see that good word, and the composer says so (4.2.6).
+- **A conversation is exactly as visible as what it sits under.** A group conversation is visible only to that group's members; a conversation under a good word is visible to everyone who can see that good word. No group ever sees another group's conversation or even whether one exists, and nothing hints at good words or conversations you can't see.
+- **Nothing gets more visible without its author.** Existing good words aren't shared with friends until their author chooses to (PRD F16.10).
 - **Account controls** in Settings: download my data, delete my account (irreversible dialog, 5.11). Deleting an account removes that person's good words from every list.
 - Plain-language privacy summary in About, above the legal text.
 
@@ -959,8 +997,9 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 **User problem:** people want to talk about what they're watching with the friends who recommended it ("wait until ep 6", "@Tess you'd love the ending"), without moving to the group chat and losing the thread.
 
 **Where conversations live**
-- A conversation belongs to **one title in one group**. Any title can have one, whether or not it's on that group's list. The first comment gives every other member an Activity item ("**Tess** started a conversation about **The Night Ferry** in College crew"), so a conversation is discoverable even when the title isn't on the list.
-- **Entry points:** the conversation preview on title detail, the comment count on list cards, Activity items, and mention emails.
+- A conversation sits **under one good word** (visible to everyone who can see it, PRD F16.5) or belongs to **one title in one group**. Group conversations work as below; conversations under a good word work the same way except where noted. Any title can have a group conversation, whether or not it's on that group's list. The first comment gives every other member an Activity item ("**Tess** started a conversation about **The Night Ferry** in College crew"), so a conversation is discoverable even when the title isn't on the list.
+- **Entry points:** the conversation preview on title detail, the comment count on list cards, the conversation row and Comment action on Home cards, Activity items, and mention emails.
+- **Under a good word on title detail,** each good word's conversation is collapsed to its count and latest comment, and opens in place to its 3 most recent comments, "See all 12 comments", and "Add a comment", which opens the full conversation (`?word=`). Its compact header reads "Jonah's good word" instead of a group name.
 - **On title detail**, the conversation preview shows the group's name, the 3 most recent comments, "See all 12 comments", and a tappable "Add a comment" field that opens the full conversation with the composer focused. If you're in several groups, a group chip row above the preview lists all of them and switches between their conversations (`?group=`). The default is the group you arrived from (`?group=`), then the one with the most recent comment, then one whose list the title is on, then your most recently joined group.
 - **The full conversation** (`/title/[type]/[id]/conversation?group=`) is its own screen: a compact header (poster thumbnail, title, group name, and back), the comment list, and the composer pinned to the bottom (4.2.11). Below 1024px it hides the tab bar, like a messaging screen, and Back leaves it. On desktop it's a panel beside the title detail rather than a separate page.
 
@@ -971,7 +1010,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - **Your own comment** appears immediately (optimistic) and the view scrolls to it.
 
 **Mentions**
-- Only members of the conversation's group can be mentioned (4.2.11). A mention notifies the person (5.13) and links straight to that comment, highlighted for 2 seconds on arrival (no motion under reduced motion).
+- Only members of the conversation's group can be mentioned; under a good word, only people who can see it and whom you already know (4.2.11). A mention notifies the person (5.13) and links straight to that comment, highlighted for 2 seconds on arrival (no motion under reduced motion).
 - Editing a comment to add a mention notifies the newly mentioned person; editing never re-notifies people already mentioned. Deleting a comment retracts its unread Activity items.
 
 **Spoilers**
@@ -981,7 +1020,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 - A reverse-chronological list of activity items (4.2.13), grouped by Today, This week, and Earlier. The bell shows the unread count (max "99+").
 - Opening Activity doesn't mark everything read; opening an item does. A "Mark all as read" action sits at the top when there are unread items.
 - Items older than 90 days are removed.
-- **Empty state:** "Nothing yet. When friends mention you or reply, it'll show up here."
+- **Empty state:** "Nothing yet. When friends mention you, reply, or ask to be friends, it'll show up here."
 
 **States** (5.12)
 | State | Conversation | Activity |
@@ -992,7 +1031,7 @@ Nudges are a core part of the strategy, so they have to feel like a friend, not 
 | Offline | Cached comments; new comments queue as "Sending when you're back online" | Cached items with the offline banner |
 
 **Moderation (small private groups)**
-- Authors can edit and delete their comments; group owners can delete any comment in their group. Removing a member leaves their past comments visible, attributed to them, but they can no longer read or post. The same goes for people who leave (decided 2026-09-29). Reporting is out of scope for the MVP.
+- Authors can edit and delete their comments; group owners can delete any comment in their group. Who can delete comments under a good word besides their authors is PRD open question 16. Removing a member leaves their past comments visible, attributed to them, but they can no longer read or post. The same goes for people who leave (decided 2026-09-29). Reporting is out of scope for the MVP.
 
 ### 5.18 Adding recs in bulk
 How someone turns a list they already have into recs (PRD F15). One decision per card; nothing lands until it's confirmed.
@@ -1005,6 +1044,26 @@ How someone turns a list they already have into recs (PRD F15). One decision per
 - **Toasts:** "Added" and "Skipped", each with Undo, timed per 4.1.15.
 - **Done:** `title-l` "Your recs are in", a summary line, then **View My list** (primary) and **Add more** (secondary).
 - **Resume:** My list shows a `Banner` ("You have 6 recs left to review" · **Finish**) while an import has unreviewed cards.
+
+### 5.19 Home
+**User problem:** opening the app, people want to know what their friends are watching, without a stream they can scroll forever (PRD F16.3).
+
+- **Layout:** Home's bar (the switcher, 4.2.5), the filter bar (5.6, without sort), then `home` rec cards (4.2.2) newest first in one column, at most `--width-reading` wide and centered on larger screens. Import roll-up lines (4.2.15) sit between cards at their time.
+- **New, then caught up:** cards new since your last visit come first, each with the New badge; then the caught-up marker (4.2.14); then nothing until you tap "Show earlier good words", which adds 24 more and keeps the button at the end until there are no more ("That's everything from your friends"). No infinite scroll on Home.
+- **Order never changes under you.** New good words that arrive while you're on Home wait behind the live pill ("2 new good words", F5.6). Comments never move a card; they light the card's dot.
+- **Filters** narrow the cards and keep the marker between new and older.
+- **Primary action:** the Add tab. On Home, **Put in a good word** is primary only in the empty and nothing-new states; otherwise Home has no primary button of its own, so cobalt stays meaningful.
+- **States** (5.12): per PRD F16.3. Loading shows 4 `home` card skeletons; offline keeps loaded cards under the banner; errors use 4.1.19 with Retry.
+- **Scroll position** is restored when returning from title detail.
+
+### 5.20 Friends
+**User problem:** people want their friends' good words without anyone becoming a follower, and without being pushed to add strangers (PRD F16.1).
+
+- **Friends screen** (`/you/friends`, from My list): title "Friends" (`title-l`), then the friend link invite card (4.2.7), then sections with `heading` labels, each hidden when empty: "Asked to be friends" (requests to you), "People from your groups", "Your friends", and "Requested" (ones you sent). Rows are person rows (4.2.16). Share is the screen's one primary action.
+- **Friend link landing** (`/join/[code]`, friend kind): the inviter's avatar (64) and "Priya wants to be friends on Good Word", one sentence ("Friends see the shows and movies each other vouch for."), and **Add Priya as a friend** (primary). Signed out, it carries the context through sign-in like a group invite (5.2), and lands on Home afterward. Never shows their good words before accepting.
+- **After joining a group,** a dismissible inline card on the group's list: "Add the people here you're not friends with yet." with each person's Add, and **Not now**. Shown once per group.
+- **Remove friend:** confirm dialog (5.11): "Remove Jonah as a friend? You'll stop seeing each other's good words, unless you share a group." with Cancel and a danger "Remove friend". Not notified.
+- **"Share your list with friends?"** (once, after the flip, PRD F16.10): a sheet listing your friends (avatars and names), with **Share all** (primary), **Choose** (opens My list in select mode), and **Not now**. It doesn't return once answered.
 
 ---
 
@@ -1070,14 +1129,34 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Take it back | Take it back |
 | Undo toast after taking back | Taken back. **Undo** |
 | Log success, nobody else yet | On your list. Invite friends to share it. **Invite** |
-| Log success, no groups picked | On your list. Only you can see it for now. |
-| Visibility line, no groups | Only you, for now |
+| Log success, nobody picked | On your list. Only you can see it for now. |
+| Visibility line, nobody picked | Only you, for now |
+| Visibility line, friends with none yet | Your friends, once you add some |
 | Log offline | You're offline. Good words need a connection, so try again when you're back. |
 | Log rate limit | That's a lot of good words for one hour. Try again in a little while. |
 | Note label | Anything to add? (optional) |
 | Note placeholder | ep 3 is where it gets you |
-| Visibility line | Visible to College crew · 6 people |
-| Log success | On your list. Priya, Jonah, and 4 others will see it. |
+| Visibility line | Your friends and College crew |
+| Visibility line, groups only | College crew · 6 people |
+| Log success | Your friends and College crew can see this. **Undo** |
+| Composer audience, group | College crew will see this |
+| Composer audience, under a good word | Everyone who can see Jonah's good word will see this |
+| Home caught up | You're all caught up |
+| Home earlier | Show earlier good words |
+| Home, the very end | That's everything from your friends |
+| Home empty, no friends or groups | Start your own list. Then send your friend link to someone whose taste you trust. |
+| Home empty, nothing from anyone | Nothing from your friends yet. |
+| Import roll-up | Luis added 40 titles to their list |
+| Home card, no comments | Say something |
+| Home card, several notes | See all 3 good words |
+| Vouch too | Vouch too |
+| Friend landing | Priya wants to be friends on Good Word |
+| Friend landing action | Add Priya as a friend |
+| Friend link expired | This invite link has expired. Ask Priya for a new one. |
+| After-join prompt | Add the people here you're not friends with yet. |
+| Activity, friend request | Mo wants to be friends |
+| Activity, friend accepted | Mo accepted your friend request |
+| Share prompt | Share your list with friends? |
 | Already on list | Your good word is already on these lists. |
 | Empty group list | Nothing here yet. Be the first to put in a good word. |
 | Empty personal list | No recs yet. What's something you'd tell a friend to watch? |
@@ -1459,6 +1538,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.4.0 (2026-10-06):** Home and friends (PRD v1.4.0, F16). Sydney's calls: **shelf becomes list** and **My Recs becomes My list** (glossary 1.4; the app follows in step 13), three tabs **Home · Add · My list** with the bell kept in the header (4.2.8), and Home replaces All groups in the switcher (4.2.5). Glossary adds Home, friend, and vouch too, and redefines conversation, mention, and activity. Rec card gains the `home` variant (4.2.2). The visibility line becomes the audience picker, with Friends on by default and no friend counts (4.2.6). Friend link variant of the invite card (4.2.7). Comment, composer, and Activity item cover conversations under a good word and friend requests (4.2.10, 4.2.11, 4.2.13); the composer's audience line never names what the viewer can't see, and mention suggestions under a good word show only people you already know. Icon map: Home tab is `House`, friends are `UserPlus`; the shortcut `g` then `h` goes to Home (it was `g` then `s`). New: caught-up marker (4.2.14), import roll-up line (4.2.15), person row (4.2.16), Home (5.19), and Friends (5.20). Sitemap (5.1), core flow (5.4), list browsing (5.6), title detail (5.7), privacy (5.14), conversations (5.17), and microcopy (6.6) updated.
 - **v3.3.1 (2026-10-02):** The Add recs daily-limit message is gone with the limit (PRD v1.3.2).
 - **v3.3.0 (2026-10-01):** Adding recs in bulk (5.18, PRD F15). Sydney kept the word **rec**: the My shelf tab is now **My Recs** (glossary 1.4, tab bar, rail, shortcuts, and every "My shelf ›" path), and its empty state reads "No recs yet". Import microcopy (6.6). The `Images` icon for Add screenshots (3.5).
 - **v3.2.9 (2026-10-01):** A site-wide 404 for unknown URLs, with copy approved by Sydney (6.6): "We couldn't find that page", linking to your shelf when signed in and to the home page when signed out. Sends noindex.
