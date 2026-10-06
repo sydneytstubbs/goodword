@@ -242,7 +242,7 @@ function Invites() {
       <Note>Friend link variant (5.20): your name instead of a group, and Reset link in its menu.</Note>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <FriendLinkCard me={people.priya} link="https://goodword.app/join/f8w4r" onReset={() => {}} />
-        <FriendLinkCard me={people.priya} link="https://goodword.app/join/n2v6t" justReset onReset={() => {}} />
+        <FriendLinkCard me={people.tess} link="https://goodword.app/join/n2v6t" justReset onReset={() => {}} />
       </div>
     </Component>
   );

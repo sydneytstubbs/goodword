@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { track } from "@/lib/events/client";
 import { t } from "@/lib/messages";
 import { Avatar } from "../ui/avatar";
@@ -29,6 +30,8 @@ export function FriendLinkCard({
   onReset?: () => void;
 }) {
   const { showToast } = useToast();
+  const headingId = useId();
+  const nameId = useId();
 
   async function copy() {
     try {
@@ -55,16 +58,18 @@ export function FriendLinkCard({
 
   return (
     <section
-      aria-labelledby="friend-link-heading"
+      aria-labelledby={`${headingId} ${nameId}`}
       className="flex flex-col gap-4 rounded-card border border-subtle bg-surface-raised p-5 shadow-sm fc-edge"
     >
       <div className="flex items-center gap-3">
         <Avatar person={me} size={40} decorative />
         <div className="flex min-w-0 flex-1 flex-col">
-          <h2 id="friend-link-heading" className="truncate text-heading text-default">
+          <h2 id={headingId} className="truncate text-heading text-default">
             {t("friends.linkHeading")}
           </h2>
-          <p className="truncate text-caption text-muted">{me.name}</p>
+          <p id={nameId} className="truncate text-caption text-muted">
+            {me.name}
+          </p>
         </div>
         {onReset && (
           <Menu
