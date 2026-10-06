@@ -68,6 +68,7 @@ export function FilterBar({
   resultCount,
   onChange,
   stuck = false,
+  sortable = true,
 }: {
   filters: Filters;
   options: FilterOptions;
@@ -75,6 +76,8 @@ export function FilterBar({
   onChange: FilterChange;
   /** A hairline once the list scrolls under the bar. */
   stuck?: boolean;
+  /** Home has no sort: it's always newest first (DS 5.19). */
+  sortable?: boolean;
 }) {
   const [moreOpen, setMoreOpen] = useState(false);
   const bar = barServices(options.services, filters);
@@ -104,7 +107,7 @@ export function FilterBar({
           onValueChange={(type) => onChange({ ...filters, type }, "push")}
           className="min-w-0 flex-1 md:w-96 md:flex-none"
         />
-        <SortMenu sort={filters.sort} onSort={(sort) => onChange({ ...filters, sort }, "replace")} />
+        {sortable && <SortMenu sort={filters.sort} onSort={(sort) => onChange({ ...filters, sort }, "replace")} />}
       </div>
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 py-2 scrollbar-none">
         {bar.map((service) => (

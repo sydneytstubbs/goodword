@@ -4,14 +4,17 @@ import NextLink from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { fullTime, nameList, relativeTime } from "@/lib/format";
-import { t } from "@/lib/messages";
+import { t, tRich } from "@/lib/messages";
 import { Icon } from "../icon";
 import { Avatar, AvatarStack } from "../ui/avatar";
+import { Button } from "../ui/button";
+import { ButtonLink } from "../ui/button-link";
+import { TextLink } from "../ui/text-link";
 import { LabelBadge, UnreadDot } from "../ui/badge";
 import { GroupChip, FriendsChip } from "../ui/chip";
 import { Poster } from "./poster";
 import { cardAccessibleName, titleMeta, vouchedByCompact } from "./title-meta";
-import type { GoodWord, Group, Title } from "./types";
+import type { GoodWord, Group, ListCard, Person, Title } from "./types";
 
 // Rec card (DESIGN-SYSTEM.md 4.2.2): one component, three variants.
 // The whole card is one link to the detail screen, named as a sentence.
@@ -228,7 +231,7 @@ export function RecCardDetail({
             </section>
           )}
           {whereToWatch && (
-            <section className="flex flex-col gap-3">
+            <section id="where-to-watch" className="flex scroll-mt-20 flex-col gap-3">
               <SubHeading className="flex items-center gap-2 text-heading text-default">
                 <Icon name="whereToWatch" size={20} />
                 {t("title.whereToWatch")}
@@ -285,3 +288,146 @@ function GoodWordGroups({ groups, friends = false }: { groups: Group[]; friends?
     </span>
   );
 }
+
+/** "Jonah", "Jonah and Tess", "Jonah, Tess and 2 more"; you're "You" (DS 4.2.2 home). */
+export function homeWho(goodWords: GoodWord[], viewerId: string): string {
+  const names = goodWords.map((g) => (g.person.id === viewerId ? t("common.you") : g.person.name));
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return t("home.whoTwo", { a: names[0], b: names[1] });
+  return t("home.whoMore", { a: names[0], b: names[1], count: names.length - 2 });
+}
+
+/**
+ * home (Home, DS 5.19): leads with the friend's words, not the poster. Who
+ * vouched, the newest note in full, the title (the link to title detail),
+ * the conversation row, and the actions. Never likes, counts of views, or
+ * sharing outside Good Word. Several targets, so the card itself isn't a link.
+ */
+export function RecCardHome({
+  card,
+  viewerId,
+  href,
+  conversationHref,
+  whereToWatchHref,
+  group,
+  vouchButton,
+  now,
+}: {
+  card: ListCard;
+  viewerId: string;
+  /** Title detail. */
+  href: string;
+  /** The conversation to open from the conversation row and Comment. */
+  conversationHref: string;
+  whereToWatchHref: string;
+  /** The group it reached you through, when nothing on it came through friendship. */
+  group?: Group;
+  /** Vouch too, or Your good word once you've vouched. */
+  vouchButton: ReactNode;
+  now?: Date;
+}) {
+  const { title, goodWords } = card;
+  const who = homeWho(goodWords, viewerId);
+  const newest = goodWords[0];
+  // Home leads with a friend's words: the newest note from someone else (yours only if theirs are missing).
+  const note = (goodWords.find((g) => g.person.id !== viewerId) ?? newest)?.note;
+  const comments = card.comments?.count ?? 0;
+  const latest = card.latestComment;
+  return (
+    <article aria-label={t("home.cardName", { who, title: title.name })} className="flex flex-col gap-4 border-b border-subtle py-6">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <AvatarStack people={goodWords.map((g) => g.person)} size={24} ring="surface" />
+        <span className="text-body-strong text-default">{who}</span>
+        {newest && (
+          <time dateTime={newest.at.toISOString()} title={fullTime(newest.at)} className="text-caption text-muted">
+            {relativeTime(newest.at, now)}
+          </time>
+        )}
+        {group && <GroupChip group={group} />}
+      </div>
+      {note && <p className="text-quote text-default break-words">“{note}”</p>}
+      {goodWords.length > 1 && (
+        <TextLink href={href} variant="standalone" className="self-start">
+          {t("home.seeAll", { count: goodWords.length })}
+        </TextLink>
+      )}
+      <NextLink href={href} className="group flex items-center gap-3 self-start rounded-control">
+        <span className="relative">
+          <Poster title={title} size="row" />
+          {card.isNew && <LabelBadge className="absolute -top-2 start-1" />}
+        </span>
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="line-clamp-2 text-card-title text-default group-hover:underline">{title.name}</span>
+          <span className="text-caption text-muted">{titleMeta(title)}</span>
+        </span>
+      </NextLink>
+      <NextLink
+        href={conversationHref}
+        className="-mx-2 flex min-h-target items-center gap-2 rounded-control px-2 text-caption text-muted transition duration-fast ease-standard hover:bg-surface-hover"
+      >
+        <Icon name="comment" size={16} className="shrink-0" />
+        {comments > 0 ? (
+          <>
+            <span className="tabular-nums">{t("title.comments", { count: comments })}</span>
+            {card.comments?.unseen && <UnreadDot size={6} label={t("title.unseenComments")} />}
+            {latest && (
+              <span className={cn("min-w-0 truncate", latest.text === null && "italic")}>
+                · {latest.authorName}: {latest.text === null ? t("spoiler.preview") : latest.text}
+              </span>
+            )}
+          </>
+        ) : (
+          <span>{t("home.saySomething")}</span>
+        )}
+      </NextLink>
+      <div className="flex flex-wrap items-center gap-2">
+        <ButtonLink href={conversationHref} variant="ghost" icon="comment">
+          {t("home.comment")}
+          <span className="sr-only"> {title.name}</span>
+        </ButtonLink>
+        {vouchButton}
+        <ButtonLink href={whereToWatchHref} variant="ghost" icon="whereToWatch">
+          {t("title.whereToWatch")}
+          <span className="sr-only"> {title.name}</span>
+        </ButtonLink>
+      </div>
+    </article>
+  );
+}
+
+/** The caught-up marker (DS 4.2.14): Home ends here; earlier good words load only on a tap. */
+export function CaughtUpMarker({ onEarlier, children }: { onEarlier?: () => void; children?: ReactNode }) {
+  return (
+    <div className="flex flex-col items-center gap-3 py-8">
+      <div className="flex w-full items-center gap-3">
+        <span aria-hidden="true" className="flex-1 border-t border-subtle" />
+        <Icon name="vouched" size={16} className="text-muted" />
+        <h2 className="text-body-strong text-default">{t("home.caughtUp")}</h2>
+        <span aria-hidden="true" className="flex-1 border-t border-subtle" />
+      </div>
+      {children}
+      {onEarlier && (
+        <Button variant="ghost" onClick={onEarlier}>
+          {t("home.earlier")}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/** One quiet line for a friend's import (DS 4.2.15), linking to their person view. */
+export function ImportRollupLine({ person, count, at, now }: { person: Person; count: number; at: Date; now?: Date }) {
+  return (
+    <NextLink
+      href={`/people/${person.id}`}
+      className="-mx-2 flex min-h-target items-center gap-3 rounded-control border-b border-subtle px-2 py-3 transition duration-fast ease-standard hover:bg-surface-hover"
+    >
+      <Avatar person={person} size={24} decorative />
+      <span className="min-w-0 flex-1 text-body text-default">{tRich("home.rollup", { name: person.name, count })}</span>
+      <time dateTime={at.toISOString()} title={fullTime(at)} className="text-caption text-muted">
+        {relativeTime(at, now)}
+      </time>
+    </NextLink>
+  );
+}
+

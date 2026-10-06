@@ -10,7 +10,7 @@ import { FriendLinkCard } from "@/components/domain/friend-link-card";
 import { InviteCard } from "@/components/domain/invite-card";
 import { PersonRow } from "@/components/domain/person-row";
 import { Poster } from "@/components/domain/poster";
-import { RecCardDetail, RecCardGrid, RecCardRow, VouchedByRow } from "@/components/domain/rec-card";
+import { CaughtUpMarker, ImportRollupLine, RecCardDetail, RecCardGrid, RecCardHome, RecCardRow, VouchedByRow } from "@/components/domain/rec-card";
 import { RobotGuessCard } from "@/components/domain/robot-guess-card";
 import { SpoilerCover } from "@/components/domain/spoiler-cover";
 import { TitleSearch } from "@/components/domain/title-search";
@@ -163,7 +163,68 @@ function RecCards() {
       <Specimen label="Vouched-by row, with your own good word as “You”">
         <VouchedByRow goodWords={[{ person: viewer, at: NOW }, ...goodWords.nightFerry]} viewerId={viewer.id} />
       </Specimen>
+      <Specimen label="home: who, the newest note in full, the title row (the link to title detail), the conversation row, and Comment, Vouch too, Where to watch. The card isn't a link; it's an article named by its first line" wide>
+        <div className="w-full max-w-reading">
+          <RecCardHome
+            card={{
+              title: titles.nightFerry,
+              goodWords: goodWords.nightFerry,
+              isNew: true,
+              comments: { count: 12, unseen: true },
+              latestComment: { authorName: people.tess.name, text: "the lighthouse bit got me", groupId: groups.college.id, commentId: "c1" },
+            }}
+            viewerId={viewer.id}
+            href="#rec-card"
+            conversationHref="#rec-card"
+            whereToWatchHref="#rec-card"
+            vouchButton={<VouchButton vouched={false} putLabel={t("vouch.vouchToo")} titleName={titles.nightFerry.name} {...handlers} />}
+            now={NOW}
+          />
+          <RecCardHome
+            card={{ title: titles.lowTide, goodWords: [{ person: viewer, at: NOW }, { person: people.bea, note: "comfort rewatch, every time", at: NOW }] }}
+            viewerId={viewer.id}
+            href="#rec-card"
+            conversationHref="#rec-card"
+            whereToWatchHref="#rec-card"
+            group={groups.college}
+            vouchButton={<VouchButton vouched {...handlers} />}
+            now={NOW}
+          />
+        </div>
+      </Specimen>
     </Component>
+  );
+}
+
+function HomeParts() {
+  return (
+    <>
+      <Component id="caught-up" title="Caught-up marker" spec="4.2.14">
+        <SpecimenGrid>
+          <Specimen label="After new cards: earlier ones load only on a tap">
+            <div className="w-full">
+              <CaughtUpMarker onEarlier={() => {}} />
+            </div>
+          </Specimen>
+          <Specimen label="Nothing new: at the top, with Put in a good word">
+            <div className="w-full">
+              <CaughtUpMarker onEarlier={() => {}}>
+                <Button variant="primary" size="lg" icon="add">
+                  {t("vouch.put")}
+                </Button>
+              </CaughtUpMarker>
+            </div>
+          </Specimen>
+        </SpecimenGrid>
+      </Component>
+      <Component id="import-rollup" title="Import roll-up line" spec="4.2.15">
+        <Specimen label="One line per import, counting only what you can see; links to their person view" wide>
+          <div className="w-full max-w-reading">
+            <ImportRollupLine person={people.luis} count={40} at={NOW} now={NOW} />
+          </div>
+        </Specimen>
+      </Component>
+    </>
   );
 }
 
@@ -197,6 +258,9 @@ function Switcher() {
           onSelect={setCurrent}
           newCounts={{ [groups.girls.id]: 3, [groups.book.id]: 1 }}
         />
+      </Specimen>
+      <Specimen label="With Home (behind the home_enabled flag): Home replaces All groups at the top">
+        <GroupSwitcher groups={switcherGroups} currentId="home" hrefFor={(id) => `/list/${id}`} onSelect={() => {}} home />
       </Specimen>
     </Component>
   );
@@ -308,6 +372,11 @@ function Bars() {
         <Specimen label="Tab bar, a group has new good words (dot on List)" wide>
           <Frame>
             <TabBar placement="inline" current="you" listDot onAdd={add} label="Tab bar with new good words preview" />
+          </Frame>
+        </Specimen>
+        <Specimen label="Tab bar with Home (behind the home_enabled flag)" wide>
+          <Frame>
+            <TabBar placement="inline" current="home" onAdd={add} label="Tab bar with Home preview" home />
           </Frame>
         </Specimen>
         <Specimen label="Rail (1024px and up)" wide>
@@ -536,6 +605,7 @@ export function Domain() {
     <Section id="domain" title="Domain components" intro="The components that are Good Word (Section 4.2). All content is invented.">
       <Posters />
       <RecCards />
+      <HomeParts />
       <VouchButtons />
       <Search />
       <Switcher />

@@ -27,7 +27,7 @@ const RECENT_KEY = "gw:recent-searches";
 const DRAFT_KEY = "gw:draft:";
 
 /** Where Add was opened from, for measurement (PRD 11.2). */
-export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state" | "email";
+export type AddEntryPoint = "tab" | "rail" | "shortcut" | "title" | "search_row" | "join_prompt" | "empty_state" | "email" | "home_card";
 export type OpenAddOptions = { title?: Title; source?: GoodWordSource; entryPoint?: AddEntryPoint };
 
 type AddContextValue = {

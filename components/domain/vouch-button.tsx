@@ -30,6 +30,8 @@ export type VouchButtonProps = {
    * title completes its accessible name ("Add The Night Ferry").
    */
   titleName?: string;
+  /** Home's card says "Vouch too" before you've vouched (DS 4.2.2 home). */
+  putLabel?: string;
 };
 
 function CrossFadeIcon({ vouched }: { vouched: boolean }) {
@@ -60,6 +62,7 @@ export function VouchButton({
   withFriends = false,
   fullWidth,
   titleName,
+  putLabel,
 }: VouchButtonProps) {
   const base = cn(buttonBase, buttonSizes[size], fullWidth && "w-full");
 
@@ -67,7 +70,12 @@ export function VouchButton({
     return (
       <button type="button" aria-pressed={false} onClick={onPut} className={cn(base, buttonVariants[emphasis])}>
         <CrossFadeIcon vouched={false} />
-        {size === "md" && titleName ? (
+        {putLabel ? (
+          <>
+            {putLabel}
+            {titleName && <span className="sr-only"> {titleName}</span>}
+          </>
+        ) : size === "md" && titleName ? (
           <>
             <span className="md:hidden">
               {t("vouch.putShort")}

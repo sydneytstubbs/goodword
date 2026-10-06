@@ -68,8 +68,10 @@ test.describe("friends", () => {
 
     // He signs in from the email; the link is remembered.
     await openMagicLink(jonahPage, jonah, `${new URL(link).pathname}/accept`);
-    await jonahPage.waitForURL("**/you/friends");
+    // He lands on Home (DS 5.20), and Priya is on his Friends screen.
+    await jonahPage.waitForURL("**/home");
     await expect(jonahPage.getByText("You and Priya are friends now.")).toBeVisible();
+    await jonahPage.goto("/you/friends");
     await expect(jonahPage.getByRole("region", { name: "Your friends" }).getByText("Priya", { exact: true })).toBeVisible();
     expect(Date.now() - started).toBeLessThan(90_000);
 

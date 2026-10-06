@@ -13,11 +13,13 @@ import { TextLink } from "../ui/text-link";
 import type { Group, Person } from "./types";
 
 // Group switcher (DESIGN-SYSTEM.md 4.2.5): the top-bar control naming the
-// current list. "All groups" is an explicit, labeled choice.
+// current list. "All groups" is an explicit, labeled choice; with Home (the
+// home_enabled flag, PRD F16.8), Home takes its place at the top.
 
 export type SwitcherGroup = Group & { members: Person[] };
 
 export const ALL_GROUPS = "all";
+export const HOME = "home";
 
 export function GroupSwitcher({
   groups,
@@ -25,6 +27,7 @@ export function GroupSwitcher({
   hrefFor,
   onSelect,
   newCounts = {},
+  home = false,
 }: {
   /** Sorted by recent activity. */
   groups: SwitcherGroup[];
@@ -34,10 +37,13 @@ export function GroupSwitcher({
   onSelect?: (groupId: string) => void;
   /** New good words per group since you last looked (PRD F5.5). */
   newCounts?: Record<string, number>;
+  /** Home replaces All groups (PRD F16.8). */
+  home?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const current = currentId === ALL_GROUPS ? t("groups.allGroups") : groups.find((g) => g.id === currentId)?.name;
-  const rows = [{ id: ALL_GROUPS, name: t("groups.allGroups"), members: [] as Person[] }, ...groups];
+  const top = home ? { id: HOME, name: t("nav.home"), members: [] as Person[] } : { id: ALL_GROUPS, name: t("groups.allGroups"), members: [] as Person[] };
+  const current = currentId === top.id ? top.name : groups.find((g) => g.id === currentId)?.name;
+  const rows = [top, ...groups];
 
   return (
     <>
@@ -59,7 +65,7 @@ export function GroupSwitcher({
             return (
               <li key={group.id}>
                 <NextLink
-                  href={hrefFor(group.id)}
+                  href={group.id === HOME ? "/home" : hrefFor(group.id)}
                   aria-current={isCurrent ? "true" : undefined}
                   onClick={(e) => {
                     if (onSelect) {
@@ -73,8 +79,8 @@ export function GroupSwitcher({
                     isCurrent && "bg-surface-sunken fc-selected",
                   )}
                 >
-                  {group.id === ALL_GROUPS ? (
-                    <Icon name="group" size={20} className="text-muted" />
+                  {group.id === ALL_GROUPS || group.id === HOME ? (
+                    <Icon name={group.id === HOME ? "home" : "group"} size={20} className="text-muted" />
                   ) : (
                     <span className="grid size-5 place-items-center">
                       <GroupDot group={group} />

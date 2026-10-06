@@ -43,7 +43,7 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
         <ActivityCountProvider userId={viewer.id} initialCount={activityCount}>
           <AddProvider>
             <ShellChrome>{children}</ShellChrome>
-            <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} />
+            <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} home={Boolean(profile?.data?.home_enabled)} />
           </AddProvider>
         </ActivityCountProvider>
       </ListNewsProvider>

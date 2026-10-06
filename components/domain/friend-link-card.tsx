@@ -22,6 +22,7 @@ export function FriendLinkCard({
   link,
   justReset = false,
   onReset,
+  shareVariant = "primary",
 }: {
   me: Person;
   link: string;
@@ -29,6 +30,8 @@ export function FriendLinkCard({
   justReset?: boolean;
   /** Opens the reset confirmation; absent in previews. */
   onReset?: () => void;
+  /** Share is primary unless something else on the screen is (Home's empty state). */
+  shareVariant?: "primary" | "secondary";
 }) {
   const { showToast } = useToast();
   const headingId = useId();
@@ -85,7 +88,7 @@ export function FriendLinkCard({
         <Button variant="secondary" size="lg" icon="copyLink" fullWidth onClick={copy}>
           {t("invite.copy")}
         </Button>
-        <Button variant="primary" size="lg" icon="share" fullWidth onClick={share}>
+        <Button variant={shareVariant} size="lg" icon="share" fullWidth onClick={share}>
           {t("invite.share")}
         </Button>
       </div>

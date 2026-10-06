@@ -19,7 +19,7 @@ import { Wordmark } from "./wordmark";
 // the page flow, for /styleguide.
 
 type Placement = "fixed" | "inline";
-export type Destination = "list" | "activity" | "you";
+export type Destination = "home" | "list" | "activity" | "you";
 
 /** Icon-only link with the icon button's look (the Activity bell navigates). */
 function IconLink({ href, icon, label, badge }: { href: string; icon: IconName; label: string; badge?: ReactNode }) {
@@ -95,12 +95,14 @@ export function TopBar({
   );
 }
 
-const tabs: Array<{ id: Exclude<Destination, "activity">; href: string; icon: IconName; label: () => string }> = [
-  { id: "list", href: "/list", icon: "group", label: () => t("nav.groups") },
-  { id: "you", href: "/you", icon: "you", label: () => t("nav.you") },
-];
+type Tab = { id: Exclude<Destination, "activity">; href: string; icon: IconName; label: () => string };
 
-function TabLink({ tab, current, dot = false }: { tab: (typeof tabs)[number]; current: boolean; dot?: boolean }) {
+// Until the flip (PRD F16.10), the first tab is Groups; with the home_enabled flag, it's Home.
+const groupsTab: Tab = { id: "list", href: "/list", icon: "group", label: () => t("nav.groups") };
+const homeTab: Tab = { id: "home", href: "/home", icon: "home", label: () => t("nav.home") };
+const youTab: Tab = { id: "you", href: "/you", icon: "you", label: () => t("nav.you") };
+
+function TabLink({ tab, current, dot = false }: { tab: Tab; current: boolean; dot?: boolean }) {
   return (
     <NextLink
       href={tab.href}
@@ -125,6 +127,7 @@ export function TabBar({
   onAdd,
   placement = "fixed",
   label,
+  home = false,
 }: {
   current?: Exclude<Destination, "activity">;
   /** Some group has new good words since you last looked (PRD F5.5). */
@@ -133,7 +136,10 @@ export function TabBar({
   placement?: Placement;
   /** Landmark name; defaults to "Main". */
   label?: string;
+  /** The home_enabled flag: Home is the first tab (PRD F16.8). */
+  home?: boolean;
 }) {
+  const first = home ? homeTab : groupsTab;
   return (
     <nav
       aria-label={label ?? t("nav.main")}
@@ -143,7 +149,7 @@ export function TabBar({
       )}
     >
       <div className="flex h-tabbar items-center">
-        <TabLink tab={tabs[0]} current={current === "list"} dot={listDot} />
+        <TabLink tab={first} current={current === first.id} dot={listDot} />
         <div className="flex flex-1 justify-center">
           <button
             type="button"
@@ -154,17 +160,18 @@ export function TabBar({
             <Icon name="add" size={24} />
           </button>
         </div>
-        <TabLink tab={tabs[1]} current={current === "you"} />
+        <TabLink tab={youTab} current={current === "you"} />
       </div>
     </nav>
   );
 }
 
-const railLinks: Array<{ id: Destination; href: string; icon: IconName; label: () => string }> = [
-  { id: "list", href: "/list", icon: "group", label: () => t("nav.groups") },
-  { id: "activity", href: "/activity", icon: "activity", label: () => t("nav.activity") },
-  { id: "you", href: "/you", icon: "you", label: () => t("nav.you") },
-];
+const activityLink: { id: Destination; href: string; icon: IconName; label: () => string } = {
+  id: "activity",
+  href: "/activity",
+  icon: "activity",
+  label: () => t("nav.activity"),
+};
 
 const railRow =
   "flex h-10 items-center gap-3 rounded-control px-3 text-body transition duration-fast ease-standard hover:bg-surface-hover active:bg-surface-pressed";
@@ -179,6 +186,7 @@ export function Rail({
   placement = "fixed",
   label,
   hide = [],
+  home = false,
 }: {
   current?: Destination;
   activityCount?: number;
@@ -192,7 +200,10 @@ export function Rail({
   label?: string;
   /** Links to leave out while their screens are still being built. */
   hide?: Array<Destination | "help">;
+  /** The home_enabled flag: Home leads the rail (PRD F16.8). */
+  home?: boolean;
 }) {
+  const railLinks = [home ? homeTab : groupsTab, activityLink, youTab];
   return (
     <nav
       aria-label={label ?? t("nav.main")}
@@ -201,7 +212,7 @@ export function Rail({
         placement === "fixed" ? "fixed inset-y-0 start-0 z-nav hidden lg:flex" : "min-h-120",
       )}
     >
-      <NextLink href="/list" className="self-start rounded-control px-2">
+      <NextLink href={home ? "/home" : "/list"} className="self-start rounded-control px-2">
         <Wordmark />
       </NextLink>
       <Button variant="primary" size="md" icon="add" fullWidth onClick={onAdd}>
@@ -211,8 +222,8 @@ export function Rail({
         {railLinks.filter((link) => !hide.includes(link.id)).map((link) => {
           const isCurrent = current === link.id;
           const count = link.id === "activity" ? activityCount : 0;
-          // On a group's list the group row is the page; List is the section it's in.
-          const ariaCurrent = isCurrent ? (link.id === "list" && currentGroupId ? "true" : "page") : undefined;
+          // On a group's list the group row is the page; Groups (or Home) is the section it's in.
+          const ariaCurrent = isCurrent ? ((link.id === "list" || link.id === "home") && currentGroupId ? "true" : "page") : undefined;
           return (
             <li key={link.id}>
               <NextLink
@@ -223,7 +234,7 @@ export function Rail({
                 <Icon name={link.icon} size={20} weight={isCurrent ? "fill" : "regular"} />
                 <span className="flex-1">{link.label()}</span>
                 {count > 0 && <CountBadge count={count} />}
-                {link.id === "list" && Object.values(newCounts).some((n) => n > 0) && <UnreadDot label={t("list.hasNew")} />}
+                {(link.id === "list" || link.id === "home") && Object.values(newCounts).some((n) => n > 0) && <UnreadDot label={t("list.hasNew")} />}
               </NextLink>
             </li>
           );

@@ -11,14 +11,15 @@ import { useGoodWords } from "../good-words";
 // themselves, so nothing jumps under your thumb: a pill counts them, and
 // tapping it scrolls to the top and brings them in. Your own show at once
 // through the usual optimistic update. A good word shared into several of
-// your groups counts once.
+// your groups counts once. Home (PRD F16.3) also listens to each friend, and
+// leaves imports out, since they never make a card there.
 
-function ListTopic({ groupId, onGoodWord }: { groupId: string; onGoodWord: (payload: Record<string, unknown>) => void }) {
-  useBroadcast(`shelf:${groupId}`, "good_word", onGoodWord);
+function Topic({ topic, onGoodWord }: { topic: string; onGoodWord: (payload: Record<string, unknown>) => void }) {
+  useBroadcast(topic, "good_word", onGoodWord);
   return null;
 }
 
-export function LiveList({ groupIds }: { groupIds: string[] }) {
+export function LiveList({ groupIds, friendIds = [], home = false }: { groupIds: string[]; friendIds?: string[]; home?: boolean }) {
   const router = useRouter();
   const { viewer } = useGoodWords();
   const seen = useRef(new Set<string>());
@@ -28,10 +29,11 @@ export function LiveList({ groupIds }: { groupIds: string[] }) {
     (payload: Record<string, unknown>) => {
       const id = typeof payload.good_word_id === "string" ? payload.good_word_id : null;
       if (!id || payload.user_id === viewer.id || seen.current.has(id)) return;
+      if (home && payload.source === "import") return;
       seen.current.add(id);
       setCount((c) => c + 1);
     },
-    [viewer.id],
+    [viewer.id, home],
   );
 
   const show = () => {
@@ -42,8 +44,8 @@ export function LiveList({ groupIds }: { groupIds: string[] }) {
 
   return (
     <>
-      {groupIds.map((id) => (
-        <ListTopic key={id} groupId={id} onGoodWord={onGoodWord} />
+      {[...groupIds.map((id) => `shelf:${id}`), ...friendIds.map((id) => `friends:${id}`)].map((topic) => (
+        <Topic key={topic} topic={topic} onGoodWord={onGoodWord} />
       ))}
       <div aria-live="polite" className="pointer-events-none sticky top-2 z-sticky flex justify-center">
         {count > 0 && <NewGoodWordsPill count={count} onShow={show} />}

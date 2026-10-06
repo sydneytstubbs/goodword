@@ -10,16 +10,18 @@ import { NoGroups } from "./no-groups";
 export const metadata: Metadata = { title: "List · Good Word" };
 
 // The List tab: the last viewed list on this device, else the most recently
-// joined group, else the no-groups empty state (PRD 6.1, F10).
+// joined group, else the no-groups empty state (PRD 6.1, F10). With Home (the
+// home_enabled flag, PRD F16.8), there's no Groups tab: /list goes Home.
 export default async function ListPage({ searchParams }: PageProps<"/list">) {
-  const { user } = await requireOnboardedUser("/list");
-  const groups = await listMyGroups(user.id);
-  const last = (await cookies()).get(LAST_LIST_COOKIE)?.value;
-  const target = groups.find((g) => g.id === last) ?? groups[0];
+  const { user, profile } = await requireOnboardedUser("/list");
   // Keep an email's ref=digest (and the weekend prompt's add=1, which opens
   // Add) through the redirect.
   const { ref, add } = await searchParams;
   const keep = new URLSearchParams({ ...(add === "1" ? { add } : {}), ...(typeof ref === "string" ? { ref } : {}) }).toString();
+  if (profile.home_enabled) redirect(`/home${keep ? `?${keep}` : ""}`);
+  const groups = await listMyGroups(user.id);
+  const last = (await cookies()).get(LAST_LIST_COOKIE)?.value;
+  const target = groups.find((g) => g.id === last) ?? groups[0];
   if (target) redirect(`/list/${target.id}${keep ? `?${keep}` : ""}`);
 
   return (

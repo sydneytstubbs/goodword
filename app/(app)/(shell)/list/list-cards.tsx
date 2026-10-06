@@ -65,7 +65,7 @@ function useInfiniteScroll(onMore: (() => void) | null) {
 }
 
 /** Whether the filter bar is stuck under the top of the screen (its hairline shows). */
-function useStuck() {
+export function useStuck() {
   const ref = useRef<HTMLDivElement>(null);
   const [stuck, setStuck] = useState(false);
   useEffect(() => {
@@ -210,7 +210,7 @@ export function ListCards({
   );
 }
 
-function NoResults({
+export function NoResults({
   filters,
   services,
   mine,
