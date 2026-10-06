@@ -251,7 +251,9 @@
     "mention": "<b>{actor}</b> mentioned you on <b>{title}</b> in {group}",
     "comment": "<b>{actor}</b> commented on <b>{title}</b> in {group}",
     "started": "<b>{actor}</b> started a conversation about <b>{title}</b> in {group}",
-    "join": "<b>{actor}</b> joined {group}"
+    "join": "<b>{actor}</b> joined {group}",
+    "friendRequest": "<b>{actor}</b> wants to be friends",
+    "friendAccepted": "<b>{actor}</b> accepted your friend request"
   },
   "conversation": {
     "previewHeading": "Talk about it in {group}",
@@ -487,7 +489,8 @@
     "settingsLink": "Settings",
     "helpLink": "Help",
     "homeScreenTip": "Add Good Word to your Home Screen for one-tap access. In Safari, tap Share, then Add to Home Screen.",
-    "homeScreenDismiss": "Dismiss"
+    "homeScreenDismiss": "Dismiss",
+    "friendsLink": "Friends"
   },
   "join": {
     "invited": "{name} invited you to {group}.",
@@ -508,7 +511,10 @@
     "alreadyMember": "You're already in {group}.",
     "left": "You left {group}.",
     "deleted": "{group} was deleted.",
-    "accountDeleted": "Your account is deleted. Thanks for being part of Good Word."
+    "accountDeleted": "Your account is deleted. Thanks for being part of Good Word.",
+    "nowFriends": "You and {name} are friends now.",
+    "alreadyFriends": "You and {name} are already friends.",
+    "ownFriendLink": "That's your own friend link. Send it to someone whose taste you trust."
   },
   "whereToWatch": {
     "stream": "Stream",
@@ -892,5 +898,54 @@
     "unfinishedBody": "Start again from Add recs. Nothing was added.",
     "startAgain": "Add recs",
     "loadErrorTitle": "This didn't load"
+  },
+  "friends": {
+    "title": "Friends",
+    "adding": "Adding {name} as a friend",
+    "linkHeading": "Your friend link",
+    "linkLabel": "Friend link",
+    "shareText": "Be friends with me on Good Word, where we share the shows and movies we'd vouch for.",
+    "linkMenu": "More actions for your friend link",
+    "resetLink": "Reset link",
+    "resetTitle": "Reset your friend link?",
+    "resetBody": "The old link stops working right away. Anyone who hasn't used it yet will need the new one.",
+    "resetDone": "Link reset. The old link no longer works.",
+    "incomingHeading": "Asked to be friends",
+    "fromGroupsHeading": "People from your groups",
+    "friendsHeading": "Your friends",
+    "sentHeading": "Requested",
+    "wantsToBeFriends": "Wants to be friends",
+    "requested": "Requested",
+    "inGroup": "In {group}",
+    "accept": "Accept",
+    "acceptName": "Accept {name}",
+    "decline": "Decline",
+    "declineName": "Decline {name}",
+    "add": "Add",
+    "addName": "Add {name}",
+    "cancel": "Cancel",
+    "cancelName": "Cancel request to {name}",
+    "menu": "More actions for {name}",
+    "remove": "Remove friend",
+    "removeTitle": "Remove {name} as a friend?",
+    "removeBody": "You'll stop seeing each other's good words, unless you share a group.",
+    "removeCancel": "Cancel",
+    "removed": "Removed {name} as a friend.",
+    "requestSent": "Request sent to {name}.",
+    "nowFriends": "You and {name} are friends now.",
+    "emptyTitle": "No friends yet",
+    "emptyBody": "Send your friend link to someone whose taste you trust.",
+    "loading": "Loading friends",
+    "errorTitle": "Friends didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute.",
+    "offline": "You're offline. Friend requests need a connection, so try again when you're back.",
+    "failed": "That didn't save. Check your connection and try again.",
+    "landingTitle": "{name} wants to be friends on Good Word",
+    "landingBody": "Friends see the shows and movies each other vouch for.",
+    "landingAction": "Add {name} as a friend",
+    "landingPageTitle": "Be friends · Good Word",
+    "promptTitle": "Add the people here you're not friends with yet.",
+    "promptNotNow": "Not now",
+    "promptLabel": "Add friends from {group}"
   }
 }

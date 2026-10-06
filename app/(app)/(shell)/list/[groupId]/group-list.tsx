@@ -18,6 +18,8 @@ import { useGoodWords } from "../../good-words";
 import { ListBar } from "../list-bar";
 import { useMarkViewed } from "../../list-news";
 import { ListCards } from "../list-cards";
+import type { FriendPerson } from "@/lib/friends/queries";
+import { FriendPrompt } from "./friend-prompt";
 import { JoinPrompt } from "./join-prompt";
 import { WelcomeBanner } from "./welcome-banner";
 
@@ -30,6 +32,7 @@ export function GroupList({
   inviteLink,
   showWelcome,
   showJoinPrompt,
+  friendPrompt = [],
 }: {
   groups: SwitcherGroup[];
   group: SwitcherGroup;
@@ -38,6 +41,8 @@ export function GroupList({
   showWelcome: boolean;
   /** No good words from you here yet, and the prompt hasn't been dismissed (F5.7). */
   showJoinPrompt: boolean;
+  /** People here you could add as friends (PRD F16.1); empty unless the flag is on. */
+  friendPrompt?: FriendPerson[];
 }) {
   const { openAdd } = useAdd();
   const { overlays } = useGoodWords();
@@ -57,6 +62,7 @@ export function GroupList({
       <ListBar groups={groups} currentId={group.id} onInvite={openInvite} />
       <LiveList groupIds={[group.id]} />
       {welcomeFor === group.id && <WelcomeBanner groupId={group.id} groupName={group.name} />}
+      <FriendPrompt key={group.id} groupId={group.id} groupName={group.name} people={friendPrompt} />
       <header className="flex flex-col gap-3">
         <h1 className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{group.name}</h1>
         <NextLink

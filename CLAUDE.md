@@ -42,7 +42,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 11 | Build your list (add recs in bulk) | PRD 12, slice 11; F15 | Done |
 | 12 | Home and friends: docs and schema check (no app code) | PRD 12, slice 12; F16 | Done |
 | 13 | Rename shelf to list, My Recs to My list (copy, routes, code) | PRD 12, slice 13 | In review |
-| 14 | Friends | PRD 12, slice 14; F16.1 | Not started |
+| 14 | Friends | PRD 12, slice 14; F16.1 | In review |
 | 15 | Friends as an audience | PRD 12, slice 15; F16.2 | Not started |
 | 16 | One card query | PRD 12, slice 16; F16.11 | Not started |
 | 17 | Home | PRD 12, slice 17; F16.3 | Not started |

@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { t } from "@/lib/messages";
 
 export type Member = { id: string; name: string; role: "owner" | "member"; joinedAt: string };
 
@@ -13,7 +14,12 @@ export type GroupDetail = {
   ownerId: string;
   members: Member[];
   inviteCode: string | null;
-  me: { role: "owner" | "member"; welcomeSeenAt: string | null; joinPromptDismissedAt: string | null };
+  me: {
+    role: "owner" | "member";
+    welcomeSeenAt: string | null;
+    joinPromptDismissedAt: string | null;
+    friendPromptDismissedAt: string | null;
+  };
 };
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
@@ -76,7 +82,7 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
   if (!group) return null;
 
   const [{ data: rows }, { data: invite }] = await Promise.all([
-    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at, join_prompt_dismissed_at").eq("group_id", groupId).order("joined_at"),
+    supabase.from("group_members").select("user_id, role, joined_at, welcome_seen_at, join_prompt_dismissed_at, friend_prompt_dismissed_at").eq("group_id", groupId).order("joined_at"),
     supabase.from("invites").select("code").eq("group_id", groupId).is("revoked_at", null).maybeSingle(),
   ]);
   const nameOf = await names(supabase, (rows ?? []).map((r) => r.user_id as string));
@@ -92,6 +98,7 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
       role: mine.role as "owner" | "member",
       welcomeSeenAt: mine.welcome_seen_at as string | null,
       joinPromptDismissedAt: mine.join_prompt_dismissed_at as string | null,
+      friendPromptDismissedAt: mine.friend_prompt_dismissed_at as string | null,
     },
     members: (rows ?? []).map((r) => ({
       id: r.user_id as string,
@@ -104,27 +111,39 @@ export const getGroup = cache(async (groupId: string, userId: string): Promise<G
 
 export type InvitePreview =
   | { status: "invalid" }
-  | { status: "expired"; ownerName: string }
+  | { status: "expired"; kind: "group" | "friend"; ownerName: string }
   | {
       status: "active";
+      kind: "group";
       groupId: string;
       groupName: string;
       memberCount: number;
       inviter: { id: string; name: string };
-    };
+    }
+  | { status: "active"; kind: "friend"; inviter: { id: string; name: string } };
 
 const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? "";
 
 /**
- * What an invite link shows before joining (F2.4): inviter, group name, and
- * member count. Never the list. Service role, because the visitor isn't a
- * member yet; only these fields leave this function.
+ * What an invite link shows before anything happens (F2.4, F16.1). A group
+ * invite: inviter, group name, and member count, never the list. A friend
+ * link: whose link it is, never their good words. Service role, because the
+ * visitor isn't a member or friend yet; only these fields leave this function.
  */
 export const getInvitePreview = cache(async (code: string): Promise<InvitePreview> => {
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(code)) return { status: "invalid" };
   const admin = createAdminClient();
-  const { data: invite } = await admin.from("invites").select("group_id, created_by, revoked_at").eq("code", code).maybeSingle();
+  const { data: invite } = await admin.from("invites").select("kind, group_id, created_by, revoked_at").eq("code", code).maybeSingle();
   if (!invite) return { status: "invalid" };
+
+  if (invite.kind === "friend") {
+    // A link whose person deleted their account is dead.
+    if (!invite.created_by) return { status: "invalid" };
+    const { data: profile } = await admin.from("profiles").select("display_name").eq("user_id", invite.created_by).maybeSingle();
+    const name = firstName((profile?.display_name as string | null) ?? "");
+    if (invite.revoked_at) return { status: "expired", kind: "friend", ownerName: name };
+    return { status: "active", kind: "friend", inviter: { id: invite.created_by as string, name } };
+  }
 
   const { data: group } = await admin.from("groups").select("id, name, owner_id").eq("id", invite.group_id).maybeSingle();
   if (!group) return { status: "invalid" };
@@ -136,9 +155,10 @@ export const getInvitePreview = cache(async (code: string): Promise<InvitePrevie
   const { data: profiles } = await admin.from("profiles").select("user_id, display_name").in("user_id", [inviterId, group.owner_id]);
   const nameOf = (id: string) => firstName((profiles ?? []).find((p) => p.user_id === id)?.display_name ?? "");
 
-  if (invite.revoked_at) return { status: "expired", ownerName: nameOf(group.owner_id as string) };
+  if (invite.revoked_at) return { status: "expired", kind: "group", ownerName: nameOf(group.owner_id as string) };
   return {
     status: "active",
+    kind: "group",
     groupId: group.id as string,
     groupName: group.name as string,
     memberCount: memberIds.size,
@@ -146,10 +166,14 @@ export const getInvitePreview = cache(async (code: string): Promise<InvitePrevie
   };
 });
 
-/** "Joining College crew" on sign-in screens when the user is on their way to join (DS 5.2). */
+/**
+ * The line kept on sign-in screens while someone is on their way in (DS 5.2,
+ * 5.20): "Joining College crew", or "Adding Priya as a friend".
+ */
 export async function inviteContext(next: string): Promise<string | null> {
   const match = next.match(/^\/join\/([A-Za-z0-9_-]+)(?:\/accept)?(?:[?#].*)?$/);
   if (!match) return null;
   const preview = await getInvitePreview(match[1]);
-  return preview.status === "active" ? preview.groupName : null;
+  if (preview.status !== "active") return null;
+  return preview.kind === "group" ? t("join.joining", { group: preview.groupName }) : t("friends.adding", { name: preview.inviter.name });
 }

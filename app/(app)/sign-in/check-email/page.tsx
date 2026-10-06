@@ -25,7 +25,7 @@ export default async function CheckEmailPage({ searchParams }: PageProps<"/sign-
       {joining && (
         <p className="flex items-center gap-2 text-label text-muted">
           <Icon name="group" size={20} />
-          {t("join.joining", { group: joining })}
+          {joining}
         </p>
       )}
       <div className="flex flex-col gap-2">

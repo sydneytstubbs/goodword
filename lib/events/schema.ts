@@ -12,7 +12,7 @@ type Definition = { client: boolean; props: Record<string, Prop> };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const EVENTS = {
-  invite_link_opened: { client: false, props: { group_id: "uuid", signed_in: "bool" } },
+  invite_link_opened: { client: false, props: { kind: ["group", "friend"], group_id: "uuid", signed_in: "bool" } },
   invite_shared: { client: true, props: { group_id: "uuid", method: ["share_sheet", "copy"] } },
   group_created: { client: false, props: { group_id: "uuid" } },
   group_joined: { client: false, props: { group_id: "uuid", via: ["invite"] } },
@@ -55,6 +55,10 @@ export const EVENTS = {
   mention_notified: { client: false, props: { channel: ["activity", "email"] } },
   activity_opened: { client: false, props: { unread_count: "int" } },
   spoiler_revealed: { client: false, props: {} },
+  friend_link_shared: { client: true, props: { method: ["share_sheet", "copy"] } },
+  friend_request_sent: { client: false, props: { from: ["friends_screen", "group_prompt"] } },
+  friend_added: { client: false, props: { via: ["link", "request", "seeded"] } },
+  friend_removed: { client: false, props: {} },
   import_started: {
     client: false,
     props: { method: ["text", "screenshots", "both"], screenshot_count: "int", text_length_bucket: ["none", "short", "medium", "long"] },

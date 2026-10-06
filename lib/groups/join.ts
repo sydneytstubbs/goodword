@@ -12,7 +12,8 @@ const WINDOW_MS = 10 * 60 * 1000;
 const PER_IP = 20;
 const PER_CODE = 60;
 
-async function rateLimited(code: string): Promise<boolean> {
+/** Per IP and per code; friend links share it (F16.1). Records the attempt. */
+export async function rateLimited(code: string): Promise<boolean> {
   const forwarded = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const ipHash = createHash("sha256").update(forwarded).digest("hex");
   const since = new Date(Date.now() - WINDOW_MS).toISOString();
@@ -42,7 +43,7 @@ export async function joinWithCode(code: string): Promise<string> {
       return `/list/${result.group_id}`;
     case "already_member": {
       const preview = await getInvitePreview(code);
-      if (preview.status === "active") await setNotice("alreadyMember", { group: preview.groupName });
+      if (preview.status === "active" && preview.kind === "group") await setNotice("alreadyMember", { group: preview.groupName });
       return `/list/${result.group_id}`;
     }
     case "group_full":

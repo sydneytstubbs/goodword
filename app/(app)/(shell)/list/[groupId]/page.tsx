@@ -5,6 +5,7 @@ import { filterKeys, newCount } from "@/lib/events/list";
 import { siteOrigin } from "@/lib/origin";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { groupList, hasGoodWordIn } from "@/lib/good-words/queries";
+import { friendPromptPeople } from "@/lib/friends/queries";
 import { getGroup, listMyGroups } from "@/lib/groups/queries";
 import { GroupList } from "./group-list";
 
@@ -22,9 +23,11 @@ export default async function GroupListPage({ params, searchParams }: PageProps<
   const [group, groups] = await Promise.all([getGroup(groupId, user.id), listMyGroups(user.id)]);
   const summary = groups.find((g) => g.id === groupId);
   if (!group || !summary) notFound();
-  const [list, vouchedHere] = await Promise.all([
+  const [list, vouchedHere, friendPrompt] = await Promise.all([
     groupList(groupId, user.id, profile.region),
     hasGoodWordIn(groupId, user.id),
+    // Behind the home_enabled flag (PRD F16.10): add the people here as friends.
+    profile.home_enabled && !group.me.friendPromptDismissedAt ? friendPromptPeople(groupId, user.id) : Promise.resolve([]),
   ]);
   await recordEvent("list_viewed", { list: "group", filters: filterKeys(await searchParams), new_count: newCount(list.cards) }, user.id);
 
@@ -37,6 +40,7 @@ export default async function GroupListPage({ params, searchParams }: PageProps<
         inviteLink={group.inviteCode ? `${await siteOrigin()}/join/${group.inviteCode}` : null}
         showWelcome={!group.me.welcomeSeenAt}
         showJoinPrompt={!vouchedHere && !group.me.joinPromptDismissedAt}
+        friendPrompt={friendPrompt}
       />
     </main>
   );

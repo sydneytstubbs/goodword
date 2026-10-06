@@ -188,8 +188,8 @@ type ActivityRow = {
   type: ActivityType;
   actor_id: string;
   actor_name: string;
-  group_id: string;
-  group_name: string;
+  group_id: string | null;
+  group_name: string | null;
   title_id: string | null;
   comment_id: string | null;
   body: string | null;
@@ -223,7 +223,7 @@ export async function activityRecords(options: { unreadOnly?: boolean } = {}): P
       id: r.id,
       type: r.type,
       actor: { id: r.actor_id, name: r.actor_name },
-      group: { id: r.group_id, name: r.group_name },
+      group: r.group_id ? { id: r.group_id, name: r.group_name ?? "" } : null,
       // Unread-only reads (the bell) only need something to group by.
       ...(r.title_id ? { title: title ?? { id: r.title_id, type: "movie" as const, name: "", genres: [], accent: "clay" as const } } : {}),
       ...(r.comment_id ? { commentId: r.comment_id } : {}),

@@ -4,13 +4,14 @@ import type { CommentSegment, Person, Title } from "@/components/domain/types";
 // conversation within an hour collapse into one entry ("Jonah and Tess
 // commented on The Night Ferry"); the bell counts unread entries.
 
-export type ActivityType = "mention" | "comment" | "conversation_started" | "group_join";
+export type ActivityType = "mention" | "comment" | "conversation_started" | "group_join" | "friend_request" | "friend_accepted";
 
 export type ActivityRecord = {
   id: string;
   type: ActivityType;
   actor: Person;
-  group: { id: string; name: string };
+  /** Null for friend items, which belong to no group (PRD F16.9). */
+  group: { id: string; name: string } | null;
   title?: Title;
   commentId?: string;
   /** The comment, unless it's a spoiler. */
@@ -27,7 +28,7 @@ export type ActivityEntry = {
   type: ActivityType;
   /** Newest first, each person once. */
   actors: Person[];
-  group: { id: string; name: string };
+  group: { id: string; name: string } | null;
   title?: Title;
   /** The comment to land on: the earliest in a collapsed run. */
   commentId?: string;
@@ -46,7 +47,7 @@ export function collapseActivity(records: ActivityRecord[]): ActivityEntry[] {
   // The open run of comment items per conversation, and when its oldest item was.
   const open = new Map<string, { entry: ActivityEntry; oldest: Date }>();
   for (const record of records) {
-    const conversation = record.title ? `${record.group.id}:${record.title.id}` : null;
+    const conversation = record.title && record.group ? `${record.group.id}:${record.title.id}` : null;
     const run = record.type === "comment" && conversation ? open.get(conversation) : undefined;
     if (run && run.oldest.getTime() - record.at.getTime() <= HOUR) {
       run.entry.ids.push(record.id);

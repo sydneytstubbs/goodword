@@ -11,11 +11,13 @@ import { getInvitePreview } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
+import { FriendLanding } from "./friend-landing";
 
 export const metadata: Metadata = { title: "You're invited · Good Word" };
 
 // Invite landing (F2.4, DS 5.2). Who invited you, the group, how many are in
-// it, and one sentence about Good Word. Never the list's contents.
+// it, and one sentence about Good Word. Never the list's contents. A friend
+// link gets its own landing (F16.1, DS 5.20).
 export default async function JoinPage({ params, searchParams }: PageProps<"/join/[code]">) {
   const { code } = await params;
   const { error } = await searchParams;
@@ -44,7 +46,11 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/joi
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   const signedIn = Boolean(data.user);
-  if (!error) await recordEvent("invite_link_opened", { group_id: preview.groupId, signed_in: signedIn }, data.user?.id ?? null);
+  if (preview.kind === "friend") {
+    if (!error) await recordEvent("invite_link_opened", { kind: "friend", signed_in: signedIn }, data.user?.id ?? null);
+    return <FriendLanding code={code} inviter={preview.inviter} signedIn={signedIn} error={typeof error === "string" ? error : undefined} />;
+  }
+  if (!error) await recordEvent("invite_link_opened", { kind: "group", group_id: preview.groupId, signed_in: signedIn }, data.user?.id ?? null);
   if (signedIn) {
     const { data: member } = await supabase.from("group_members").select("id").eq("group_id", preview.groupId).eq("user_id", data.user!.id).maybeSingle();
     // Already a member: straight to the list, with a toast.

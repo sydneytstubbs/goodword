@@ -6,7 +6,9 @@ import { Rail, TabBar, TopBar } from "@/components/domain/app-bars";
 import { Comment, CommentList, NewCommentsDivider } from "@/components/domain/comment";
 import { Composer } from "@/components/domain/composer";
 import { GroupSwitcher } from "@/components/domain/group-switcher";
+import { FriendLinkCard } from "@/components/domain/friend-link-card";
 import { InviteCard } from "@/components/domain/invite-card";
+import { PersonRow } from "@/components/domain/person-row";
 import { Poster } from "@/components/domain/poster";
 import { RecCardDetail, RecCardGrid, RecCardRow, VouchedByRow } from "@/components/domain/rec-card";
 import { RobotGuessCard } from "@/components/domain/robot-guess-card";
@@ -17,7 +19,9 @@ import { GroupPicker, VisibilityLine } from "@/components/domain/visibility-line
 import { VouchButton } from "@/components/domain/vouch-button";
 import { WhereToWatchList, WhereToWatchSkeleton } from "@/components/domain/where-to-watch";
 import { Wordmark } from "@/components/domain/wordmark";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { t } from "@/lib/messages";
 import {
   NOW,
   comments as initialComments,
@@ -234,6 +238,11 @@ function Invites() {
         <InviteCard group={groups.college} members={members.college} link="https://goodword.app/join/k7x2p" inviterName="Priya" />
         <InviteCard group={groups.girls} members={members.girls} link="https://goodword.app/join/p3m9q" state="reset" inviterName="Bea" />
         <InviteCard group={groups.book} members={members.book} link="https://goodword.app/join/a1b2c" state="expired" inviterName="Jonah" />
+      </div>
+      <Note>Friend link variant (5.20): your name instead of a group, and Reset link in its menu.</Note>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <FriendLinkCard me={people.priya} link="https://goodword.app/join/f8w4r" onReset={() => {}} />
+        <FriendLinkCard me={people.priya} link="https://goodword.app/join/n2v6t" justReset onReset={() => {}} />
       </div>
     </Component>
   );
@@ -466,7 +475,34 @@ function Activity() {
         <ActivityItem kind="started" actor={people.jonah} title={titles.moth} group={groups.college} quote="anyone seen this?" at={new Date(NOW.getTime() - 3_600_000 * 5)} unread href="#activity-item" now={NOW} />
         <ActivityItem kind="comment" actor={people.bea} actorNames="Bea and Priya" title={titles.heist} group={groups.girls} quote="the grandma steals every scene" at={new Date(NOW.getTime() - 86_400_000 * 3)} href="#activity-item" now={NOW} />
         <ActivityItem kind="join" actor={people.luis} group={groups.book} at={new Date(NOW.getTime() - 86_400_000 * 9)} href="#activity-item" now={NOW} />
+        <ActivityItem
+          kind="friendRequest"
+          actor={people.mo}
+          at={new Date(NOW.getTime() - 1_800_000)}
+          unread
+          now={NOW}
+          actions={
+            <>
+              <Button variant="secondary">{t("friends.accept")}</Button>
+              <Button variant="ghost">{t("friends.decline")}</Button>
+            </>
+          }
+        />
+        <ActivityItem kind="friendAccepted" actor={people.tess} at={new Date(NOW.getTime() - 86_400_000)} href="#activity-item" now={NOW} />
       </div>
+    </Component>
+  );
+}
+
+function PersonRows() {
+  return (
+    <Component id="person-row" title="Person row" spec="4.2.16">
+      <ul className="flex max-w-reading flex-col divide-y divide-subtle">
+        <PersonRow person={people.mo} variant="incoming" onAccept={() => {}} onDecline={() => {}} />
+        <PersonRow person={people.luis} variant="fromGroup" groupName={groups.book.name} onAdd={() => {}} />
+        <PersonRow person={people.jonah} variant="friend" onRemove={() => {}} />
+        <PersonRow person={people.bea} variant="sent" onCancel={() => {}} />
+      </ul>
     </Component>
   );
 }
@@ -485,6 +521,7 @@ export function Domain() {
       <Robot />
       <Conversation />
       <Activity />
+      <PersonRows />
     </Section>
   );
 }
