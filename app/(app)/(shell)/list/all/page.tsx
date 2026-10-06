@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { requireOnboardedUser } from "@/lib/auth/session";
-import { allGroupsShelf } from "@/lib/good-words/queries";
+import { allGroupsList } from "@/lib/good-words/queries";
 import { recordEvent } from "@/lib/events/server";
-import { filterKeys, newCount } from "@/lib/events/shelf";
+import { filterKeys, newCount } from "@/lib/events/list";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { NoGroups } from "../no-groups";
-import { AllGroupsShelf } from "./all-groups-shelf";
+import { AllGroupsList } from "./all-groups-list";
 
 export const metadata: Metadata = { title: "All groups · Good Word" };
 
-export default async function AllGroupsPage({ searchParams }: PageProps<"/shelf/all">) {
-  const { user, profile } = await requireOnboardedUser("/shelf/all");
+export default async function AllGroupsPage({ searchParams }: PageProps<"/list/all">) {
+  const { user, profile } = await requireOnboardedUser("/list/all");
   const groups = await listMyGroups(user.id);
   if (groups.length === 0) {
     return (
@@ -21,15 +21,15 @@ export default async function AllGroupsPage({ searchParams }: PageProps<"/shelf/
       </main>
     );
   }
-  const shelf = await allGroupsShelf(
+  const list = await allGroupsList(
     groups.map((g) => g.id),
     user.id,
     profile.region,
   );
-  await recordEvent("shelf_viewed", { shelf: "all", filters: filterKeys(await searchParams), new_count: newCount(shelf.cards) }, user.id);
+  await recordEvent("list_viewed", { list: "all", filters: filterKeys(await searchParams), new_count: newCount(list.cards) }, user.id);
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 pb-12">
-      <AllGroupsShelf groups={groups} shelf={shelf} />
+      <AllGroupsList groups={groups} list={list} />
     </main>
   );
 }

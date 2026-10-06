@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { recordEvent } from "@/lib/events/server";
-import { filterKeys } from "@/lib/events/shelf";
-import { allGroupsShelf } from "@/lib/good-words/queries";
+import { filterKeys } from "@/lib/events/list";
+import { allGroupsList } from "@/lib/good-words/queries";
 import { listMyGroups } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
-import { PersonShelf } from "./person-shelf";
+import { PersonList } from "./person-list";
 
 export const metadata: Metadata = { title: "Good Word" };
 
@@ -34,20 +34,20 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/p
     );
   }
 
-  const shelf = await allGroupsShelf(
+  const list = await allGroupsList(
     shared.map((g) => g.id),
     user.id,
     profile.region,
   );
   // Only their good words, and only who they are on each card.
-  const cards = shelf.cards
+  const cards = list.cards
     .map((card) => ({ ...card, goodWords: card.goodWords.filter((gw) => gw.person.id === userId), isNew: false }))
     .filter((card) => card.goodWords.length > 0);
-  await recordEvent("shelf_viewed", { shelf: "person", filters: filterKeys(await searchParams), new_count: 0 }, user.id);
+  await recordEvent("list_viewed", { list: "person", filters: filterKeys(await searchParams), new_count: 0 }, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 py-8">
-      <PersonShelf name={name} groups={shared.map(({ id, name }) => ({ id, name }))} shelf={{ ...shelf, cards }} />
+      <PersonList name={name} groups={shared.map(({ id, name }) => ({ id, name }))} list={{ ...list, cards }} />
     </main>
   );
 }

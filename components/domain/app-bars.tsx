@@ -19,7 +19,7 @@ import { Wordmark } from "./wordmark";
 // the page flow, for /styleguide.
 
 type Placement = "fixed" | "inline";
-export type Destination = "shelf" | "activity" | "you";
+export type Destination = "list" | "activity" | "you";
 
 /** Icon-only link with the icon button's look (the Activity bell navigates). */
 function IconLink({ href, icon, label, badge }: { href: string; icon: IconName; label: string; badge?: ReactNode }) {
@@ -96,7 +96,7 @@ export function TopBar({
 }
 
 const tabs: Array<{ id: Exclude<Destination, "activity">; href: string; icon: IconName; label: () => string }> = [
-  { id: "shelf", href: "/shelf", icon: "shelf", label: () => t("nav.shelf") },
+  { id: "list", href: "/list", icon: "group", label: () => t("nav.groups") },
   { id: "you", href: "/you", icon: "you", label: () => t("nav.you") },
 ];
 
@@ -112,7 +112,7 @@ function TabLink({ tab, current, dot = false }: { tab: (typeof tabs)[number]; cu
     >
       <span className="relative">
         <Icon name={tab.icon} size={24} weight={current ? "fill" : "regular"} />
-        {dot && <UnreadDot label={t("shelf.hasNew")} className="absolute -top-0.5 -right-1" />}
+        {dot && <UnreadDot label={t("list.hasNew")} className="absolute -top-0.5 -right-1" />}
       </span>
       {tab.label()}
     </NextLink>
@@ -121,14 +121,14 @@ function TabLink({ tab, current, dot = false }: { tab: (typeof tabs)[number]; cu
 
 export function TabBar({
   current,
-  shelfDot = false,
+  listDot = false,
   onAdd,
   placement = "fixed",
   label,
 }: {
   current?: Exclude<Destination, "activity">;
   /** Some group has new good words since you last looked (PRD F5.5). */
-  shelfDot?: boolean;
+  listDot?: boolean;
   onAdd: () => void;
   placement?: Placement;
   /** Landmark name; defaults to "Main". */
@@ -143,7 +143,7 @@ export function TabBar({
       )}
     >
       <div className="flex h-tabbar items-center">
-        <TabLink tab={tabs[0]} current={current === "shelf"} dot={shelfDot} />
+        <TabLink tab={tabs[0]} current={current === "list"} dot={listDot} />
         <div className="flex flex-1 justify-center">
           <button
             type="button"
@@ -161,7 +161,7 @@ export function TabBar({
 }
 
 const railLinks: Array<{ id: Destination; href: string; icon: IconName; label: () => string }> = [
-  { id: "shelf", href: "/shelf", icon: "shelf", label: () => t("nav.shelf") },
+  { id: "list", href: "/list", icon: "group", label: () => t("nav.groups") },
   { id: "activity", href: "/activity", icon: "activity", label: () => t("nav.activity") },
   { id: "you", href: "/you", icon: "you", label: () => t("nav.you") },
 ];
@@ -201,7 +201,7 @@ export function Rail({
         placement === "fixed" ? "fixed inset-y-0 start-0 z-nav hidden lg:flex" : "min-h-120",
       )}
     >
-      <NextLink href="/shelf" className="self-start rounded-control px-2">
+      <NextLink href="/list" className="self-start rounded-control px-2">
         <Wordmark />
       </NextLink>
       <Button variant="primary" size="md" icon="add" fullWidth onClick={onAdd}>
@@ -211,8 +211,8 @@ export function Rail({
         {railLinks.filter((link) => !hide.includes(link.id)).map((link) => {
           const isCurrent = current === link.id;
           const count = link.id === "activity" ? activityCount : 0;
-          // On a group's shelf the group row is the page; Shelf is the section it's in.
-          const ariaCurrent = isCurrent ? (link.id === "shelf" && currentGroupId ? "true" : "page") : undefined;
+          // On a group's list the group row is the page; List is the section it's in.
+          const ariaCurrent = isCurrent ? (link.id === "list" && currentGroupId ? "true" : "page") : undefined;
           return (
             <li key={link.id}>
               <NextLink
@@ -223,7 +223,7 @@ export function Rail({
                 <Icon name={link.icon} size={20} weight={isCurrent ? "fill" : "regular"} />
                 <span className="flex-1">{link.label()}</span>
                 {count > 0 && <CountBadge count={count} />}
-                {link.id === "shelf" && Object.values(newCounts).some((n) => n > 0) && <UnreadDot label={t("shelf.hasNew")} />}
+                {link.id === "list" && Object.values(newCounts).some((n) => n > 0) && <UnreadDot label={t("list.hasNew")} />}
               </NextLink>
             </li>
           );
@@ -237,13 +237,13 @@ export function Rail({
             return (
               <li key={group.id}>
                 <NextLink
-                  href={`/shelf/${group.id}`}
+                  href={`/list/${group.id}`}
                   aria-current={isCurrent ? "page" : undefined}
                   className={cn(railRow, isCurrent ? "bg-surface-sunken font-semibold text-default fc-selected" : "text-default")}
                 >
                   <GroupDot group={group} />
                   <span className="flex-1 truncate">{group.name}</span>
-                  <CountBadge count={newCounts[group.id] ?? 0} label={t("shelf.newCount", { count: newCounts[group.id] ?? 0 })} />
+                  <CountBadge count={newCounts[group.id] ?? 0} label={t("list.newCount", { count: newCounts[group.id] ?? 0 })} />
                 </NextLink>
               </li>
             );

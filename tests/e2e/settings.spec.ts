@@ -131,14 +131,14 @@ test.describe("settings and help", () => {
 
     await page.getByRole("button", { name: "Send feedback" }).click();
     await expect(page.getByText("Write something first, then send.").filter({ visible: true })).toBeVisible();
-    await page.getByRole("textbox", { name: "Your feedback" }).fill("The shelf is lovely");
+    await page.getByRole("textbox", { name: "Your feedback" }).fill("The list is lovely");
     await page.getByRole("checkbox", { name: "OK to follow up by email" }).check();
     await page.getByRole("button", { name: "Send feedback" }).click();
     await expect(page.getByText("Thanks. Sydney reads every one.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Your feedback" })).toHaveValue("");
     await expect
       .poll(async () => (await admin().from("feedback").select("message, may_contact").eq("user_id", tess.id)).data)
-      .toEqual([{ message: "The shelf is lovely", may_contact: true }]);
+      .toEqual([{ message: "The list is lovely", may_contact: true }]);
   });
 
   test("keyboard shortcuts: ? opens them, g then a goes to Activity", async ({ browser }, testInfo) => {

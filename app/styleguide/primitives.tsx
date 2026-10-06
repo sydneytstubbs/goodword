@@ -386,7 +386,7 @@ function Overlays() {
             <Button onClick={() => setDestructive(true)}>Open the delete dialog</Button>
           </Specimen>
         </SpecimenGrid>
-        <Sheet open={sheet} onClose={() => setSheet(false)} title="Your shelves">
+        <Sheet open={sheet} onClose={() => setSheet(false)} title="Your groups">
           <p className="text-body text-muted">
             Sheets hold tasks and pickers on mobile. Swipe down on the header, tap the scrim, press Esc, or use Close.
           </p>
@@ -407,7 +407,7 @@ function Overlays() {
           open={dialog}
           onClose={() => setDialog(false)}
           title="Leave College crew?"
-          description="Your good words will leave this shelf too. You can rejoin with an invite."
+          description="Your good words will leave this list too. You can rejoin with an invite."
           actions={
             <>
               <Button onClick={() => setDialog(false)}>Cancel</Button>
@@ -438,7 +438,7 @@ function Overlays() {
         <SpecimenGrid>
           <Specimen label="Static previews" wide>
             <div className="flex flex-col items-start gap-3">
-              <ToastView message="On your shelf. Priya, Jonah, and 4 others will see it." action={{ label: "Undo", onAction: () => {} }} />
+              <ToastView message="On your list. Priya, Jonah, and 4 others will see it." action={{ label: "Undo", onAction: () => {} }} />
               <ToastView message="Link copied. Send it to someone whose taste you trust." />
             </div>
           </Specimen>
@@ -489,7 +489,7 @@ function StatusComponents() {
       <Component id="skeleton" title="Skeleton and spinner" spec="4.1.17">
         <SpecimenGrid>
           <Specimen label="Skeleton matches the final layout (a grid card)">
-            <SkeletonRegion label="Loading shelf" className="grid w-full grid-cols-2 gap-3">
+            <SkeletonRegion label="Loading list" className="grid w-full grid-cols-2 gap-3">
               {[0, 1].map((i) => (
                 <div key={i} className="flex flex-col gap-2.5">
                   <Skeleton className="aspect-2/3 w-full rounded-poster" />
@@ -513,7 +513,7 @@ function StatusComponents() {
               <div className="p-8">
                 <EmptyState
                   headingLevel={4}
-                  showShelf
+                  showList
                   title="Nothing here yet"
                   body="Be the first to put in a good word."
                   action={<Button variant="primary" icon="add">Put in a good word</Button>}
@@ -538,7 +538,7 @@ function StatusComponents() {
               <div className="p-8">
                 <ErrorState
                   headingLevel={4}
-                  title="This shelf didn't load"
+                  title="This list didn't load"
                   body="Check your connection and try again."
                   action={<Button>Retry</Button>}
                 />
@@ -552,7 +552,7 @@ function StatusComponents() {
         {milestone ? (
           <Milestone
             line="Your first good word."
-            body="Your friends will see it on their shelves."
+            body="Your groups will see it on their lists."
             onDismiss={() => setMilestone(false)}
           />
         ) : (

@@ -8,7 +8,7 @@ export function Skeleton({ className }: { className?: string }) {
   return <span aria-hidden="true" className={cn("block bg-surface-sunken motion-ok:animate-pulse", className)} />;
 }
 
-/** A content region that's loading: aria-busy plus a hidden "Loading shelf". */
+/** A content region that's loading: aria-busy plus a hidden "Loading list". */
 export function SkeletonRegion({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return (
     <div aria-busy="true" className={className}>

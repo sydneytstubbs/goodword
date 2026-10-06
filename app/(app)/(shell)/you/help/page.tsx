@@ -17,13 +17,13 @@ const FAQ = ["what", "who", "groups", "leave", "delete"] as const;
 const SHORTCUTS: Array<{ keys: string[]; label: MessageKey }> = [
   { keys: ["/"], label: "help.shortcuts.search" },
   { keys: ["n"], label: "help.shortcuts.add" },
-  { keys: ["g", "s"], label: "help.shortcuts.shelf" },
-  { keys: ["g", "y"], label: "help.shortcuts.myShelf" },
+  { keys: ["g", "s"], label: "help.shortcuts.groups" },
+  { keys: ["g", "y"], label: "help.shortcuts.myList" },
   { keys: ["g", "a"], label: "help.shortcuts.activity" },
   { keys: ["?"], label: "help.shortcuts.help" },
 ];
 
-// Help (PRD F11, DS 5.16): the same place on every screen (My Recs › Help,
+// Help (PRD F11, DS 5.16): the same place on every screen (My list › Help,
 // and the rail's footer). A short FAQ, shortcuts, send feedback, and About
 // with the privacy summary and the TMDB and JustWatch attributions (PRD 9).
 export default async function HelpPage() {

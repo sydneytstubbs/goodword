@@ -7,7 +7,7 @@ import { dismissJoinPrompt } from "@/lib/good-words/actions";
 import { useAdd } from "../../add";
 
 // The first-good-word prompt (PRD F5.7, DS 5.2): a small inline card at the
-// end of the shelf, not a modal. It appears once you've looked around (you
+// end of the list, not a modal. It appears once you've looked around (you
 // scrolled to the end, or 20 seconds passed), and doesn't come back for this
 // group once dismissed or used.
 
@@ -22,7 +22,7 @@ export function JoinPrompt({ groupId }: { groupId: string }) {
   useEffect(() => {
     if (shown) return;
     const timer = setTimeout(() => setShown(true), DELAY_MS);
-    // Only a real scroll counts: a short shelf that's all on screen waits for the timer.
+    // Only a real scroll counts: a short list that's all on screen waits for the timer.
     const onScroll = () => {
       const top = sentinel.current?.getBoundingClientRect().top;
       if (top !== undefined && top <= window.innerHeight) setShown(true);

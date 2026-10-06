@@ -15,12 +15,12 @@ import {
   type TitleRef,
   type WriteResult,
 } from "@/lib/good-words/actions";
-import type { Overlay } from "@/lib/good-words/shelf";
+import type { Overlay } from "@/lib/good-words/list";
 import { audienceNames } from "@/lib/format";
 import { t } from "@/lib/messages";
 
 // The viewer's good words, written optimistically (DS 5.10, PRD F4): a change
-// shows everywhere at once as an overlay on the server-rendered shelves and
+// shows everywhere at once as an overlay on the server-rendered lists and
 // title screens, while the server action runs. When it lands, the refreshed
 // server data takes over; if it fails, the overlay drops (the change reverts)
 // and a toast offers Retry. Writes run one at a time, so Undo never overtakes
@@ -52,7 +52,7 @@ type GoodWordsValue = {
   setGroups: (title: Title, mine: MyGoodWord, groupIds: string[]) => void;
   takeBack: (title: Title, mine: MyGoodWord) => void;
   milestone: Milestone | null;
-  /** A milestone reached elsewhere (the review deck), shown on the next shelf. */
+  /** A milestone reached elsewhere (the review deck), shown on the next list. */
   showMilestone: (milestone: Milestone) => void;
   dismissMilestone: () => void;
 };
@@ -67,7 +67,7 @@ export function useGoodWords(): GoodWordsValue {
 
 const ref = (title: Title): TitleRef => ({ type: title.type, tmdbId: title.tmdbId ?? 0 });
 
-/** Shelves it's newly on get "now"; shelves it stays on keep their date. */
+/** Lists it's newly on get "now"; lists it stays on keep their date. */
 function withGroups(mine: MyGoodWord, groupIds: string[], now: string): MyGoodWord {
   return {
     ...mine,
@@ -220,8 +220,8 @@ export function GoodWordsProvider({
           names.push(member.name);
         }
       }
-      if (names.length > 0) return t("vouch.onShelfAudience", { names: audienceNames(names) });
-      return groupIds.length === 0 && groups.length > 0 ? t("vouch.onShelfOnlyYou") : null;
+      if (names.length > 0) return t("vouch.onListAudience", { names: audienceNames(names) });
+      return groupIds.length === 0 && groups.length > 0 ? t("vouch.onListOnlyYou") : null;
     },
     [groups, viewer.id],
   );
@@ -240,7 +240,7 @@ export function GoodWordsProvider({
         showToast({ message: t("vouch.queued") });
         return;
       }
-      // "On your shelf. Priya, Jonah, and 4 others will see it." with Undo, or,
+      // "On your list. Priya, Jonah, and 4 others will see it." with Undo, or,
       // with nobody else to see it yet, an Invite action (F4).
       const message = audienceToast(input.groupIds);
       if (message) {
@@ -248,7 +248,7 @@ export function GoodWordsProvider({
       } else {
         const onlyGroup = input.groupIds.length === 1 ? input.groupIds[0] : null;
         showToast({
-          message: t("vouch.onShelfInvite"),
+          message: t("vouch.onListInvite"),
           action: { label: t("vouch.invite"), onAction: () => router.push(onlyGroup ? `/groups/${onlyGroup}` : "/groups/new") },
         });
       }

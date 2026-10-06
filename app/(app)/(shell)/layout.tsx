@@ -6,13 +6,13 @@ import { ActivityCountProvider } from "./activity-count";
 import { AddProvider } from "./add";
 import { AppNav } from "./app-nav";
 import { GoodWordsProvider } from "./good-words";
-import { ShelfNewsProvider } from "./shelf-news";
+import { ListNewsProvider } from "./list-news";
 import { ShellChrome } from "./shell-chrome";
 
 // Signed-in chrome: the tab bar or rail (DS 4.2.8), with Add opening the
 // search sheet from any screen, and the viewer's good words written
 // optimistically everywhere at once. Each page still checks who's signed in;
-// New good words since your last visit badge the Shelf tab and switcher
+// New good words since your last visit badge the List tab and switcher
 // (PRD F5.5). The Activity bell's unread count stays live (PRD F14).
 export default async function ShellLayout({ children }: LayoutProps<"/">) {
   const supabase = await createClient();
@@ -36,14 +36,14 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
 
   return (
     <GoodWordsProvider viewer={viewer} groups={groups} myServices={myServices}>
-      <ShelfNewsProvider counts={newCounts}>
+      <ListNewsProvider counts={newCounts}>
         <ActivityCountProvider userId={viewer.id} initialCount={activityCount}>
           <AddProvider>
             <ShellChrome>{children}</ShellChrome>
             <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} />
           </AddProvider>
         </ActivityCountProvider>
-      </ShelfNewsProvider>
+      </ListNewsProvider>
     </GoodWordsProvider>
   );
 }

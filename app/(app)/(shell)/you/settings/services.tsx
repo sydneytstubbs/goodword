@@ -13,7 +13,7 @@ import { saveStreamingServices } from "./actions";
 const FIRST = 12;
 
 // Settings › Streaming services (P1, F5.4): tick the services you have and
-// "On my services" on a shelf shows only titles on one of them. Each tick
+// "On my services" on a list shows only titles on one of them. Each tick
 // saves at once and rolls back with a Retry toast if it fails (DS 5.10,
 // DS 5.16). Services are per region, so they follow Settings › Region.
 export function StreamingServices({ region, providers, initial }: { region: string; providers: Provider[]; initial: number[] }) {

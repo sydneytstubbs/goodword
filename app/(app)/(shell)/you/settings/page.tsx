@@ -10,13 +10,13 @@ import type { Provider } from "@/lib/tmdb/normalize";
 import { AccountSettings } from "./account";
 import { NotificationSettings, type Prefs } from "./notifications";
 import { StreamingServices } from "./services";
-import { ShareShelf } from "./share-shelf";
+import { ShareList } from "./share-list";
 import { YourData } from "./your-data";
 
 export const metadata: Metadata = { title: "Settings · Good Word" };
 
 // Settings (PRD F11, DS 5.16), grouped: Account, Streaming services (P1),
-// Notifications (F7.7), Share my shelf (F9), Your data (F1). Email footers
+// Notifications (F7.7), Share my list (F9), Your data (F1). Email footers
 // link to #notifications; "On my services" links to #services.
 export default async function SettingsPage() {
   const { user, profile } = await requireOnboardedUser("/you/settings");
@@ -51,7 +51,7 @@ export default async function SettingsPage() {
         <NotificationSettings initial={prefs} />
       </Section>
       <Section id="share" title={t("settings.shareHeading")} intro={t("settings.shareIntro")}>
-        <ShareShelf
+        <ShareList
           origin={await siteOrigin()}
           initial={{ enabled: share.data?.enabled ?? false, token: (share.data?.token as string | undefined) ?? null, views: share.data?.view_count ?? 0 }}
         />

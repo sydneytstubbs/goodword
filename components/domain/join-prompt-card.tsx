@@ -8,10 +8,10 @@ import { IconButton } from "../ui/icon-button";
 export function JoinPromptCard({ onPut, onDismiss }: { onPut: () => void; onDismiss: () => void }) {
   return (
     <aside
-      aria-label={t("shelf.joinPrompt")}
+      aria-label={t("list.joinPrompt")}
       className="relative flex flex-col items-start gap-4 rounded-card border border-subtle bg-surface-raised p-5 pe-16 shadow-sm fc-edge motion-ok:animate-rise"
     >
-      <p className="text-heading text-default">{t("shelf.joinPrompt")}</p>
+      <p className="text-heading text-default">{t("list.joinPrompt")}</p>
       <Button variant="primary" icon="add" onClick={onPut}>
         {t("vouch.put")}
       </Button>

@@ -1,17 +1,17 @@
 import "server-only";
 import { cache } from "react";
-import type { GoodWord, GoodWordSource, Group, MyGoodWord, Person, Service, Shelf, ShelfCard, Title, TitleType } from "@/components/domain/types";
+import type { GoodWord, GoodWordSource, Group, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
 import { commentCounts } from "@/lib/conversations/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getTitle } from "@/lib/titles/cache";
-import { safeRegion, shelfProviders } from "@/lib/titles/providers";
+import { safeRegion, listProviders } from "@/lib/titles/providers";
 import { recordToTitle, titleKey, type TitleRecord } from "@/lib/tmdb/normalize";
-import { cardsFromRows } from "./shelf";
+import { cardsFromRows } from "./list";
 
 // Good word reads (PRD F4, F5, F6). Everything here runs as the signed-in
 // user, under row-level security: someone else's good word shows only if it's
-// on a shelf the viewer is on, with only the viewer's groups (PRD 8).
+// on a list the viewer is on, with only the viewer's groups (PRD 8).
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
@@ -28,13 +28,13 @@ async function names(supabase: Supabase, userIds: string[]): Promise<Map<string,
   return new Map((data ?? []).map((p) => [p.user_id as string, (p.display_name as string | null) ?? ""]));
 }
 
-type ShelfRow = {
+type ListRow = {
   shared_at: string;
   group_id: string;
   good_words: { user_id: string; note: string | null; titles: TitleRow };
 };
 
-/** When the viewer last looked at each group's shelf, or joined it if never (F5.5). */
+/** When the viewer last looked at each group's list, or joined it if never (F5.5). */
 async function lastViewed(supabase: Supabase, userId: string, groupIds: string[]): Promise<Map<string, number>> {
   const { data } = await supabase
     .from("group_members")
@@ -46,13 +46,13 @@ async function lastViewed(supabase: Supabase, userId: string, groupIds: string[]
   );
 }
 
-/** Cards with their streaming services in the viewer's region, and every service on the shelf. */
-async function withServices(cards: ShelfCard[], rowIds: Map<string, string>, region: string): Promise<Shelf> {
+/** Cards with their streaming services in the viewer's region, and every service on the list. */
+async function withServices(cards: ListCard[], rowIds: Map<string, string>, region: string): Promise<List> {
   const refs = cards.flatMap((c) => {
     const rowId = rowIds.get(c.title.id);
     return rowId && c.title.tmdbId ? [{ rowId, type: c.title.type, tmdbId: c.title.tmdbId }] : [];
   });
-  const providers = await shelfProviders(refs, safeRegion(region));
+  const providers = await listProviders(refs, safeRegion(region));
   const services = new Map<number, Service>();
   const withIds = cards.map((card) => {
     const found = providers.get(rowIds.get(card.title.id) ?? "");
@@ -63,7 +63,7 @@ async function withServices(cards: ShelfCard[], rowIds: Map<string, string>, reg
   return { cards: withIds, services: [...services.values()] };
 }
 
-async function groupsShelf(groupIds: string[], viewerId: string, region: string): Promise<Shelf> {
+async function groupsList(groupIds: string[], viewerId: string, region: string): Promise<List> {
   if (groupIds.length === 0) return { cards: [], services: [] };
   const supabase = await createClient();
   const [{ data, error }, since, comments] = await Promise.all([
@@ -72,15 +72,15 @@ async function groupsShelf(groupIds: string[], viewerId: string, region: string)
       .select(`shared_at, group_id, good_words!inner(user_id, note, titles!inner(${TITLE_COLUMNS}))`)
       .in("group_id", groupIds)
       .order("shared_at", { ascending: false })
-      .returns<ShelfRow[]>(),
+      .returns<ListRow[]>(),
     lastViewed(supabase, viewerId, groupIds),
     commentCounts(groupIds),
   ]);
-  if (error) throw new Error(`shelf: ${error.code}`);
+  if (error) throw new Error(`list: ${error.code}`);
   const rows = data ?? [];
   const nameOf = await names(supabase, rows.map((r) => r.good_words.user_id));
   const rowIds = new Map(rows.map((r) => [toTitle(r.good_words.titles).id, r.good_words.titles.id]));
-  // New: someone else's good word went on this shelf since you last looked (F5.5).
+  // New: someone else's good word went on this list since you last looked (F5.5).
   const fresh = new Set(
     rows
       .filter((r) => r.good_words.user_id !== viewerId && new Date(r.shared_at).getTime() > (since.get(r.group_id) ?? Infinity))
@@ -101,14 +101,14 @@ async function groupsShelf(groupIds: string[], viewerId: string, region: string)
   return withServices(cards, rowIds, region);
 }
 
-/** A group's shelf: every title vouched for into it, one card per title (F5.1). */
-export async function groupShelf(groupId: string, viewerId: string, region: string): Promise<Shelf> {
-  return groupsShelf([groupId], viewerId, region);
+/** A group's list: every title vouched for into it, one card per title (F5.1). */
+export async function groupList(groupId: string, viewerId: string, region: string): Promise<List> {
+  return groupsList([groupId], viewerId, region);
 }
 
 /** All groups: every group you're in, one card per title, each person once (F5.2). */
-export async function allGroupsShelf(groupIds: string[], viewerId: string, region: string): Promise<Shelf> {
-  return groupsShelf(groupIds, viewerId, region);
+export async function allGroupsList(groupIds: string[], viewerId: string, region: string): Promise<List> {
+  return groupsList(groupIds, viewerId, region);
 }
 
 type MineRow = {
@@ -129,8 +129,8 @@ function toMine(row: Omit<MineRow, "titles">): MyGoodWord {
   };
 }
 
-/** My Recs: only your own good words, including ones in no group (F5.3). */
-export async function myShelf(userId: string, name: string, region: string): Promise<Shelf> {
+/** My list: only your own good words, including ones in no group (F5.3). */
+export async function myList(userId: string, name: string, region: string): Promise<List> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("good_words")
@@ -138,7 +138,7 @@ export async function myShelf(userId: string, name: string, region: string): Pro
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .returns<MineRow[]>();
-  if (error) throw new Error(`my shelf: ${error.code}`);
+  if (error) throw new Error(`my list: ${error.code}`);
   const rows = data ?? [];
   const cards = cardsFromRows(
     rows.map((r) => ({
@@ -232,7 +232,7 @@ export type SearchAnnotations = {
   friends: Record<string, Person[]>;
 };
 
-/** "On your shelf" and "Priya vouched for this" for search results (F3). */
+/** "On your list" and "Priya vouched for this" for search results (F3). */
 export async function searchAnnotations(titles: Array<Pick<Title, "type" | "tmdbId">>, viewerId: string): Promise<SearchAnnotations> {
   const result: SearchAnnotations = { mine: {}, friends: {} };
   const tmdbIds = [...new Set(titles.map((t) => t.tmdbId).filter((id): id is number => typeof id === "number"))];

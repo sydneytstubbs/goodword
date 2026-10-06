@@ -8,7 +8,7 @@ import { titleRowId } from "./queries";
 
 // Good word writes (PRD F4). Each calls a database function that checks
 // membership and limits (supabase/migrations/…_good_words.sql), then refreshes
-// the router so every shelf shows the change. The client applies it
+// the router so every list shows the change. The client applies it
 // optimistically first and rolls back on failure (DS 5.10).
 
 export type TitleRef = { type: TitleType; tmdbId: number };

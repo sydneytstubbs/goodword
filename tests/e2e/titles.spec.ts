@@ -43,7 +43,7 @@ test.describe("titles", () => {
 
   test.afterAll(async () => deleteUsers(users));
 
-  async function signedIn(browser: Browser, next = "/shelf"): Promise<Page> {
+  async function signedIn(browser: Browser, next = "/list"): Promise<Page> {
     const page = await (await browser.newContext()).newPage();
     await openMagicLink(page, bea, next);
     return page;
@@ -97,11 +97,11 @@ test.describe("titles", () => {
 
   test("Back closes the sheet and stays on the page", async ({ browser }) => {
     const page = await signedIn(browser);
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await openAdd(page);
     await page.goBack();
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
   });
 
@@ -145,11 +145,11 @@ test.describe("titles", () => {
     await expect(sheet.getByLabel("Anything to add? (optional)")).toBeFocused();
     await expect(sheet.getByText(name, { exact: true }).filter({ visible: true })).toBeVisible();
     await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
 
     // Back returns to where Add was opened, with the sheet closed.
     await page.goBack();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
 
     const { type, tmdbId } = body.results.find((r) => r.name === name)!;

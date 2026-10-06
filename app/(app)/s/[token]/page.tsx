@@ -8,7 +8,7 @@ import { t } from "@/lib/messages";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { recordToTitle, type TitleRecord } from "@/lib/tmdb/normalize";
 
-// A shared shelf (PRD F9, J7): read-only, for anyone with the link. The
+// A shared list (PRD F9, J7): read-only, for anyone with the link. The
 // owner's name and their own good words (poster, title, year, their note),
 // newest first, and a small "Made with Good Word" link. Never groups, other
 // people, or other people's notes. noindex, and no analytics beyond the view
@@ -19,11 +19,11 @@ export const metadata: Metadata = { title: "Good Word", robots: { index: false, 
 
 type Row = { owner_name: string; title: (Omit<TitleRecord, "overview" | "original_title"> & { tmdb_id: number | null }) | null; note: string | null };
 
-export default async function SharedShelfPage({ params }: PageProps<"/s/[token]">) {
+export default async function SharedListPage({ params }: PageProps<"/s/[token]">) {
   const { token } = await params;
   if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) notFound();
   const { data, error } = await createAdminClient().rpc("shared_shelf", { p_token: token });
-  if (error) throw new Error("shared shelf didn't load");
+  if (error) throw new Error("shared list didn't load");
   const rows = (data ?? []) as Row[];
   if (rows.length === 0) notFound();
   const name = rows[0].owner_name;

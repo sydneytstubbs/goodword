@@ -337,7 +337,7 @@ export function ReviewDeck({
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <ButtonLink href="/you" variant="primary" size="lg">
-              {t("importDeck.viewMyRecs")}
+              {t("importDeck.viewMyList")}
             </ButtonLink>
             <ButtonLink href="/you/import" variant="secondary" size="lg">
               {t("importDeck.addMore")}

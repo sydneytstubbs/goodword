@@ -1,16 +1,16 @@
 "use client";
 
-import type { Shelf } from "@/components/domain/types";
+import type { List } from "@/components/domain/types";
 import { GroupDot, type Group } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { joinList } from "@/lib/format";
 import { t } from "@/lib/messages";
-import { ShelfCards } from "../../shelf/shelf-cards";
+import { ListCards } from "../../list/list-cards";
 
 // Person view (PRD F8): their name, the groups you share, and their good
 // words in those groups, with the usual filters. The empty scope keeps your
-// own pending good words off their shelf.
-export function PersonShelf({ name, groups, shelf }: { name: string; groups: Group[]; shelf: Shelf }) {
+// own pending good words off their list.
+export function PersonList({ name, groups, list }: { name: string; groups: Group[]; list: List }) {
   return (
     <>
       <header className="flex flex-col gap-2">
@@ -24,9 +24,9 @@ export function PersonShelf({ name, groups, shelf }: { name: string; groups: Gro
           </span>
         </p>
       </header>
-      <ShelfCards
-        cards={shelf.cards}
-        services={shelf.services}
+      <ListCards
+        cards={list.cards}
+        services={list.services}
         scope={{ kind: "all", groupIds: [] }}
         empty={<EmptyState headingLevel={2} title={t("people.emptyTitle", { name })} body={t("people.emptyBody")} />}
       />

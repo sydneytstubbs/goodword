@@ -23,15 +23,15 @@ test.describe("groups", () => {
 
   test.afterAll(async () => deleteUsers(users));
 
-  async function signedIn(browser: Browser, user: TestUser, next = "/shelf"): Promise<Page> {
+  async function signedIn(browser: Browser, user: TestUser, next = "/list"): Promise<Page> {
     const page = await (await browser.newContext()).newPage();
     await openMagicLink(page, user, next);
     return page;
   }
 
-  test("with no groups, the shelf offers to start one", async ({ browser }) => {
+  test("with no groups, the list offers to start one", async ({ browser }) => {
     const page = await signedIn(browser, priya);
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
     await expectNoViolations(page);
     await page.getByRole("link", { name: "Start a group" }).click();
@@ -59,15 +59,15 @@ test.describe("groups", () => {
     await expect(page.getByText("Priya · You · Owner").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
 
-    // My Recs is a main nav item, listing your groups (PRD F5.3).
-    await page.getByRole("link", { name: "My Recs" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("My Recs");
+    // My list is a main nav item, listing your groups (PRD F5.3).
+    await page.getByRole("link", { name: "My list" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("My list");
     await expect(page.getByRole("heading", { level: 2, name: "No recs yet" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /College crew/ })).toHaveAttribute("href", `/shelf/${groupId}`);
+    await expect(page.getByRole("link", { name: /College crew/ })).toHaveAttribute("href", `/list/${groupId}`);
     await expectNoViolations(page);
   });
 
-  test("a signed-out friend joins from the link, through sign-in, onto the shelf", async ({ page }) => {
+  test("a signed-out friend joins from the link, through sign-in, onto the list", async ({ page }) => {
     const path = new URL(inviteLink).pathname;
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Priya invited you to College crew.");
@@ -87,7 +87,7 @@ test.describe("groups", () => {
     await page.getByLabel("Your name").fill("Jonah");
     await page.getByRole("button", { name: "Continue" }).click();
 
-    await expect(page).toHaveURL(new RegExp(`/shelf/${groupId}$`));
+    await expect(page).toHaveURL(new RegExp(`/list/${groupId}$`));
     await expect(page.getByText("You're in. Here's what College crew vouches for.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Nothing here yet" })).toBeVisible();
     await expectNoViolations(page);
@@ -98,16 +98,16 @@ test.describe("groups", () => {
     await expect(page.getByText("You're in. Here's what College crew vouches for.")).toHaveCount(0);
   });
 
-  test("opening the link again as a member goes straight to the shelf", async ({ browser }) => {
+  test("opening the link again as a member goes straight to the list", async ({ browser }) => {
     const page = await signedIn(browser, jonahEmail);
     await page.goto(new URL(inviteLink).pathname);
-    await expect(page).toHaveURL(new RegExp(`/shelf/${groupId}$`));
+    await expect(page).toHaveURL(new RegExp(`/list/${groupId}$`));
     await expect(page.getByText("You're already in College crew.").filter({ visible: true })).toBeVisible();
   });
 
   test("someone outside the group sees nothing of it", async ({ browser }) => {
     const page = await signedIn(browser, tess);
-    for (const path of [`/shelf/${groupId}`, `/groups/${groupId}`]) {
+    for (const path of [`/list/${groupId}`, `/groups/${groupId}`]) {
       const response = await page.goto(path);
       expect(response?.status()).toBe(404);
       await expect(page.getByRole("heading", { level: 2, name: "You're not in this group" })).toBeVisible();
@@ -120,9 +120,9 @@ test.describe("groups", () => {
     await expectNoViolations(page);
   });
 
-  test("the switcher and invite sheet on the shelf", async ({ browser }) => {
-    const page = await signedIn(browser, priya, `/shelf/${groupId}`);
-    await page.getByRole("button", { name: /Switch shelf/ }).click();
+  test("the switcher and invite sheet on the list", async ({ browser }) => {
+    const page = await signedIn(browser, priya, `/list/${groupId}`);
+    await page.getByRole("button", { name: /Switch list/ }).click();
     await expect(page.getByRole("link", { name: /All groups/ })).toBeVisible();
     await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "Invite to College crew" }).click();
@@ -145,7 +145,7 @@ test.describe("groups", () => {
     await expect(page.getByText("Jonah", { exact: true })).toHaveCount(0);
 
     const jonah = await signedIn(browser, jonahEmail);
-    await jonah.goto(`/shelf/${groupId}`);
+    await jonah.goto(`/list/${groupId}`);
     await expect(jonah.getByRole("heading", { level: 2, name: "You're not in this group" })).toBeVisible();
 
     const old = inviteLink;
@@ -171,7 +171,7 @@ test.describe("groups", () => {
     const dialog = page.getByRole("dialog", { name: "Leave College crew 2026?" });
     await expect(dialog.getByText("You're the only member, so leaving deletes College crew 2026.", { exact: false }).filter({ visible: true })).toBeVisible();
     await dialog.getByRole("button", { name: "Leave and delete" }).click();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByText("College crew 2026 was deleted.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
   });
@@ -185,7 +185,7 @@ test.describe("groups", () => {
     const dialog = page.getByRole("dialog", { name: "Delete The girls?" });
     await expect(dialog.getByText("This removes the group for 1 person and can't be undone.").filter({ visible: true })).toBeVisible();
     await dialog.getByRole("button", { name: "Delete The girls" }).click();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByText("The girls was deleted.").filter({ visible: true })).toBeVisible();
   });
 });

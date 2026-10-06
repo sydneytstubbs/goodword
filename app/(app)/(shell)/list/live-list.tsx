@@ -7,18 +7,18 @@ import { prefersReducedMotion } from "@/lib/hooks";
 import { useBroadcast } from "@/lib/supabase/realtime";
 import { useGoodWords } from "../good-words";
 
-// Live new good words on a shelf (PRD F5.6). Others' good words never insert
+// Live new good words on a list (PRD F5.6). Others' good words never insert
 // themselves, so nothing jumps under your thumb: a pill counts them, and
 // tapping it scrolls to the top and brings them in. Your own show at once
 // through the usual optimistic update. A good word shared into several of
 // your groups counts once.
 
-function ShelfTopic({ groupId, onGoodWord }: { groupId: string; onGoodWord: (payload: Record<string, unknown>) => void }) {
+function ListTopic({ groupId, onGoodWord }: { groupId: string; onGoodWord: (payload: Record<string, unknown>) => void }) {
   useBroadcast(`shelf:${groupId}`, "good_word", onGoodWord);
   return null;
 }
 
-export function LiveShelf({ groupIds }: { groupIds: string[] }) {
+export function LiveList({ groupIds }: { groupIds: string[] }) {
   const router = useRouter();
   const { viewer } = useGoodWords();
   const seen = useRef(new Set<string>());
@@ -43,7 +43,7 @@ export function LiveShelf({ groupIds }: { groupIds: string[] }) {
   return (
     <>
       {groupIds.map((id) => (
-        <ShelfTopic key={id} groupId={id} onGoodWord={onGoodWord} />
+        <ListTopic key={id} groupId={id} onGoodWord={onGoodWord} />
       ))}
       <div aria-live="polite" className="pointer-events-none sticky top-2 z-sticky flex justify-center">
         {count > 0 && <NewGoodWordsPill count={count} onShow={show} />}

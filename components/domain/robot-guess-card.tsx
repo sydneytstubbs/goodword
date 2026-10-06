@@ -7,7 +7,7 @@ import type { Title } from "./types";
 
 // Robot guess card (DESIGN-SYSTEM.md 4.2.9): shown only when someone asks.
 // Unmistakable from a friend's good word: sunken, dashed border, a Robot
-// label, and no avatars, quote, or vouched-by row. Never inside a shelf.
+// label, and no avatars, quote, or vouched-by row. Never inside a list.
 
 export function RobotGuessCard({ title, vouchButton }: { title: Title; vouchButton?: ReactNode }) {
   return (

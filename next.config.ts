@@ -35,6 +35,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // "Shelf" became "list" (PRD v1.4.0, slice 13). Old links in emails,
+  // bookmarks, and Home Screen icons keep working, query string included.
+  async redirects() {
+    return [
+      { source: "/shelf", destination: "/list", permanent: true },
+      { source: "/shelf/:path*", destination: "/list/:path*", permanent: true },
+      { source: "/api/shelves/:path*", destination: "/api/lists/:path*", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

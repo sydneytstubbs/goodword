@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-// Desktop shortcuts that go somewhere (DS 3.9): `g` then `s` (shelf), `y` (My
-// shelf), or `a` (Activity), and `?` for the list in Help. `n` and `/` live
+// Desktop shortcuts that go somewhere (DS 3.9): `g` then `s` (list), `y` (My
+// list), or `a` (Activity), and `?` for the list in Help. `n` and `/` live
 // with Add. Never while typing, never with a sheet or menu open, never required.
 
-const GO: Record<string, string> = { s: "/shelf", y: "/you", a: "/activity" };
+const GO: Record<string, string> = { s: "/list", y: "/you", a: "/activity" };
 const SEQUENCE_MS = 1500;
 
 const isTyping = (target: EventTarget | null) =>

@@ -1,7 +1,7 @@
-// Shelf sorting and filtering (PRD F5.4, 6.3; DS 5.6). Pure, so the URL
+// List sorting and filtering (PRD F5.4, 6.3; DS 5.6). Pure, so the URL
 // parsing, the filter logic, and the chip counts are unit tested, and the
-// browser filters a loaded shelf instantly, even offline.
-import type { Service, ShelfCard, TitleType } from "@/components/domain/types";
+// browser filters a loaded list instantly, even offline.
+import type { Service, ListCard, TitleType } from "@/components/domain/types";
 
 export type TypeFilter = "all" | TitleType;
 export type Sort = "newest" | "vouched";
@@ -16,7 +16,7 @@ export type Filters = {
   genres: string[];
   length: Length | null;
   sort: Sort;
-  /** My Recs only: group ids it's shared into. OR within groups. */
+  /** My list only: group ids it's shared into. OR within groups. */
   groups: string[];
   /** On my services (P1): only titles on a streaming service the viewer has. */
   mine: boolean;
@@ -65,7 +65,7 @@ export function filtersToQuery(filters: Filters): string {
   return query ? `?${query}` : "";
 }
 
-/** Anything narrowing the shelf (sort doesn't). */
+/** Anything narrowing the list (sort doesn't). */
 export function isFiltered(filters: Filters): boolean {
   return (
     filters.type !== "all" ||
@@ -87,7 +87,7 @@ export function toggle<T>(values: T[], value: T): T[] {
 
 type Category = "type" | "services" | "genres" | "length" | "groups" | "mine";
 
-const test: Record<Category, (card: ShelfCard, f: Filters) => boolean> = {
+const test: Record<Category, (card: ListCard, f: Filters) => boolean> = {
   type: (card, f) => f.type === "all" || card.title.type === f.type,
   services: (card, f) => f.services.length === 0 || f.services.some((id) => card.services?.includes(id)),
   genres: (card, f) => f.genres.length === 0 || f.genres.some((g) => card.title.genres.includes(g)),
@@ -99,25 +99,25 @@ const test: Record<Category, (card: ShelfCard, f: Filters) => boolean> = {
 };
 
 /** AND across categories, OR within one (DS 5.6). `except` leaves one category out, for its chip counts. */
-export function matches(card: ShelfCard, filters: Filters, except?: Category): boolean {
+export function matches(card: ListCard, filters: Filters, except?: Category): boolean {
   return (Object.keys(test) as Category[]).every((c) => c === except || test[c](card, filters));
 }
 
-const latest = (card: ShelfCard) => Math.max(0, ...card.goodWords.map((g) => g.at.getTime()));
+const latest = (card: ListCard) => Math.max(0, ...card.goodWords.map((g) => g.at.getTime()));
 
 /** Newest good word first; or most people first, ties broken by newest (F5.4). */
-export function sortCards(cards: ShelfCard[], sort: Sort): ShelfCard[] {
+export function sortCards(cards: ListCard[], sort: Sort): ListCard[] {
   if (sort === "newest") return cards;
   return [...cards].sort((a, b) => b.goodWords.length - a.goodWords.length || latest(b) - latest(a));
 }
 
-export type FilteredShelf = {
-  cards: ShelfCard[];
+export type FilteredList = {
+  cards: ListCard[];
   /** With a length filter on: titles left out only because their runtime is unknown. */
   unknownLength: number;
 };
 
-export function filterShelf(cards: ShelfCard[], filters: Filters): FilteredShelf {
+export function filterList(cards: ListCard[], filters: Filters): FilteredList {
   const shown = cards.filter((card) => matches(card, filters));
   const unknownLength =
     filters.length === null ? 0 : cards.filter((c) => c.title.runtime === undefined && matches(c, filters, "length")).length;
@@ -125,10 +125,10 @@ export function filterShelf(cards: ShelfCard[], filters: Filters): FilteredShelf
 }
 
 /**
- * Every streaming service on the shelf, most common first (ties by name),
+ * Every streaming service on the list, most common first (ties by name),
  * with how many cards each would show given the other filters.
  */
-export function serviceCounts(cards: ShelfCard[], services: Service[], filters: Filters): Array<Service & { count: number; total: number }> {
+export function serviceCounts(cards: ListCard[], services: Service[], filters: Filters): Array<Service & { count: number; total: number }> {
   const others = cards.filter((card) => matches(card, filters, "services"));
   return services
     .map((service) => ({
@@ -140,8 +140,8 @@ export function serviceCounts(cards: ShelfCard[], services: Service[], filters: 
     .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
 }
 
-/** Genres present on the shelf, most common first, with counts given the other filters. */
-export function genreCounts(cards: ShelfCard[], filters: Filters): Array<{ name: string; count: number }> {
+/** Genres present on the list, most common first, with counts given the other filters. */
+export function genreCounts(cards: ListCard[], filters: Filters): Array<{ name: string; count: number }> {
   const totals = new Map<string, number>();
   for (const card of cards) for (const g of card.title.genres) totals.set(g, (totals.get(g) ?? 0) + 1);
   const others = cards.filter((card) => matches(card, filters, "genres"));
@@ -151,7 +151,7 @@ export function genreCounts(cards: ShelfCard[], filters: Filters): Array<{ name:
 }
 
 /**
- * The service chips on the bar: the five most common on the shelf, in a
+ * The service chips on the bar: the five most common on the list, in a
  * stable order so chips don't jump as filters change, plus any other
  * selected service, so every active filter stays visible (DS 5.6).
  */
@@ -161,7 +161,7 @@ export function barServices<T extends Service>(ranked: T[], filters: Filters): T
 }
 
 /**
- * What a no-results group shelf names: "a Netflix movie", "a Netflix or Hulu
+ * What a no-results group list names: "a Netflix movie", "a Netflix or Hulu
  * show", "a movie", "anything on Netflix". Null when genres, length, or groups
  * are on too, which the filter bar above already shows.
  */

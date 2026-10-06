@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EVENTS, cleanProps, isEventName, lengthBucket } from "./schema";
-import { filterKeys } from "./shelf";
+import { filterKeys } from "./list";
 
 // Event schema (PRD 11.1, 11.2): only known events, only their properties,
 // and never text that could hold a note, a search, or an email address.
@@ -10,7 +10,7 @@ describe("event schema", () => {
     expect(Object.keys(EVENTS).sort()).toEqual(
       [
         "invite_link_opened", "invite_shared", "group_created", "group_joined", "sign_in_completed", "add_opened",
-        "search_performed", "good_word_created", "good_word_edited", "good_word_taken_back", "shelf_viewed", "title_viewed",
+        "search_performed", "good_word_created", "good_word_edited", "good_word_taken_back", "list_viewed", "title_viewed",
         "where_to_watch_clicked", "email_sent", "email_clicked", "notification_pref_changed", "first_good_word_prompt",
         "conversation_opened", "comment_created", "comment_edited", "comment_deleted", "mention_notified", "activity_opened",
         "spoiler_revealed", "share_link_toggled", "import_started", "import_parsed", "import_failed", "import_card_decided", "import_finished",
@@ -43,8 +43,8 @@ describe("event schema", () => {
   });
 
   it("records filter names only, never their values", () => {
-    expect(cleanProps("shelf_viewed", { shelf: "group", filters: ["genres", "type", "genres", "Comedy!", "x".repeat(30)], new_count: 3 })).toEqual({
-      shelf: "group",
+    expect(cleanProps("list_viewed", { list: "group", filters: ["genres", "type", "genres", "Comedy!", "x".repeat(30)], new_count: 3 })).toEqual({
+      list: "group",
       filters: ["genres", "type"],
       new_count: 3,
     });

@@ -50,7 +50,7 @@ export async function saveStreamingServices(region: string, providerIds: number[
   return !error && data === true;
 }
 
-/** Settings › Share my shelf (F9): on makes a new link, off stops the old one at once. */
+/** Settings › Share my list (F9): on makes a new link, off stops the old one at once. */
 export async function setShareLink(on: boolean): Promise<string | null> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("set_share_link", { p_on: on });
@@ -59,7 +59,7 @@ export async function setShareLink(on: boolean): Promise<string | null> {
   return data;
 }
 
-/** Settings › Share my shelf › Reset link (F9): a new link; the old one stops working. */
+/** Settings › Share my list › Reset link (F9): a new link; the old one stops working. */
 export async function resetShareLink(): Promise<string | null> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("reset_share_link");

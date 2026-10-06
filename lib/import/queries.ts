@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
-// An import with cards still to review, for My Recs' resume banner (PRD
+// An import with cards still to review, for My list' resume banner (PRD
 // F15.3). Your own only, through RLS: the most recent one, where to pick up,
 // and how many are left.
 export async function unfinishedImport(): Promise<{ importId: string; position: number; left: number } | null> {

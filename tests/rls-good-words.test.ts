@@ -82,7 +82,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     for (const id of ids) await admin.auth.admin.deleteUser(id);
   });
 
-  it("puts in a good word on every chosen shelf, and the first one is a milestone once", async () => {
+  it("puts in a good word on every chosen list, and the first one is a milestone once", async () => {
     expect(await put(people.priya, ferry, "  ep 3 is where it gets you ", [crew, girls])).toEqual({ status: "created", milestone: "first" });
     const { data } = await people.priya.client.from("good_words").select("note, source, good_word_groups(group_id)").eq("title_id", ferry).single();
     expect(data!.note).toBe("ep 3 is where it gets you");
@@ -96,13 +96,13 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     expect(data).toEqual([{ note: "ep 3" }]);
   });
 
-  it("allows zero groups: it lives only on My Recs", async () => {
+  it("allows zero groups: it lives only on My list", async () => {
     expect((await put(people.priya, moth, "", [])).status).toBe("created");
     const { data } = await people.priya.client.from("good_words").select("note, good_word_groups(group_id)").eq("title_id", moth).single();
     expect(data).toEqual({ note: null, good_word_groups: [] });
   });
 
-  it("refuses shelves you're not on", async () => {
+  it("refuses lists you're not on", async () => {
     expect((await put(people.jonah, moth, null, [girls])).status).toBe("not_member");
     const { data } = await people.jonah.client.from("good_words").select("id").eq("user_id", people.jonah.id);
     expect(data).toEqual([]);
@@ -123,7 +123,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     expect(links).toEqual([]);
   });
 
-  it("never lets anyone write good words or shelves directly", async () => {
+  it("never lets anyone write good words or lists directly", async () => {
     const insert = await people.jonah.client.from("good_words").insert({ user_id: people.jonah.id, title_id: moth });
     expect(insert.error).not.toBeNull();
     const { data: mine } = await people.priya.client.from("good_words").select("id").eq("title_id", ferry).single();
@@ -150,7 +150,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     expect((await people.priya.client.rpc("set_good_word_groups", { p_title: ferry, p_groups: [crew, girls] })).data).toBe("updated");
   });
 
-  it("takes a good word back and Undo restores its note, source, dates, and shelves exactly", async () => {
+  it("takes a good word back and Undo restores its note, source, dates, and lists exactly", async () => {
     const { data: before } = await people.priya.client
       .from("good_words")
       .select("note, source, created_at, good_word_groups(group_id, shared_at)")
@@ -160,14 +160,14 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     const { data: gone } = await people.jonah.client.from("good_words").select("id");
     expect(gone).toEqual([]);
 
-    const shelves = before!.good_word_groups as Array<{ group_id: string; shared_at: string }>;
+    const lists = before!.good_word_groups as Array<{ group_id: string; shared_at: string }>;
     const restored = await people.priya.client.rpc("restore_good_word", {
       p_title: ferry,
       p_note: before!.note,
       p_source: before!.source,
       p_created_at: before!.created_at,
-      p_groups: shelves.map((s) => s.group_id),
-      p_shared_at: shelves.map((s) => s.shared_at),
+      p_groups: lists.map((s) => s.group_id),
+      p_shared_at: lists.map((s) => s.shared_at),
     });
     expect(restored.data).toBe("restored");
     const { data: after } = await people.priya.client
@@ -182,7 +182,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     });
   });
 
-  it("takes a member's good words off a shelf when they leave, and keeps them on My Recs", async () => {
+  it("takes a member's good words off a list when they leave, and keeps them on My list", async () => {
     await put(people.tess, ferry, "agree", [girls], "join_prompt");
     const { data: seen } = await people.priya.client.from("good_words").select("user_id").eq("user_id", people.tess.id);
     expect(seen).toHaveLength(1);
@@ -193,7 +193,7 @@ describe.skipIf(!enabled)("row-level security: good words", () => {
     expect(own).toEqual([{ note: "agree", source: "join_prompt", good_word_groups: [] }]);
   });
 
-  it("takes a removed member's good words off the shelf", async () => {
+  it("takes a removed member's good words off the list", async () => {
     await put(people.jonah, moth, null, [crew]);
     expect((await people.priya.client.rpc("remove_member", { p_group: crew, p_user: people.jonah.id })).data).toBe(true);
     const { data } = await people.priya.client.from("good_words").select("id").eq("user_id", people.jonah.id);

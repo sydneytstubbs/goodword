@@ -170,7 +170,7 @@ describe.skipIf(!enabled)("row-level security: conversations and Activity", () =
     expect(own).toBe(true);
   });
 
-  it("lets any title have a conversation, on the shelf or not", async () => {
+  it("lets any title have a conversation, on the list or not", async () => {
     expect((await post(people.jonah, crew, moth, "anyone seen this?")).status).toBe("created");
     const { data } = await people.tess.client.rpc("conversation_previews", { p_title: moth });
     const crewPreview = (data as Array<{ group_id: string; comment_count: number; on_shelf: boolean }>).find((p) => p.group_id === crew);

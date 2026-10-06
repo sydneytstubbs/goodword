@@ -70,7 +70,7 @@ export async function conversationPreviews(titleId: string | null, groups: Group
       group: { id: g.id, name: g.name, memberCount: g.members.length },
       count: row?.comment_count ?? 0,
       ...(row?.latest_at ? { latestAt: new Date(row.latest_at) } : {}),
-      onShelf: row?.on_shelf ?? false,
+      onList: row?.on_shelf ?? false,
       recent: (row?.recent ?? []).map((c) => toComment(c, viewerId)),
     };
   });
@@ -78,7 +78,7 @@ export async function conversationPreviews(titleId: string | null, groups: Group
 
 /**
  * Which group's conversation to show (DS 5.17): the one asked for, then the
- * one with the most recent comment, then one whose shelf the title is on,
+ * one with the most recent comment, then one whose list the title is on,
  * then the most recently joined.
  */
 export function defaultGroupId(previews: ConversationPreview[], asked?: string | null): string | null {
@@ -86,7 +86,7 @@ export function defaultGroupId(previews: ConversationPreview[], asked?: string |
   const latest = previews
     .filter((p) => p.latestAt)
     .sort((a, b) => b.latestAt!.getTime() - a.latestAt!.getTime())[0];
-  return latest?.group.id ?? previews.find((p) => p.onShelf)?.group.id ?? previews[0]?.group.id ?? null;
+  return latest?.group.id ?? previews.find((p) => p.onList)?.group.id ?? previews[0]?.group.id ?? null;
 }
 
 const PAGE = 30;
@@ -163,9 +163,9 @@ export async function newerComments(groupId: string, titleId: string, from: stri
 }
 
 /**
- * Comment counts for shelf cards (DS 4.2.2), by title row id: summed over
+ * Comment counts for list cards (DS 4.2.2), by title row id: summed over
  * `groupIds`, and whether any has comments you haven't seen. Empty (no
- * counts) if they can't be read, rather than failing the shelf.
+ * counts) if they can't be read, rather than failing the list.
  */
 export async function commentCounts(groupIds: string[]): Promise<Map<string, CommentCount>> {
   const counts = new Map<string, CommentCount>();

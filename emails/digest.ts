@@ -22,7 +22,7 @@ export function digestEmail(content: DigestContent, links: EmailLinks): Email {
     unsubscribe: { label: t("email.digest.unsubscribe"), href: links.unsubscribe },
     settings: { label: t("email.settings"), href: `${origin}/you/settings` },
   };
-  const openHref = `${origin}/shelf?${new URLSearchParams(REF)}`;
+  const openHref = `${origin}/list?${new URLSearchParams(REF)}`;
 
   const rows: string[] = [row(`<h1 style="${styles.heading}margin:0;">${escapeHtml(t("email.digest.heading"))}</h1>`)];
   const text: string[] = [t("email.digest.heading"), ""];
@@ -45,7 +45,7 @@ export function digestEmail(content: DigestContent, links: EmailLinks): Email {
 
     if (group.total > group.titles.length) {
       const seeAll = t("email.digest.seeAll", { count: group.total, group: group.name });
-      const href = `${origin}/shelf/${group.id}?${new URLSearchParams(REF)}`;
+      const href = `${origin}/list/${group.id}?${new URLSearchParams(REF)}`;
       rows.push(row(`<a href="${escapeHtml(href)}" style="${styles.small}${styles.link}">${escapeHtml(seeAll)}</a>`, "0 0 16px 0"));
       text.push(`${seeAll}: ${href}`, "");
     }

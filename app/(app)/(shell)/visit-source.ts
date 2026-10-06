@@ -18,10 +18,10 @@ const EMAIL_REFS: Record<string, "digest" | "mention" | "group_join" | "nudge_em
   nudge_email: "nudge_email",
 };
 
-function landing(pathname: string): "title" | "shelf" | "conversation" | "group" | "other" {
+function landing(pathname: string): "title" | "list" | "conversation" | "group" | "other" {
   if (/^\/title\/(movie|tv)\/\d+\/conversation$/.test(pathname)) return "conversation";
   if (pathname.startsWith("/title/")) return "title";
-  if (pathname.startsWith("/shelf")) return "shelf";
+  if (pathname.startsWith("/list")) return "list";
   if (pathname.startsWith("/groups/")) return "group";
   return "other";
 }

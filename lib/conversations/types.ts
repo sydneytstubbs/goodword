@@ -14,8 +14,8 @@ export type ConversationPreview = {
   group: GroupWithCount;
   count: number;
   latestAt?: Date;
-  /** The title is on this group's shelf. */
-  onShelf: boolean;
+  /** The title is on this group's list. */
+  onList: boolean;
   /** The 3 most recent comments, oldest first. */
   recent: ConversationComment[];
 };
@@ -29,5 +29,5 @@ export type ConversationPage = {
   firstUnseenId?: string;
 };
 
-/** Comments on a shelf card's title in one group (DS 4.2.2). */
+/** Comments on a list card's title in one group (DS 4.2.2). */
 export type CommentCount = { count: number; unseen: boolean };

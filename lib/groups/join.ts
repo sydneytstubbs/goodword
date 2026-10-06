@@ -39,11 +39,11 @@ export async function joinWithCode(code: string): Promise<string> {
   switch (result?.status) {
     case "joined":
       await recordEvent("group_joined", { group_id: result.group_id ?? undefined, via: "invite" });
-      return `/shelf/${result.group_id}`;
+      return `/list/${result.group_id}`;
     case "already_member": {
       const preview = await getInvitePreview(code);
       if (preview.status === "active") await setNotice("alreadyMember", { group: preview.groupName });
-      return `/shelf/${result.group_id}`;
+      return `/list/${result.group_id}`;
     }
     case "group_full":
       return `${landing}?error=full`;

@@ -55,7 +55,7 @@ export const listMyGroups = cache(async (userId: string): Promise<GroupSummary[]
 
 /**
  * New good words from other people per group since you last looked at its
- * shelf (PRD F5.5): the switcher's counts and the Shelf tab's dot. RLS-scoped.
+ * list (PRD F5.5): the switcher's counts and the List tab's dot. RLS-scoped.
  * Empty (no badges) if it can't be read, rather than failing the page.
  */
 export const newGoodWordCounts = cache(async (): Promise<Record<string, number>> => {
@@ -117,7 +117,7 @@ const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? "";
 
 /**
  * What an invite link shows before joining (F2.4): inviter, group name, and
- * member count. Never the shelf. Service role, because the visitor isn't a
+ * member count. Never the list. Service role, because the visitor isn't a
  * member yet; only these fields leave this function.
  */
 export const getInvitePreview = cache(async (code: string): Promise<InvitePreview> => {

@@ -4,7 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { FilterBar, type FilterChange } from "@/components/domain/filter-bar";
 import { RecCardGrid } from "@/components/domain/rec-card";
-import type { Service, ShelfCard } from "@/components/domain/types";
+import type { Service, ListCard } from "@/components/domain/types";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Milestone } from "@/components/ui/milestone";
@@ -12,7 +12,7 @@ import { Skeleton, SkeletonRegion } from "@/components/ui/skeleton";
 import {
   article,
   clearFilters,
-  filterShelf,
+  filterList,
   filtersToQuery,
   genreCounts,
   noResultsSubject,
@@ -21,24 +21,24 @@ import {
   serviceCounts,
   type Filters,
 } from "@/lib/good-words/filters";
-import { applyOverlays, type ShelfScope } from "@/lib/good-words/shelf";
+import { applyOverlays, type ListScope } from "@/lib/good-words/list";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "../good-words";
 
-// A shelf's cards (PRD F5, DS 4.2.2, 5.6): the filter bar, then a grid of 2,
+// A list's cards (PRD F5, DS 4.2.2, 5.6): the filter bar, then a grid of 2,
 // 3, then 4 columns (DS 8.1), with the viewer's pending changes applied. A
 // card the viewer just put in slides in at the top. Filters and sort live in
-// the URL (PRD 6.3), so they survive refresh and Back; the whole shelf is
+// the URL (PRD 6.3), so they survive refresh and Back; the whole list is
 // loaded, so filtering is instant and works offline. Cards show 24 at a
 // time, with infinite scroll, a Load more fallback, and an end footer.
 
 const GRID = "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4";
 
-// Pages shown per shelf and filter, kept for the session, so Back from a
+// Pages shown per list and filter, kept for the session, so Back from a
 // title returns to the same place (DS 5.1). Read only after the first
 // hydration, so the server's first page always matches.
 let hydrated = false;
-const pagesKey = (key: string) => `shelf-pages:${key}`;
+const pagesKey = (key: string) => `list-pages:${key}`;
 
 function restoredPages(key: string): number {
   if (!hydrated) return 1;
@@ -78,18 +78,18 @@ function useStuck() {
   return { ref, stuck };
 }
 
-export function ShelfCards({
+export function ListCards({
   cards: serverCards,
   services,
   scope,
   empty,
   after,
 }: {
-  cards: ShelfCard[];
-  /** Streaming services on the shelf in the viewer's region. */
+  cards: ListCard[];
+  /** Streaming services on the list in the viewer's region. */
   services: Service[];
-  scope: ShelfScope;
-  /** The empty state, when there's nothing on the shelf. */
+  scope: ListScope;
+  /** The empty state, when there's nothing on the list. */
   empty: ReactNode;
   /** Below the cards: the first-good-word prompt. */
   after?: ReactNode;
@@ -102,7 +102,7 @@ export function ShelfCards({
   const key = `${pathname}${query}`;
 
   const cards = applyOverlays(serverCards, overlays, scope, viewer);
-  const { cards: shown, unknownLength } = filterShelf(cards, filters);
+  const { cards: shown, unknownLength } = filterList(cards, filters);
   const onServer = new Set(serverCards.map((c) => c.title.id));
   const groupOf = new Map(groups.map((g) => [g.id, { id: g.id, name: g.name }]));
 
@@ -137,7 +137,7 @@ export function ShelfCards({
   if (cards.length === 0) {
     return (
       <>
-        <ShelfMilestone />
+        <ListMilestone />
         {empty}
       </>
     );
@@ -145,7 +145,7 @@ export function ShelfCards({
 
   return (
     <>
-      <ShelfMilestone />
+      <ListMilestone />
       <div ref={stuckRef} aria-hidden="true" className="-mb-8 h-px" />
       <FilterBar
         filters={filters}
@@ -168,7 +168,7 @@ export function ShelfCards({
           onClear={() => onChange(clearFilters(filters), "replace")}
         />
       ) : (
-        <section aria-label={t("shelf.goodWords", { count: shown.length })} className="flex flex-col gap-10">
+        <section aria-label={t("list.goodWords", { count: shown.length })} className="flex flex-col gap-10">
           <ul className={GRID}>
             {visible.map((card, i) => (
               <li key={card.title.id} className={onServer.has(card.title.id) ? undefined : "motion-ok:animate-card-in"}>
@@ -181,7 +181,7 @@ export function ShelfCards({
                   commentCount={card.comments?.count}
                   unseenComments={card.comments?.unseen}
                   eager={i < 4}
-                  shelves={
+                  lists={
                     scope.kind === "mine"
                       ? (card.groupIds ?? []).flatMap((id) => {
                           const group = groupOf.get(id);
@@ -197,11 +197,11 @@ export function ShelfCards({
           {hasMore ? (
             <div ref={sentinel} className="flex justify-center">
               <Button variant="secondary" onClick={loadMore}>
-                {t("shelf.loadMore")}
+                {t("list.loadMore")}
               </Button>
             </div>
           ) : (
-            <p className="text-center text-caption text-muted">{t("shelf.end")}</p>
+            <p className="text-center text-caption text-muted">{t("list.end")}</p>
           )}
         </section>
       )}
@@ -247,7 +247,7 @@ function NoResults({
   );
 }
 
-export function ShelfMilestone() {
+export function ListMilestone() {
   const { milestone, dismissMilestone } = useGoodWords();
   if (!milestone) return null;
   return (
@@ -260,9 +260,9 @@ export function ShelfMilestone() {
 }
 
 /** Six skeleton cards in the grid's exact shape (PRD F5.7, DS 4.1.17). */
-export function ShelfSkeleton() {
+export function ListSkeleton() {
   return (
-    <SkeletonRegion label={t("shelf.loading")}>
+    <SkeletonRegion label={t("list.loading")}>
       <div className={GRID}>
         {[0, 1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="flex flex-col gap-2.5">

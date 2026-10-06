@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ShelfCard, Title } from "@/components/domain/types";
+import type { ListCard, Title } from "@/components/domain/types";
 import {
   article,
   barServices,
   clearFilters,
   DEFAULT_FILTERS,
-  filterShelf,
+  filterList,
   filtersToQuery,
   genreCounts,
   isFiltered,
@@ -25,7 +25,7 @@ const services = [
   { id: 337, name: "Disney Plus" },
 ];
 
-function card(name: string, type: Title["type"], opts: Partial<Title> & { services?: number[]; people?: number; at?: string; groupIds?: string[] } = {}): ShelfCard {
+function card(name: string, type: Title["type"], opts: Partial<Title> & { services?: number[]; people?: number; at?: string; groupIds?: string[] } = {}): ListCard {
   const { services: s, people = 1, at = "2026-09-01T00:00:00Z", groupIds, ...title } = opts;
   return {
     title: { id: `${type}-${name.length}${name[0]}`, type, name, genres: [], accent: "plum", ...title },
@@ -35,7 +35,7 @@ function card(name: string, type: Title["type"], opts: Partial<Title> & { servic
   };
 }
 
-const shelf: ShelfCard[] = [
+const list: ListCard[] = [
   card("The Night Ferry", "tv", { genres: ["Drama", "Mystery"], runtime: 52, services: [NETFLIX], at: "2026-09-05T00:00:00Z", groupIds: ["g1"] }),
   card("Low Tide Club", "movie", { genres: ["Comedy"], runtime: 104, services: [NETFLIX, HULU], people: 3, at: "2026-09-04T00:00:00Z", groupIds: ["g2"] }),
   card("Grandma's Heist", "movie", { genres: ["Comedy", "Crime"], runtime: 131, services: [HULU], people: 2, at: "2026-09-03T00:00:00Z" }),
@@ -43,7 +43,7 @@ const shelf: ShelfCard[] = [
   card("Bea's Kitchen", "tv", { genres: ["Comedy"], runtime: 24, at: "2026-09-01T00:00:00Z" }),
 ];
 
-const names = (cards: ShelfCard[]) => cards.map((c) => c.title.name);
+const names = (cards: ListCard[]) => cards.map((c) => c.title.name);
 const params = (query: string) => new URLSearchParams(query);
 const f = (partial: Partial<Filters>): Filters => ({ ...DEFAULT_FILTERS, ...partial });
 
@@ -77,46 +77,46 @@ describe("URL state (PRD 6.3)", () => {
 
 describe("filter logic (DS 5.6)", () => {
   it("ORs within a category and ANDs across them", () => {
-    expect(names(filterShelf(shelf, f({ services: [NETFLIX, HULU] })).cards)).toEqual([
+    expect(names(filterList(list, f({ services: [NETFLIX, HULU] })).cards)).toEqual([
       "The Night Ferry",
       "Low Tide Club",
       "Grandma's Heist",
       "Moth Season",
     ]);
-    expect(names(filterShelf(shelf, f({ type: "movie", services: [NETFLIX] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
-    expect(names(filterShelf(shelf, f({ type: "movie", services: [NETFLIX], genres: ["Comedy"], length: 120 })).cards)).toEqual([
+    expect(names(filterList(list, f({ type: "movie", services: [NETFLIX] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
+    expect(names(filterList(list, f({ type: "movie", services: [NETFLIX], genres: ["Comedy"], length: 120 })).cards)).toEqual([
       "Low Tide Club",
     ]);
   });
 
   it("uses episode runtime for shows, and leaves out unknown runtimes, counting them", () => {
-    const under30 = filterShelf(shelf, f({ length: 30 }));
+    const under30 = filterList(list, f({ length: 30 }));
     expect(names(under30.cards)).toEqual(["Bea's Kitchen"]);
     expect(under30.unknownLength).toBe(1);
-    expect(filterShelf(shelf, f({ length: 30, type: "tv" })).unknownLength).toBe(0);
-    expect(filterShelf(shelf, f({})).unknownLength).toBe(0);
+    expect(filterList(list, f({ length: 30, type: "tv" })).unknownLength).toBe(0);
+    expect(filterList(list, f({})).unknownLength).toBe(0);
   });
 
   it("never matches a service filter while a title's services are unknown", () => {
-    expect(names(filterShelf(shelf, f({ services: [337] })).cards)).toEqual([]);
+    expect(names(filterList(list, f({ services: [337] })).cards)).toEqual([]);
   });
 
   it("shows only titles on one of your services with On my services (P1)", () => {
     const mine = f({ mine: true, myServices: [HULU] });
-    expect(names(filterShelf(shelf, mine).cards)).toEqual(["Low Tide Club", "Grandma's Heist"]);
-    expect(names(filterShelf(shelf, f({ mine: true, myServices: [] })).cards)).toEqual([]);
+    expect(names(filterList(list, mine).cards)).toEqual(["Low Tide Club", "Grandma's Heist"]);
+    expect(names(filterList(list, f({ mine: true, myServices: [] })).cards)).toEqual([]);
     expect(isFiltered(mine)).toBe(true);
     expect(filtersToQuery(mine)).toBe("?mine=1");
     expect(parseFilters(params("mine=1")).mine).toBe(true);
     expect(clearFilters(mine)).toEqual(f({ myServices: [HULU] }));
   });
 
-  it("filters My Recs by the groups a good word is shared into", () => {
-    expect(names(filterShelf(shelf, f({ groups: ["g2"] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
+  it("filters My list by the groups a good word is shared into", () => {
+    expect(names(filterList(list, f({ groups: ["g2"] })).cards)).toEqual(["Low Tide Club", "Moth Season"]);
   });
 
   it("sorts by most vouched, ties broken by newest", () => {
-    expect(names(filterShelf(shelf, f({ sort: "vouched" })).cards)).toEqual([
+    expect(names(filterList(list, f({ sort: "vouched" })).cards)).toEqual([
       "Low Tide Club",
       "Moth Season",
       "Grandma's Heist",
@@ -127,8 +127,8 @@ describe("filter logic (DS 5.6)", () => {
 });
 
 describe("chip counts (PRD F5.4)", () => {
-  it("ranks services by how common they are on the shelf, counting under the other filters", () => {
-    const counts = serviceCounts(shelf, services, f({ type: "movie", services: [NETFLIX] }));
+  it("ranks services by how common they are on the list, counting under the other filters", () => {
+    const counts = serviceCounts(list, services, f({ type: "movie", services: [NETFLIX] }));
     expect(counts.map((s) => [s.name, s.total, s.count])).toEqual([
       ["Netflix", 3, 2],
       ["Hulu", 2, 2],
@@ -141,8 +141,8 @@ describe("chip counts (PRD F5.4)", () => {
     expect(barServices(ranked, f({ services: [7, 2] })).map((s) => s.id)).toEqual([1, 2, 3, 4, 5, 7]);
   });
 
-  it("lists genres present on the shelf, most common first", () => {
-    expect(genreCounts(shelf, f({ type: "movie" }))).toEqual([
+  it("lists genres present on the list, most common first", () => {
+    expect(genreCounts(list, f({ type: "movie" }))).toEqual([
       { name: "Comedy", count: 2 },
       { name: "Crime", count: 1 },
       { name: "Drama", count: 0 },

@@ -103,7 +103,7 @@ describe("weekly digest", () => {
     expect(links).toContain(`${ORIGIN}/title/tv/101?ref=digest`);
     expect(links).toContain(`${ORIGIN}/title/movie/102?ref=digest`);
     expect(links).toContain(`${ORIGIN}/title/tv/101/conversation?group=${CREW}&ref=digest`);
-    expect(links).toContain(`${ORIGIN}/shelf?ref=digest`);
+    expect(links).toContain(`${ORIGIN}/list?ref=digest`);
     for (const link of links) expect(new URL(link).searchParams.get("ref")).toBe("digest");
   });
 
@@ -119,7 +119,7 @@ describe("weekly digest", () => {
     more.groups[0].total = 11;
     const { html } = digestEmail(more, LINKS);
     expect(html).toContain("See all 11 in College crew");
-    expect(hrefs(html)).toContain(`${ORIGIN}/shelf/${CREW}?ref=digest`);
+    expect(hrefs(html)).toContain(`${ORIGIN}/list/${CREW}?ref=digest`);
   });
 
   it("says why you got it, with unsubscribe and settings links", () => {
@@ -211,8 +211,8 @@ describe("weekend prompt", () => {
     const email = weekendPromptEmail({ origin: ORIGIN, unsubscribe: `${ORIGIN}/unsubscribe?token=x` });
     expect(email.subject).toBe("What did you watch this weekend?");
     expect(email.html).toContain("Put in a good word");
-    expect(email.html).toContain(`${ORIGIN}/shelf?add=1&amp;ref=nudge_email`);
-    expect(email.text).toContain(`${ORIGIN}/shelf?add=1&ref=nudge_email`);
+    expect(email.html).toContain(`${ORIGIN}/list?add=1&amp;ref=nudge_email`);
+    expect(email.text).toContain(`${ORIGIN}/list?add=1&ref=nudge_email`);
     expect(email.html).toContain(`${ORIGIN}/unsubscribe?token=x`);
     expect(email.text).not.toContain("!");
   });

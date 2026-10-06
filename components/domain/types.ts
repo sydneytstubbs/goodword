@@ -57,26 +57,26 @@ export type MyGoodWord = {
   groupIds: string[];
   createdAt: string;
   source: GoodWordSource;
-  /** When it went on each shelf, by group id, so Undo restores it exactly. */
+  /** When it went on each list, by group id, so Undo restores it exactly. */
   sharedAt: Record<string, string>;
 };
 
-/** One card per title per shelf (PRD F4): everyone who vouched, newest first. */
-export type ShelfCard = {
+/** One card per title per list (PRD F4): everyone who vouched, newest first. */
+export type ListCard = {
   title: Title;
   goodWords: GoodWord[];
-  /** My Recs only: the viewer's groups it's shared into. */
+  /** My list only: the viewer's groups it's shared into. */
   groupIds?: string[];
-  /** A good word from someone else since the viewer last looked at this shelf (PRD F5.5). */
+  /** A good word from someone else since the viewer last looked at this list (PRD F5.5). */
   isNew?: boolean;
   /** Streaming services (TMDB provider ids) in the viewer's region. Unknown until fetched. */
   services?: number[];
-  /** Comments on it in this shelf's groups, and whether any are unseen (DS 4.2.2, PRD F13). */
+  /** Comments on it in this list's groups, and whether any are unseen (DS 4.2.2, PRD F13). */
   comments?: { count: number; unseen: boolean };
 };
 
-/** A streaming service on a shelf, for the services filter (PRD F5.4). */
+/** A streaming service on a list, for the services filter (PRD F5.4). */
 export type Service = { id: number; name: string };
 
-/** A shelf's cards, and the streaming services on it in the viewer's region. */
-export type Shelf = { cards: ShelfCard[]; services: Service[] };
+/** A list's cards, and the streaming services on it in the viewer's region. */
+export type List = { cards: ListCard[]; services: Service[] };

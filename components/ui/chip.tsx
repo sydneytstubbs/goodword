@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { peopleTone, toneBg, type PeopleTone } from "@/lib/people-color";
 import { Icon } from "../icon";
 
-// Chips (DESIGN-SYSTEM.md 4.1.9). Group chip says which shelf; filter chip
+// Chips (DESIGN-SYSTEM.md 4.1.9). Group chip says which list; filter chip
 // narrows what's shown. Visual height 32px, hit area 44px.
 
 export type Group = { id: string; name: string };
@@ -32,7 +32,7 @@ export function GroupDot({
 const groupChipClass =
   "relative inline-flex h-8 items-center gap-2 rounded-pill bg-surface-sunken px-3 text-caption font-medium text-default fc-edge";
 
-/** Not interactive, unless `href` makes it a link to that shelf. */
+/** Not interactive, unless `href` makes it a link to that list. */
 export function GroupChip({ group, href }: { group: Group; href?: string }) {
   const content = (
     <>

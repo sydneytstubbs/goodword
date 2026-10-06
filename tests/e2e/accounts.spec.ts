@@ -19,8 +19,8 @@ async function expectNoViolations(page: Page) {
 
 test.describe("signed out", () => {
   test("app routes go to sign-in and remember where you were going", async ({ page }) => {
-    await page.goto("/shelf");
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Fshelf$/);
+    await page.goto("/list");
+    await expect(page).toHaveURL(/\/sign-in\?next=%2Flist$/);
   });
 
   test("sign-in: one field, one primary action, noindex, no axe violations", async ({ page }) => {
@@ -45,15 +45,15 @@ test.describe("signed out", () => {
   });
 
   test("an expired link shows the banner, with no axe violations", async ({ page }) => {
-    await page.goto("/auth/confirm?token_hash=not-a-real-token&next=%2Fshelf");
-    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Fshelf$/);
+    await page.goto("/auth/confirm?token_hash=not-a-real-token&next=%2Flist");
+    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Flist$/);
     await expect(page.getByText("This sign-in link has expired. We can send a new one.").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
   });
 
   test("a crafted next parameter can't leave the site", async ({ page }) => {
     await page.goto("/auth/confirm?token_hash=x&next=https%3A%2F%2Fevil.example");
-    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Fshelf$/);
+    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Flist$/);
   });
 
   test("check-your-email: address shown, countdown, different email", async ({ page, context, baseURL }) => {
@@ -64,7 +64,7 @@ test.describe("signed out", () => {
         url: baseURL!,
       },
     ]);
-    await page.goto("/sign-in/check-email?next=%2Fshelf");
+    await page.goto("/sign-in/check-email?next=%2Flist");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Check your email");
     await expect(page.getByText("priya@example.com").filter({ visible: true })).toBeVisible();
     await expect(page.getByText("It works for 15 minutes.").filter({ visible: true })).toBeVisible();
@@ -72,12 +72,12 @@ test.describe("signed out", () => {
     await expect(resend).toHaveAttribute("aria-disabled", "true");
     await expectNoViolations(page);
     await page.getByRole("button", { name: "Use a different email" }).click();
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Fshelf$/);
+    await expect(page).toHaveURL(/\/sign-in\?next=%2Flist$/);
   });
 
   test("check-your-email without a request goes back to sign-in", async ({ page }) => {
     await page.goto("/sign-in/check-email");
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Fshelf$/);
+    await expect(page).toHaveURL(/\/sign-in\?next=%2Flist$/);
   });
 });
 
@@ -100,13 +100,13 @@ test.describe("signed in", () => {
     if (userId) await admin!.auth.admin.deleteUser(userId);
   });
 
-  test("a new user opens their link, names themselves, and lands on the shelf", async ({ page }) => {
+  test("a new user opens their link, names themselves, and lands on the list", async ({ page }) => {
     const link = await admin!.auth.admin.generateLink({ type: "magiclink", email });
     if (link.error) throw link.error;
     tokenHash = link.data.properties.hashed_token;
 
-    await page.goto(`/auth/confirm?token_hash=${tokenHash}&next=%2Fshelf`);
-    await expect(page).toHaveURL(/\/welcome\?next=%2Fshelf$/);
+    await page.goto(`/auth/confirm?token_hash=${tokenHash}&next=%2Flist`);
+    await expect(page).toHaveURL(/\/welcome\?next=%2Flist$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("What should friends call you?");
     // Prefilled from the account's name.
     await expect(page.getByLabel("Your name")).toHaveValue("Tess");
@@ -118,7 +118,7 @@ test.describe("signed in", () => {
 
     await page.getByLabel("Your name").fill("Tess");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await expect(page.getByRole("heading", { level: 2, name: "No groups yet" })).toBeVisible();
     await expectNoViolations(page);
 
@@ -130,7 +130,7 @@ test.describe("signed in", () => {
   });
 
   test("a link is single use", async ({ page }) => {
-    await page.goto(`/auth/confirm?token_hash=${tokenHash}&next=%2Fshelf`);
+    await page.goto(`/auth/confirm?token_hash=${tokenHash}&next=%2Flist`);
     await expect(page).toHaveURL(/\/sign-in\?error=expired/);
   });
 
@@ -143,16 +143,16 @@ test.describe("signed in", () => {
     await expectNoViolations(page);
 
     await page.goto("/sign-in");
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
     await page.goto("/welcome");
-    await expect(page).toHaveURL(/\/shelf$/);
+    await expect(page).toHaveURL(/\/list$/);
 
     // Sign out lives in Settings (PRD F11).
     await page.goto("/you/settings");
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/sign-in$/);
-    await page.goto("/shelf");
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Fshelf$/);
+    await page.goto("/list");
+    await expect(page).toHaveURL(/\/sign-in\?next=%2Flist$/);
   });
 });
 

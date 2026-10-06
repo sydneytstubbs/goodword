@@ -11,10 +11,10 @@ import { resetShareLink, setShareLink } from "./actions";
 
 export type ShareState = { enabled: boolean; token: string | null; views: number };
 
-// Settings › Share my shelf (PRD F9, J7, DS 5.14): off by default. On shows
+// Settings › Share my list (PRD F9, J7, DS 5.14): off by default. On shows
 // the link with Copy and Share, and how many times it's been opened. Off, or
 // Reset link, stops the old link at once; turning it back on makes a new one.
-export function ShareShelf({ origin, initial }: { origin: string; initial: ShareState }) {
+export function ShareList({ origin, initial }: { origin: string; initial: ShareState }) {
   const [state, setState] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -70,7 +70,7 @@ export function ShareShelf({ origin, initial }: { origin: string; initial: Share
   return (
     <div className="flex flex-col gap-4">
       <Switch
-        id="share-shelf"
+        id="share-list"
         label={t("settings.shareSwitch")}
         description={t("settings.shareHint")}
         checked={state.enabled}

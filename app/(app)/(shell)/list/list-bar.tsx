@@ -6,12 +6,12 @@ import { t } from "@/lib/messages";
 import NextLink from "next/link";
 import { Icon } from "@/components/icon";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useShelfNews } from "../shelf-news";
+import { useListNews } from "../list-news";
 
-// The shelf's own bar: the group switcher, group details, and the invite
+// The list's own bar: the group switcher, group details, and the invite
 // button, which opens the current group's invite card in a sheet (F2.3). The
 // full top bar with Activity (DS 4.2.8) arrives with steps 4 and 6.
-export function ShelfBar({
+export function ListBar({
   groups,
   currentId,
   onInvite,
@@ -21,12 +21,12 @@ export function ShelfBar({
   onInvite?: () => void;
 }) {
   const current = groups.find((g) => g.id === currentId);
-  const { counts } = useShelfNews();
+  const { counts } = useListNews();
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/shelf/${id}`} newCounts={counts} />
+        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/list/${id}`} newCounts={counts} />
       </div>
       {current && (
         <div className="flex items-center">

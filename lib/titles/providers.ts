@@ -12,7 +12,7 @@ import { NO_PROVIDERS, type Provider, type WatchProviders } from "@/lib/tmdb/nor
 // writes this table.
 
 export const PROVIDERS_TTL_MS = 24 * 60 * 60_000;
-/** Titles fetched while a shelf waits; the rest fill in after the response. */
+/** Titles fetched while a list waits; the rest fill in after the response. */
 const WAIT_FOR = 24;
 const CONCURRENCY = 6;
 
@@ -103,12 +103,12 @@ export const getWatchProviders = cache(async (type: TitleType, tmdbId: number, r
 });
 
 /**
- * Streaming services for every title on a shelf (the services filter, F5.4),
+ * Streaming services for every title on a list (the services filter, F5.4),
  * by title row id. Stale entries are used and refreshed after the response;
- * missing ones are fetched now, up to a limit, so a large new shelf stays
+ * missing ones are fetched now, up to a limit, so a large new list stays
  * fast. Titles still unknown are left out, and match no service filter.
  */
-export async function shelfProviders(refs: TitleRef[], region: string): Promise<Map<string, WatchProviders>> {
+export async function listProviders(refs: TitleRef[], region: string): Promise<Map<string, WatchProviders>> {
   const rows = await readRows(
     refs.map((r) => r.rowId),
     region,
@@ -127,7 +127,7 @@ export async function shelfProviders(refs: TitleRef[], region: string): Promise<
     try {
       result.set(ref.rowId, await refresh(ref, region));
     } catch {
-      // TMDB is down: the shelf still loads, and this title matches no service.
+      // TMDB is down: the list still loads, and this title matches no service.
     }
   });
   refreshLater([...stale, ...missing.slice(WAIT_FOR)], region);

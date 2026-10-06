@@ -17,7 +17,7 @@ export function EmptyState({
   title,
   body,
   action,
-  showShelf = false,
+  showList = false,
   headingLevel = 2,
   className,
 }: {
@@ -25,8 +25,8 @@ export function EmptyState({
   body: string;
   /** One primary action. */
   action?: ReactNode;
-  /** Three dashed poster outlines: a shelf waiting to be filled. */
-  showShelf?: boolean;
+  /** Three dashed poster outlines: a list waiting to be filled. */
+  showList?: boolean;
   headingLevel?: HeadingLevel;
   className?: string;
 }) {
@@ -37,7 +37,7 @@ export function EmptyState({
         className,
       )}
     >
-      {showShelf && (
+      {showList && (
         <div aria-hidden="true" className="mb-3 flex gap-3">
           {[0, 1, 2].map((i) => (
             <span key={i} className="aspect-2/3 w-16 rounded-poster border border-dashed border-subtle" />

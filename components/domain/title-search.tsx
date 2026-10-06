@@ -26,7 +26,7 @@ const MAX_RECENT = 5;
 
 export type SearchAnnotations = {
   /** Titles you've already vouched for. */
-  onYourShelf?: string[];
+  onYourList?: string[];
   /** Friends who vouched, by title id. */
   friends?: Record<string, Person[]>;
 };
@@ -226,7 +226,7 @@ export function TitleSearch({
       >
         {expanded &&
           results.map((title, i) => {
-            const onShelf = annotations.onYourShelf?.includes(title.id);
+            const onList = annotations.onYourList?.includes(title.id);
             const friends = annotations.friends?.[title.id] ?? [];
             return (
               <li
@@ -246,10 +246,10 @@ export function TitleSearch({
                 <span className="flex min-w-0 flex-col gap-1">
                   <span className="line-clamp-2 text-card-title text-default">{title.name}</span>
                   <span className="text-caption text-muted">{titleMeta(title)}</span>
-                  {onShelf ? (
+                  {onList ? (
                     <span className="inline-flex items-center gap-1 text-caption font-medium text-action-text">
                       <Icon name="vouched" size={16} />
-                      {t("search.onYourShelf")}
+                      {t("search.onYourList")}
                     </span>
                   ) : friends.length > 0 ? (
                     <span className="flex items-center gap-2">

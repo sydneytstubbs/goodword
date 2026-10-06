@@ -8,7 +8,7 @@ import type { EmailLinks } from "./types";
 export function weekendPromptEmail(links: EmailLinks): Email {
   const { origin } = links;
   const subject = t("email.weekend.subject");
-  const href = `${origin}/shelf?add=1&ref=nudge_email`;
+  const href = `${origin}/list?add=1&ref=nudge_email`;
   const footer: Footer = {
     why: t("email.weekend.why"),
     unsubscribe: { label: t("email.weekend.unsubscribe"), href: links.unsubscribe },

@@ -1,16 +1,16 @@
 // Good Word's service worker (PRD F12, DS 8.3). Keeps the app shell (built
-// scripts, styles, fonts, icons) and the last few shelves you viewed, so the
+// scripts, styles, fonts, icons) and the last few lists you viewed, so the
 // app opens offline to what you last saw. Everything else goes to the
 // network. Signed-in pages are cleared when you reach sign-in, so a shared
-// phone never shows the last person's shelves.
+// phone never shows the last person's lists.
 
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL = `gw-shell-${VERSION}`;
 const PAGES = `gw-pages-${VERSION}`;
 const MAX_PAGES = 6;
 
-// Pages worth keeping for offline: shelves and My shelf.
-const KEEP = /^\/(shelf(\/(all|[0-9a-f-]{36}))?|you)$/;
+// Pages worth keeping for offline: lists and My list.
+const KEEP = /^\/(list(\/(all|[0-9a-f-]{36}))?|you)$/;
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -59,8 +59,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Pages: network first. Shelves that load are kept for offline; offline,
-  // the same page if kept, else the most recent shelf.
+  // Pages: network first. Lists that load are kept for offline; offline,
+  // the same page if kept, else the most recent list.
   event.respondWith(
     (async () => {
       try {

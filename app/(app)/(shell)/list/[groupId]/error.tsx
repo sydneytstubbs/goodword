@@ -1,3 +1,3 @@
 "use client";
 
-export { ShelfError as default } from "../shelf-error";
+export { ListError as default } from "../list-error";

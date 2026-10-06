@@ -101,7 +101,7 @@ const RADII = ["poster", "control", "card", "sheet", "device", "pill"];
 
 const MOTION: Array<{ name: string; spec: string; className: string }> = [
   { name: "Toast in", spec: "--dur-base, enter, 6px rise with fade", className: "motion-ok:animate-toast-in" },
-  { name: "New card on shelf", spec: "--dur-base, enter, fade in from 6px above", className: "motion-ok:animate-card-in" },
+  { name: "New card on list", spec: "--dur-base, enter, fade in from 6px above", className: "motion-ok:animate-card-in" },
   { name: "Dialog in", spec: "--dur-base, enter, fade with scale 0.98 → 1", className: "motion-ok:animate-dialog-in" },
   { name: "Milestone", spec: "--dur-slow, enter, fade and 8px rise", className: "motion-ok:animate-rise" },
   { name: "Marketing entrance", spec: "--dur-expressive, enter, fade and 8px rise", className: "motion-ok:animate-rise-expressive" },

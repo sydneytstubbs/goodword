@@ -60,10 +60,10 @@ test.describe("measurement", () => {
     await expect.poll(async () => (await eventsOf(null, "invite_link_opened")).some((p) => p.group_id === crew && p.signed_in === false)).toBe(true);
 
     const jonahPage = await signedIn(browser, jonah, `/join/${code}/accept`);
-    await expect(jonahPage).toHaveURL(new RegExp(`/shelf/${crew}`));
+    await expect(jonahPage).toHaveURL(new RegExp(`/list/${crew}`));
     await expect.poll(async () => await eventsOf(jonah, "sign_in_completed")).toContainEqual({ method: "magic_link", new_user: false });
     await expect.poll(async () => await eventsOf(jonah, "group_joined")).toContainEqual({ group_id: crew, via: "invite" });
-    await expect.poll(async () => (await eventsOf(jonah, "shelf_viewed"))[0]).toMatchObject({ shelf: "group" });
+    await expect.poll(async () => (await eventsOf(jonah, "list_viewed"))[0]).toMatchObject({ list: "group" });
   });
 
   test("a good word: Add opened from the title, time to log, and source", async ({ browser }) => {

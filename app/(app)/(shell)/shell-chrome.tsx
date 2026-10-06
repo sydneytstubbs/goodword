@@ -26,7 +26,7 @@ export function ShellChrome({ children }: { children: ReactNode }) {
     <div className={cn("lg:ps-rail lg:pb-0", !immersive && "pb-tabbar-safe")}>
       {!immersive && (
         <header className="flex h-14 items-center justify-between ps-4 pe-2 lg:hidden">
-          <NextLink href="/shelf" aria-label={t("wordmark.name")}>
+          <NextLink href="/list" aria-label={t("wordmark.name")}>
             <Wordmark />
           </NextLink>
           <ActivityBell count={count} />

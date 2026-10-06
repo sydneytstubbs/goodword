@@ -37,7 +37,7 @@ function latestNote(goodWords: GoodWord[]): string | undefined {
   return [...goodWords].filter((g) => g.note).sort((a, b) => b.at.getTime() - a.at.getTime())[0]?.note;
 }
 
-/** grid: shelves. No card box; the poster is the object. */
+/** grid: lists. No card box; the poster is the object. */
 export function RecCardGrid({
   title,
   goodWords,
@@ -47,7 +47,7 @@ export function RecCardGrid({
   commentCount = 0,
   unseenComments = false,
   eager,
-  shelves,
+  lists,
   className,
 }: Common & {
   href: string;
@@ -55,8 +55,8 @@ export function RecCardGrid({
   commentCount?: number;
   unseenComments?: boolean;
   eager?: boolean;
-  /** My Recs: the groups it's shared into; empty means "Only you" (PRD F5.3). */
-  shelves?: Group[];
+  /** My list: the groups it's shared into; empty means "Only you" (PRD F5.3). */
+  lists?: Group[];
   className?: string;
 }) {
   const note = latestNote(goodWords);
@@ -65,8 +65,8 @@ export function RecCardGrid({
       href={href}
       aria-label={[
         cardAccessibleName(title, goodWords, viewerId),
-        shelves &&
-          `${shelves.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(shelves.map((g) => g.name)) })}.`,
+        lists &&
+          `${lists.length === 0 ? t("vouch.onlyYou") : t("vouch.sharedIn", { groups: nameList(lists.map((g) => g.name)) })}.`,
         // The badge is inside the link, so its text goes in the name (DS 4.1.11).
         isNew && `${t("common.new")}.`,
         commentCount > 0 && `${t("title.comments", { count: commentCount })}.`,
@@ -95,15 +95,15 @@ export function RecCardGrid({
       </span>
       <VouchedByRow goodWords={goodWords} viewerId={viewerId} />
       {note && <span className="line-clamp-2 text-caption text-muted">“{note}”</span>}
-      {shelves && (
+      {lists && (
         <span className="flex flex-wrap gap-1">
-          {shelves.length === 0 ? (
+          {lists.length === 0 ? (
             <span className="inline-flex items-center gap-1 text-caption text-muted">
               <Icon name="private" size={16} />
               {t("vouch.onlyYou")}
             </span>
           ) : (
-            shelves.map((group) => <GroupChip key={group.id} group={group} />)
+            lists.map((group) => <GroupChip key={group.id} group={group} />)
           )}
         </span>
       )}
@@ -121,7 +121,7 @@ export function RecCardRow({
   trailing,
 }: Common & {
   href: string;
-  /** Replaces the vouched-by row, e.g. "On your shelf" in search. */
+  /** Replaces the vouched-by row, e.g. "On your list" in search. */
   annotation?: ReactNode;
   /** The vouch button. */
   trailing?: ReactNode;

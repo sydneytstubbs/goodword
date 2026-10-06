@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 export const metadata: Metadata = { title: "You're invited · Good Word" };
 
 // Invite landing (F2.4, DS 5.2). Who invited you, the group, how many are in
-// it, and one sentence about Good Word. Never the shelf's contents.
+// it, and one sentence about Good Word. Never the list's contents.
 export default async function JoinPage({ params, searchParams }: PageProps<"/join/[code]">) {
   const { code } = await params;
   const { error } = await searchParams;
@@ -47,7 +47,7 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/joi
   if (!error) await recordEvent("invite_link_opened", { group_id: preview.groupId, signed_in: signedIn }, data.user?.id ?? null);
   if (signedIn) {
     const { data: member } = await supabase.from("group_members").select("id").eq("group_id", preview.groupId).eq("user_id", data.user!.id).maybeSingle();
-    // Already a member: straight to the shelf, with a toast.
+    // Already a member: straight to the list, with a toast.
     if (member) redirect(`/join/${code}/accept`);
   }
 

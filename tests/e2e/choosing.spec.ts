@@ -21,7 +21,7 @@ const named: Seed[] = [
   { key: "moth", type: "movie", name: "Moth Season", genres: ["Horror"], runtime: 98, stream: [NETFLIX] },
   { key: "ferry", type: "tv", name: "The Night Ferry", genres: ["Drama"], runtime: 52, stream: [NETFLIX, HULU] },
 ];
-// Enough to page: 30 more titles for The girls' shelf.
+// Enough to page: 30 more titles for The girls' list.
 const filler: Seed[] = Array.from({ length: 30 }, (_, i) => ({
   key: `extra${i}`,
   type: "movie",
@@ -126,24 +126,24 @@ test.describe("choosing", () => {
   const cards = (page: Page) => page.getByRole("list").filter({ has: page.getByRole("link", { name: /Vouched for by/ }) }).getByRole("listitem");
 
   test("New since your last visit: badges on cards and a count in the switcher", async ({ browser }) => {
-    const page = await signedIn(browser, tess, `/shelf/${crew}`);
+    const page = await signedIn(browser, tess, `/list/${crew}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("College crew");
     await expect(page.getByRole("link", { name: /^Low Tide Club, film, 2024\. .* New\.$/ })).toBeVisible();
     await expect(page.getByRole("link", { name: /^Grandma's Heist, .*\.$/ })).not.toHaveAccessibleName(/New\./);
-    await page.getByRole("button", { name: /Switch shelf/ }).click();
-    const sheet = page.getByRole("dialog", { name: "Your shelves" });
+    await page.getByRole("button", { name: /Switch list/ }).click();
+    const sheet = page.getByRole("dialog", { name: "Your groups" });
     await expect(sheet.getByRole("link", { name: /College crew/ })).toContainText("1 new good word");
   });
 
   test("J4: Movies, then Netflix, then More filters; the URL keeps it through refresh and Back", async ({ browser }) => {
-    const page = await signedIn(browser, tess, `/shelf/${crew}`);
+    const page = await signedIn(browser, tess, `/list/${crew}`);
     await expect(cards(page)).toHaveCount(4);
 
     await page.getByRole("radio", { name: "Movies" }).click();
     await expect(page).toHaveURL(/\?type=movie$/);
     await expect(cards(page)).toHaveCount(3);
 
-    const bar = page.getByRole("group", { name: "Filter the shelf" });
+    const bar = page.getByRole("group", { name: "Filter the list" });
     await bar.getByRole("button", { name: /^Netflix/ }).click();
     await expect(page).toHaveURL(/\?type=movie&services=8$/);
     await expect(bar.getByRole("status")).toHaveText("3 good words");
@@ -164,31 +164,31 @@ test.describe("choosing", () => {
 
     // Chips replace the entry; the segmented control pushed one, so Back undoes Movies and everything after.
     await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`/shelf/${crew}$`));
+    await expect(page).toHaveURL(new RegExp(`/list/${crew}$`));
     await expect(cards(page)).toHaveCount(4);
   });
 
-  test("no results names what was excluded, and Clear filters brings the shelf back", async ({ browser }) => {
-    const page = await signedIn(browser, tess, `/shelf/${crew}?type=tv&services=8&length=30`);
+  test("no results names what was excluded, and Clear filters brings the list back", async ({ browser }) => {
+    const page = await signedIn(browser, tess, `/list/${crew}?type=tv&services=8&length=30`);
     await expect(page.getByRole("heading", { name: "Nobody's vouched for anything like that yet." })).toBeVisible();
-    await page.goto(`/shelf/${crew}?type=movie&services=15`);
+    await page.goto(`/list/${crew}?type=movie&services=15`);
     await expect(page.getByRole("heading", { name: "Nobody's vouched for a Hulu movie yet." })).toBeVisible();
     await page.getByRole("button", { name: "Clear filters" }).click();
     await expect(cards(page)).toHaveCount(4);
   });
 
   test("sort by most vouched", async ({ browser }) => {
-    const page = await signedIn(browser, tess, `/shelf/${crew}?sort=vouched`);
+    const page = await signedIn(browser, tess, `/list/${crew}?sort=vouched`);
     await expect(cards(page).first()).toContainText("Low Tide Club");
     await expect(page.getByRole("button", { name: "Sort: Most vouched" })).toBeVisible();
   });
 
-  test("paging: 24 at a time, more on scroll, then the end of the shelf", async ({ browser }) => {
-    const page = await signedIn(browser, priya, `/shelf/${girls}`);
+  test("paging: 24 at a time, more on scroll, then the end of the list", async ({ browser }) => {
+    const page = await signedIn(browser, priya, `/list/${girls}`);
     await expect(cards(page)).toHaveCount(24);
     await page.getByRole("button", { name: "Load more" }).scrollIntoViewIfNeeded();
     await expect(cards(page)).toHaveCount(31);
-    await expect(page.getByText("That's the whole shelf.").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("That's the whole list.").filter({ visible: true })).toBeVisible();
   });
 
   test("title detail: good words with your groups, where to watch, and JustWatch", async ({ browser }) => {

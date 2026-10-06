@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Marks shelves as viewed (PRD F5.5), when you leave a shelf or after 10
+// Marks lists as viewed (PRD F5.5), when you leave a list or after 10
 // seconds on it. A route rather than a server action so it can be sent with
 // `keepalive` as the page closes. Same-origin only; it only ever touches the
 // caller's own memberships (mark_shelves_viewed).
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   if (!data?.claims?.sub) return new NextResponse(null, { status: 401 });
   const { error } = await supabase.rpc("mark_shelves_viewed", { p_groups: groups });
   if (error) {
-    console.error("mark shelves viewed failed", error.code);
+    console.error("mark lists viewed failed", error.code);
     return new NextResponse(null, { status: 500 });
   }
   return new NextResponse(null, { status: 204 });

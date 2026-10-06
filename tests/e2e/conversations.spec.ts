@@ -152,7 +152,7 @@ test.describe("conversations", () => {
     await expect(activityLink(priyaPage, 3)).toBeVisible();
 
     // Jonah sees "2 comments" on the card, and Tess's spoiler covered.
-    const jonahPage = await signedIn(browser, jonah, `/shelf/${crew}`);
+    const jonahPage = await signedIn(browser, jonah, `/list/${crew}`);
     await expect(jonahPage.getByRole("link", { name: /The Night Ferry.*2 comments\. New comments\./ })).toBeVisible();
     await jonahPage.getByRole("link", { name: /The Night Ferry/ }).first().click();
     await jonahPage.getByRole("link", { name: "See all 2 comments" }).click();

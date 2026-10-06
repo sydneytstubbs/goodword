@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { currentUser } from "@/lib/auth/session";
 import { t } from "@/lib/messages";
 
-// Any URL that matches no route. Signed-in people go back to their shelf;
+// Any URL that matches no route. Signed-in people go back to their list;
 // everyone else goes to the home page.
 export const metadata: Metadata = {
   title: `${t("notFound.title")} · Good Word`,
@@ -23,8 +23,8 @@ export default async function NotFound() {
           body={t("notFound.body")}
           action={
             user ? (
-              <ButtonLink href="/shelf" variant="secondary">
-                {t("notFound.goToShelf")}
+              <ButtonLink href="/list" variant="secondary">
+                {t("notFound.goToGroups")}
               </ButtonLink>
             ) : (
               <ButtonLink href="/" variant="secondary">

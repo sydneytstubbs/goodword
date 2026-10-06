@@ -83,7 +83,7 @@ export default async function ConversationPage({ params, searchParams }: PagePro
         ? "activity"
         : came && /^\/title\/(movie|tv)\/\d+$/.test(came)
           ? "title"
-          : came && /^\/(shelf|you)(\/|$)/.test(came)
+          : came && /^\/(list|you)(\/|$)/.test(came)
             ? "card"
             : undefined;
   const firstUnseen = page?.firstUnseenId ? page.comments.findIndex((c) => c.id === page.firstUnseenId) : -1;

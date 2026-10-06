@@ -69,7 +69,7 @@ function VouchButtons() {
   const handlers = {
     onPut: () => {
       setVouched(true);
-      showToast({ message: "On your shelf. Priya, Jonah, and 4 others will see it.", action: { label: "Undo", onAction: () => setVouched(false) } });
+      showToast({ message: "On your list. Priya, Jonah, and 4 others will see it.", action: { label: "Undo", onAction: () => setVouched(false) } });
     },
     onEditNote: () => showToast({ message: "Edit note opens the confirm sheet (step 4)." }),
     onChangeGroups: () => showToast({ message: "Change groups opens the group picker (step 4)." }),
@@ -173,7 +173,7 @@ function Search() {
             search={fakeSearch}
             onSelect={(title) => showToast({ message: `Picked ${title.name}.` })}
             recent={["night ferry", "moth"]}
-            annotations={{ onYourShelf: [titles.lowTide.id], friends: { [titles.nightFerry.id]: [people.priya, people.jonah] } }}
+            annotations={{ onYourList: [titles.lowTide.id], friends: { [titles.nightFerry.id]: [people.priya, people.jonah] } }}
           />
         </div>
       </Specimen>
@@ -189,7 +189,7 @@ function Switcher() {
         <GroupSwitcher
           groups={switcherGroups}
           currentId={current}
-          hrefFor={(id) => `/shelf/${id}`}
+          hrefFor={(id) => `/list/${id}`}
           onSelect={setCurrent}
           newCounts={{ [groups.girls.id]: 3, [groups.book.id]: 1 }}
         />
@@ -252,7 +252,7 @@ function Bars() {
               groupName="College crew"
               activityCount={3}
               onInvite={() => showToast({ message: "Invite opens the invite card." })}
-              switcher={<GroupSwitcher groups={switcherGroups} currentId={groups.college.id} hrefFor={(id) => `/shelf/${id}`} onSelect={() => {}} />}
+              switcher={<GroupSwitcher groups={switcherGroups} currentId={groups.college.id} hrefFor={(id) => `/list/${id}`} onSelect={() => {}} />}
             />
           </Frame>
         </Specimen>
@@ -263,25 +263,25 @@ function Bars() {
               scrolled
               groupName="The girls"
               onInvite={() => {}}
-              switcher={<GroupSwitcher groups={switcherGroups} currentId={groups.girls.id} hrefFor={(id) => `/shelf/${id}`} onSelect={() => {}} />}
+              switcher={<GroupSwitcher groups={switcherGroups} currentId={groups.girls.id} hrefFor={(id) => `/list/${id}`} onSelect={() => {}} />}
             />
           </Frame>
         </Specimen>
         <Specimen label="Tab bar (mobile and tablet)" wide>
           <Frame>
-            <TabBar placement="inline" current="shelf" onAdd={add} label="Tab bar preview" />
+            <TabBar placement="inline" current="list" onAdd={add} label="Tab bar preview" />
           </Frame>
         </Specimen>
-        <Specimen label="Tab bar, a group has new good words (dot on Shelf)" wide>
+        <Specimen label="Tab bar, a group has new good words (dot on List)" wide>
           <Frame>
-            <TabBar placement="inline" current="you" shelfDot onAdd={add} label="Tab bar with new good words preview" />
+            <TabBar placement="inline" current="you" listDot onAdd={add} label="Tab bar with new good words preview" />
           </Frame>
         </Specimen>
         <Specimen label="Rail (1024px and up)" wide>
           <Frame>
             <Rail
               placement="inline"
-              current="shelf"
+              current="list"
               activityCount={3}
               groups={Object.values(groups)}
               newCounts={{ [groups.girls.id]: 3 }}
@@ -306,7 +306,7 @@ function Robot() {
       <div className="max-w-120">
         <RobotGuessCard title={titles.moth} vouchButton={<VouchButton vouched={false} {...handlers} />} />
       </div>
-      <Note>Only after someone asks, in its own labeled section, never inside a shelf.</Note>
+      <Note>Only after someone asks, in its own labeled section, never inside a list.</Note>
     </Component>
   );
 }

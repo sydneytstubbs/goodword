@@ -13,7 +13,7 @@ import { TextLink } from "../ui/text-link";
 import type { Group, Person } from "./types";
 
 // Group switcher (DESIGN-SYSTEM.md 4.2.5): the top-bar control naming the
-// current shelf. "All groups" is an explicit, labeled choice.
+// current list. "All groups" is an explicit, labeled choice.
 
 export type SwitcherGroup = Group & { members: Person[] };
 
@@ -90,7 +90,7 @@ export function GroupSwitcher({
                       </span>
                     )}
                   </span>
-                  <CountBadge count={newCounts[group.id] ?? 0} label={t("shelf.newCount", { count: newCounts[group.id] ?? 0 })} />
+                  <CountBadge count={newCounts[group.id] ?? 0} label={t("list.newCount", { count: newCounts[group.id] ?? 0 })} />
                   {group.members.length > 0 && <AvatarStack people={group.members} size={24} ring="surface-raised" />}
                   {isCurrent && <Icon name="vouched" size={20} className="text-default" />}
                 </NextLink>

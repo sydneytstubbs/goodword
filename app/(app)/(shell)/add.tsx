@@ -215,7 +215,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const searchAnnotations: SearchAnnotations = {
-    onYourShelf: [...new Set([...Object.keys(annotations.mine), ...overlays.map((o) => o.title.id)])].filter(
+    onYourList: [...new Set([...Object.keys(annotations.mine), ...overlays.map((o) => o.title.id)])].filter(
       (id) => mineFor(id, annotations.mine[id] ?? null) !== null,
     ),
     friends: annotations.friends,
@@ -260,7 +260,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   } else if (view.kind === "confirm") {
     const { title } = view;
     const mine = mineOf(title);
-    // Already on every shelf picked: offer Edit note instead (DS 5.4).
+    // Already on every list picked: offer Edit note instead (DS 5.4).
     const already = mine !== null && selected.every((id) => mine.groupIds.includes(id));
     const chosen = withCounts.filter((g) => selected.includes(g.id));
     body = (

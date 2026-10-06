@@ -13,5 +13,5 @@ export function WelcomeBanner({ groupId, groupName }: { groupId: string; groupNa
     void markWelcomeSeen(groupId);
   }, [groupId]);
   if (!open) return null;
-  return <Banner onDismiss={() => setOpen(false)}>{t("shelf.welcome", { group: groupName })}</Banner>;
+  return <Banner onDismiss={() => setOpen(false)}>{t("list.welcome", { group: groupName })}</Banner>;
 }

@@ -7,7 +7,7 @@ import { t } from "@/lib/messages";
 
 // The Home Screen tip (PRD F12): iOS Safari only, from the third visit on,
 // never once installed, and never again after it's dismissed. A visit is a
-// browser session that opens My Recs.
+// browser session that opens My list.
 const VISITS = "gw:visits";
 const COUNTED = "gw:visit-counted";
 const DISMISSED = "gw:home-tip-dismissed";

@@ -164,7 +164,7 @@ test.describe("Add recs and the review deck", () => {
       ],
       1,
     );
-    // Resume from My Recs.
+    // Resume from My list.
     const page = await signedIn(browser, priya, "/you");
     await expect(page.getByText("You have 3 recs left to review.").filter({ visible: true })).toBeVisible();
     await page.getByRole("link", { name: "Finish" }).click();
@@ -196,7 +196,7 @@ test.describe("Add recs and the review deck", () => {
     await expect(page.getByText("3 of 3")).toBeVisible();
     await page.getByRole("button", { name: "Skip", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your recs are in");
-    await expect(page.getByText("Added 2 recs. 1 was already in My Recs.")).toBeVisible();
+    await expect(page.getByText("Added 2 recs. 1 was already in My list.")).toBeVisible();
     await expectNoViolations(page);
 
     const { data: words } = await admin()
@@ -211,8 +211,8 @@ test.describe("Add recs and the review deck", () => {
       ].sort(),
     );
 
-    await page.getByRole("link", { name: "View My Recs" }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("My Recs");
+    await page.getByRole("link", { name: "View My list" }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("My list");
     await expect(page.getByText(/left to review/)).toHaveCount(0);
     await page.context().close();
   });

@@ -47,7 +47,7 @@ export const icons = {
   activity: Bell,
   more: DotsThree,
   whereToWatch: MonitorPlay,
-  shelf: BookmarksSimple,
+  list: BookmarksSimple,
   you: UserCircle,
   private: LockSimple,
   edit: PencilSimple,

@@ -84,12 +84,12 @@ describe.skipIf(!enabled)("settings: feedback and deleting an account", () => {
 
   it("stores feedback, and nobody can read it back", async () => {
     const id = randomUUID();
-    const { data } = await people.tess.client.rpc("send_feedback", { p_id: id, p_message: "Love the shelf", p_may_contact: true });
+    const { data } = await people.tess.client.rpc("send_feedback", { p_id: id, p_message: "Love the list", p_may_contact: true });
     expect(data).toBe("sent");
     // A retry with the same id doesn't duplicate it.
-    await people.tess.client.rpc("send_feedback", { p_id: id, p_message: "Love the shelf", p_may_contact: true });
+    await people.tess.client.rpc("send_feedback", { p_id: id, p_message: "Love the list", p_may_contact: true });
     const { data: stored } = await admin.from("feedback").select("message, may_contact").eq("user_id", people.tess.id);
-    expect(stored).toEqual([{ message: "Love the shelf", may_contact: true }]);
+    expect(stored).toEqual([{ message: "Love the list", may_contact: true }]);
     const { data: readBack } = await people.tess.client.from("feedback").select("id");
     expect(readBack ?? []).toEqual([]);
     const { data: empty } = await people.tess.client.rpc("send_feedback", { p_id: randomUUID(), p_message: "   ", p_may_contact: false });
@@ -134,8 +134,8 @@ describe.skipIf(!enabled)("settings: feedback and deleting an account", () => {
       const { data } = await admin.from(table).select("user_id").eq("user_id", people.priya.id);
       expect(data, table).toEqual([]);
     }
-    const { data: shelf } = await admin.from("good_word_groups").select("group_id").in("group_id", [crew, girls]);
-    expect(shelf).toEqual([]);
+    const { data: list } = await admin.from("good_word_groups").select("group_id").in("group_id", [crew, girls]);
+    expect(list).toEqual([]);
     delete people.priya;
   });
 });

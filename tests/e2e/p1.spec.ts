@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
-// Step 10 (PRD 12, slice 10): installable app, share my shelf (F9, J7), the
+// Step 10 (PRD 12, slice 10): installable app, share my list (F9, J7), the
 // person view (F8), and the weekend prompt's link opening Add (F7.2).
 // Invented people and titles; Priya owns College crew with Jonah; Tess is in
 // no group.
@@ -11,7 +11,7 @@ const base = 900_000_000 + Math.floor(Math.random() * 90_000_000);
 
 test("the app is installable: a manifest and its icons", async ({ request }) => {
   const manifest = await (await request.get("/manifest.webmanifest")).json();
-  expect(manifest).toMatchObject({ name: "Good Word", start_url: "/shelf", display: "standalone" });
+  expect(manifest).toMatchObject({ name: "Good Word", start_url: "/list", display: "standalone" });
   for (const icon of manifest.icons as Array<{ src: string }>) {
     const response = await request.get(icon.src);
     expect(response.status(), icon.src).toBe(200);
@@ -78,9 +78,9 @@ test.describe("P1 extras", () => {
     expect(response.headers()["x-robots-tag"]).toContain("noindex");
   });
 
-  test("share my shelf: off by default, read-only for anyone with the link, and off stops it", async ({ browser }) => {
+  test("share my list: off by default, read-only for anyone with the link, and off stops it", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/you/settings#share");
-    const toggle = page.getByRole("switch", { name: "Share my shelf" });
+    const toggle = page.getByRole("switch", { name: "Share my list" });
     await expect(toggle).toHaveAttribute("aria-checked", "false");
     await toggle.click();
     const field = page.getByRole("textbox", { name: "Your link" });
@@ -103,7 +103,7 @@ test.describe("P1 extras", () => {
     // Priya sees it was opened, then turns it off: the link stops at once.
     await page.reload();
     await expect(page.getByText("Opened 1 time").filter({ visible: true })).toBeVisible();
-    await page.getByRole("switch", { name: "Share my shelf" }).click();
+    await page.getByRole("switch", { name: "Share my list" }).click();
     await expect(page.getByRole("textbox", { name: "Your link" })).toHaveCount(0);
     await expect.poll(async () => (await admin().from("share_links").select("enabled").eq("user_id", priya.id).single()).data?.enabled).toBe(false);
     expect((await visitor.goto(link))?.status()).toBe(404);
@@ -121,7 +121,7 @@ test.describe("P1 extras", () => {
   });
 
   test("the weekend prompt's button opens Add, once", async ({ browser }) => {
-    const page = await signedIn(browser, priya, "/shelf?add=1&ref=nudge_email");
+    const page = await signedIn(browser, priya, "/list?add=1&ref=nudge_email");
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeVisible();
     await expect(page).not.toHaveURL(/add=1/);
     await expect(page).not.toHaveURL(/ref=/);

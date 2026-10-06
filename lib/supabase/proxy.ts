@@ -1,11 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isNoindexPath, isProtectedPath, LAST_SHELF_COOKIE, shelfGroupId } from "@/lib/auth/paths";
+import { isNoindexPath, isProtectedPath, LAST_LIST_COOKIE, listGroupId } from "@/lib/auth/paths";
 
 /**
  * Refreshes the session cookie on every request, then applies the access rules
  * (PRD 6.4): signed-out visitors to a signed-in route go to /sign-in?next=<route>;
- * signed-in visitors to /sign-in or / go to /shelf (the last viewed shelf).
+ * signed-in visitors to /sign-in or / go to /list (the last viewed list).
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -45,12 +45,12 @@ export async function updateSession(request: NextRequest) {
   };
 
   if (!signedIn && isProtectedPath(pathname)) return redirect("/sign-in", { next: pathname + search });
-  if (signedIn && (pathname === "/sign-in" || pathname === "/")) return redirect("/shelf");
+  if (signedIn && (pathname === "/sign-in" || pathname === "/")) return redirect("/list");
 
   if (isNoindexPath(pathname)) response.headers.set("X-Robots-Tag", "noindex, nofollow");
-  const groupId = shelfGroupId(pathname);
+  const groupId = listGroupId(pathname);
   if (signedIn && groupId) {
-    response.cookies.set(LAST_SHELF_COOKIE, groupId, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax", httpOnly: true });
+    response.cookies.set(LAST_LIST_COOKIE, groupId, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax", httpOnly: true });
   }
   return response;
 }

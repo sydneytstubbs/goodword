@@ -67,7 +67,7 @@ test.describe("the core loop", () => {
     await admin().from("titles").delete().in("tmdb_id", [base, base + 1, base + 2]);
   });
 
-  async function signedIn(browser: Browser, user: TestUser, next = "/shelf"): Promise<Page> {
+  async function signedIn(browser: Browser, user: TestUser, next = "/list"): Promise<Page> {
     const page = await (await browser.newContext()).newPage();
     await openMagicLink(page, user, next);
     // Search returns the invented titles (the live route is tested in titles.spec).
@@ -84,8 +84,8 @@ test.describe("the core loop", () => {
     return sheet;
   }
 
-  test("J3: put in a good word from Add, see it on both shelves, with the audience named", async ({ browser }) => {
-    const page = await signedIn(browser, priya, `/shelf/${crew}`);
+  test("J3: put in a good word from Add, see it on both lists, with the audience named", async ({ browser }) => {
+    const page = await signedIn(browser, priya, `/list/${crew}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("College crew");
     await expect(page.getByRole("heading", { level: 2, name: "Nothing here yet" })).toBeVisible();
     await expectNoViolations(page);
@@ -102,7 +102,7 @@ test.describe("the core loop", () => {
 
     await expect(sheet).toBeHidden();
     // Names follow group order, which the docs leave open.
-    await expect(page.getByText(/On your shelf\. (Jonah and Tess|Tess and Jonah) will see it\./).filter({ visible: true })).toBeVisible();
+    await expect(page.getByText(/On your list\. (Jonah and Tess|Tess and Jonah) will see it\./).filter({ visible: true })).toBeVisible();
     const card = page.getByRole("link", { name: "The Night Ferry, series, 2024. Vouched for by You." });
     await expect(card).toBeVisible();
     await expect(card).toContainText("“ep 3 is where it gets you”");
@@ -110,10 +110,10 @@ test.describe("the core loop", () => {
     await expect(page.getByRole("region", { name: "Your first good word." })).toBeVisible();
     await expectNoViolations(page);
 
-    // Saved, on both shelves, as organic.
+    // Saved, on both lists, as organic.
     await page.reload();
     await expect(card).toBeVisible();
-    await page.goto(`/shelf/${girls}`);
+    await page.goto(`/list/${girls}`);
     await expect(page.getByRole("link", { name: /^The Night Ferry, series, 2024/ })).toBeVisible();
     const { data } = await admin().from("good_words").select("note, source, good_word_groups(group_id)").eq("user_id", priya.id).single();
     expect(data!.note).toBe("ep 3 is where it gets you");
@@ -122,7 +122,7 @@ test.describe("the core loop", () => {
   });
 
   test("J2: a friend adds the same title from its page and joins the same card", async ({ browser }) => {
-    const page = await signedIn(browser, jonah, `/shelf/${crew}`);
+    const page = await signedIn(browser, jonah, `/list/${crew}`);
     await expect(page.getByRole("link", { name: "The Night Ferry, series, 2024. Vouched for by Priya." })).toBeVisible();
     await page.getByRole("link", { name: /^The Night Ferry/ }).click();
 
@@ -133,17 +133,17 @@ test.describe("the core loop", () => {
     const sheet = page.getByRole("dialog", { name: "Put in a good word" });
     await expect(sheet.getByRole("button", { name: /Visible to College crew · 2 people/ })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("On your shelf. Priya will see it.").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("On your list. Priya will see it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Your good word" })).toHaveAttribute("aria-pressed", "true");
 
-    await page.goto(`/shelf/${crew}`);
+    await page.goto(`/list/${crew}`);
     const cards = page.getByRole("link", { name: /^The Night Ferry/ });
     await expect(cards).toHaveCount(1);
     await expect(cards).toHaveAccessibleName("The Night Ferry, series, 2024. Vouched for by You and Priya.");
   });
 
   test("All groups shows one card with each person once; other groups never see Jonah", async ({ browser }) => {
-    const page = await signedIn(browser, priya, "/shelf/all");
+    const page = await signedIn(browser, priya, "/list/all");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("All groups");
     // Jonah's good word arrived after Priya last looked, so the card is New (F5.5).
     await expect(page.getByRole("link", { name: /^The Night Ferry/ })).toHaveAccessibleName(
@@ -175,7 +175,7 @@ test.describe("the core loop", () => {
     await picker.getByRole("checkbox", { name: /The girls/ }).uncheck();
     await expect(picker.getByText("Visible to College crew · 2 people").filter({ visible: true })).toBeVisible();
     await picker.getByRole("button", { name: "Done" }).click();
-    await page.goto(`/shelf/${girls}`);
+    await page.goto(`/list/${girls}`);
     await expect(page.getByRole("heading", { level: 2, name: "Nothing here yet" })).toBeVisible();
 
     await page.goto(`/title/tv/${base}`);
@@ -198,14 +198,14 @@ test.describe("the core loop", () => {
     const sheet = await pick(page, "Moth Season");
     await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("On your shelf. Invite friends to share it.").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("On your list. Invite friends to share it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Invite" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Moth Season, film. Vouched for by You. Only you." })).toBeVisible();
     await expectNoViolations(page);
   });
 
   test("a failed write reverts, offers Retry, and keeps the note", async ({ browser }) => {
-    const page = await signedIn(browser, priya, `/shelf/${crew}`);
+    const page = await signedIn(browser, priya, `/list/${crew}`);
     // Server actions post to the page with a Next-Action header.
     await page.route("**/*", (route) => (route.request().headers()["next-action"] ? route.abort() : route.fallback()));
     await page.getByRole("button", { name: /^(Add|Put in a good word)$/ }).filter({ visible: true }).first().click();
@@ -229,7 +229,7 @@ test.describe("the core loop", () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.clock.install();
-    await openMagicLink(page, tess, `/shelf/${girls}`);
+    await openMagicLink(page, tess, `/list/${girls}`);
     await expect(page.getByRole("link", { name: /^Low Tide Club/ })).toBeVisible();
     const prompt = page.getByRole("complementary", { name: "What's something you'd tell these folks to watch?" });
     await expect(prompt).toHaveCount(0);

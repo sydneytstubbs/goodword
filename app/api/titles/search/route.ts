@@ -11,7 +11,7 @@ import { SearchCache } from "@/lib/tmdb/search-cache";
 // Title search (PRD F3): GET /api/titles/search?q=night. Signed-in only. The
 // browser never talks to TMDB; this route does, with a 5-minute cache per
 // normalized query and a limit of 60 searches per person per minute (10.4).
-// Results carry the viewer's own annotations ("On your shelf", friends who
+// Results carry the viewer's own annotations ("On your list", friends who
 // vouched), which are never cached across people.
 
 const cache = new SearchCache();

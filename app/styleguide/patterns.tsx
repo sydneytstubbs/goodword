@@ -12,7 +12,7 @@ import {
 import { FilterBar } from "@/components/domain/filter-bar";
 import { JoinPromptCard } from "@/components/domain/join-prompt-card";
 import { RecCardGrid } from "@/components/domain/rec-card";
-import type { ShelfCard } from "@/components/domain/types";
+import type { ListCard } from "@/components/domain/types";
 import { Banner } from "@/components/ui/banner";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -20,14 +20,14 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Milestone } from "@/components/ui/milestone";
 import { Skeleton, SkeletonRegion } from "@/components/ui/skeleton";
 import { ToastView } from "@/components/ui/toast";
-import { DEFAULT_FILTERS, filterShelf, genreCounts, serviceCounts, type Filters } from "@/lib/good-words/filters";
+import { DEFAULT_FILTERS, filterList, genreCounts, serviceCounts, type Filters } from "@/lib/good-words/filters";
 import { t } from "@/lib/messages";
 import type { ConversationPreview } from "@/lib/conversations/types";
 import { comments, goodWords, groups, groupsWithCounts, NOW, people, titles, viewer } from "./fixtures";
 import { Component, Frame, Note, Section, Specimen, SpecimenGrid } from "./parts";
 
 // Patterns (DS 14), added step by step. Step 4: putting in a good word (5.4)
-// and the three shelves in every state (PRD F5.7, DS 5.12). Step 5:
+// and the three lists in every state (PRD F5.7, DS 5.12). Step 5:
 // browsing and filtering (5.6). Step 6: conversations, mentions, and Activity
 // (5.17). Built from the same components the app uses.
 
@@ -72,7 +72,7 @@ function PuttingIn() {
             />
           </SheetFrame>
         </Specimen>
-        <Specimen label="Already on every shelf picked: Edit note instead">
+        <Specimen label="Already on every list picked: Edit note instead">
           <SheetFrame
             label="Already vouched"
             title={t("vouch.put")}
@@ -96,10 +96,10 @@ function PuttingIn() {
         <Specimen label="Toasts: the audience named, nobody to see it yet, taken back, and a failed write">
           <div className="flex flex-col items-start gap-3">
             <ToastView
-              message={t("vouch.onShelfAudience", { names: "Priya, Jonah, and 4 others" })}
+              message={t("vouch.onListAudience", { names: "Priya, Jonah, and 4 others" })}
               action={{ label: t("common.undo"), onAction: () => {} }}
             />
-            <ToastView message={t("vouch.onShelfInvite")} action={{ label: t("vouch.invite"), onAction: () => {} }} />
+            <ToastView message={t("vouch.onListInvite")} action={{ label: t("vouch.invite"), onAction: () => {} }} />
             <ToastView message={t("vouch.takenBack")} action={{ label: t("common.undo"), onAction: () => {} }} />
             <ToastView message={t("vouch.didntSave")} action={{ label: t("common.retry"), onAction: () => {} }} />
           </div>
@@ -113,42 +113,42 @@ function PuttingIn() {
   );
 }
 
-function Shelves() {
+function Lists() {
   return (
-    <Component id="shelf-states" title="Shelves" spec="5.12">
-      <Frame label="Ideal: a group shelf, one card per title, newest first (2, 3, then 4 columns); New since your last visit">
+    <Component id="list-states" title="Lists" spec="5.12">
+      <Frame label="Ideal: a group list, one card per title, newest first (2, 3, then 4 columns); New since your last visit">
         <div className="p-4">
           <ul className={GRID}>
             {(["nightFerry", "lowTide", "heist"] as const).map((key) => (
               <li key={key}>
-                <RecCardGrid title={titles[key]} goodWords={goodWords[key]} href="#shelf-states" viewerId={viewer.id} isNew={key === "nightFerry"} />
+                <RecCardGrid title={titles[key]} goodWords={goodWords[key]} href="#list-states" viewerId={viewer.id} isNew={key === "nightFerry"} />
               </li>
             ))}
             <li>
-              <RecCardGrid title={titles.moth} goodWords={[{ person: people.bea, at: new Date("2026-09-20T18:00:00Z") }]} href="#shelf-states" viewerId={viewer.id} />
+              <RecCardGrid title={titles.moth} goodWords={[{ person: people.bea, at: new Date("2026-09-20T18:00:00Z") }]} href="#list-states" viewerId={viewer.id} />
             </li>
           </ul>
         </div>
       </Frame>
-      <Frame label="My Recs: each card says where it's shared, or Only you">
+      <Frame label="My list: each card says where it's shared, or Only you">
         <div className="p-4">
           <ul className={GRID}>
             <li>
               <RecCardGrid
                 title={titles.nightFerry}
                 goodWords={[{ person: viewer, note: "ep 3 is where it gets you", at: new Date("2026-09-27T18:00:00Z") }]}
-                href="#shelf-states"
+                href="#list-states"
                 viewerId={viewer.id}
-                shelves={[groups.college, groups.girls]}
+                lists={[groups.college, groups.girls]}
               />
             </li>
             <li>
               <RecCardGrid
                 title={titles.moth}
                 goodWords={[{ person: viewer, at: new Date("2026-09-26T18:00:00Z") }]}
-                href="#shelf-states"
+                href="#list-states"
                 viewerId={viewer.id}
-                shelves={[]}
+                lists={[]}
               />
             </li>
           </ul>
@@ -162,23 +162,23 @@ function Shelves() {
           <JoinPromptCard onPut={() => {}} onDismiss={() => {}} />
         </Specimen>
         <Specimen label="Offline: a banner; what's loaded stays">
-          <Banner icon="offline">{t("shelf.offline")}</Banner>
+          <Banner icon="offline">{t("list.offline")}</Banner>
         </Specimen>
       </SpecimenGrid>
       <SpecimenGrid>
-        <Specimen label="Empty group shelf">
+        <Specimen label="Empty group list">
           <EmptyState
-            showShelf
+            showList
             headingLevel={4}
-            title={t("shelf.groupEmptyTitle")}
-            body={t("shelf.groupEmptyBody")}
+            title={t("list.groupEmptyTitle")}
+            body={t("list.groupEmptyBody")}
             action={
               <div className="flex flex-wrap gap-3 md:justify-center">
                 <Button variant="primary" icon="add">
                   {t("vouch.put")}
                 </Button>
                 <Button variant="secondary" icon="share">
-                  {t("shelf.inviteFriends")}
+                  {t("list.inviteFriends")}
                 </Button>
               </div>
             }
@@ -186,26 +186,26 @@ function Shelves() {
         </Specimen>
         <Specimen label="No groups yet">
           <EmptyState
-            showShelf
+            showList
             headingLevel={4}
-            title={t("shelf.noGroupsTitle")}
-            body={t("shelf.noGroupsBody")}
+            title={t("list.noGroupsTitle")}
+            body={t("list.noGroupsBody")}
             action={
               <div className="flex flex-col items-start gap-4 md:items-center">
                 <div className="flex flex-wrap gap-3 md:justify-center">
-                  <ButtonLink href="#shelf-states" variant="primary" icon="add">
-                    {t("shelf.startGroup")}
+                  <ButtonLink href="#list-states" variant="primary" icon="add">
+                    {t("list.startGroup")}
                   </ButtonLink>
                   <Button variant="secondary">{t("vouch.put")}</Button>
                 </div>
-                <p className="text-caption text-muted">{t("shelf.inviteHint")}</p>
+                <p className="text-caption text-muted">{t("list.inviteHint")}</p>
               </div>
             }
           />
         </Specimen>
-        <Specimen label="Empty My Recs">
+        <Specimen label="Empty My list">
           <EmptyState
-            showShelf
+            showList
             headingLevel={4}
             title={t("you.emptyTitle")}
             body={t("you.emptyBody")}
@@ -219,13 +219,13 @@ function Shelves() {
         <Specimen label="Error, with Retry">
           <ErrorState
             headingLevel={4}
-            title={t("shelf.errorTitle")}
-            body={t("shelf.errorBody")}
+            title={t("list.errorTitle")}
+            body={t("list.errorBody")}
             action={<Button variant="secondary">{t("common.retry")}</Button>}
           />
         </Specimen>
         <Specimen label="Loading: skeletons in the grid's shape" wide>
-          <SkeletonRegion label={t("shelf.loading")} className="w-full">
+          <SkeletonRegion label={t("list.loading")} className="w-full">
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="flex flex-col gap-2.5">
@@ -243,13 +243,13 @@ function Shelves() {
   );
 }
 
-const shelfServices = [
+const listServices = [
   { id: 8, name: "Netflix" },
   { id: 15, name: "Hulu" },
   { id: 337, name: "Disney Plus" },
 ];
 
-const shelfCards: ShelfCard[] = [
+const listCards: ListCard[] = [
   { title: titles.nightFerry, goodWords: goodWords.nightFerry, services: [8], isNew: true },
   { title: titles.lowTide, goodWords: goodWords.lowTide, services: [8, 15] },
   { title: titles.heist, goodWords: goodWords.heist, services: [15] },
@@ -258,16 +258,16 @@ const shelfCards: ShelfCard[] = [
 
 function Browsing() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const { cards } = filterShelf(shelfCards, filters);
+  const { cards } = filterList(listCards, filters);
   return (
-    <Component id="browsing" title="Browsing and filtering the shelf" spec="5.6">
+    <Component id="browsing" title="Browsing and filtering the list" spec="5.6">
       <Frame label="Live: All / Movies / Shows, service chips with counts, More filters, sort. Active filters stay visible with a count and Clear">
         <div className="flex flex-col gap-6 px-4 pb-4">
           <FilterBar
             filters={filters}
             resultCount={cards.length}
             onChange={(next) => setFilters(next)}
-            options={{ services: serviceCounts(shelfCards, shelfServices, filters), genres: genreCounts(shelfCards, filters) }}
+            options={{ services: serviceCounts(listCards, listServices, filters), genres: genreCounts(listCards, filters) }}
           />
           {cards.length === 0 ? (
             <EmptyState
@@ -289,14 +289,14 @@ function Browsing() {
                   </li>
                 ))}
               </ul>
-              <p className="text-center text-caption text-muted">{t("shelf.end")}</p>
+              <p className="text-center text-caption text-muted">{t("list.end")}</p>
             </div>
           )}
         </div>
       </Frame>
       <SpecimenGrid>
         <Specimen label="More than 24 cards: infinite scroll, with Load more as the fallback">
-          <Button variant="secondary">{t("shelf.loadMore")}</Button>
+          <Button variant="secondary">{t("list.loadMore")}</Button>
         </Specimen>
         <Specimen label="No results, with a length filter on: says titles with unknown length are left out">
           <EmptyState
@@ -306,7 +306,7 @@ function Browsing() {
             action={<Button variant="secondary">{t("filters.clearFilters")}</Button>}
           />
         </Specimen>
-        <Specimen label="No results on My Recs">
+        <Specimen label="No results on My list">
           <EmptyState
             headingLevel={4}
             title={t("filters.noResultsMine")}
@@ -325,10 +325,10 @@ const previews: ConversationPreview[] = [
     group: groupsWithCounts[0],
     count: 12,
     latestAt: comments[4].at,
-    onShelf: true,
+    onList: true,
     recent: comments.slice(2).map((c) => ({ ...c, covered: Boolean(c.spoiler) && c.author.id !== viewer.id })),
   },
-  { group: groupsWithCounts[1], count: 0, onShelf: false, recent: [] },
+  { group: groupsWithCounts[1], count: 0, onList: false, recent: [] },
 ];
 
 function Conversations() {
@@ -388,7 +388,7 @@ function Conversations() {
           <p className="text-caption text-muted">{t("conversation.spoilerHint")}</p>
         </Specimen>
         <Specimen label="Offline: what's loaded stays; a comment that can't send says so, with Retry">
-          <Banner icon="offline">{t("shelf.offline")}</Banner>
+          <Banner icon="offline">{t("list.offline")}</Banner>
         </Specimen>
       </SpecimenGrid>
       <Frame label="Activity: Today, This week, Earlier; Mark all as read while anything is unread">
@@ -450,10 +450,10 @@ export function Patterns() {
     <Section
       id="patterns"
       title="Patterns"
-      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the shelves. Step 5: browsing and filtering. Step 6: conversations and Activity."
+      intro="Section 5 patterns, added as each build step builds them. Step 4: putting in a good word and the lists. Step 5: browsing and filtering. Step 6: conversations and Activity."
     >
       <PuttingIn />
-      <Shelves />
+      <Lists />
       <Browsing />
       <Conversations />
     </Section>

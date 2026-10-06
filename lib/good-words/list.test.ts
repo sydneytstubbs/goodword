@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MyGoodWord, Title } from "@/components/domain/types";
 import { audienceNames } from "@/lib/format";
-import { applyOverlays, cardsFromRows, type VouchRow } from "./shelf";
+import { applyOverlays, cardsFromRows, type VouchRow } from "./list";
 
 const ferry: Title = { id: "tv-101", type: "tv", tmdbId: 101, name: "The Night Ferry", year: 2024, genres: ["Drama"], accent: "plum" };
 const moth: Title = { id: "movie-202", type: "movie", tmdbId: 202, name: "Moth Season", genres: ["Horror"], accent: "clay" };
@@ -56,24 +56,24 @@ const mine = (groupIds: string[], note = "", createdAt = "2026-09-29T09:00:00Z")
 });
 
 describe("applyOverlays", () => {
-  const shelf = cardsFromRows([
+  const list = cardsFromRows([
     row(ferry, "jonah", "Jonah", "2026-09-20T10:00:00Z", "the ferry scene"),
     row(heist, "tess", "Tess", "2026-09-26T10:00:00Z"),
   ]);
 
-  it("puts a new card at the top of each shelf it's shared into", () => {
-    const cards = applyOverlays(shelf, [{ title: moth, mine: mine(["crew"], "so creepy") }], { kind: "group", groupId: "crew" }, priya);
+  it("puts a new card at the top of each list it's shared into", () => {
+    const cards = applyOverlays(list, [{ title: moth, mine: mine(["crew"], "so creepy") }], { kind: "group", groupId: "crew" }, priya);
     expect(cards.map((c) => c.title.name)).toEqual(["Moth Season", "Grandma's Heist", "The Night Ferry"]);
     expect(cards[0].goodWords).toEqual([{ person: priya, note: "so creepy", at: new Date("2026-09-29T09:00:00Z") }]);
   });
 
-  it("leaves shelves it isn't shared into alone", () => {
-    const cards = applyOverlays(shelf, [{ title: moth, mine: mine(["girls"]) }], { kind: "group", groupId: "crew" }, priya);
-    expect(cards).toEqual(shelf);
+  it("leaves lists it isn't shared into alone", () => {
+    const cards = applyOverlays(list, [{ title: moth, mine: mine(["girls"]) }], { kind: "group", groupId: "crew" }, priya);
+    expect(cards).toEqual(list);
   });
 
   it("joins a friend's card instead of adding a second one, listing you first", () => {
-    const cards = applyOverlays(shelf, [{ title: ferry, mine: mine(["crew"]) }], { kind: "group", groupId: "crew" }, priya);
+    const cards = applyOverlays(list, [{ title: ferry, mine: mine(["crew"]) }], { kind: "group", groupId: "crew" }, priya);
     expect(cards).toHaveLength(2);
     expect(cards[0].title.name).toBe("The Night Ferry");
     expect(cards[0].goodWords.map((g) => g.person.name)).toEqual(["Priya", "Jonah"]);
@@ -85,12 +85,12 @@ describe("applyOverlays", () => {
   });
 
   it("keeps a friend's card when you take yours back", () => {
-    const both = applyOverlays(shelf, [{ title: ferry, mine: mine(["crew"]) }], { kind: "group", groupId: "crew" }, priya);
+    const both = applyOverlays(list, [{ title: ferry, mine: mine(["crew"]) }], { kind: "group", groupId: "crew" }, priya);
     const cards = applyOverlays(both, [{ title: ferry, mine: null }], { kind: "group", groupId: "crew" }, priya);
     expect(cards.find((c) => c.title.id === ferry.id)!.goodWords.map((g) => g.person.name)).toEqual(["Jonah"]);
   });
 
-  it("shows zero-group good words on My Recs with no groups", () => {
+  it("shows zero-group good words on My list with no groups", () => {
     const cards = applyOverlays([], [{ title: moth, mine: mine([]) }], { kind: "mine" }, priya);
     expect(cards).toHaveLength(1);
     expect(cards[0].groupIds).toEqual([]);

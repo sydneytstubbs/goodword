@@ -10,7 +10,7 @@ import { VisibilityLine, type GroupWithCount } from "./visibility-line";
 
 // The confirm step of putting in a good word (DESIGN-SYSTEM.md 5.4): poster,
 // title, and year; the optional note; and the visibility line, which opens
-// the group picker. When the good word is already on every shelf picked, it
+// the group picker. When the good word is already on every list picked, it
 // says so instead of asking for a note (the sheet then offers Edit note).
 
 export function NoteField({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) {
@@ -39,7 +39,7 @@ export function ConfirmGoodWord({
   title: Title;
   note: string;
   onNoteChange: (value: string) => void;
-  /** Your good word is already on every shelf picked. */
+  /** Your good word is already on every list picked. */
   already?: boolean;
   /** The groups picked. */
   groups: GroupWithCount[];
@@ -60,7 +60,7 @@ export function ConfirmGoodWord({
       {already ? (
         <p className="flex items-start gap-2 text-body text-default">
           <Icon name="vouched" size={20} className="mt-0.5 shrink-0 text-action-text" />
-          {t("vouch.alreadyOnShelves")}
+          {t("vouch.alreadyOnLists")}
         </p>
       ) : (
         <NoteField value={note} onValueChange={onNoteChange} />

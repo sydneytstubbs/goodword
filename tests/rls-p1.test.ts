@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // The P1 extras (PRD 12, slice 10), against the real project: streaming
-// services, share my shelf, who hears a shelf's new good words, and the
+// services, share my list, who hears a list's new good words, and the
 // weekend prompt. Priya owns College crew with Jonah; Tess is in no group.
 // Invented people and titles only. Skipped without the Supabase env vars.
 // Needs the step 10 migration applied.
@@ -14,7 +14,7 @@ const enabled = Boolean(url && anon && service);
 
 type User = { id: string; client: SupabaseClient };
 
-describe.skipIf(!enabled)("P1: services, share my shelf, live shelves, weekend prompt", () => {
+describe.skipIf(!enabled)("P1: services, share my list, live lists, weekend prompt", () => {
   const admin = enabled ? createClient(url!, service!, { auth: { persistSession: false } }) : (null as unknown as SupabaseClient);
   const run = randomUUID().slice(0, 8);
   const people: Record<string, User> = {};
@@ -107,7 +107,7 @@ describe.skipIf(!enabled)("P1: services, share my shelf, live shelves, weekend p
     expect(text).not.toContain("lighthouse");
     expect(text).not.toContain("Jonah");
 
-    // Only the server can read a shared shelf, and nobody else reads your link.
+    // Only the server can read a shared list, and nobody else reads your link.
     const signedOut = createClient(url!, anon!, { auth: { persistSession: false } });
     expect((await signedOut.rpc("shared_shelf", { p_token: token })).error).not.toBeNull();
     expect((await people.jonah.client.rpc("shared_shelf", { p_token: token })).error).not.toBeNull();
@@ -133,7 +133,7 @@ describe.skipIf(!enabled)("P1: services, share my shelf, live shelves, weekend p
     expect((await admin.rpc("shared_shelf", { p_token: reset })).data).toHaveLength(1);
   });
 
-  it("lets only a group's members hear its shelf", async () => {
+  it("lets only a group's members hear its list", async () => {
     expect((await people.jonah.client.rpc("can_hear", { p_topic: `shelf:${crew}` })).data).toBe(true);
     expect((await people.tess.client.rpc("can_hear", { p_topic: `shelf:${crew}` })).data).toBe(false);
     expect((await people.tess.client.rpc("can_hear", { p_topic: "shelf:nope" })).data).toBe(false);

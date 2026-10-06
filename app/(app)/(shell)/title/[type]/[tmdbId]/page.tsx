@@ -36,9 +36,9 @@ export default async function TitlePage({ params, searchParams }: PageProps<"/ti
   if (!title) notFound();
   const [groups, titleId, query] = await Promise.all([listMyGroups(user.id), cachedTitleId(parsed.type, parsed.tmdbId), searchParams]);
   const asked = typeof query.group === "string" ? query.group : null;
-  // Where the view came from (PRD 11.2): a digest link, or a shelf.
+  // Where the view came from (PRD 11.2): a digest link, or a list.
   const came = await referrerPath();
-  const from = query.ref === "digest" ? "digest" : came && /^\/(shelf|you)(\/|$)/.test(came) ? "shelf" : undefined;
+  const from = query.ref === "digest" ? "digest" : came && /^\/(list|you)(\/|$)/.test(came) ? "list" : undefined;
   await recordEvent("title_viewed", from ? { from } : {}, user.id);
 
   return (

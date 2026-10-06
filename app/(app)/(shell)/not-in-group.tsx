@@ -7,14 +7,14 @@ import { t } from "@/lib/messages";
 export function NotInGroup() {
   return (
     <main className="mx-auto w-full max-w-content px-4 py-12">
-      <h1 className="sr-only">{t("shelf.notInGroupTitle")}</h1>
+      <h1 className="sr-only">{t("list.notInGroupTitle")}</h1>
       <EmptyState
         headingLevel={2}
-        title={t("shelf.notInGroupTitle")}
-        body={t("shelf.notInGroupBody")}
+        title={t("list.notInGroupTitle")}
+        body={t("list.notInGroupBody")}
         action={
-          <ButtonLink href="/shelf" variant="secondary">
-            {t("shelf.goToShelf")}
+          <ButtonLink href="/list" variant="secondary">
+            {t("list.goToGroups")}
           </ButtonLink>
         }
       />

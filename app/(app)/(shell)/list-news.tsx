@@ -3,22 +3,22 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 // New since your last visit (PRD F5.5): how many new good words each group
-// has, for the group switcher's counts and the Shelf tab's dot. "Last
-// viewed" updates when you leave a shelf or after 10 seconds on it, never on
+// has, for the group switcher's counts and the List tab's dot. "Last
+// viewed" updates when you leave a list or after 10 seconds on it, never on
 // arrival, so the New badges on its cards don't vanish before you see them.
 
-type ShelfNews = {
+type ListNews = {
   counts: Record<string, number>;
   markViewed: (groupIds: string[]) => void;
 };
 
-const ShelfNewsContext = createContext<ShelfNews>({ counts: {}, markViewed: () => {} });
+const ListNewsContext = createContext<ListNews>({ counts: {}, markViewed: () => {} });
 
-export function useShelfNews(): ShelfNews {
-  return useContext(ShelfNewsContext);
+export function useListNews(): ListNews {
+  return useContext(ListNewsContext);
 }
 
-export function ShelfNewsProvider({ counts: serverCounts, children }: { counts: Record<string, number>; children: ReactNode }) {
+export function ListNewsProvider({ counts: serverCounts, children }: { counts: Record<string, number>; children: ReactNode }) {
   // Groups viewed since the server last counted. Fresh counts from the server start over.
   const [viewed, setViewed] = useState({ source: serverCounts, ids: new Set<string>() });
   const ids = viewed.source === serverCounts ? viewed.ids : new Set<string>();
@@ -31,26 +31,26 @@ export function ShelfNewsProvider({ counts: serverCounts, children }: { counts: 
         const base = v.source === serverCounts ? v.ids : new Set<string>();
         return { source: serverCounts, ids: new Set([...base, ...groupIds]) };
       });
-      fetch("/api/shelves/viewed", {
+      fetch("/api/lists/viewed", {
         method: "POST",
         keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ groups: groupIds }),
       }).catch(() => {
-        // Offline: the shelf is marked next time.
+        // Offline: the list is marked next time.
       });
     },
     [serverCounts],
   );
 
-  return <ShelfNewsContext.Provider value={{ counts, markViewed }}>{children}</ShelfNewsContext.Provider>;
+  return <ListNewsContext.Provider value={{ counts, markViewed }}>{children}</ListNewsContext.Provider>;
 }
 
 const VIEW_AFTER_MS = 10_000;
 
-/** Marks these shelves viewed after 10 seconds, or when the viewer leaves or closes the page. */
+/** Marks these lists viewed after 10 seconds, or when the viewer leaves or closes the page. */
 export function useMarkViewed(groupIds: string[]) {
-  const { markViewed } = useShelfNews();
+  const { markViewed } = useListNews();
   const key = groupIds.join(",");
   useEffect(() => {
     const ids = key ? key.split(",") : [];

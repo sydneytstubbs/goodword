@@ -22,7 +22,7 @@ import { Sheet } from "../ui/sheet";
 import { TextLink } from "../ui/text-link";
 import type { Group, Service } from "./types";
 
-// The shelf's filter bar (DS 5.6, PRD F5.4): All / Movies / Shows, then the
+// The list's filter bar (DS 5.6, PRD F5.4): All / Movies / Shows, then the
 // five most common streaming services with counts, then More filters, then
 // sort. Every active filter stays visible on the bar, with the result count
 // and one Clear. Chips are grouped by kind, so OR within a kind and AND
@@ -34,11 +34,11 @@ export type Counted<T> = T & { count: number };
 export type FilterChange = (next: Filters, history: "push" | "replace") => void;
 
 export type FilterOptions = {
-  /** Every service on the shelf, most common first, with counts under the other filters. */
+  /** Every service on the list, most common first, with counts under the other filters. */
   services: Array<Counted<Service>>;
-  /** Genres on the shelf, most common first. */
+  /** Genres on the list, most common first. */
   genres: Array<Counted<{ name: string }>>;
-  /** My Recs only: filter by the groups a good word is shared into (F5.3). */
+  /** My list only: filter by the groups a good word is shared into (F5.3). */
   groups?: Group[];
   /** Whether the viewer has picked their streaming services, for "On my services" (P1). */
   hasMyServices?: boolean;
@@ -73,7 +73,7 @@ export function FilterBar({
   options: FilterOptions;
   resultCount: number;
   onChange: FilterChange;
-  /** A hairline once the shelf scrolls under the bar. */
+  /** A hairline once the list scrolls under the bar. */
   stuck?: boolean;
 }) {
   const [moreOpen, setMoreOpen] = useState(false);
@@ -152,7 +152,7 @@ export function FilterBar({
       </div>
       <div className={cn("flex min-h-6 items-center gap-3", !filtered && "sr-only")}>
         <p role="status" className="text-label font-medium text-default tabular-nums">
-          {filtered ? t("shelf.goodWords", { count: resultCount }) : ""}
+          {filtered ? t("list.goodWords", { count: resultCount }) : ""}
         </p>
         {filtered && (
           <button
@@ -221,7 +221,7 @@ function SheetSection({ title, children }: { title: string; children: React.Reac
   );
 }
 
-/** Everything in the More filters sheet: all services, genres, length, and groups on My Recs. */
+/** Everything in the More filters sheet: all services, genres, length, and groups on My list. */
 export function MoreFilters({ filters, options, onChange }: { filters: Filters; options: FilterOptions; onChange: FilterChange }) {
   const set = (next: Partial<Filters>) => onChange({ ...filters, ...next }, "replace");
   return (

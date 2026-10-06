@@ -2,10 +2,10 @@
 
 import NextLink from "next/link";
 import { useState } from "react";
-import { LiveShelf } from "../live-shelf";
+import { LiveList } from "../live-list";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { InviteCard } from "@/components/domain/invite-card";
-import type { Shelf } from "@/components/domain/types";
+import type { List } from "@/components/domain/types";
 import { AvatarStack } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -15,25 +15,25 @@ import { nameList } from "@/lib/format";
 import { t } from "@/lib/messages";
 import { useAdd } from "../../add";
 import { useGoodWords } from "../../good-words";
-import { ShelfBar } from "../shelf-bar";
-import { useMarkViewed } from "../../shelf-news";
-import { ShelfCards } from "../shelf-cards";
+import { ListBar } from "../list-bar";
+import { useMarkViewed } from "../../list-news";
+import { ListCards } from "../list-cards";
 import { JoinPrompt } from "./join-prompt";
 import { WelcomeBanner } from "./welcome-banner";
 
-// A group's shelf (PRD F5.1): the group name as the page title, its members
+// A group's list (PRD F5.1): the group name as the page title, its members
 // beneath (linking to group details), then one card per title.
-export function GroupShelf({
+export function GroupList({
   groups,
   group,
-  shelf,
+  list,
   inviteLink,
   showWelcome,
   showJoinPrompt,
 }: {
   groups: SwitcherGroup[];
   group: SwitcherGroup;
-  shelf: Shelf;
+  list: List;
   inviteLink: string | null;
   showWelcome: boolean;
   /** No good words from you here yet, and the prompt hasn't been dismissed (F5.7). */
@@ -54,30 +54,30 @@ export function GroupShelf({
 
   return (
     <>
-      <ShelfBar groups={groups} currentId={group.id} onInvite={openInvite} />
-      <LiveShelf groupIds={[group.id]} />
+      <ListBar groups={groups} currentId={group.id} onInvite={openInvite} />
+      <LiveList groupIds={[group.id]} />
       {welcomeFor === group.id && <WelcomeBanner groupId={group.id} groupName={group.name} />}
       <header className="flex flex-col gap-3">
         <h1 className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{group.name}</h1>
         <NextLink
           href={`/groups/${group.id}`}
-          aria-label={t("shelf.membersLink", { names: nameList(group.members.map((m) => m.name)) })}
+          aria-label={t("list.membersLink", { names: nameList(group.members.map((m) => m.name)) })}
           className="-mx-1 inline-flex min-h-target items-center gap-2 self-start rounded-control px-1 text-caption text-muted transition duration-fast ease-standard hover:text-default"
         >
           <AvatarStack people={group.members} size={24} />
           {t("groups.members", { count: group.members.length })}
         </NextLink>
       </header>
-      <ShelfCards
-        cards={shelf.cards}
-        services={shelf.services}
+      <ListCards
+        cards={list.cards}
+        services={list.services}
         scope={{ kind: "group", groupId: group.id }}
         empty={
           <EmptyState
-            showShelf
+            showList
             headingLevel={2}
-            title={t("shelf.groupEmptyTitle")}
-            body={t("shelf.groupEmptyBody")}
+            title={t("list.groupEmptyTitle")}
+            body={t("list.groupEmptyBody")}
             action={
               <div className="flex flex-wrap gap-3 md:justify-center">
                 <Button variant="primary" size="lg" icon="add" onClick={() => openAdd({ entryPoint: "empty_state" })}>
@@ -85,7 +85,7 @@ export function GroupShelf({
                 </Button>
                 {openInvite && (
                   <Button variant="secondary" size="lg" icon="share" onClick={openInvite}>
-                    {t("shelf.inviteFriends")}
+                    {t("list.inviteFriends")}
                   </Button>
                 )}
               </div>

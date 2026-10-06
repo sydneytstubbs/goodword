@@ -17,7 +17,7 @@ export async function WhereToWatch({
   type: TitleType;
   tmdbId: number;
   region: string;
-  /** Friends have vouched for it, for measuring whether shelves help people choose (H5). */
+  /** Friends have vouched for it, for measuring whether lists help people choose (H5). */
   fromGoodWord: boolean;
 }) {
   const [providers, titleId] = await Promise.all([

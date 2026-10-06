@@ -37,7 +37,7 @@ export async function deleteUsers(users: TestUser[]) {
 }
 
 /** Opens a fresh magic link for `user` in `page`, as if tapped from the email. */
-export async function openMagicLink(page: Page, user: TestUser, next = "/shelf") {
+export async function openMagicLink(page: Page, user: TestUser, next = "/list") {
   const link = await admin().auth.admin.generateLink({ type: "magiclink", email: user.email });
   if (link.error) throw link.error;
   await page.goto(`/auth/confirm?token_hash=${link.data.properties.hashed_token}&next=${encodeURIComponent(next)}`);

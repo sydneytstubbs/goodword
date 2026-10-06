@@ -12,7 +12,7 @@ import type { ConversationComment } from "./types";
 // Each calls a database function that checks membership, limits, and
 // mentions. The screens apply writes optimistically first and roll back on
 // failure (DS 5.10). Nothing here refreshes the router: the conversation keeps
-// its own list, and shelves pick up counts on their next load (F13).
+// its own list, and lists pick up counts on their next load (F13).
 
 export type CommentWriteResult = { ok: true } | { ok: false; error: "failed" | "rateLimited" | "tooLong" };
 

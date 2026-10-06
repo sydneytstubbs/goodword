@@ -25,7 +25,7 @@ export function OfflineBanner() {
   if (!offline) return null;
   return (
     <div className="mx-auto w-full max-w-content px-4 pb-4">
-      <Banner icon="offline">{t("shelf.offline")}</Banner>
+      <Banner icon="offline">{t("list.offline")}</Banner>
     </div>
   );
 }
