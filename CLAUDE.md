@@ -1,6 +1,6 @@
 # Good Word
 
-A private, mobile-first web app where small groups of friends keep a shared shelf of the shows and movies they'd vouch for, and talk about them. Humans do all the recommending; the app never recommends on its own.
+A private, mobile-first web app where small groups of friends keep lists of the shows and movies they'd vouch for, see their friends' good words on Home, and talk about them. Humans do all the recommending; the app never recommends on its own.
 
 Owner: Sydney (product and design). She reviews every slice on her phone before the next one starts.
 
@@ -34,14 +34,26 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 3 | Titles (TMDB) | PRD 12, slice 3 | Done |
 | 4 | The core loop | PRD 12, slice 4 | Done |
 | 5 | Choosing | PRD 12, slice 5 | Done |
-| 6 | Conversations | PRD 12, slice 6 | In review |
+| 6 | Conversations | PRD 12, slice 6 | Done |
 | 7 | Email | PRD 12, slice 7 | Done (email polish deferred; see PRD changelog v1.2.10) |
-| 8 | Settings and trust | PRD 12, slice 8 | In review |
-| 9 | Measurement | PRD 12, slice 9 | In review |
-| 10 | P1 extras | PRD 12, slice 10 | In review |
-| 11 | Build your list (add recs in bulk) | PRD 12, slice 11; F15 | In review |
+| 8 | Settings and trust | PRD 12, slice 8 | Done |
+| 9 | Measurement | PRD 12, slice 9 | Done |
+| 10 | P1 extras | PRD 12, slice 10 | Done |
+| 11 | Build your list (add recs in bulk) | PRD 12, slice 11; F15 | Done |
+| 12 | Home and friends: docs and schema check (no app code) | PRD 12, slice 12; F16 | In review |
+| 13 | Rename shelf to list, My Recs to My list (copy, routes, code) | PRD 12, slice 13 | Not started |
+| 14 | Friends | PRD 12, slice 14; F16.1 | Not started |
+| 15 | Friends as an audience | PRD 12, slice 15; F16.2 | Not started |
+| 16 | One card query | PRD 12, slice 16; F16.11 | Not started |
+| 17 | Home | PRD 12, slice 17; F16.3 | Not started |
+| 18 | Conversations by scope | PRD 12, slice 18; F16.5 | Not started |
+| 19 | Title page | PRD 12, slice 19; F16.4 | Not started |
+| 20 | The flip | PRD 12, slice 20; F16.10 | Not started |
+| 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Not started |
 
 Before starting a step, check PRD Section 15 for open questions that step depends on, and ask about any that are still open.
+
+Steps 14 to 19 ship behind the `home_enabled` flag (PRD F16.10). With it off, the app works exactly as it did before step 14. Step 20 turns it on for everyone and removes it.
 
 ---
 
@@ -95,7 +107,7 @@ These come from the docs. Breaking one is a bug.
 
 **Content**
 - All UI copy lives in `messages/en.json`, never hardcoded in components.
-- Use the glossary (DS 1.4): good word, shelf, group, member, note, conversation, comment, mention, activity. Never post, item, feed, review, rating, chat, or thread in UI copy.
+- Use the glossary (DS 1.4): good word, list, My list, Home, friend, group, member, note, conversation, comment, mention, activity. Never post, item, feed, timeline, follower, review, rating, like, chat, or thread in UI copy, and never post, feed, or follower in code identifiers or routes.
 - Follow the voice and error formula in DS 6. No exclamation marks in our copy.
 
 **Accessibility (WCAG 2.2 AA)**
