@@ -1,6 +1,6 @@
 # Good Word
 
-A private, mobile-first web app where small groups of friends keep lists of the shows and movies they'd vouch for, see their friends' good words on Home, and talk about them. Humans do all the recommending; the app never recommends on its own.
+A private, mobile-first web app where friends keep lists of the shows and movies they'd vouch for, see their friends' good words on Home, and talk about them. Humans do all the recommending; the app never recommends on its own.
 
 Owner: Sydney (product and design). She reviews every slice on her phone before the next one starts.
 
@@ -40,8 +40,8 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 9 | Measurement | PRD 12, slice 9 | Done |
 | 10 | P1 extras | PRD 12, slice 10 | Done |
 | 11 | Build your list (add recs in bulk) | PRD 12, slice 11; F15 | Done |
-| 12 | Home and friends: docs and schema check (no app code) | PRD 12, slice 12; F16 | In review |
-| 13 | Rename shelf to list, My Recs to My list (copy, routes, code) | PRD 12, slice 13 | Not started |
+| 12 | Home and friends: docs and schema check (no app code) | PRD 12, slice 12; F16 | Done |
+| 13 | Rename shelf to list, My Recs to My list (copy, routes, code) | PRD 12, slice 13 | In review |
 | 14 | Friends | PRD 12, slice 14; F16.1 | Not started |
 | 15 | Friends as an audience | PRD 12, slice 15; F16.2 | Not started |
 | 16 | One card query | PRD 12, slice 16; F16.11 | Not started |
