@@ -17,7 +17,8 @@ export type VouchRow = {
 };
 
 const time = (iso: string) => new Date(iso).getTime();
-const latest = (card: ListCard) => Math.max(0, ...card.goodWords.map((g) => g.at.getTime()));
+// Home's cards keep their own time: imports and your good word never move them (PRD F16.3).
+const latest = (card: ListCard) => card.latestAt?.getTime() ?? Math.max(0, ...card.goodWords.map((g) => g.at.getTime()));
 
 function sortCards(cards: ListCard[]): ListCard[] {
   return cards
@@ -55,6 +56,10 @@ export type CardRow = {
   /** Scope mine only. */
   groupIds: string[] | null;
   friends: boolean | null;
+  /** Scope home only. */
+  viaGroupId?: string | null;
+  /** Scope home only: when someone else's good word (not an import) last moved the card. */
+  latestAt?: string | null;
 };
 
 /** Cards from title_cards rows, in the same order and shape as cardsFromRows. */
@@ -66,6 +71,8 @@ export function cardsFromCardRows(rows: CardRow[]): ListCard[] {
       ...(row.isNew ? { isNew: true } : {}),
       ...(row.groupIds ? { groupIds: row.groupIds } : {}),
       ...(row.friends ? { friends: true } : {}),
+      ...(row.viaGroupId ? { viaGroupId: row.viaGroupId } : {}),
+      ...(row.latestAt ? { latestAt: new Date(row.latestAt) } : {}),
     })),
   );
 }
@@ -77,11 +84,15 @@ function goodWord(person: Person, note: string | null, at: string): GoodWord {
 /** A change to the viewer's own good word on a title that the server hasn't confirmed yet. */
 export type Overlay = { title: Title; mine: MyGoodWord | null };
 
-export type ListScope = { kind: "group"; groupId: string } | { kind: "all"; groupIds: string[] } | { kind: "mine" };
+export type ListScope =
+  | { kind: "group"; groupId: string }
+  | { kind: "all"; groupIds: string[] }
+  | { kind: "mine" }
+  | { kind: "home" };
 
 /** When the viewer's good word went on this list, or null if it isn't on it. */
 function shelvedAt(mine: MyGoodWord, scope: ListScope): string | null {
-  if (scope.kind === "mine") return mine.createdAt;
+  if (scope.kind === "mine" || scope.kind === "home") return mine.createdAt;
   const ids = scope.kind === "group" ? [scope.groupId] : scope.groupIds;
   const dates = mine.groupIds.filter((id) => ids.includes(id)).map((id) => mine.sharedAt[id] ?? mine.createdAt);
   if (dates.length === 0) return null;
@@ -95,6 +106,18 @@ function shelvedAt(mine: MyGoodWord, scope: ListScope): string | null {
  */
 export function applyOverlays(cards: ListCard[], overlays: Overlay[], scope: ListScope, viewer: Person): ListCard[] {
   if (overlays.length === 0) return cards;
+  // Home (PRD F16.3): your good word only names you on a card someone else
+  // made. It never adds a card, takes one away, or moves one.
+  if (scope.kind === "home") {
+    return cards.map((card) => {
+      const overlay = overlays.find((o) => o.title.id === card.title.id);
+      if (!overlay) return card;
+      const others = card.goodWords.filter((g) => g.person.id !== viewer.id);
+      const at = overlay.mine ? shelvedAt(overlay.mine, scope) : null;
+      const goodWords = at && overlay.mine ? [...others, goodWord(viewer, overlay.mine.note || null, at)] : others;
+      return { ...card, goodWords: [...goodWords].sort((a, b) => b.at.getTime() - a.at.getTime()) };
+    });
+  }
   const byTitle = new Map(cards.map((card) => [card.title.id, card]));
   for (const { title, mine } of overlays) {
     const card = byTitle.get(title.id);

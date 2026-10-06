@@ -113,3 +113,23 @@ export const friendCount = cache(async (userId: string): Promise<number> => {
     .or(`user_low.eq.${userId},user_high.eq.${userId}`);
   return error ? 0 : (count ?? 0);
 });
+
+/** Your friends' ids: Home listens for their good words (PRD F16.3, F5.6). */
+export const friendIds = cache(async (userId: string): Promise<string[]> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("friendships")
+    .select("user_low, user_high")
+    .eq("status", "accepted")
+    .or(`user_low.eq.${userId},user_high.eq.${userId}`);
+  if (error) throw new Error(`friend ids: ${error.code}`);
+  return (data ?? []).map((r) => (r.user_low === userId ? r.user_high : r.user_low) as string);
+});
+
+/** Your friend link's code, made the first time it's asked for (PRD F16.1). */
+export async function myFriendLinkCode(): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("my_friend_link");
+  if (error || !data) throw new Error(`friend link: ${error?.code}`);
+  return data as string;
+}

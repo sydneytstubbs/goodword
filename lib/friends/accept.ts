@@ -6,8 +6,8 @@ import { setNotice } from "@/lib/notice";
 import { createClient } from "@/lib/supabase/server";
 
 // Accepting someone's friend link (PRD F16.1): you're friends both ways at
-// once. Until Home ships (slice 17) you land on Friends, with a toast; without
-// the home_enabled flag there's no Friends page yet, so you land on your lists.
+// once, and you land on Home with a toast (DS 5.20); without the home_enabled
+// flag there's no Home yet, so you land on your lists.
 export async function acceptFriendLink(code: string): Promise<string> {
   const landing = `/join/${encodeURIComponent(code)}`;
   if (await rateLimited(code)) return `${landing}?error=slow`;
@@ -20,19 +20,19 @@ export async function acceptFriendLink(code: string): Promise<string> {
   const name = preview.status === "active" && preview.kind === "friend" ? preview.inviter.name : "";
   const { data: auth } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("profiles").select("home_enabled").eq("user_id", auth.user?.id ?? "").maybeSingle();
-  const friendsPage = profile?.home_enabled ? "/you/friends" : "/list";
+  const next = profile?.home_enabled ? "/home" : "/list";
 
   switch (result?.status) {
     case "friends":
       await recordEvent("friend_added", { via: "link" });
       await setNotice("nowFriends", { name });
-      return friendsPage;
+      return next;
     case "already_friends":
       await setNotice("alreadyFriends", { name });
-      return friendsPage;
+      return next;
     case "self":
       await setNotice("ownFriendLink", {});
-      return friendsPage;
+      return next;
     default:
       return landing;
   }

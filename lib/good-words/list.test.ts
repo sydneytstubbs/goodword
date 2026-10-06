@@ -156,3 +156,25 @@ describe("audienceNames", () => {
     expect(audienceNames(["Jonah", "Tess", "Mo", "Luis", "Bea"])).toBe("Jonah, Tess, and 3 others");
   });
 });
+
+describe("applyOverlays on Home (PRD F16.3)", () => {
+  const viewer = { id: "priya", name: "Priya" };
+  const home = cardsFromRows([
+    row(ferry, "jonah", "Jonah", "2026-09-28T10:00:00Z", "the ferry scene"),
+    row(moth, "tess", "Tess", "2026-09-20T10:00:00Z"),
+  ]);
+
+  it("names you on a card someone else made, without moving it", () => {
+    const [first, second] = applyOverlays(home, [{ title: moth, mine: mine([], "", "2026-09-30T10:00:00Z") }], { kind: "home" }, viewer);
+    expect(first.title.name).toBe("The Night Ferry");
+    expect(second.goodWords.map((g) => g.person.name)).toEqual(["Priya", "Tess"]);
+  });
+
+  it("never adds a card only you vouched for, and taking yours back leaves the card", () => {
+    expect(applyOverlays(home, [{ title: heist, mine: mine([]) }], { kind: "home" }, viewer)).toHaveLength(2);
+    const named = applyOverlays(home, [{ title: moth, mine: mine([]) }], { kind: "home" }, viewer);
+    const back = applyOverlays(named, [{ title: moth, mine: null }], { kind: "home" }, viewer);
+    expect(back[1].goodWords.map((g) => g.person.name)).toEqual(["Tess"]);
+  });
+});
+

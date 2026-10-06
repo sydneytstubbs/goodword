@@ -79,7 +79,16 @@ export type ListCard = {
   services?: number[];
   /** Comments on it in this list's groups, and whether any are unseen (DS 4.2.2, PRD F13). */
   comments?: { count: number; unseen: boolean };
+  /** Home only: the group it reached you through, when nothing on it came through friendship (PRD F16.3). */
+  viaGroupId?: string;
+  /** Home only: when someone else's good word (not an import) last moved this card; Home's order. */
+  latestAt?: Date;
+  /** Home only: the newest comment you can see on it (PRD F16.3). Spoilers have no text. */
+  latestComment?: LatestComment;
 };
+
+/** The newest comment on a title in one of your groups, for Home's conversation row (PRD F16.3). */
+export type LatestComment = { authorName: string; text: string | null; groupId: string; commentId: string };
 
 /** A streaming service on a list, for the services filter (PRD F5.4). */
 export type Service = { id: number; name: string };

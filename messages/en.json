@@ -122,7 +122,8 @@
     "friendsAndGroupsSee": "Your friends and {count} groups can see this.",
     "changeAudience": "Change who sees it",
     "friendsChip": "Friends",
-    "sharedWithFriends": "Shared with your friends"
+    "sharedWithFriends": "Shared with your friends",
+    "vouchToo": "Vouch too"
   },
   "search": {
     "label": "Search for a show or movie",
@@ -222,6 +223,7 @@
   },
   "nav": {
     "main": "Main",
+    "home": "Home",
     "groups": "Groups",
     "add": "Add",
     "you": "My list",
@@ -960,5 +962,30 @@
     "promptTitle": "Add the people here you're not friends with yet.",
     "promptNotNow": "Not now",
     "promptLabel": "Add friends from {group}"
+  },
+  "home": {
+    "title": "Home",
+    "whoTwo": "{a} and {b}",
+    "whoMore": "{a}, {b} and {count} more",
+    "cardName": "{who} vouched for {title}",
+    "seeAll": "See all {count} good words",
+    "saySomething": "Say something",
+    "comment": "Comment",
+    "caughtUp": "You're all caught up",
+    "earlier": "Show earlier good words",
+    "earlierLoaded_one": "{count} earlier good word loaded",
+    "earlierLoaded_other": "{count} earlier good words loaded",
+    "end": "That's everything from your friends",
+    "rollup_one": "<b>{name}</b> added {count} title to their list",
+    "rollup_other": "<b>{name}</b> added {count} titles to their list",
+    "newCards": "New good words",
+    "earlierCards": "Earlier good words",
+    "emptyStartTitle": "Start your own list",
+    "emptyStartBody": "Then send your friend link to someone whose taste you trust.",
+    "emptyNothingTitle": "Nothing from your friends yet.",
+    "emptyNothingBody": "Send your friend link to someone whose taste you trust.",
+    "loading": "Loading Home",
+    "errorTitle": "Home didn't load",
+    "errorBody": "Good Word is having a moment. Try again in a minute."
   }
 }

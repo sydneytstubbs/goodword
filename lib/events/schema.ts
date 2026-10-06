@@ -19,7 +19,7 @@ export const EVENTS = {
   sign_in_completed: { client: false, props: { method: ["magic_link", "google"], new_user: "bool" } },
   add_opened: {
     client: true,
-    props: { entry_point: ["tab", "rail", "shortcut", "title", "search_row", "join_prompt", "empty_state", "email"] },
+    props: { entry_point: ["tab", "rail", "shortcut", "title", "search_row", "join_prompt", "empty_state", "email", "home_card"] },
   },
   search_performed: { client: false, props: { query_length: "int", result_count: "int" } },
   good_word_created: {
@@ -35,7 +35,8 @@ export const EVENTS = {
   },
   good_word_edited: { client: false, props: { field: ["note", "groups", "friends"] } },
   good_word_taken_back: { client: false, props: { undone: "bool" } },
-  list_viewed: { client: false, props: { list: ["group", "all", "mine", "person"], filters: "keys", new_count: "int" } },
+  list_viewed: { client: false, props: { list: ["home", "group", "all", "mine", "person"], filters: "keys", new_count: "int" } },
+  home_caught_up: { client: true, props: { new_count: "int", earlier_loaded: "int" } },
   title_viewed: { client: false, props: { from: ["list", "search", "digest", "person", "share"] } },
   where_to_watch_clicked: { client: true, props: { title_id: "uuid", provider_id: "int", from_good_word: "bool" } },
   email_sent: { client: false, props: { type: ["digest", "mention", "group_join", "weekend_prompt"] } },

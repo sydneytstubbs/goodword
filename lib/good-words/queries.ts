@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import type { GoodWord, GoodWordSource, Group, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
+import { decodeBody, plainText } from "@/lib/conversations/body";
 import { commentCounts } from "@/lib/conversations/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -45,7 +46,12 @@ async function withServices(cards: ListCard[], rowIds: Map<string, string>, regi
   return { cards: withIds, services: [...services.values()] };
 }
 
-type CardScope = { kind: "group"; groupId: string } | { kind: "groups" } | { kind: "mine" } | { kind: "person"; userId: string };
+type CardScope =
+  | { kind: "group"; groupId: string }
+  | { kind: "groups" }
+  | { kind: "mine" }
+  | { kind: "person"; userId: string }
+  | { kind: "home" };
 
 type TitleCardRow = TitleRow & {
   vouchers: CardRow["vouchers"];
@@ -53,6 +59,7 @@ type TitleCardRow = TitleRow & {
   is_new: boolean;
   group_ids: string[] | null;
   friends: boolean | null;
+  via_group: string | null;
 };
 
 /**
@@ -70,7 +77,15 @@ async function titleCards(scope: CardScope): Promise<{ cards: ListCard[]; rowIds
   if (error) throw new Error(`title cards (${scope.kind}): ${error.code}`);
   const rows = (data ?? []) as TitleCardRow[];
   const cards = cardsFromCardRows(
-    rows.map((r) => ({ title: toTitle(r), vouchers: r.vouchers, isNew: r.is_new, groupIds: r.group_ids, friends: r.friends })),
+    rows.map((r) => ({
+      title: toTitle(r),
+      vouchers: r.vouchers,
+      isNew: r.is_new,
+      groupIds: r.group_ids,
+      friends: r.friends,
+      viaGroupId: r.via_group,
+      ...(scope.kind === "home" ? { latestAt: r.latest_at } : {}),
+    })),
   );
   return { cards, rowIds: new Map(rows.map((r) => [toTitle(r).id, r.id])) };
 }
@@ -94,6 +109,91 @@ export async function groupList(groupId: string, _viewerId: string, region: stri
 export async function allGroupsList(groupIds: string[], _viewerId: string, region: string): Promise<List> {
   if (groupIds.length === 0) return { cards: [], services: [] };
   return listFor({ kind: "groups" }, groupIds, region);
+}
+
+/** One import roll-up line on Home (PRD F16.3): only the good words you can see are counted. */
+export type ImportRollup = { person: Person; importId: string; count: number; at: string; isNew: boolean };
+
+export type HomeData = {
+  list: List;
+  rollups: ImportRollup[];
+  /** Your own good words on Home's titles, by title id, for the vouch button. */
+  mine: Record<string, MyGoodWord>;
+};
+
+const HOME_FIRST_VISIT_MS = 7 * 86_400_000;
+
+/**
+ * Home (PRD F16.3): every title with a good word from someone else you can
+ * see, from the one card query, with comment counts and each card's newest
+ * comment from your groups, streaming services, and the import roll-ups.
+ */
+export async function homeList(viewerId: string, myGroupIds: string[], region: string): Promise<HomeData> {
+  const supabase = await createClient();
+  const [{ cards, rowIds }, comments, rollups, profile] = await Promise.all([
+    titleCards({ kind: "home" }),
+    commentCounts(myGroupIds),
+    supabase.rpc("home_import_rollups"),
+    supabase.from("profiles").select("home_viewed_at").eq("user_id", viewerId).maybeSingle(),
+  ]);
+  const titleRowIds = [...rowIds.values()];
+  const [{ data: latest }, { data: mineRows }] =
+    titleRowIds.length > 0
+      ? await Promise.all([
+          supabase.rpc("latest_comments", { p_titles: titleRowIds }),
+          supabase
+            .from("good_words")
+            .select("title_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
+            .eq("user_id", viewerId)
+            .in("title_id", titleRowIds)
+            .returns<Array<Omit<MineRow, "titles"> & { title_id: string }>>(),
+        ])
+      : [{ data: [] }, { data: [] }];
+  const titleIdOf = new Map([...rowIds].map(([titleId, rowId]) => [rowId, titleId]));
+  const mine = Object.fromEntries(
+    (mineRows ?? []).flatMap((row) => {
+      const titleId = titleIdOf.get(row.title_id);
+      return titleId ? [[titleId, toMine(row)]] : [];
+    }),
+  );
+  const seenAt = profile.data?.home_viewed_at as string | null | undefined;
+  const seen = seenAt ? new Date(seenAt).getTime() : Date.now() - HOME_FIRST_VISIT_MS;
+  const latestByRow = new Map(
+    ((latest ?? []) as Array<{
+      title_id: string;
+      group_id: string;
+      comment_id: string;
+      author_name: string;
+      body: string | null;
+      mentions: Array<{ id: string; name: string }> | null;
+    }>).map((c) => [
+      c.title_id,
+      {
+        authorName: c.author_name,
+        text: c.body === null ? null : plainText(decodeBody(c.body, c.mentions ?? [])),
+        groupId: c.group_id,
+        commentId: c.comment_id,
+      },
+    ]),
+  );
+  const withComments = cards.map((card) => {
+    const rowId = rowIds.get(card.title.id) ?? "";
+    const count = comments.get(rowId);
+    const newest = latestByRow.get(rowId);
+    return { ...card, ...(count ? { comments: count } : {}), ...(newest ? { latestComment: newest } : {}) };
+  });
+  const list = await withServices(withComments, rowIds, region);
+  return {
+    list,
+    rollups: ((rollups.data ?? []) as Array<{ user_id: string; name: string; import_id: string; added_count: number; at: string }>).map((r) => ({
+      person: { id: r.user_id, name: r.name },
+      importId: r.import_id,
+      count: r.added_count,
+      at: r.at,
+      isNew: new Date(r.at).getTime() > seen,
+    })),
+    mine,
+  };
 }
 
 /** Person view (F8): their good words you can see, with comments from the groups you share. */

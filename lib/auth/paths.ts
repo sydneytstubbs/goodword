@@ -1,6 +1,6 @@
 // Route access (PRD 6.4). Only /, /privacy, /terms are indexable; the rest of
 // these routes send noindex. Later steps add their routes to the list.
-const PROTECTED_PREFIXES = ["/list", "/welcome", "/you", "/groups", "/activity", "/settings", "/title", "/people", "/admin"];
+const PROTECTED_PREFIXES = ["/home", "/list", "/welcome", "/you", "/groups", "/activity", "/settings", "/title", "/people", "/admin"];
 
 export function isProtectedPath(pathname: string): boolean {
   if (/^\/join\/[^/]+\/accept$/.test(pathname)) return true;
