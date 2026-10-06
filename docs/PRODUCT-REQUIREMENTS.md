@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.4.1 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-06
+**Version** 1.4.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-06
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -769,7 +769,9 @@ Good Word opens to **Home**: one place, newest first, with every good word your 
 - **Always mutual.** A friendship is a request that becomes a friendship when the other person accepts. There's no one-way following, and no counts are shown to anyone.
 - **Friend link.** Each person has one personal invite link, `/join/[code]` (the same route as group invites, F2.3, with at least 128 bits of entropy). The landing shows the inviter's name and avatar, a one-sentence explanation, and **Add Priya as a friend**. It never shows their good words before accepting. Accepting makes you friends both ways at once; signed-out visitors go through sign-in with the context kept, as in F2.4. **Reset link** invalidates the old one immediately. An expired or reset link shows "This invite link has expired. Ask Priya for a new one."
 - **Friends screen** (`/you/friends`, reached from My list): your friend link (invite card, DS 4.2.7), requests to you (Accept, Decline), requests you sent (Cancel), "People from your groups" you aren't friends with yet (Add), then your friends, each with a menu holding **Remove friend**.
-- **Requests from groups.** Add on someone from your groups sends a request. They get an Activity item (F16.9); accepting gives you one back. Declining removes the request without telling the requester (open question 13).
+- **Requests from groups.** Add on someone from your groups sends a request. They get an Activity item (F16.9); accepting gives you one back.
+- **Declining works like Instagram's** (open question 13): it's silent. The requester isn't notified; on their side the request simply stops showing as Requested, and the person goes back to having an **Add** button. They can ask again at any time. Cancelling a request you sent works the same way for the other person.
+- **No limits** on the number of friends or friend requests (open question 15).
 - **After joining a group,** one dismissible prompt offers "Add the people here you're not friends with yet." Joining never makes anyone friends on its own.
 - **Removing a friend** uses a confirm dialog (DS 5.11). Neither person is notified. Access ends both ways on the next load (F16.6).
 - **No discovery.** No people search, no public profiles, no "people you may know" beyond your own groups.
@@ -780,6 +782,7 @@ Good Word opens to **Home**: one place, newest first, with every good word your 
 - Given Priya resets her friend link, when someone opens the old one, then they see the expired-link copy and no friendship is made.
 - Given Tess and Mo share College crew, when Tess taps Add next to Mo, then Mo gets an Activity item, and when he accepts, both are friends and Tess gets an Activity item.
 - Given Bea shares no group with Luis and has no link from him, then nothing in the app lets her find or request him.
+- Given Mo declines Tess's request, then Tess isn't notified, Mo no longer shows as Requested on her Friends screen, his row offers Add again, and a new request from her reaches him as before.
 - Given Priya removes Jonah, then neither is notified, and on the next load neither sees the other's friends-shared good words or the conversations under them.
 
 #### F16.2 Audience
@@ -1224,15 +1227,16 @@ Decide before the slice that needs them.
 | 10 | Comments from people who leave or are removed | **Decided (2026-09-29):** stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
 | 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the list (F13). Still holds for group conversations after F16 | Slice 6 |
 | 12 | Should mentions work inside notes too? | Not in the MVP; notes travel across groups, so a mention could reach people outside the mentioned person's groups | After beta |
-| 13 | Is a declined friend request visible to the person who sent it? | No. Declining removes the request without telling them; it disappears from their sent requests. They can ask again later | Slice 14 |
+| 13 | Is a declined friend request visible to the person who sent it? | **Decided (2026-10-06): like Instagram.** Declining is silent: the requester isn't notified, the request stops showing as Requested, and they can ask again at any time (F16.1) | Slice 14 |
 | 14 | Does a good word shared only into groups also get a conversation under it, beside the group's conversation? | No. Only friends-shared good words get a conversation under them; group-only good words are talked about in the group's conversation, as today. Avoids two conversations with the same audience on one page | Slice 18 |
-| 15 | Limits for friends | No cap on friends for the beta; friend requests limited to 30 an hour per person, like other writes (10.4) | Slice 14 |
+| 15 | Limits for friends | **Decided (2026-10-06): no limits** on friends or friend requests (F16.1) | Slice 14 |
 | 16 | Who can delete comments under a good word, besides their authors? | The good word's author, the way a group owner can in a group conversation (F13) | Slice 18 |
 
 ---
 
 ## 16. Changelog
 
+- **v1.4.2 (2026-10-06):** Open questions 13 and 15 decided by Sydney: a declined friend request works like Instagram's (silent, and the requester can ask again), and there are no limits on friends or friend requests (F16.1).
 - **v1.4.1 (2026-10-06):** Step 13, the rename. Until Home replaces it at the flip (slice 20), the first tab is labeled **Groups** (it opens your group lists), so it never sits as "List" beside "My list"; the group switcher's sheet is "Your groups". Old `/shelf` links redirect to `/list` with their query string. Stored `shelf_viewed`, `title_viewed`, and `email_clicked` events are renamed by migration, with a trigger catching old names until the deploy (dropped in slice 20). Database names that still say shelf (`mark_shelves_viewed`, `shared_shelf`, `conversation_previews.on_shelf`, the `shelf:` Realtime topic, `admin_metrics.title_views_from_shelf`) are renamed in the slices that rebuild them (16 to 20), because renaming them now would break the running app between the migration and the deploy. The marketing page keeps "shelf" until slice 21.
 - **v1.4.0 (2026-10-06):** Home and friends (F16, slices 12 to 21), from Sydney's "Good Word: Feed-first UX" spec, with its eight decisions taken as recommended. Sydney's further calls: the word **shelf becomes list** and **My Recs becomes My list** everywhere (DS 1.4), renamed in the app in slice 13; the tab bar stays three tabs, **Home · Add · My list**, with the Activity bell in the header (F16.8); **Home replaces All groups**; no new email types, and the digest covers what Home shows (F16.9). Changes: principles 4 and 6 (1.3); scope (4.1, 4.3); J3 and new J8; routes `/home`, `/you/friends`, and conversations under a good word (6.1); navigation (6.2); access (6.4); default audience is Friends on, groups off (F4, F15.1); All groups replaced (F5.2); title detail and person view show what the viewer may see (F6, F8); conversations by scope (F13); new Activity types (F14); data model, visibility functions, and RLS (section 8); events (11.2); risks (14); open questions 13 to 16. Schema check: the source spec was written against v1.1; the differences found (no SQL views for cards, `activity_items.group_id` required, Realtime and the digest group-only, person view and export without friends, no store for Home's last visit) are covered above. The source spec's 5-tab bar and "context" prop are replaced by the 3-tab bar and a `home` card variant. Steps 6 to 11 accepted.
 - **v1.3.2 (2026-10-02):** No daily import limit (F15.4): Sydney removed it after failed tries, caused by an API key problem, used up her day. The per-import caps stay (5 screenshots, 5,000 characters, 100 titles), and spend is capped in the Anthropic console.

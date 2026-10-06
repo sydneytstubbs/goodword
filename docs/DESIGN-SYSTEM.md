@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.4.1 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
+**Version** 3.4.2 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -1062,6 +1062,7 @@ How someone turns a list they already have into recs (PRD F15). One decision per
 - **Friends screen** (`/you/friends`, from My list): title "Friends" (`title-l`), then the friend link invite card (4.2.7), then sections with `heading` labels, each hidden when empty: "Asked to be friends" (requests to you), "People from your groups", "Your friends", and "Requested" (ones you sent). Rows are person rows (4.2.16). Share is the screen's one primary action.
 - **Friend link landing** (`/join/[code]`, friend kind): the inviter's avatar (64) and "Priya wants to be friends on Good Word", one sentence ("Friends see the shows and movies each other vouch for."), and **Add Priya as a friend** (primary). Signed out, it carries the context through sign-in like a group invite (5.2), and lands on Home afterward. Never shows their good words before accepting.
 - **After joining a group,** a dismissible inline card on the group's list: "Add the people here you're not friends with yet." with each person's Add, and **Not now**. Shown once per group.
+- **Decline** is silent and immediate, with no dialog: the row leaves the screen, and the requester's "Requested" row quietly returns to **Add**, as on Instagram. No toast tells the requester anything.
 - **Remove friend:** confirm dialog (5.11): "Remove Jonah as a friend? You'll stop seeing each other's good words, unless you share a group." with Cancel and a danger "Remove friend". Not notified.
 - **"Share your list with friends?"** (once, after the flip, PRD F16.10): a sheet listing your friends (avatars and names), with **Share all** (primary), **Choose** (opens My list in select mode), and **Not now**. It doesn't return once answered.
 
@@ -1538,6 +1539,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.4.2 (2026-10-06):** Declining a friend request is silent, as on Instagram (5.20, PRD open question 13).
 - **v3.4.1 (2026-10-06):** Step 13. Until Home ships (PRD slice 20), the first tab reads **Groups** with the `UsersThree` icon, and the switcher sheet is titled "Your groups", so no tab reads "List" beside "My list" (4.2.5, 4.2.8 describe the end state). The `g` then `s` shortcut stays until Home replaces it.
 - **v3.4.0 (2026-10-06):** Home and friends (PRD v1.4.0, F16). Sydney's calls: **shelf becomes list** and **My Recs becomes My list** (glossary 1.4; the app follows in step 13), three tabs **Home · Add · My list** with the bell kept in the header (4.2.8), and Home replaces All groups in the switcher (4.2.5). Glossary adds Home, friend, and vouch too, and redefines conversation, mention, and activity. Rec card gains the `home` variant (4.2.2). The visibility line becomes the audience picker, with Friends on by default and no friend counts (4.2.6). Friend link variant of the invite card (4.2.7). Comment, composer, and Activity item cover conversations under a good word and friend requests (4.2.10, 4.2.11, 4.2.13); the composer's audience line never names what the viewer can't see, and mention suggestions under a good word show only people you already know. Icon map: Home tab is `House`, friends are `UserPlus`; the shortcut `g` then `h` goes to Home (it was `g` then `s`). New: caught-up marker (4.2.14), import roll-up line (4.2.15), person row (4.2.16), Home (5.19), and Friends (5.20). Sitemap (5.1), core flow (5.4), list browsing (5.6), title detail (5.7), privacy (5.14), conversations (5.17), and microcopy (6.6) updated.
 - **v3.3.1 (2026-10-02):** The Add recs daily-limit message is gone with the limit (PRD v1.3.2).
