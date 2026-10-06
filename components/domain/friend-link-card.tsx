@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { copyText } from "@/lib/clipboard";
 import { track } from "@/lib/events/client";
 import { t } from "@/lib/messages";
 import { Avatar } from "../ui/avatar";
@@ -34,11 +35,10 @@ export function FriendLinkCard({
   const nameId = useId();
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(link);
+    if (await copyText(link)) {
       showToast({ message: t("invite.copied") });
       track("friend_link_shared", { method: "copy" });
-    } catch {
+    } else {
       showToast({ message: t("invite.copyFailed") });
     }
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { copyText } from "@/lib/clipboard";
 import { track } from "@/lib/events/client";
 import { t } from "@/lib/messages";
 import { AvatarStack } from "../ui/avatar";
@@ -31,11 +32,10 @@ export function InviteCard({
   const { showToast } = useToast();
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(link);
+    if (await copyText(link)) {
       showToast({ message: t("invite.copied") });
       track("invite_shared", { group_id: group.id, method: "copy" });
-    } catch {
+    } else {
       showToast({ message: t("invite.copyFailed") });
     }
   }

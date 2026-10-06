@@ -1,5 +1,6 @@
 "use client";
 
+import { copyText } from "@/lib/clipboard";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -50,12 +51,7 @@ export function ShareList({ origin, initial }: { origin: string; initial: ShareS
   };
 
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(link);
-      showToast({ message: t("settings.shareCopied") });
-    } catch {
-      showToast({ message: t("invite.copyFailed") });
-    }
+    showToast({ message: (await copyText(link)) ? t("settings.shareCopied") : t("invite.copyFailed") });
   };
 
   const share = async () => {
