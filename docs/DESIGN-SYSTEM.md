@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.4.4 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
+**Version** 3.4.5 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -687,7 +687,7 @@ One component, four variants. Home uses the same component (`variant="home"`), n
 - **`detail`** (title screen): large poster, title as `title-l`, meta, genres, then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote` (Instrument Serif italic 24px), and group chips for which of **your** groups it's in ("Only you" for your own with none); then where to watch (5.7), the vouch button (`lg`), the conversation preview (5.17), and the overview.
 - **`home`** (Home, 5.19): leads with the friend's words, not the poster. Level 0, no card box, hairline `--border-subtle` dividers between cards, `--space-6` above and below each. Top to bottom:
   1. **Who:** avatar stack (24) and names in `body-strong`, newest first ("Jonah", "Jonah and Tess", "Jonah, Tess and 2 more"; you're named as "You" when you've vouched), then the relative time of the newest good word (`caption`, `--text-muted`), and the group's chip (4.1.11) only when the card reached you through that group and not through friendship.
-  2. **Note:** the newest voucher's note in `quote` (Instrument Serif italic 24px), in full, exactly as typed: never truncated or auto-capitalized. With several notes, "See all 3 good words" (tertiary link) to title detail. With no note, this line is skipped.
+  2. **Note:** the newest note from someone other than you in `quote` (Instrument Serif italic 24px), in full, exactly as typed: never truncated or auto-capitalized. With several notes, "See all 3 good words" (tertiary link) to title detail. With no note, this line is skipped.
   3. **Title:** 48×72 poster, title (`card-title`), meta (`caption`, "Series · 2024"). This row is the link to title detail. The New badge sits on the poster.
   4. **Conversation:** `ChatCircle` 16px, the count, and one line of the latest comment (`caption`, `--text-muted`, one line with ellipsis), or "a spoiler comment". A 6px `--action` dot marks unseen comments. With no comments it reads "Say something" in `--text-muted`, never "0". The row links to the conversation (5.17).
   5. **Actions:** Comment (tertiary, `ChatCircle`), **Vouch too** (the vouch button, `md`, secondary; "Your good word" once vouched), Where to watch (tertiary, `MonitorPlay`). At least 44px each.
@@ -1540,6 +1540,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.4.5 (2026-10-06):** Step 17. The `home` card's note is the newest note from someone other than you, so your own good word without a note never hides a friend's words (4.2.2). The New badge sits just above the 48px poster's top edge, since it's wider than the poster. Home's h1 is visually hidden, because the switcher already names it. Vouch too keeps the title in its accessible name ("Vouch too The Night Ferry"), as Comment and Where to watch do. Home's empty state with nobody yet makes **Put in a good word** the primary action and the friend link's Share secondary, keeping one primary per screen. With the flag, the tab bar and rail lead with Home (`House`), the switcher's first row is Home, and `g` then `h` goes Home (4.2.5, 4.2.8, 3.9).
 - **v3.4.4 (2026-10-06):** Step 15. The audience picker uses checkboxes, like the group picker it extends, with Your friends first (4.2.6); the line keeps the app's "Visible to …" wording ("Visible to your friends and College crew"), and 6.6 matches. The Friends chip uses the group chip's style with the `UserPlus` icon (4.2.2, Sydney's call). The vouch menu reads "Change who sees it" with the flag (4.2.3).
 - **v3.4.3 (2026-10-06):** Step 14. Tooltips (4.1.14) hide while their button's menu is open, and Esc-dismiss now also works while hovering; before, a hover tooltip could sit over the first menu item on desktop and swallow the click. Activity items (4.2.13) gain the friend request (Accept and Decline in the item, not a link) and friend accepted types. Person row (4.2.16) and the friend link card (4.2.7) are in the styleguide. The friend landing uses the 56px avatar of the group invite landing (5.20).
 - **v3.4.2 (2026-10-06):** Declining a friend request is silent, as on Instagram (5.20, PRD open question 13).
