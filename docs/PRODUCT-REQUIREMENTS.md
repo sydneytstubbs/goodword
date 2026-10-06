@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.3.2 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-01
+**Version** 1.4.0 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-06
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -36,7 +36,7 @@ The build brief for the Good Word web app. It defines **what** the product does:
 - **Don't invent features, screens, or settings** that aren't here. If something seems missing, ask. If a requirement seems wrong or contradicts the design system, flag it before building.
 - **Priority labels:** **P0** is required for the MVP. **P1** should ship in the MVP if time allows, after all P0 work in its slice. **Later** is documented for context only; do not build it.
 - **Acceptance criteria are tests.** A requirement is done only when its acceptance criteria pass and the screen meets the screen definition of done (DS 12.1).
-- **Use the glossary** (DS 1.4) in UI copy: good word, list, group, member, note, conversation, comment, mention, activity. Never post, item, feed, review, rating, chat, or thread.
+- **Use the glossary** (DS 1.4) in UI copy: good word, list, My list, Home, friend, group, member, note, conversation, comment, mention, activity. Never post, item, feed, timeline, follower, review, rating, like, chat, or thread.
 - **Invented sample content** for seeds, tests, and the styleguide: titles The Night Ferry, Low Tide Club, Grandma's Heist, Moth Season; people Priya, Jonah, Tess, Mo, Luis, Bea; groups College crew, The girls, Sunday book club. Never use real people's data in seeds.
 
 ### 0.2 Document map
@@ -56,18 +56,19 @@ If this doc and the design system conflict on **what** the product does, this do
 People trust their friends' taste more than any algorithm, but getting a recommendation from a friend is slow and lossy. You text the group chat, wait days, get one reply, and the good suggestions scroll away and are forgotten. Meanwhile, streaming algorithms recommend from viewing history and strangers' behavior, and they don't know you.
 
 ### 1.2 The product
-Good Word is a private, mobile-first web app where small groups of friends keep a shared list of the shows and movies they'd vouch for. Each person belongs to a few groups (college friends, the girls, a book club), and each group has its own list. When you finish something great, you put in a good word in about ten seconds. When you need something to watch, you pull from people whose taste you actually know, with their names on every pick.
+Good Word is a private, mobile-first web app where friends keep lists of the shows and movies they'd vouch for. It opens to Home: everything your friends have put in a good word for, newest first. Friends are mutual, and each person can also belong to a few groups (college friends, the girls, a book club), each with its own list. When you finish something great, you put in a good word in about ten seconds. When you need something to watch, you pull from people whose taste you actually know, with their names on every pick.
 
 ### 1.3 Product principles
 These are the product's non-negotiables. They're expanded in DS 1.1.
 1. **People over picks.** Every good word shows the person behind it. The app never recommends on its own.
 2. **Private by default, visibly so.** You always know who will see what, before you share it.
 3. **Ten seconds to a good word.** Logging is the core habit and must be nearly effortless.
-4. **A library, not a mailbox.** You stock lists for your groups; you don't send recommendations to individuals (for now).
+4. **A library, not a mailbox.** You stock your own list and choose who sees each good word: your friends, any of your groups, or only you. You don't send recommendations to individuals (for now).
 5. **Useful alone, better together.** Your own list is valuable even before friends join.
+6. **It ends.** Home is newest first and finite: new good words, then "You're all caught up". No ranking, no endless scrolling (F16.3).
 
 ### 1.4 What Good Word is not
-- Not a public social network. No followers, public profiles, or discovery of strangers.
+- Not a public social network. No followers, public profiles, or discovery of strangers. Friends are mutual, and nobody sees a count of them.
 - Not a tracker or diary. You don't log everything you watch, only what you'd recommend.
 - Not a review site. No star ratings, scores, or long reviews.
 - Not an algorithm. No computer-generated picks in the MVP.
@@ -137,9 +138,14 @@ The same person moves between these roles. Design for all four in every flow.
 | Groups | Invite link, join via link, members list | P0 |
 | Groups | Leave group, remove member, reset invite link | P0 |
 | Titles | Title search (movies and shows, via TMDB) | P0 |
-| Good words | Put in a good word with optional note and group selection | P0 |
-| Good words | Edit note, change groups, take it back (with Undo) | P0 |
-| Lists | Group list, All groups list, My list | P0 |
+| Good words | Put in a good word with optional note and audience | P0 |
+| Good words | Edit note, change who sees it, take it back (with Undo) | P0 |
+| Lists | Home, group list, My list | P0 |
+| Friends | Mutual friends: friend link, requests from your groups, Friends screen, remove a friend (F16.1) | P0 |
+| Good words | Audience: friends, any of your groups, or only you (F16.2) | P0 |
+| Home | Every good word you can see, one card per title, newest first, caught-up marker, import roll-ups (F16.3) | P0 |
+| Titles | One title page for everyone, showing what each viewer may see (F16.4, F16.6) | P0 |
+| Conversations | Conversations under a good word (F16.5) | P0 |
 | Lists | Filters (type, streaming service, genre, length) and sort | P0 |
 | Lists | "New since your last visit" indicators | P0 |
 | Titles | Title detail with everyone's good words, notes, and where to watch | P0 |
@@ -176,9 +182,9 @@ Ordered by likely value. Each needs its own spec before building.
 10. **Native iOS app.**
 
 ### 4.3 Explicitly out of scope
-- Public profiles, discoverable groups, followers, or likes.
+- Public profiles, discoverable groups, followers, one-way following, people search, suggested people beyond your own groups, or likes.
 - Nested reply threads, reactions, attachments, GIFs, or formatting in comments.
-- Conversations that span groups, or that include anyone outside the group.
+- Conversations that span groups. A conversation's audience is exactly its group, or exactly the people who can see the good word it sits under (F16.5).
 - Typing indicators and read receipts.
 - Star ratings, scores, or long-form reviews.
 - Any algorithmic or AI-generated recommendations. (Reading someone's own list during an import, F15, isn't recommending.)
@@ -217,8 +223,8 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 ### J3. Putting in a good word (contributor)
 1. Priya finishes a show she loved. She opens Good Word from her Home Screen and taps **Add**.
 2. She types "night fe" and taps The Night Ferry (2024, Series).
-3. The confirm sheet shows the poster, an optional note, and "Visible to 2 groups · 11 people". She types "ep 3 is where it gets you" and taps **Put in a good word**.
-4. The sheet closes, the card appears at the top of her list, and a toast says "On your list. Jonah, Tess, and 9 others will see it." with Undo.
+3. The confirm sheet shows the poster, an optional note, and who will see it: Friends on, her groups off. She types "ep 3 is where it gets you" and taps **Put in a good word**.
+4. The sheet closes and a toast says "Your friends can see this." with Undo. The good word is on My list and on her friends' Home.
 
 **Success:** median under 10 seconds from tapping Add to the toast, excluding typing the note.
 
@@ -250,6 +256,14 @@ Each journey is the end-to-end story the MVP must support. Detailed requirements
 2. The coworker opens a read-only page: "Sydney's good words", with posters, titles, and Sydney's notes, and a small "Made with Good Word" link.
 3. Later, Sydney turns the link off, and it stops working immediately.
 
+### J8. Adding a friend and opening Home
+1. Priya opens My list › Friends and taps **Share** on her friend link, sending it to Jonah.
+2. Jonah opens it on his iPhone: "Priya wants to be friends on Good Word." He taps **Add Priya as a friend** and signs in.
+3. He lands on Home. Priya's good words for The Night Ferry and Low Tide Club are there, one card each, with her notes first. Below them: "You're all caught up."
+4. He taps **Vouch too** on Low Tide Club, and the confirm sheet opens with the title chosen and Friends on.
+
+**Success:** under 90 seconds from tapping the link to seeing Priya's good words on Home.
+
 ---
 
 ## 6. Information architecture and navigation
@@ -259,26 +273,29 @@ Extends DS 5.1.
 
 | Route | Screen | Auth | Priority |
 |---|---|---|---|
-| `/` | Marketing page (signed out); redirect to last viewed list (signed in) | Public | P0 |
+| `/` | Marketing page (signed out); redirect to Home (signed in, F16.8) | Public | P0 |
 | `/sign-in` | Sign in (optionally carrying `?next=` and invite context) | Public | P0 |
 | `/sign-in/check-email` | Check your email | Public | P0 |
 | `/auth/callback` | Magic link and OAuth callback | Public | P0 |
 | `/welcome` | Name prompt (first sign-in only) | Signed in | P0 |
-| `/join/[code]` | Invite landing | Public | P0 |
-| `/list` | Redirect to last viewed list, or the no-groups empty state | Signed in | P0 |
-| `/list/all` | All groups list | Signed in | P0 |
+| `/join/[code]` | Invite landing: a group invite, or a person's friend link (F16.1) | Public | P0 |
+| `/home` | Home (F16.3) | Signed in | P0 |
+| `/list` | Redirect to Home | Signed in | P0 |
+| `/list/all` | Redirect to Home (All groups is replaced by Home) | Signed in | P0 |
 | `/list/[groupId]` | Group list | Member | P0 |
-| `/title/[type]/[tmdbId]` | Title detail (`type` is `movie` or `tv`) | Signed in | P0 |
+| `/title/[type]/[tmdbId]` | Title detail (`type` is `movie` or `tv`), showing what this viewer may see (F16.4) | Signed in | P0 |
+| `/title/[type]/[tmdbId]/conversation?word=[goodWordId]` | The conversation under a good word (F16.5) | Can see that good word | P0 |
 | `/title/[type]/[tmdbId]/conversation?group=[groupId]` | A group's conversation about a title (on desktop, a panel beside title detail) | Member of that group | P0 |
 | `/activity` | Activity: mentions, new comments in your conversations, joins | Signed in | P0 |
-| `/you` | My list (a main tab): your good words, your groups, settings entry | Signed in | P0 |
+| `/you` | My list (a main tab): your good words, Friends, your groups, settings entry | Signed in | P0 |
+| `/you/friends` | Friends: your friend link, requests, people from your groups, your friends (F16.1) | Signed in | P0 |
 | `/you/import` | Add recs: paste, dictate, or upload screenshots (F15) | Signed in | P1 |
 | `/you/import/[importId]` | Review deck and done screen for one import (`?card=` is the card shown) | Signed in, own import | P1 |
 | `/you/settings` | Account, region, notifications, services (P1), share link (P1) | Signed in | P0 |
 | `/you/help` | Help, FAQ, shortcuts, send feedback, about and attributions | Signed in | P0 |
 | `/groups/new` | Create a group | Signed in | P0 |
 | `/groups/[groupId]` | Group details: invite, members, rename, leave, delete | Member | P0 |
-| `/people/[userId]` | Person view: their good words in groups you share | Signed in, shares a group | P1 |
+| `/people/[userId]` | Person view: the good words of theirs you can see (F8) | Signed in, friend or shares a group | P1 |
 | `/s/[token]` | Shared list (read-only, public by link) | Public | P1 |
 | `/unsubscribe?token=` | Unsubscribe from one kind of email, with Undo (F7.7) | Public (signed token) | P0 |
 | `/privacy`, `/terms` | Legal pages | Public | P0 |
@@ -287,9 +304,9 @@ Extends DS 5.1.
 **Sheets over the current route (no navigation):** Add (search and confirm), group switcher, filters, vouch menu, confirm dialogs. Opening a sheet pushes a history entry so the Back gesture closes it (DS 5.1).
 
 ### 6.2 Navigation model
-- **Mobile:** bottom tab bar with **List**, **Add** (center), and **My list** (DS 4.2.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right; on a list, the list's own bar holds the group switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
+- **Mobile:** bottom tab bar with **Home**, **Add** (center), and **My list** (DS 4.2.8, F16.8). The header holds the wordmark on the left and the Activity bell with an unread count on the right. Home's own bar holds the switcher (Home, then each group, then Create a group); on a group list, the list's own bar holds the switcher, group details, and the invite button. The conversation screen hides the tab bar so the composer sits at the bottom, and its compact header's Back leaves it.
 - **Desktop (1024px and up):** left rail with the same destinations plus the group list.
-- **List tab** shows the last viewed list (a group or All groups), remembered per device.
+- **Home tab** opens Home. Groups are reached from the switcher or the rail.
 - **Add** opens the log sheet over whatever screen you're on, and returns you there afterward.
 - **Title detail** opens from any card and returns to the exact scroll position (DS 5.1).
 - **Conversations** open from title detail, a card's comment count, Activity, or a mention email. Back from a conversation returns to wherever you came from.
@@ -300,6 +317,7 @@ Query parameters on list routes: `type` (`movie`, `tv`), `services` (comma list 
 ### 6.4 Access rules
 - Signed-out visitors to any signed-in route go to `/sign-in?next=<route>` and return there after signing in.
 - A signed-in non-member visiting `/list/[groupId]` or `/groups/[groupId]` sees a 404-style "You're not in this group" state with a link to their list. It must not reveal the group's name or members.
+- A signed-in person opening a good word's conversation they can't see, or `/people/[userId]` for someone who isn't their friend and shares no group, gets the same 404-style state, revealing nothing (F16.6, rule 4).
 - All app routes send `noindex`. Only `/`, `/privacy`, and `/terms` are indexable.
 
 ---
@@ -421,7 +439,7 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Rules**
 - **One good word per person per title.** A person's good word has one note and can be shared into any number of their groups. Adding the same title again means editing the existing good word (DS 5.4, "already vouched").
 - **Note:** optional, up to 140 characters, plain text, no links rendered as links, emoji allowed.
-- **Group selection:** defaults to **all your groups**. The visibility line (DS 4.2.6) shows the audience and opens the group picker. A good word may have **zero groups** ("Only you, for now"), in which case it lives only on My list. This keeps Good Word useful before friends join.
+- **Audience** (F16.2): **Friends** on and groups off by default. The visibility line (DS 4.2.6) shows the audience and opens the picker. A good word may be shared with nobody ("Only you, for now"), in which case it lives only on My list. This keeps Good Word useful before friends join.
 - **One card per title per group.** When several members vouch for the same title, the list shows one card with a growing vouched-by row and their notes (most recent note on the grid card, all notes on detail).
 - **Take it back** removes the good word from all groups immediately with an 8-second Undo toast (DS 5.11). Undo restores the note and groups exactly.
 - **Edits** to the note or groups are saved immediately, optimistically, with no "edited" label.
@@ -432,8 +450,8 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 **Entry points:** the Add tab, the rail's Add button, the `n` shortcut on desktop, the vouch button on any title detail or search row, the first-good-word prompt, and empty-state actions.
 
 **Acceptance**
-- Given a user in 2 groups, when they put in a good word without changing groups, then it appears on both lists and My list, and the toast names up to 2 people plus "and N others".
-- Given a user with no groups, when they put in a good word, then the visibility line reads "Only you, for now" and the toast reads "On your list. Invite friends to share it." with an Invite action.
+- Given a user with friends and 2 groups, when they put in a good word without changing anything, then it's on My list and their friends' Home, on neither group list, and the toast reads "Your friends can see this."
+- Given a user with no friends and no groups, when they put in a good word, then the visibility line reads "Your friends, once you add some" and the toast reads "On your list. Invite friends to share it." with an Invite action.
 - Given a friend already vouched for the title in a shared group, when the user adds theirs, then the list shows one card with both people in the vouched-by row.
 - Given a user taps Undo within 8 seconds of taking a good word back, then it's restored to every group it was in, with its note.
 - Given the network fails on submit, then the card reverts and a toast offers Retry, and the note is not lost.
@@ -443,14 +461,14 @@ The core feature. The flow is defined in DS 5.4; these are the product rules.
 
 ### F5. Lists (P0)
 
-Three kinds of list share one layout: a grid of rec cards (DS 4.2.2) with the filter bar (DS 5.6).
+Group lists and My list share one layout: a grid of rec cards (DS 4.2.2) with the filter bar (DS 5.6). Home (F16.3) uses the same filters with its own `home` card.
 
 #### F5.1 Group list (`/list/[groupId]`)
 - Page title is the group name (`title-l`), with member avatars and count beneath, linking to group details.
 - Shows every title vouched for by any member into that group, one card per title.
 
-#### F5.2 All groups list (`/list/all`)
-- Titled "All groups". Combines every group you're in, deduplicated: one card per title, with the vouched-by row merging all people across your groups (each person once).
+#### F5.2 All groups (replaced by Home)
+- All groups is replaced by Home (F16.3), which shows every group's good words plus your friends'. `/list/all` redirects to `/home`. Until the flip (F16.10), All groups works as before for accounts without `home_enabled`.
 - Group chips on the detail screen show which of **your** groups each good word is in.
 
 #### F5.3 My list (the My list tab, `/you`)
@@ -469,16 +487,16 @@ Three kinds of list share one layout: a grid of rec cards (DS 4.2.2) with the fi
 
 #### F5.5 New since your last visit
 - Each membership stores when you last viewed that list. Cards whose most recent good word from **someone else** is newer than that show a **New** badge (DS 4.1.11). Before your first visit, "last viewed" is when you joined, so good words from before you joined aren't New.
-- The group switcher shows a count of new good words per group; the List tab shows a dot if any group has new ones.
-- "Last viewed" updates when you leave the list or after 10 seconds on it, not on arrival, so badges don't vanish before you see them. Viewing All groups counts as viewing each of your groups.
+- The group switcher shows a count of new good words per group, and the switcher's button on Home shows a dot if any group has new ones.
+- "Last viewed" updates when you leave the list or after 10 seconds on it, not on arrival, so badges don't vanish before you see them. Home keeps its own last visit (F16.3) and doesn't clear group counts.
 
 #### F5.6 Live updates (P1)
 - While you're viewing a list, new good words from others don't insert themselves (content never jumps). A pill appears at the top: "2 new good words". Tapping it scrolls to top and inserts them. Your own good words insert immediately.
 
 #### F5.7 States (DS 5.12)
-| State | Group list | All groups | My list |
+| State | Group list | Home (until the flip: All groups) | My list |
 |---|---|---|---|
-| Empty, first use | "Nothing here yet. Be the first to put in a good word." + Put in a good word + Invite friends | "No groups yet" + Start a group + "Got an invite link? Open it to join." | DS 6.6 empty personal list copy + Put in a good word |
+| Empty, first use | "Nothing here yet. Be the first to put in a good word." + Put in a good word + Invite friends | Per F16.3 states | DS 6.6 empty personal list copy + Put in a good word |
 | No results | "Nobody's vouched for a Netflix movie yet." + Clear filters | Same | "You haven't vouched for anything like that." + Clear filters |
 | Loading | 6 skeleton cards | Same | Same |
 | Error | Error state + Retry | Same | Same |
@@ -487,7 +505,7 @@ Three kinds of list share one layout: a grid of rec cards (DS 4.2.2) with the fi
 **First-good-word prompt:** on a group list, for a member with no good words in that group, show an inline card after the first scroll to the end or after 20 seconds: "What's something you'd tell these folks to watch?" with **Put in a good word**. Dismissible; doesn't return for that group once dismissed or used.
 
 **Acceptance**
-- Given a user in 2 groups where the same title was vouched for in both, then All groups shows one card whose vouched-by row lists each person once.
+- Given a user in 2 groups where the same title was vouched for in both, then Home shows one card whose vouched-by row lists each person once.
 - Given filters Movies + Netflix + Hulu, then results include movies available on Netflix or Hulu in the user's region, and the URL reflects all three.
 - Given a new good word by a friend since the user's last visit, then its card shows New and the group switcher shows a count.
 - Given a list of 60 good words, then the first 24 load, more load on scroll, and "That's the whole list." shows at the end.
@@ -496,19 +514,19 @@ Three kinds of list share one layout: a grid of rec cards (DS 4.2.2) with the fi
 
 ### F6. Title detail (P0)
 
-**Route:** `/title/[type]/[tmdbId]`. Layout and content order per DS 4.2.2 (`detail`) and DS 5.7.
+**Route:** `/title/[type]/[tmdbId]`. Layout and content order per DS 4.2.2 (`detail`) and DS 5.7. **F16.4 sets what this page shows and in what order;** the rules below still apply where F16.4 doesn't change them.
 
 **Content, in order**
 1. Poster, title (`h1`), meta line ("Series · 2024 · 3 seasons" or "Film · 2023 · 1h 52m"), genres as text.
-2. **Good words:** every person in your groups who vouched for it, each with avatar, name, note, when, and the chips of the groups (yours only) it's shared in. Your own good word is listed first as "You" with an Edit menu.
+2. **Good words:** every good word you can see (F16.6), each with avatar, name, note, when, and the chips of the groups (yours only) it's shared in. Your own good word is listed first as "You" with an Edit menu.
 3. **Where to watch** for the user's region, grouped Stream / Rent / Buy, with provider logos and names, each linking out to the provider (via TMDB's watch link). JustWatch attribution beneath (Section 9.2). If nothing: "Not streaming in your region right now."
 4. **Vouch button** (`lg`, DS 4.2.3).
 5. **Conversation preview** for the current group (F13), per DS 5.17: "Talk about it in College crew", the 3 most recent comments, "See all N comments", and "Add a comment…". Any title can have a conversation in any of your groups, so if you're in several groups, a chip row of all of them switches between their conversations. The default is the group in `?group=`, then the group with the most recent comment, then a group whose list the title is on, then your most recently joined group. Hidden only when you're in no groups.
 6. Overview, collapsed to 3 lines with More.
 
 **Rules**
-- The detail screen is reachable for any title (for example, from search), even with no good words from your groups. In that case, section 2 reads "None of your groups have vouched for this yet."
-- Never show people or groups the viewer doesn't share a group with.
+- The detail screen is reachable for any title (for example, from search), even with no good words you can see. In that case, section 2 is the **Put in a good word** prompt (F16.4).
+- Never show people, groups, or counts the viewer can't see (F16.6, rule 4).
 - The document title is "The Night Ferry · Good Word".
 
 **Acceptance**
@@ -524,9 +542,9 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 
 #### F7.1 Weekly digest (P0)
 - **Default on.** Sent weekly on **Thursday at 5pm in the user's timezone** (pending confirmation, Section 15).
-- **Only sent if there's something new:** at least one good word from someone else in your groups in the past 7 days. Never send an empty digest.
+- **Only sent if there's something new:** at least one good word from someone else that you can see (F16.6) in the past 7 days: a friend's, or one in your groups. Never send an empty digest.
 - Subject: "This week on Good Word: 5 new good words" (singular for 1).
-- Body: grouped by group, up to 8 good words per group (poster, title, who vouched, note), then "See all N in College crew". A single primary button: "Open Good Word".
+- Body: what Home shows (F16.9): up to 8 titles from your friends and groups, newest first, each once (poster, title, who vouched, note, and the group chip when that's how it reached you), import roll-ups as one line each, then "See all N on Home". A single primary button: "Open Good Word".
 - Every title links to its detail page with a `ref=digest` parameter so good words created in that session record source `digest`.
 - Footer: why you got it, a one-click unsubscribe from digests, and a link to notification settings.
 
@@ -564,9 +582,9 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 
 ### F8. Person view (P1)
 
-- Tapping a person's name or avatar anywhere opens `/people/[userId]`: their name, the groups you share, and their good words **only within groups you share**, with the standard filters.
-- Serves the "I trust her taste in film" use case. Never shows their other groups or good words outside shared groups.
-- Visiting someone you share no group with shows "You're not in any groups with this person."
+- Tapping a person's name or avatar anywhere opens `/people/[userId]`: their name, the groups you share, and **the good words of theirs you can see** (F16.6), with the standard filters. No counts and no bio (decision 8).
+- Serves the "I trust her taste in film" use case. Never shows their other groups or good words you can't see.
+- Visiting someone who isn't your friend and shares no group with you shows the 404-style state (6.4).
 
 ---
 
@@ -582,7 +600,7 @@ All notifications follow DS 5.13: they name people or titles, deep-link to what 
 
 ### F10. Onboarding, empty states, and first run (P0)
 - **No tutorials, carousels, or taste quizzes** (DS 5.2). Teach through the invite landing, empty states, the welcome banner, and the first-good-word prompt.
-- **New user with no invite and no groups** lands on All groups' empty state: "Start a group, or put in a good word just for you." with **Start a group** (primary) and **Put in a good word** (secondary), plus "Got an invite link? Open it to join."
+- **New user with no invite** lands on Home's empty state (F16.3): their friend link and "Start your own list" with **Put in a good word**, plus "Got an invite link? Open it to join." Starting a group stays in the switcher.
 - **Welcome banner** on first arrival to a group's list after joining: "You're in. Here's what College crew vouches for." Dismissible; shown once per group.
 - **Milestones** per F4.
 
@@ -622,18 +640,18 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 - As a member, I can edit or delete what I said.
 
 **Rules**
-- **Scope:** a conversation belongs to one title in one group. Any title can have one, whether or not it's on that group's list (open question 11). The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
+- **Scope:** a group conversation belongs to one title in one group. Conversations under a good word follow F16.5; everything in F13 applies to both kinds unless F16.5 says otherwise. Any title can have one, whether or not it's on that group's list (open question 11). The same title can have separate conversations in each group, and no group can see another group's conversation or learn whether one exists.
 - **Starting a conversation:** the first comment in a group's conversation about a title gives every other member of that group an Activity item ("Tess started a conversation about The Night Ferry in College crew"), so a conversation on a title that isn't on the list can still be found. Later comments notify participants only.
 - **Who can take part:** current members of the group. Comments are visible to every current member.
 - **Structure:** flat and chronological (oldest first), no nested replies. Replying is done by mentioning.
 - **Comment:** 1 to 500 characters, plain text. Line breaks are kept. URLs are shown as text, not links, in the MVP.
-- **Mentions:** only members of that group, chosen from the autocomplete (DS 4.2.11). Stored by user id. Up to 10 mentions per comment. You can't mention yourself.
+- **Mentions:** only members of that group (in a conversation under a good word, only people who can see it, F16.5), chosen from the autocomplete (DS 4.2.11). Stored by user id. Up to 10 mentions per comment. You can't mention yourself.
 - **Spoilers:** the author can mark a comment as a spoiler when writing or editing. Spoiler text is never rendered for others until they tap to reveal, and never appears in previews, Activity, or email (DS 4.2.12).
 - **Edit:** the author can edit anytime; the comment shows "edited". Newly added mentions notify; existing ones don't re-notify.
 - **Delete:** the author, or the group owner, can delete. Deletion is immediate with an 8-second Undo, then permanent. Deleting retracts related unread Activity items and unsent mention emails.
 - **Participants:** you become a participant in a title's conversation in a group when you comment there or put in a good word for that title in that group. Participants get Activity items for new comments (not emails).
 - **People who leave:** comments from people who leave or are removed stay visible and attributed to them, so conversations still make sense (open question 10). They're deleted only if that person deletes their account.
-- **Unseen tracking:** per person, per title, per group. Opening the conversation marks comments as seen up to the bottom of what was shown.
+- **Unseen tracking:** per person, per conversation. Opening the conversation marks comments as seen up to the bottom of what was shown.
 - **Live updates:** while a conversation is open, new comments arrive in real time (DS 5.17). The list's comment counts update on the next load.
 - **Moderation:** owners can delete any comment in their group. No reporting in the MVP.
 
@@ -655,10 +673,10 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 
 **Rules**
 - Route `/activity`, opened from the bell in the top bar (and rail on desktop). The bell shows the unread count (DS 4.1.11).
-- Item types: `mention`, `comment` (in conversations you're part of, excluding your own), `conversation_started` (the first comment in a conversation in one of your groups, F13), `group_join` (owners only). Comment items for the same conversation within an hour collapse into one ("Jonah and Tess commented on The Night Ferry").
+- Item types: `mention`, `comment` (in conversations you're part of, including under your good words, excluding your own), `friend_request` and `friend_accepted` (F16.9), `conversation_started` (the first comment in a conversation in one of your groups, F13), `group_join` (owners only). Comment items for the same conversation within an hour collapse into one ("Jonah and Tess commented on The Night Ferry").
 - Each item deep-links to the exact comment (or group, for joins). Opening an item marks it read; "Mark all as read" marks everything read.
 - Items are kept for 90 days.
-- Activity respects group membership: leaving a group removes its items.
+- Activity respects group membership and friendship: leaving a group, or losing sight of a good word, removes the items that came from it.
 - Layout, grouping (Today, This week, Earlier), and states follow DS 4.2.13 and DS 5.17.
 
 **Acceptance criteria**
@@ -670,13 +688,13 @@ Interaction and visual details are in DS 4.2.10 to 4.2.12 and DS 5.17. These are
 
 People's recs already live somewhere else: phone notes, Letterboxd, their heads. Typing them in one at a time kills momentum. Add recs lets someone dump what they have, in whatever form, and confirm clean, matched titles one card at a time. Source: "Good Word PRD: Build Your Recs List" (2026-09-30).
 
-**Words.** A **rec** is one of your own good words, seen as your collection. The My list tab is now **My list** (DS 1.4). In a group it's still a good word on a list.
+**Words.** A **rec** is one of your own good words, seen as your collection. The tab was My shelf, then **My Recs** (v1.3.0), and is now **My list** (v1.4.0, DS 1.4). "Recs" stays in import copy. In a group it's a good word on that group's list.
 
 #### F15.1 Add recs (`/you/import`)
 - One screen with a large text box (label "List everything you'd recommend", helper tip below it, never placeholder-only) and an **Add screenshots** control. Search stays one tap away (the Add sheet).
 - **Type, paste, or dictate.** Device dictation is the voice path; we build no audio recording. The tip reads, on phones, "Tip: tap the mic on your keyboard and just start listing shows." and on desktop, "Tip: use your computer's dictation (Mac: Edit > Start Dictation, Windows: Win + H)."
 - **Letterboxd screenshots.** Up to 5 images (grid, list, or diary views) through the native photo picker, multiple at once. Desktop also takes drag and drop and paste (Cmd/Ctrl + V). Images are shrunk in the browser (longest side 1568px, JPEG) before upload, read once, and never stored.
-- **Who sees them.** One visibility line applies to the whole import. It defaults to all your groups, the same smart default as a single good word (F4).
+- **Who sees them.** One visibility line applies to the whole import, with the same default as a single good word: Friends on, groups off (F16.2). Imported good words reach friends as one roll-up line on Home, not a card each (F16.3).
 - **Find my titles** is disabled until there's text or a screenshot. iOS Safari can't receive the share sheet into a web app, so on iPhone the path from Notes is copy and paste.
 
 #### F15.2 Parsing
@@ -714,6 +732,214 @@ People's recs already live somewhere else: phone notes, Letterboxd, their heads.
 - Given the same text is submitted twice, then the second import makes no AI call.
 - No uploaded image is stored, and no AI or TMDB key reaches the browser.
 
+### F16. Home and friends (P0)
+
+Good Word opens to **Home**: one place, newest first, with every good word your friends have put in. Friends are a direct, mutual relationship. Groups stay as they are, one tap away in the switcher, as a second audience. Source: Sydney's "Good Word: Feed-first UX" (2026-10-06). Built in slices 12 to 21, behind the `home_enabled` flag until slice 20 (F16.10).
+
+**What changes**
+- **Home is the front door.** The app opens to Home instead of a group's list. Home replaces All groups.
+- **Friends are a direct relationship.** Today you only see someone through a shared group. You'll have friends of your own, always mutual.
+- **A title is one shared page.** The Night Ferry has one page for everyone, and each person sees their own friends' good words and conversations on it.
+- **Conversations can sit under a good word.** Anyone who can see Jonah's good word can see what's said under it.
+
+**What stays**
+- Groups, group invites, group lists, and group conversations work as they do now (F2, F5.1, F13).
+- One good word per person per title, with a note of up to 140 characters.
+- Humans only, newest first, no likes, no followers, no public profiles.
+
+**Concepts**
+
+| Concept | What it is | Status |
+|---|---|---|
+| Title | One movie or show, shared by everyone (one row per TMDB id) | Exists (`titles`) |
+| Good word | One person vouching for one title, with a note | Exists (`good_words`) |
+| Friend | Two people who have accepted each other. Always mutual | New (`friendships`) |
+| Audience | Who a good word is shared with: your friends, any of your groups, or only you | Extended: friends is new |
+| Conversation | Comments under a good word, or on a title in a group | Extended: the group kind exists |
+| Group | A private circle with its own list and conversations | Unchanged |
+| Home | Every good word you're allowed to see, newest first | New view over existing data |
+
+#### F16.1 Friends
+**Stories**
+- As a person, I can send someone my friend link, and once they accept, we see each other's friends-shared good words.
+- As a group member, I can add people from my groups as friends, without joining a group making anyone my friend.
+- As a person, I can see my friends and pending requests, and remove a friend.
+
+**Rules**
+- **Always mutual.** A friendship is a request that becomes a friendship when the other person accepts. There's no one-way following, and no counts are shown to anyone.
+- **Friend link.** Each person has one personal invite link, `/join/[code]` (the same route as group invites, F2.3, with at least 128 bits of entropy). The landing shows the inviter's name and avatar, a one-sentence explanation, and **Add Priya as a friend**. It never shows their good words before accepting. Accepting makes you friends both ways at once; signed-out visitors go through sign-in with the context kept, as in F2.4. **Reset link** invalidates the old one immediately. An expired or reset link shows "This invite link has expired. Ask Priya for a new one."
+- **Friends screen** (`/you/friends`, reached from My list): your friend link (invite card, DS 4.2.7), requests to you (Accept, Decline), requests you sent (Cancel), "People from your groups" you aren't friends with yet (Add), then your friends, each with a menu holding **Remove friend**.
+- **Requests from groups.** Add on someone from your groups sends a request. They get an Activity item (F16.9); accepting gives you one back. Declining removes the request without telling the requester (open question 13).
+- **After joining a group,** one dismissible prompt offers "Add the people here you're not friends with yet." Joining never makes anyone friends on its own.
+- **Removing a friend** uses a confirm dialog (DS 5.11). Neither person is notified. Access ends both ways on the next load (F16.6).
+- **No discovery.** No people search, no public profiles, no "people you may know" beyond your own groups.
+- **Account deletion** removes the person's friendships. **Download my data** adds the names of your friends.
+
+**Acceptance**
+- Given Priya shares her friend link and Jonah opens it signed out, when he signs in and taps **Add Priya as a friend**, then they're friends both ways and he lands on Home.
+- Given Priya resets her friend link, when someone opens the old one, then they see the expired-link copy and no friendship is made.
+- Given Tess and Mo share College crew, when Tess taps Add next to Mo, then Mo gets an Activity item, and when he accepts, both are friends and Tess gets an Activity item.
+- Given Bea shares no group with Luis and has no link from him, then nothing in the app lets her find or request him.
+- Given Priya removes Jonah, then neither is notified, and on the next load neither sees the other's friends-shared good words or the conversations under them.
+
+#### F16.2 Audience
+- **Choosing who sees it** happens on the confirm sheet (DS 5.4), in the same step as the note. **Friends** is on by default; your groups are listed under it as toggles, off by default. Turning everything off keeps the good word on My list only.
+- The visibility line (DS 4.2.6) states the audience before you share, and the success toast names it: "Your friends and College crew can see this."
+- **Change it later** from the vouch menu (Edit note, **Change who sees it**, Take it back) on title detail or My list.
+- **Narrowing** an audience hides the good word, and the conversation under it, from everyone who lost access. Nothing is deleted, and widening again restores both.
+- **Imports** (F15) use the same audience step once for the whole import, with the same default.
+- Sharing with friends is recorded as a time (`friends_shared_at`), the way sharing into a group is (`good_word_groups.shared_at`). Home orders by these times.
+
+**Acceptance**
+- Given a person with friends and two groups, when they put in a good word without changing anything, then their friends can see it and neither group's list shows it.
+- Given they turn off Friends and every group, then the visibility line reads "Only you, for now" and the good word is only on My list.
+- Given Jonah narrows a good word from friends to College crew only, then Priya (his friend, not in College crew) no longer sees it or its conversation on the next load, and widening it again brings both back.
+
+#### F16.3 Home (`/home`)
+Home answers one question the moment the app opens: what are my friends watching?
+
+- **What's on it.** Every title with at least one good word from someone else that you can see (F16.6): friends' friends-shared good words, and good words shared into your groups. Titles only you vouched for live on My list.
+- **One card per title.** If Jonah and Tess both vouch for The Night Ferry, that's one card with both names. You're named on it too when you've vouched.
+- **Newest first.** A newly visible good word moves its title to the top. Comments never reorder anything; they show as an unseen dot on the card.
+- **No ranking.** Nothing is sorted by engagement, and Home has no sort control. No suggested titles or suggested people, ever.
+- **It ends.** Cards new since your last visit come first, then a "You're all caught up" marker. Older cards load 24 at a time on a tap ("Show earlier good words"), never automatically, so there's no endless scrolling.
+- **Last visit** is stored per person and updates the way F5.5 does: when you leave Home, or after 10 seconds on it.
+- **Imports stay quiet.** Good words with source `import` don't make or move cards on their own. Friends see one line per import instead: "Luis added 40 titles to their list", counting only the good words that viewer can see, linking to Luis's person view (F8). If another person vouches for one of those titles, the card appears as usual and lists Luis too.
+- **Group chip.** A card shows the group's chip only when its good words reached you through a group and not through friendship.
+- **Filters.** The filter bar's type, services, genres, and length filters (F5.4) work on Home as on a list, and their state lives in the URL. The caught-up marker stays between new and older cards.
+- **Live updates.** The "N new good words" pill (F5.6) works on Home for good words you can see.
+
+**The card** (DS 4.2.2, `home` variant) leads with the friend's words, not the poster:
+- **Who:** the people who vouched, newest first: "Jonah", "Jonah and Tess", "Jonah, Tess and 2 more". You're named when you've vouched too.
+- **Note:** the newest voucher's note in full, exactly as typed, never truncated. With several notes, "See all 3 good words" opens title detail.
+- **Title:** poster, title, type, and year. Tapping opens title detail.
+- **Conversation:** comment count and one line of the latest comment (F16.5). A spoiler comment never previews. With no comments, a quiet "Say something", not a zero.
+- **Actions:** Comment, **Vouch too** (opens the confirm sheet with the title chosen; reads "Your good word" once you've vouched), and Where to watch.
+- **Not on the card:** hearts, likes, view counts, double-tap, or any button that shares outside Good Word.
+
+**States** (DS 5.12)
+
+| State | Home |
+|---|---|
+| Empty, no friends and no groups | Your friend link and "Start your own list" with **Put in a good word** |
+| Friends or groups, nothing from anyone yet | "Nothing from your friends yet." with your friend link |
+| Nothing new | The caught-up marker, **Put in a good word**, and "Show earlier good words" |
+| No results | "Nobody's vouched for a Netflix movie yet." + Clear filters |
+| Loading | 4 skeleton cards |
+| Error | Error state + Retry |
+| Offline | The offline banner, with loaded cards kept on screen |
+
+**Acceptance**
+- Given Jonah and Tess both shared The Night Ferry with friends, when their friend Priya opens Home, then she sees one card naming both, with Tess's note if hers is newer.
+- Given a new comment on an older title, then its card doesn't move, and it shows an unseen dot.
+- Given Luis imports 40 titles shared with friends, then his friends' Home shows one line, "Luis added 40 titles to their list", and no card for each.
+- Given 3 cards are new since Priya's last visit, then they come first, then "You're all caught up", and older cards appear only when she taps "Show earlier good words".
+- Given Jonah shared a good word only with College crew, when Priya (his friend, not in College crew) opens Home, then it isn't there; and for Tess (in College crew, not his friend) it's there with the College crew chip.
+
+#### F16.4 Title page (`/title/[type]/[tmdbId]`)
+Every title has one page at one URL, whoever opens it. What appears on it depends on who's looking. This replaces F6's content order.
+
+1. **Header:** poster, title, meta, genres, and where to watch, as F6.
+2. **Good words from your people:** every good word you can see, newest first: who, their note, when. Yours sits first; if you don't have one, a **Put in a good word** prompt takes its place.
+3. **A conversation under each good word** (F16.5), collapsed to its count and latest comment; it opens in place.
+4. **Group conversations:** each of your groups gets its own labeled section ("In College crew"), with the chip row and default as F6 and F13. Unchanged.
+5. Overview.
+
+- The composer always says who will see a comment before you type: "Jonah's friends will see this" or "College crew will see this."
+- Anyone signed in can open any title's page. It shows only what passes F16.6, with no count or hint of anything else.
+
+**Acceptance:** see F16.6.
+
+#### F16.5 Conversations under a good word
+- **Scope.** A conversation sits under one good word, or on one title in one group (F13). Each good word has at most one conversation under it.
+- **Audience.** Everyone who can see the good word can read and join its conversation, including a friend of the author whom you aren't friends with (decision 3). The composer says so ("Jonah's friends will see this").
+- **Why per good word.** A comment needs one clear audience. "Everyone who can see Jonah's good word" is one audience; a title-wide conversation would have a different audience for every reader.
+- **Mentions** in a good word's conversation are limited to people who can see that good word.
+- **Everything else is F13:** flat and chronological, 500 characters, spoilers, edit, delete with Undo, live updates, participants, and unseen tracking (now per person per conversation).
+- **Group conversations** stay private to their group. A comment made in College crew never appears under a good word.
+- Whether a good word shared only into groups also gets a conversation under it, beside the group's own conversation, is open question 14. Decide before slice 18.
+
+#### F16.6 Who sees what
+Three rules decide everything a person can see. A fourth says nothing else leaks.
+
+1. **Good words.** You see a good word if it's yours, or its author is your friend and shared it with friends, or it's shared into a group you're in.
+2. **Conversations.** You see a conversation if you can see what it sits under: the good word, or the group.
+3. **Title pages.** Any signed-in person can open a title's page. It shows only the good words and conversations that pass rules 1 and 2.
+4. **No leaks.** Nothing hints at what you can't see: no counts, no names, no "2 more from people you don't know". Not on the page, by URL, or through the API.
+
+Bea opens the same The Night Ferry page Priya does and finds her own friends on it. Mo is the in-between case: he's Jonah's friend and not Priya's, so he sees Jonah's good word and everything under it, including Priya's comment there.
+
+**Edge rules**
+- Removing a friend, or leaving a group, removes access both ways on the next load. Comments already written stay attributed, as they do when someone leaves a group.
+- Narrowing a good word's audience hides it and its conversation from everyone who lost access. Nothing is deleted.
+- Spoiler handling doesn't change.
+
+**Acceptance** (each one is also a row-level security test, by page, by URL, and by API)
+- Given Priya, Jonah, and Tess are all friends and each shared a good word for The Night Ferry with friends, when any of them opens it, then they see all three good words and the conversation under each.
+- Given Bea shared a good word for The Night Ferry and is friends with none of them, when she opens it, then she sees only her own, with no count or hint of the others, and can't reach theirs by URL or API.
+- Given Mo is friends with Jonah only, when Mo opens The Night Ferry, then he sees Jonah's good word and every comment under it, including Priya's, and neither Priya's nor Tess's good word.
+- Given Jonah shared a good word only with College crew, when Priya (his friend, not in College crew) opens Home, then it isn't there.
+- Given Priya removes Jonah as a friend, then on the next load neither sees the other's friends-shared good words or the conversations under them.
+- Given Luis imports 40 titles, then his friends' Home shows one roll-up line and no individual cards.
+
+#### F16.7 Groups
+Groups keep everything they have and move one level down in the app.
+- **A group is an audience, not a place you have to be.** You put in a good word once and choose who sees it; groups are choices on that step.
+- **Group lists are unchanged:** each still has its own list, filters, invite, and New counts (F5.1, F5.5).
+- **Group conversations are unchanged** and private to the group (F13).
+- **Group good words show on Home** for members, with the group chip when that's how they reached you.
+- **Joining a group doesn't make anyone friends** (F16.1).
+
+The case for keeping groups is the one on the marketing page: different friends, different taste. Home is everyone; a group is the film nerds.
+
+#### F16.8 Navigation
+- **Tab bar:** Home · Add (center) · My list. The Activity bell stays in the header (6.2).
+- **Home's bar** holds the switcher: Home first, then each group (with its New count), then Create a group. Picking a group opens its list as today. All groups is gone; `/list/all` redirects to `/home`.
+- **Default route:** signed in, `/` and `/list` go to Home, and so does finishing sign-in without an invite.
+- **Desktop rail:** Put in a good word, Home, Activity, My list, then the group list.
+- **Tapping a person's name** opens their person view (F8): the good words of theirs you can see (decision 8).
+
+#### F16.9 Activity, email, and live updates
+- **Activity** (F14) adds `friend_request` (someone asked to be your friend, with Accept and Decline in the item), `friend_accepted`, and comments under your good word (as `comment`). Mentions work in both kinds of conversation.
+- **No new email types.** Friend requests and comments under your good word are Activity only. Mention emails (F7.4) cover both kinds of conversation.
+- **The weekly digest** (F7.1) covers what Home shows: new good words from your friends and your groups, without repeating a title, with the conversation summary per F7.5. Import roll-ups appear as one line each.
+- **Live updates** (Realtime) carry friends-shared good words to the people allowed to see them, under the same rules as F16.6.
+
+#### F16.10 Launch: the flag, the migration, and the flip
+- **One flag.** Slices 14 to 19 ship behind `home_enabled`, a per-account switch (off by default) that Sydney turns on for test accounts. With it off, the app works exactly as it did before slice 14. Slice 20 turns it on for everyone and removes it, along with the old paths.
+- **Nothing gets more visible without its author.** Existing good words keep `friends_shared_at` empty, so they stay exactly as visible as they are until their author opts in.
+- **Friends seeded once, at the flip.** People who share a group become friends once, when the flip runs (decision 4), and the prompt below shows who they are.
+- **One prompt, once.** After the flip, each person sees "Share your list with friends?", listing their friends, with **Share all**, **Choose**, and **Not now**. It doesn't return once answered.
+- **Additive first.** Add tables and columns, backfill, switch reads, and only then drop old columns, in a later slice.
+
+#### F16.11 Engineering guardrails
+The aim is that Home, group lists, My list, and title pages are four views of one system, not four systems. If a slice seems to need an exception to any of these, stop and ask.
+
+1. **Docs before code.** Update this doc, the design system, and the CLAUDE.md build table first.
+2. **Visibility lives in the database, in one place.** Every policy and query goes through `can_view_good_word` and `can_view_conversation` (section 8). No component, route, or query re-implements "is this my friend" or "am I in this group".
+3. **Audience is data, not branches.** One card query, `title_cards(scope)`, serves Home, a group list, My list, a person view, and one title. No `if (isHome)` in data fetching and no Home-only copy of a query. It replaces the card-building code in `lib/good-words/queries.ts`.
+4. **One card component.** The existing rec card gains a `home` variant (DS 4.2.2). No separate card component for Home.
+5. **One conversation system.** The existing comment, composer, mention, and spoiler components serve both scopes; only the scope and the audience label differ.
+6. **Home is derived, never stored.** No table of Home cards, no fan-out on write, no cached counters until a measured query needs one.
+7. **Migrations are additive and reversible,** one concern each. Backfills can be run twice safely.
+8. **One flag** (F16.10).
+9. **Tests encode the privacy rules.** Every acceptance criterion in F16.6 is a row-level security test, including access by URL and by API.
+10. **The glossary applies to code.** `good_word`, `friendship`, `home`; never `post`, `follower`, or `feed` in identifiers, routes, or copy.
+11. **Existing rules carry over:** optimistic writes with rollback, state in the URL, spoiler text never in the DOM until revealed, and one slice per session with a plan first.
+
+**Decisions** (Sydney, 2026-10-06, as recommended in the source spec)
+
+| # | Decision | Chosen | What it costs |
+|---|---|---|---|
+| 1 | On Home, one card per title or one per good word? | Per title | Jonah's and Tess's good words aren't separate moments; the card shows the newest note and both names |
+| 2 | One conversation per good word, or one per title? | Per good word | Three friends vouching means three small conversations on title detail instead of one long one |
+| 3 | Can a friend's friend read your comment under that friend's good word? | Yes | Your comment is as visible as the good word it sits under; the composer says so |
+| 4 | Do people who already share a group become friends at launch? | Yes, once, shown in the opt-in prompt | Without it, Home is empty on day one; with it, nobody picked their friends by hand |
+| 5 | Default audience for a new good word | Friends on, groups off | Someone who only ever shared with one group now shares wider unless they turn it off |
+| 6 | Do group good words appear on Home? | Yes, with a group chip | Home mixes two audiences; the chip keeps that legible |
+| 7 | Do new comments move a card up on Home? | No | A lively conversation on an older title shows only as the dot and in Activity |
+| 8 | Does tapping a friend's name open their good words? | Yes: the ones you can see | The closest thing to a profile; it stays a list, with no counts and no bio |
+
 ---
 
 ## 8. Data model
@@ -722,53 +948,64 @@ Postgres (via Supabase). Names are indicative; keep them consistent once chosen.
 
 | Table | Key fields | Notes |
 |---|---|---|
-| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`), `spoiler_hint_seen_at` | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device. `spoiler_hint_seen_at` records the one-time spoiler hint (DS 5.17) |
+| `profiles` | `user_id` (auth user), `display_name`, `region` (ISO 3166-1, default `US`), `timezone`, `onboarded_at`, `deleted_at`, `milestones` (text array: `first`, `tenth`), `spoiler_hint_seen_at`, `home_viewed_at`, `share_prompt_answered_at`, `home_enabled` | One per user. `milestones` records which milestone moments have been shown, so each shows once on any device. `spoiler_hint_seen_at` records the one-time spoiler hint (DS 5.17). `home_viewed_at` is Home's last visit (F16.3). `share_prompt_answered_at` records the one-time "Share your list with friends?" prompt (F16.10). `home_enabled` is the launch flag, dropped at the flip |
 | `groups` | `name`, `owner_id`, `color` | `color` assigned at creation |
-| `group_members` | `group_id`, `user_id`, `role` (`owner`, `member`), `joined_at`, `last_viewed_at`, `welcome_seen_at`, `join_prompt_dismissed_at` | Unique (`group_id`, `user_id`) |
-| `invites` | `group_id`, `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group |
+| `group_members` | `group_id`, `user_id`, `role` (`owner`, `member`), `joined_at`, `last_viewed_at`, `welcome_seen_at`, `join_prompt_dismissed_at`, `friend_prompt_dismissed_at` | Unique (`group_id`, `user_id`) |
+| `invites` | `kind` (`group`, `friend`), `group_id` (null for `friend`), `code` (unique), `created_by`, `revoked_at` | One active (non-revoked) invite per group, and one active friend link per person. One server function validates both kinds |
+| `friendships` | `user_low`, `user_high`, `status` (`pending`, `accepted`), `requested_by`, `accepted_at`, `seeded` (made at the flip, F16.10) | One row per pair, ids stored in order (`user_low` < `user_high`), unique on the pair, so a friendship can't disagree with itself. Declining, cancelling, or removing deletes the row |
 | `titles` | `tmdb_id`, `media_type` (`movie`, `tv`), `title`, `original_title`, `year`, `poster_path`, `genres` (array of TMDB genre ids and names), `runtime_minutes`, `seasons`, `overview`, `accent` (one of the four `genreAccent` values in DS 4.2.1), `fetched_at` | Unique (`tmdb_id`, `media_type`). `accent` set once on insert via `genreAccent` (DS 4.2.1) |
-| `good_words` | `user_id`, `title_id`, `note` (max 140), `source` (`organic`, `digest`, `nudge_email`, `join_prompt`, `share`, `import`) | Unique (`user_id`, `title_id`) |
+| `good_words` | `user_id`, `title_id`, `note` (max 140), `friends_shared_at`, `source` (`organic`, `digest`, `nudge_email`, `join_prompt`, `share`, `import`) | Unique (`user_id`, `title_id`). `friends_shared_at` null means not shared with friends; it mirrors `good_word_groups.shared_at` (F16.2) |
 | `good_word_groups` | `good_word_id`, `group_id`, `shared_at` | Unique pair. Which lists a good word is on |
 | `watch_providers` | `title_id`, `region`, `providers` (json: stream, rent, buy), `link`, `fetched_at` | Cached per title per region. Unique (`title_id`, `region`). Stream is TMDB's `flatrate`, `free`, and `ads` together. A region with nothing is stored with empty lists, so it isn't fetched again for a day |
 | `notification_prefs` | `user_id`, `digest`, `mention_email`, `group_joins`, `weekend_prompt` (booleans) | Defaults: all on |
-| `comments` | `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at`, `deleted_by` | Index on (`group_id`, `title_id`, `created_at`). Mentions are stored in `body` by user id, so renamed people resolve correctly. Soft delete supports Undo; purge after the Undo window |
-| `comment_mentions` | `comment_id`, `mentioned_user_id` | Unique pair. Mentioned user must be a member of the comment's group |
-| `conversation_reads` | `user_id`, `group_id`, `title_id`, `last_read_at` | Drives the "New" divider and unseen-comment dots |
-| `conversation_participants` | `user_id`, `group_id`, `title_id`, `muted` | Created when you comment or vouch for that title in that group; decides who gets comment activity. `muted` reserved for later |
-| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `conversation_started`, `group_join`), `actor_id`, `group_id`, `title_id`, `comment_id`, `read_at`, `email_handled_at` (mention and join emails: sent, or deliberately not sent) | Deleted after 90 days, or when the source comment is deleted |
+| `conversations` | `title_id`, `scope` (`good_word`, `group`), `good_word_id`, `group_id` | Exactly one of `good_word_id` or `group_id`, enforced by a check constraint. One conversation per target: unique (`good_word_id`), unique (`group_id`, `title_id`). Deleted with its good word or group |
+| `comments` | `conversation_id`, `group_id`, `title_id`, `user_id`, `body` (max 500), `is_spoiler`, `edited_at`, `deleted_at`, `deleted_by` | Index on (`group_id`, `title_id`, `created_at`). Mentions are stored in `body` by user id, so renamed people resolve correctly. Soft delete supports Undo; purge after the Undo window. `conversation_id` is backfilled into `group` conversations (F16.10); `group_id` and `title_id` are dropped in a later slice |
+| `comment_mentions` | `comment_id`, `mentioned_user_id` | Unique pair. Mentioned user must be able to see the comment's conversation |
+| `conversation_reads` | `user_id`, `conversation_id`, `last_read_at` | Drives the "New" divider and unseen-comment dots |
+| `conversation_participants` | `user_id`, `conversation_id`, `muted` | Created when you comment in a conversation, vouch for its title in its group, or own the good word it sits under; decides who gets comment activity. `muted` reserved for later |
+| `activity_items` | `user_id` (recipient), `type` (`mention`, `comment`, `conversation_started`, `group_join`, `friend_request`, `friend_accepted`), `actor_id`, `group_id` (nullable), `conversation_id`, `title_id`, `comment_id`, `read_at`, `email_handled_at` (mention and join emails: sent, or deliberately not sent) | Deleted after 90 days, or when the source comment is deleted |
 | `notification_log` | `user_id`, `type`, `sent_at`, `payload_ref` | Enforces caps and dedupes sends |
 | `streaming_services` (P1) | `user_id`, `region`, `provider_ids` (array) | |
 | `share_links` (P1) | `user_id`, `token` (unique), `enabled`, `revoked_at`, `view_count` | |
 | `feedback` | `user_id`, `message`, `may_contact` | |
-| `imports` (F15) | `user_id`, `status` (`parsing`, `reviewing`, `done`, `cancelled`, `failed`), `method` (`text`, `screenshots`, `both`), `input_hash`, `group_ids`, `found_count`, `duplicate_count`, `extracted` (the parsed candidates, for reuse), `ai_input_tokens`, `ai_output_tokens`, `completed_at` | Readable and writable only by its owner. Started through a server function that enforces 10 a day |
+| `imports` (F15) | `user_id`, `status` (`parsing`, `reviewing`, `done`, `cancelled`, `failed`), `method` (`text`, `screenshots`, `both`), `input_hash`, `group_ids`, `share_with_friends`, `found_count`, `duplicate_count`, `extracted` (the parsed candidates, for reuse), `ai_input_tokens`, `ai_output_tokens`, `completed_at` | Readable and writable only by its owner. Started through a server function that enforces 10 a day |
 | `import_cards` (F15) | `import_id`, `user_id`, `position`, `query`, `note`, `confidence` (`high`, `low`), `candidates` (json: up to 4 TMDB matches), `chosen` (index), `decision` (`pending`, `added`, `skipped`), `decided_at`, `opened_alternatives` | Owner only. Never shown on a list |
 | `title_matches` (F15) | `query_key` (normalized title, year, type), `media_type`, `tmdb_id` | Shared match cache. Server only (no policies) |
 | `events` | `user_id` (nullable), `name`, `properties` (json), `occurred_at` | First-party analytics (Section 11) |
 | `app_admins` | `user_id` | Who can open `/admin/metrics` (11.4). Seeded with Sydney's account |
 
-**Derived views**
-- **List card:** for a given group, group `good_word_groups` joined to `good_words` by `title_id`, returning the title, the list of vouchers (ordered by `shared_at` desc), the most recent note, voucher count, and most recent `shared_at` (for sorting and New badges).
-- **All groups:** the same across all the viewer's groups, deduplicating vouchers by `user_id`.
+**Visibility functions** (the only places visibility is decided, F16.11)
+
+| Function | Answers |
+|---|---|
+| `friend_ids(user)` | Who are this person's accepted friends? |
+| `can_view_good_word(viewer, good_word)` | F16.6 rule 1 |
+| `can_view_conversation(viewer, conversation)` | F16.6 rule 2: defers to the good word or the group |
+| `title_cards(viewer, scope)` | The cards for Home, a group list, My list, a person view, or one title: the title, the visible vouchers (newest first), the newest visible note, voucher count, newest shared time, and the group chip where it applies. Replaces the card-building code in `lib/good-words/queries.ts` (slice 16) |
 
 **Deletion semantics**
 - Taking back a good word deletes it and its `good_word_groups` rows (Undo re-creates both from the client's snapshot, or use a soft delete with a short grace period, whichever is simpler).
 - Leaving or being removed from a group deletes that person's `good_word_groups` rows for that group.
 - Deleting a group deletes its memberships, invites, and `good_word_groups` rows. Good words themselves remain.
+- Removing a friend deletes the `friendships` row. Good words, and comments already written under them, remain.
 - Deleting an account deletes the profile, memberships, good words, comments, and activity items, transfers ownership as in F1, and purges within 30 days.
 - Deleting a group also deletes its comments, mentions, reads, and activity items.
 
 **Row-level security (must be enforced in the database, not only in the UI)**
 - A user can read a group, its members, and its invite only if they're a member.
-- A user can read a good word only if it's their own, or it's shared into a group they're a member of. When reading someone else's good word, the `good_word_groups` rows returned are **only** those for groups the viewer belongs to, so group names are never leaked.
+- A user can read a good word only if `can_view_good_word` allows it: it's their own, or its author is their friend and shared it with friends, or it's shared into a group they're a member of. When reading someone else's good word, the `good_word_groups` rows returned are **only** those for groups the viewer belongs to, so group names are never leaked.
 - Only the good word's author can create, edit, or delete it and its group links, and only into groups they belong to.
 - Only owners can rename, reset invites, remove members, or delete groups.
-- A user can read comments only in groups they're currently a member of. Removed or departed members lose read access immediately.
-- A user can create a comment only in a group they belong to, as themselves, on any title. Authors can edit and delete their own comments; group owners can delete any comment in their group.
+- A user can read a conversation and its comments only if `can_view_conversation` allows it. Removed or departed members, removed friends, and people dropped from a good word's audience lose read access on the next load.
+- A user can read a `friendships` row only if they're one of its two people, and a friend `invites` row only if they created it.
+- A profile's display name is readable by friends, co-members, the other person in a pending request, and anyone who can see something that person wrote. Nothing else about a profile is.
+- A user can create a comment only in a conversation they can see, as themselves: any title in a group they belong to, or under a good word they can see. Authors can edit and delete their own comments; group owners can delete any comment in their group.
 - Comment authors' names stay readable in that group's conversations after they leave it (open question 10), and nowhere else.
-- A mention is valid only if the mentioned user is a member of the comment's group at the time of writing; the server drops any others and stores the text as plain text.
+- A mention is valid only if the mentioned user can see the comment's conversation at the time of writing; the server drops any others and stores the text as plain text.
 - Users can read only their own `activity_items`, `conversation_reads`, and `notification_prefs`.
 - `titles` and `watch_providers` are readable by any signed-in user and writable only by the server.
-- Joining via invite happens through a server function that validates the code and limits.
+- Joining via invite, and accepting a friend link, happen through a server function that validates the code and limits.
+- Every policy calls the visibility functions above and holds no visibility logic of its own.
 
 ---
 
@@ -852,17 +1089,17 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 ### 11.2 Events
 | Event | Properties | Serves |
 |---|---|---|
-| `invite_link_opened` | `group_id`, `signed_in` | H1 |
+| `invite_link_opened` | `kind` (`group`, `friend`), `group_id` (group links), `signed_in` | H1 |
 | `invite_shared` | `group_id`, `method` (`share_sheet`, `copy`) | H1 |
 | `group_created` | `group_id` | J1 |
 | `group_joined` | `group_id`, `via` (`invite`) | H1 |
 | `sign_in_completed` | `method` (`magic_link`, `google`), `new_user` | Funnel |
 | `add_opened` | `entry_point` (`tab`, `rail`, `shortcut`, `title`, `search_row`, `join_prompt`, `empty_state`, `email`) | H3 |
 | `search_performed` | `query_length`, `result_count` | H3 |
-| `good_word_created` | `title_id`, `groups_count`, `has_note`, `source`, `ms_from_add_opened` | H2, H3, H4 |
-| `good_word_edited` | `field` (`note`, `groups`) | |
+| `good_word_created` | `title_id`, `groups_count`, `friends` (boolean), `has_note`, `source`, `ms_from_add_opened` | H2, H3, H4 |
+| `good_word_edited` | `field` (`note`, `groups`, `friends`) | |
 | `good_word_taken_back` | `undone` (boolean) | |
-| `list_viewed` | `list` (`group`, `all`, `mine`, `person`), `filters` (keys only), `new_count` | H5 |
+| `list_viewed` | `list` (`home`, `group`, `all`, `mine`, `person`), `filters` (keys only), `new_count` | H5 |
 | `title_viewed` | `from` (`list`, `search`, `digest`, `person`, `share`) | H5 |
 | `where_to_watch_clicked` | `title_id`, `provider_id`, `from_good_word` (boolean) | H5 |
 | `email_sent` | `type` | H4, H6 |
@@ -870,8 +1107,8 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `notification_pref_changed` | `type`, `enabled` | |
 | `first_good_word_prompt` | `action` (`shown`, `used`, `dismissed`) | H2 |
 | `share_link_toggled` (P1) | `enabled` | J7 |
-| `conversation_opened` | `group_id`, `title_id`, `from` (`title`, `card`, `activity`, `email`), `unseen_count` | H7 |
-| `comment_created` | `group_id`, `title_id`, `length_bucket`, `mention_count`, `is_spoiler` | H7 |
+| `conversation_opened` | `scope` (`good_word`, `group`), `group_id` (group scope), `title_id`, `from` (`title`, `card`, `activity`, `email`), `unseen_count` | H7 |
+| `comment_created` | `scope`, `group_id` (group scope), `title_id`, `length_bucket`, `mention_count`, `is_spoiler` | H7 |
 | `comment_edited` / `comment_deleted` | `undone` (for delete) | |
 | `mention_notified` | `channel` (`activity`, `email`) | H7 |
 | `activity_opened` | `unread_count` | H7 |
@@ -880,6 +1117,12 @@ First-party, minimal, and privacy-respecting. Events go to the `events` table. N
 | `import_parsed` | `found_count`, `duplicate_count`, `high_confidence_count`, `ai_used`, `reused`, `ai_input_tokens`, `ai_output_tokens`, `ai_cost_microdollars`, `ms_elapsed` | F15 cost and speed |
 | `import_failed` | `stage` (`parse`, `save`), `reason` (`config`, `auth`, `rate_limited`, `bad_request`, `unavailable`, `refused`, `unparsed`, `failed`) | F15 reliability |
 | `import_card_decided` | `decision` (`added`, `skipped`), `opened_alternatives`, `bulk` | F15 match accuracy |
+| `friend_link_shared` | `method` (`share_sheet`, `copy`) | F16 |
+| `friend_request_sent` | `from` (`friends_screen`, `group_prompt`) | F16 |
+| `friend_added` | `via` (`link`, `request`, `seeded`) | F16 |
+| `friend_removed` | | F16 |
+| `home_caught_up` | `new_count`, `earlier_loaded` (pages tapped) | F16: Home ends |
+| `share_prompt` | `action` (`share_all`, `choose`, `not_now`), `friends_count_bucket` | F16.10 |
 | `import_finished` | `added_count`, `skipped_count`, `duplicate_count`, `ms_from_start` | F15: time to a list of 10 |
 
 ### 11.3 Source attribution
@@ -908,7 +1151,17 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | **8. Settings and trust** | Settings, help, FAQ, feedback, about and attributions, download my data, delete account with ownership transfer, privacy and terms pages, security headers, rate limits | Account deletion and data download verified; all attribution present |
 | **9. Measurement** | Events per Section 11; source attribution; `/admin/metrics` | Every event fires from its flow; metrics page shows real numbers from test use |
 | **10. P1 (in order)** | Installable app and offline queue; live new-good-words pill; person view; streaming services filter; share my list; weekend prompt | Each P1 item meets its acceptance criteria |
-| **11. Build your list** | My list renamed My list; Add recs from text, dictation, and Letterboxd screenshots; review deck; done screen; resume; limits and cost events (F15) | F15's acceptance criteria pass, with the AI faked in tests and checked once live |
+| **11. Build your list** | My shelf renamed My Recs (since renamed My list); Add recs from text, dictation, and Letterboxd screenshots; review deck; done screen; resume; limits and cost events (F15) | F15's acceptance criteria pass, with the AI faked in tests and checked once live |
+| **12. Home and friends: docs** | Schema check against section 8; F16; data model and RLS; design system glossary, card, navigation, and patterns; CLAUDE.md build table. No app code | Sydney accepts the docs |
+| **13. Rename** | "shelf" becomes "list" and My Recs becomes My list in all UI copy, emails, `messages/en.json`, routes (`/shelf/*` to `/list/*`, old paths redirect), and code names; `shelf_viewed` becomes `list_viewed` (stored events renamed) | No "shelf" left in UI copy, emails, routes, or identifiers; old links redirect; all tests pass |
+| **14. Friends** | `friendships`; friend links on `invites`; the friend landing; Friends screen; requests from groups; the after-join prompt; remove friend; Activity items; RLS and tests. Behind `home_enabled` | J8's steps 1 and 2 work on two phones; F16.1's acceptance criteria pass |
+| **15. Friends as an audience** | `friends_shared_at`; `friend_ids` and `can_view_good_word`; the audience step on the confirm sheet and import; Change who sees it. Behind the flag | F16.2's acceptance criteria pass; a flag-off account sees no change |
+| **16. One card query** | `title_cards(viewer, scope)` replaces the card-building code; group lists, My list, and person view move onto it with no visible change | Every existing list test passes unchanged; group lists look identical at 390 and 1440 |
+| **17. Home** | `/home`, the `home` card variant, caught-up marker, earlier pages on tap, import roll-up, group chip, filters, empty states, live pill, switcher and tab changes. Behind the flag | F16.3's acceptance criteria pass; J8 works end to end |
+| **18. Conversations by scope** | `conversations` and the backfill; reads, participants, mentions, and Activity by conversation; conversations under good words; the composer's audience line; Realtime topics. Behind the flag | F16.5 works on two phones; every F13 test still passes |
+| **19. Title page** | Title detail shows what each viewer may see, in F16.4's order, with a conversation under each good word | F16.6's acceptance criteria pass as RLS tests, by page, URL, and API |
+| **20. The flip** | Home becomes the default for everyone; friends seeded from shared groups; the "Share your list with friends?" prompt; digest covers Home; All groups redirects; the flag and old paths removed | A flag-free account gets the prompt once and lands on Home; nothing became more visible without its author |
+| **21. Copy pass** | Marketing page, BRAND.md's positioning line, onboarding, and FAQ rewritten for a friends-first app with "list" | The marketing spec and page agree; the promises in F16's source spec ("Followers", "Public profiles", "Endless scrolling", "Reviews from strangers" stay crossed out) still hold |
 
 **Across every slice:** each new screen meets DS 12.1 before the slice is called done, and is checked on iOS Safari first.
 
@@ -918,6 +1171,7 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 
 ### 13.1 Usability testing (per NN/g practice)
 - **When:** after slice 4 (core loop), after slice 5 (choosing), and after slice 6 (conversations), before inviting the beta.
+- **Also:** after slice 20 (Home and friends), with the tasks "Add Priya as a friend", "See what your friends vouched for this week", and "Share a good word with only College crew".
 - **Who:** 5 people per round who aren't on the team, on their own phones.
 - **Tasks:** "A friend sent you this link. Join the group." · "You just finished a show you loved. Tell the group." · "It's Friday night. Find a comedy movie you can watch on Netflix that someone in the group recommends." · "Change the note on something you recommended." · "Tell Priya what you thought of The Night Ferry's ending without spoiling it for anyone else."
 - **Measure:** task success, time on task, errors, and a single ease rating per task. Fix severity 1 and 2 issues before release.
@@ -946,6 +1200,8 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | Scope creep before the core loop is proven | Medium | P0/P1/Later labels; slice gates; Later items need their own spec |
 | Conversations pull attention from putting in good words | Medium | Conversations live on title detail, not the list; the Add button stays the primary action; watch H7's "good words per member doesn't drop" signal |
 | Spoilers ruin a show for someone | Medium | Spoiler toggle with a first-time hint; covered text never rendered, previewed, or emailed |
+| Home turns into something people scroll instead of choose from | High | Newest first only, no ranking, the caught-up marker, earlier pages only on tap, no likes or counts (F16.3); watch `home_caught_up` |
+| Friends of friends see more than people expect | High | The composer and visibility line always name the audience; nothing becomes more visible without its author (F16.10); F16.6 acceptance criteria as RLS tests |
 | Mentions feel like pressure or spam | Low | Mentions only within a group; batched emails; one-tap unsubscribe; no read receipts or typing indicators |
 
 ---
@@ -966,13 +1222,17 @@ Decide before the slice that needs them.
 | 8 | Email provider | **Decided (2026-09-29): Resend**, set up in slice 1 for sign-in links | Slice 1 |
 | 9 | Do we need an explicit "Watched it" action to prove H5? | Rely on where-to-watch clicks and interviews for the MVP; build "Watched it because of you" first if evidence is unclear | After beta |
 | 10 | Comments from people who leave or are removed | **Decided (2026-09-29):** stay visible and attributed so conversations make sense; deleted only if they delete their account | Slice 6 |
-| 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the list (F13) | Slice 6 |
+| 11 | Can people comment on a title nobody in the group has vouched for? | **Decided (2026-09-29): yes.** Any title can have a conversation in any group. The first comment gives every other member an Activity item, so it's discoverable without being on the list (F13). Still holds for group conversations after F16 | Slice 6 |
 | 12 | Should mentions work inside notes too? | Not in the MVP; notes travel across groups, so a mention could reach people outside the mentioned person's groups | After beta |
+| 13 | Is a declined friend request visible to the person who sent it? | No. Declining removes the request without telling them; it disappears from their sent requests. They can ask again later | Slice 14 |
+| 14 | Does a good word shared only into groups also get a conversation under it, beside the group's conversation? | No. Only friends-shared good words get a conversation under them; group-only good words are talked about in the group's conversation, as today. Avoids two conversations with the same audience on one page | Slice 18 |
+| 15 | Limits for friends | No cap on friends for the beta; friend requests limited to 30 an hour per person, like other writes (10.4) | Slice 14 |
 
 ---
 
 ## 16. Changelog
 
+- **v1.4.0 (2026-10-06):** Home and friends (F16, slices 12 to 21), from Sydney's "Good Word: Feed-first UX" spec, with its eight decisions taken as recommended. Sydney's further calls: the word **shelf becomes list** and **My Recs becomes My list** everywhere (DS 1.4), renamed in the app in slice 13; the tab bar stays three tabs, **Home · Add · My list**, with the Activity bell in the header (F16.8); **Home replaces All groups**; no new email types, and the digest covers what Home shows (F16.9). Changes: principles 4 and 6 (1.3); scope (4.1, 4.3); J3 and new J8; routes `/home`, `/you/friends`, and conversations under a good word (6.1); navigation (6.2); access (6.4); default audience is Friends on, groups off (F4, F15.1); All groups replaced (F5.2); title detail and person view show what the viewer may see (F6, F8); conversations by scope (F13); new Activity types (F14); data model, visibility functions, and RLS (section 8); events (11.2); risks (14); open questions 13 to 15. Schema check: the source spec was written against v1.1; the differences found (no SQL views for cards, `activity_items.group_id` required, Realtime and the digest group-only, person view and export without friends, no store for Home's last visit) are covered above. The source spec's 5-tab bar and "context" prop are replaced by the 3-tab bar and a `home` card variant. Steps 6 to 11 accepted.
 - **v1.3.2 (2026-10-02):** No daily import limit (F15.4): Sydney removed it after failed tries, caused by an API key problem, used up her day. The per-import caps stay (5 screenshots, 5,000 characters, 100 titles), and spend is capped in the Anthropic console.
 - **v1.3.1 (2026-10-01):** `import_failed` (11.2) records why an import failed (a missing or rejected API key, limits, the API rejecting the request), never the text, so failures can be diagnosed from the events table.
 - **v1.3.0 (2026-10-01):** Build your list (F15, slice 11), from Sydney's "Build Your Recs List" spec. Decisions: keep the word "recs" and rename My shelf to **My Recs**; imported recs go into all your groups by default; Claude Haiku 4.5 only, with no larger-model escalation; limits of 5 screenshots, 5,000 characters, 100 titles per import, and 10 imports a day; unreviewed cards are saved privately so a review can be resumed. The share sheet path is Android only; iPhone uses paste. New routes (6.1), tables (section 8), and events (11.2). A site-wide 404 for unknown URLs.
