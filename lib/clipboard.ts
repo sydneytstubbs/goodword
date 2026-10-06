@@ -23,7 +23,10 @@ function copyWithSelection(text: string): boolean {
   field.setAttribute("aria-hidden", "true");
   field.tabIndex = -1;
   field.className = "fixed -left-full top-0 text-body";
-  document.body.appendChild(field);
+  // Inside the open sheet or dialog, if any: everything outside a modal
+  // dialog is inert, and an inert field can't be selected or copied.
+  const host = document.activeElement?.closest("dialog") ?? document.querySelector("dialog[open]") ?? document.body;
+  host.appendChild(field);
   const selection = document.getSelection();
   const previous = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
   try {
