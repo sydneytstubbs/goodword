@@ -43,7 +43,7 @@ test.describe("titles", () => {
 
   test.afterAll(async () => deleteUsers(users));
 
-  async function signedIn(browser: Browser, next = "/list"): Promise<Page> {
+  async function signedIn(browser: Browser, next = "/home"): Promise<Page> {
     const page = await (await browser.newContext()).newPage();
     await openMagicLink(page, bea, next);
     return page;
@@ -97,12 +97,12 @@ test.describe("titles", () => {
 
   test("Back closes the sheet and stays on the page", async ({ browser }) => {
     const page = await signedIn(browser);
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
     await openAdd(page);
     await page.goBack();
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
-    await expect(page).toHaveURL(/\/list$/);
-    await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
+    await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { name: "Start your own list" })).toBeVisible();
   });
 
   test("searching “night” returns movies and shows with posters in under a second", async ({ browser }) => {
@@ -144,19 +144,20 @@ test.describe("titles", () => {
     // Step 4: a result opens the confirm step in the same sheet (DS 5.4).
     await expect(sheet.getByLabel("Anything to add? (optional)")).toBeFocused();
     await expect(sheet.getByText(name, { exact: true }).filter({ visible: true })).toBeVisible();
-    await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
-    await expect(page).toHaveURL(/\/list$/);
+    // Friends on by default (PRD F16.2); Bea has none yet.
+    await expect(sheet.getByText("Visible to your friends, once you add some").filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/home$/);
 
     // Back returns to where Add was opened, with the sheet closed.
     await page.goBack();
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("dialog", { name: "Put in a good word" })).toBeHidden();
 
     const { type, tmdbId } = body.results.find((r) => r.name === name)!;
     await page.goto(`/title/${type}/${tmdbId}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
     await expect(page).toHaveTitle(`${name} · Good Word`);
-    await expect(page.getByText("None of your groups have vouched for this yet.").filter({ visible: true })).toBeVisible();
+    await expect(page.getByText("Nobody you know has vouched for this yet.").filter({ visible: true })).toBeVisible();
     await expectNoViolations(page);
     const { data } = await admin().from("titles").select("title, accent").eq("media_type", type).eq("tmdb_id", tmdbId).single();
     expect(data?.title).toBe(name);

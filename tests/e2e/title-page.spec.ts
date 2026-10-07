@@ -136,12 +136,4 @@ test.describe("the title page", () => {
     await expect(page.getByRole("link", { name: /^The Night Ferry/ })).toBeVisible();
   });
 
-  test("without the flag, the page is as it was", async ({ browser }) => {
-    const page = await signedIn(browser, tess, path);
-    // Her own good word as before, no Good words heading, and none of her
-    // friends' friends-only good words (they only show with the flag).
-    await expect(page.getByText("“strange and perfect”").filter({ visible: true }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Good words" })).toHaveCount(0);
-    await expect(page.locator("body")).not.toContainText("the ferry scene");
-  });
 });

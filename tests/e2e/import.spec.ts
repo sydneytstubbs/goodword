@@ -102,7 +102,7 @@ test.describe("Add recs and the review deck", () => {
     const submit = page.getByRole("button", { name: "Find my titles" });
     await expect(submit).toHaveAttribute("aria-disabled", "true");
     await expect(page.getByText("Add a list or a screenshot first.")).toBeVisible();
-    await expect(page.getByRole("button", { name: /College crew/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Visible to your friends/ })).toBeVisible();
     await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
     await expectNoViolations(page);
     await box.fill("The Night Ferry\nMoth Season, so eerie");

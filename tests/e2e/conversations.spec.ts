@@ -204,7 +204,7 @@ test.describe("conversations", () => {
 
   test("any title can have a conversation: the first comment tells the rest of the group", async ({ browser }) => {
     const jonahPage = await signedIn(browser, jonah, titlePath(moth));
-    await expect(jonahPage.getByText("None of your groups have vouched for this yet.").filter({ visible: true })).toBeVisible();
+    await expect(jonahPage.getByText("Nobody you know has vouched for this yet.").filter({ visible: true })).toBeVisible();
     await jonahPage.getByRole("link", { name: "Add a comment…" }).click();
     await jonahPage.getByRole("textbox", { name: "Comment" }).fill("anyone seen this?");
     await jonahPage.getByRole("button", { name: "Send", exact: true }).click();

@@ -207,12 +207,4 @@ test.describe("Home", () => {
     await page.waitForURL("**/home");
   });
 
-  test("without the flag, there's no Home", async ({ browser }) => {
-    const page = await signedIn(browser, mo, "/you");
-    await page.goto("/home");
-    await expect(page.getByRole("heading", { level: 1, name: "We couldn't find that page" })).toBeAttached();
-    await page.goto("/list");
-    await expect(page).not.toHaveURL(/\/home/);
-    await expect(page.getByRole("link", { name: "Groups", exact: true }).filter({ visible: true }).first()).toBeVisible();
-  });
 });

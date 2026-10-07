@@ -140,21 +140,4 @@ test.describe("friends as an audience", () => {
     await expect(page.getByText("On your list. Only you can see it for now.").filter({ visible: true })).toBeVisible();
   });
 
-  test("without the flag, nothing changes", async ({ browser }) => {
-    const page = await signedIn(browser, bea, `/list/${girls}`);
-    await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
-    const sheet = await pick(page, "The Night Ferry");
-    // Defaults to all your groups, counted, as before (F4).
-    await sheet.getByRole("button", { name: /^Visible to The girls · 2 people/ }).click();
-    await expect(sheet.getByRole("checkbox", { name: /Your friends/ })).toHaveCount(0);
-    await sheet.getByRole("button", { name: "Done" }).click();
-    await sheet.getByRole("button", { name: "Put in a good word" }).click();
-    await expect(page.getByText("On your list. Tess will see it.").filter({ visible: true })).toBeVisible();
-
-    await page.goto(`/title/tv/${base}`);
-    await page.getByRole("button", { name: "Your good word" }).click();
-    await expect(page.getByRole("menuitem", { name: "Change groups" })).toBeVisible();
-    const { data } = await admin().from("good_words").select("friends_shared_at").eq("user_id", bea.id).single();
-    expect(data!.friends_shared_at).toBeNull();
-  });
 });

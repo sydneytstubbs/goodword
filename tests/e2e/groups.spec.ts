@@ -23,18 +23,19 @@ test.describe("groups", () => {
 
   test.afterAll(async () => deleteUsers(users));
 
-  async function signedIn(browser: Browser, user: TestUser, next = "/list"): Promise<Page> {
+  async function signedIn(browser: Browser, user: TestUser, next = "/home"): Promise<Page> {
     const page = await (await browser.newContext()).newPage();
     await openMagicLink(page, user, next);
     return page;
   }
 
-  test("with no groups, the list offers to start one", async ({ browser }) => {
+  test("with no groups, Home's switcher offers to start one", async ({ browser }) => {
     const page = await signedIn(browser, priya);
-    await expect(page).toHaveURL(/\/list$/);
-    await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
+    await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { name: "Start your own list" })).toBeVisible();
     await expectNoViolations(page);
-    await page.getByRole("link", { name: "Start a group" }).click();
+    await page.getByRole("button", { name: "Switch list. Current: Home" }).click();
+    await page.getByRole("dialog").getByRole("link", { name: "Create a group" }).click();
     await expect(page).toHaveURL(/\/groups\/new$/);
   });
 
@@ -123,7 +124,7 @@ test.describe("groups", () => {
   test("the switcher and invite sheet on the list", async ({ browser }) => {
     const page = await signedIn(browser, priya, `/list/${groupId}`);
     await page.getByRole("button", { name: /Switch list/ }).click();
-    await expect(page.getByRole("link", { name: /All groups/ })).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("link", { name: /^Home/ })).toBeVisible();
     await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "Invite to College crew" }).click();
     await expect(page.getByRole("dialog", { name: "Invite your people" })).toBeVisible();
@@ -171,9 +172,9 @@ test.describe("groups", () => {
     const dialog = page.getByRole("dialog", { name: "Leave College crew 2026?" });
     await expect(dialog.getByText("You're the only member, so leaving deletes College crew 2026.", { exact: false }).filter({ visible: true })).toBeVisible();
     await dialog.getByRole("button", { name: "Leave and delete" }).click();
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByText("College crew 2026 was deleted.").filter({ visible: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "No groups yet" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Start your own list" })).toBeVisible();
   });
 
   test("the owner deletes a group with the danger dialog", async ({ browser }) => {
@@ -185,7 +186,7 @@ test.describe("groups", () => {
     const dialog = page.getByRole("dialog", { name: "Delete The girls?" });
     await expect(dialog.getByText("This removes the group for 1 person and can't be undone.").filter({ visible: true })).toBeVisible();
     await dialog.getByRole("button", { name: "Delete The girls" }).click();
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByText("The girls was deleted.").filter({ visible: true })).toBeVisible();
   });
 });

@@ -94,14 +94,20 @@ test.describe("the core loop", () => {
     const sheet = await pick(page, "The Night Ferry");
     const note = sheet.getByLabel("Anything to add? (optional)");
     await expect(note).toBeFocused();
-    // Defaults to all your groups (DS 5.4).
-    await expect(sheet.getByRole("button", { name: /Visible to 2 groups · 3 people/ })).toBeVisible();
+    // Defaults to Friends on, groups off (PRD F16.2); Priya picks both her groups too.
     await expectNoViolations(page);
     await note.fill("ep 3 is where it gets you");
+    await sheet.getByRole("button", { name: /^Visible to your friends/ }).click();
+    // The sheet's title changes to the picker's while it's open.
+    const picker = page.getByRole("dialog");
+    await picker.getByRole("checkbox", { name: /College crew/ }).check();
+    await picker.getByRole("checkbox", { name: /The girls/ }).check();
+    await picker.getByRole("button", { name: "Done" }).click();
+    await expect(sheet.getByRole("button", { name: /^Visible to your friends and 2 groups/ })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
 
     await expect(sheet).toBeHidden();
-    // Names follow group order, which the docs leave open.
+    // Priya has no friends yet, so the toast names who will see it. Names follow group order, which the docs leave open.
     await expect(page.getByText(/On your list\. (Jonah and Tess|Tess and Jonah) will see it\./).filter({ visible: true })).toBeVisible();
     const card = page.getByRole("link", { name: "The Night Ferry, series, 2024. Vouched for by You." });
     await expect(card).toBeVisible();
@@ -131,7 +137,10 @@ test.describe("the core loop", () => {
     await expectNoViolations(page);
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = page.getByRole("dialog", { name: "Put in a good word" });
-    await expect(sheet.getByRole("button", { name: /Visible to College crew · 2 people/ })).toBeVisible();
+    // Friends on, groups off by default (PRD F16.2): Jonah adds College crew.
+    await sheet.getByRole("button", { name: /^Visible to your friends/ }).click();
+    await page.getByRole("dialog").getByRole("checkbox", { name: /College crew/ }).check();
+    await page.getByRole("dialog").getByRole("button", { name: "Done" }).click();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
     await expect(page.getByText("On your list. Priya will see it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Your good word" })).toHaveAttribute("aria-pressed", "true");
@@ -142,13 +151,13 @@ test.describe("the core loop", () => {
     await expect(cards).toHaveAccessibleName("The Night Ferry, series, 2024. Vouched for by You and Priya.");
   });
 
-  test("All groups shows one card with each person once; other groups never see Jonah", async ({ browser }) => {
-    const page = await signedIn(browser, priya, "/list/all");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("All groups");
-    // Jonah's good word arrived after Priya last looked, so the card is New (F5.5).
-    await expect(page.getByRole("link", { name: /^The Night Ferry/ })).toHaveAccessibleName(
-      "The Night Ferry, series, 2024. Vouched for by You and Jonah. New.",
-    );
+  test("Home, which replaced All groups, shows one card naming each person once; other groups never see Jonah", async ({ browser }) => {
+    const page = await signedIn(browser, priya, "/home");
+    await page.goto("/list/all");
+    await page.waitForURL((u) => u.pathname === "/home");
+    const cards = page.getByRole("article", { name: /vouched for The Night Ferry$/ });
+    await expect(cards).toHaveCount(1);
+    await expect(cards).toHaveAccessibleName("Jonah and You vouched for The Night Ferry");
     await expectNoViolations(page);
 
     const tessPage = await signedIn(browser, tess, `/title/tv/${base}`);
@@ -170,10 +179,10 @@ test.describe("the core loop", () => {
     await expect(page.getByRole("main").getByText("“the ferry scene”").filter({ visible: true })).toBeVisible();
 
     await vouch.click();
-    await page.getByRole("menuitem", { name: "Change groups" }).click();
+    await page.getByRole("menuitem", { name: "Change who sees it" }).click();
     const picker = page.getByRole("dialog", { name: "Who can see it" });
     await picker.getByRole("checkbox", { name: /The girls/ }).uncheck();
-    await expect(picker.getByText("Visible to College crew · 2 people").filter({ visible: true })).toBeVisible();
+    await expect(picker.getByText("Visible to your friends and College crew").filter({ visible: true })).toBeVisible();
     await picker.getByRole("button", { name: "Done" }).click();
     await page.goto(`/list/${girls}`);
     await expect(page.getByRole("heading", { level: 2, name: "Nothing here yet" })).toBeVisible();
@@ -185,22 +194,24 @@ test.describe("the core loop", () => {
     await expect(page.getByRole("main").getByRole("button", { name: "Put in a good word" })).toBeVisible();
     await page.getByRole("button", { name: "Undo" }).click();
     await expect(vouch).toBeVisible();
+    // The page shows it back at once; wait for the restore to land before reloading.
+    await expect.poll(async () => (await admin().from("good_words").select("id").eq("user_id", priya.id).eq("note", "the ferry scene")).data?.length).toBe(1);
     await page.reload();
     await expect(page.getByRole("main").getByText("“the ferry scene”").filter({ visible: true })).toBeVisible();
     const { data } = await admin().from("good_words").select("note, good_word_groups(group_id)").eq("user_id", priya.id).single();
     expect(data).toEqual({ note: "the ferry scene", good_word_groups: [{ group_id: crew }] });
   });
 
-  test("with no groups: only you, for now, and an Invite action", async ({ browser }) => {
+  test("with no groups or friends yet: shared with friends for later, and an Invite action", async ({ browser }) => {
     const page = await signedIn(browser, mo, "/you");
     await expect(page.getByRole("heading", { level: 2, name: "No recs yet" })).toBeVisible();
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = await pick(page, "Moth Season");
-    await expect(sheet.getByText("Only you, for now").filter({ visible: true })).toBeVisible();
+    await expect(sheet.getByText("Visible to your friends, once you add some").filter({ visible: true })).toBeVisible();
     await sheet.getByRole("button", { name: "Put in a good word" }).click();
     await expect(page.getByText("On your list. Invite friends to share it.").filter({ visible: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Invite" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Moth Season, film. Vouched for by You. Only you." })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Moth Season, film. Vouched for by You. Shared with your friends." })).toBeVisible();
     await expectNoViolations(page);
   });
 
@@ -222,10 +233,25 @@ test.describe("the core loop", () => {
     const again = await pick(page, "Low Tide Club");
     await expect(again.getByLabel("Anything to add? (optional)")).toHaveValue("so funny");
     await again.getByRole("button", { name: "Put in a good word" }).click();
+    await expect(again).toBeHidden();
+    // Friends on, groups off by default (PRD F16.2), so it's on My list rather than College crew's.
+    await expect
+      .poll(async () => (await admin().from("good_words").select("id, titles!inner(title)").eq("user_id", priya.id).eq("titles.title", "Low Tide Club")).data?.length)
+      .toBe(1);
+    await page.goto("/you");
     await expect(page.getByRole("link", { name: /^Low Tide Club/ })).toBeVisible();
   });
 
   test("the first-good-word prompt appears after 20 seconds and stays dismissed", async ({ browser }) => {
+    // Priya's Low Tide Club (from the test before) went to her friends only, the
+    // default (PRD F16.2); she shares it into The girls so Tess's list isn't empty.
+    const { data: lowTide } = await admin()
+      .from("good_words")
+      .select("id, titles!inner(title)")
+      .eq("user_id", priya.id)
+      .eq("titles.title", "Low Tide Club")
+      .single();
+    await admin().from("good_word_groups").upsert({ good_word_id: lowTide!.id, group_id: girls }, { onConflict: "good_word_id,group_id" });
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.clock.install();

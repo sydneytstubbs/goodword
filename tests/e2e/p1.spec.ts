@@ -11,7 +11,7 @@ const base = 900_000_000 + Math.floor(Math.random() * 90_000_000);
 
 test("the app is installable: a manifest and its icons", async ({ request }) => {
   const manifest = await (await request.get("/manifest.webmanifest")).json();
-  expect(manifest).toMatchObject({ name: "Good Word", start_url: "/list", display: "standalone" });
+  expect(manifest).toMatchObject({ name: "Good Word", start_url: "/home", display: "standalone" });
   for (const icon of manifest.icons as Array<{ src: string }>) {
     const response = await request.get(icon.src);
     expect(response.status(), icon.src).toBe(200);

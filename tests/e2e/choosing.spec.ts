@@ -194,7 +194,7 @@ test.describe("choosing", () => {
   test("title detail: good words with your groups, where to watch, and JustWatch", async ({ browser }) => {
     const page = await signedIn(browser, priya, `/title/movie/${byKey.lowTide.tmdbId}`);
     await expect(page).toHaveTitle("Low Tide Club · Good Word");
-    const goodWords = page.getByRole("region", { name: "Good words" });
+    const goodWords = page.getByRole("group", { name: "Good words" });
     await expect(goodWords.getByRole("figure").first()).toContainText("You");
     await expect(goodWords.getByRole("figure").first()).toContainText("comfort rewatch, every time");
     await expect(goodWords.getByRole("figure").nth(1)).toContainText("Tess");

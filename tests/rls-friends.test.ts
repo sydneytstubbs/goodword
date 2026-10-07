@@ -198,14 +198,14 @@ describe.skipIf(!enabled)("row-level security: friends", () => {
     expect((data as Array<{ status: string }>)[0].status).toBe("invalid");
   });
 
-  it("shows friend Activity only to people with the home_enabled flag (F16.10)", async () => {
+  it("shows friend requests in Activity, whatever the old launch flag says (the flip, F16.10)", async () => {
     await admin.from("activity_items").delete().eq("user_id", people.mo.id);
     await people.tess.client.rpc("remove_friend", { p_user: people.mo.id });
     await people.tess.client.rpc("request_friend", { p_user: people.mo.id });
     const types = async () => ((await people.mo.client.rpc("my_activity", {})).data as Array<{ type: string }>).map((a) => a.type);
     expect(await types()).toContain("friend_request");
     await admin.from("profiles").update({ home_enabled: false }).eq("user_id", people.mo.id);
-    expect(await types()).not.toContain("friend_request");
+    expect(await types()).toContain("friend_request");
     await admin.from("profiles").update({ home_enabled: true }).eq("user_id", people.mo.id);
   });
 

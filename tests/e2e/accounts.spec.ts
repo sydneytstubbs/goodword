@@ -53,7 +53,7 @@ test.describe("signed out", () => {
 
   test("a crafted next parameter can't leave the site", async ({ page }) => {
     await page.goto("/auth/confirm?token_hash=x&next=https%3A%2F%2Fevil.example");
-    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Flist$/);
+    await expect(page).toHaveURL(/\/sign-in\?error=expired&next=%2Fhome$/);
   });
 
   test("check-your-email: address shown, countdown, different email", async ({ page, context, baseURL }) => {
@@ -77,7 +77,7 @@ test.describe("signed out", () => {
 
   test("check-your-email without a request goes back to sign-in", async ({ page }) => {
     await page.goto("/sign-in/check-email");
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Flist$/);
+    await expect(page).toHaveURL(/\/sign-in\?next=%2Fhome$/);
   });
 });
 
@@ -118,8 +118,8 @@ test.describe("signed in", () => {
 
     await page.getByLabel("Your name").fill("Tess");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page).toHaveURL(/\/list$/);
-    await expect(page.getByRole("heading", { level: 2, name: "No groups yet" })).toBeVisible();
+    await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { level: 2, name: "Start your own list" })).toBeVisible();
     await expectNoViolations(page);
 
     const { data } = await admin!.from("profiles").select("display_name, region, timezone, onboarded_at").eq("user_id", userId).single();
@@ -143,9 +143,9 @@ test.describe("signed in", () => {
     await expectNoViolations(page);
 
     await page.goto("/sign-in");
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
     await page.goto("/welcome");
-    await expect(page).toHaveURL(/\/list$/);
+    await expect(page).toHaveURL(/\/home$/);
 
     // Sign out lives in Settings (PRD F11).
     await page.goto("/you/settings");

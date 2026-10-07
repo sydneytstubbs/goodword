@@ -114,17 +114,6 @@ test.describe("friends", () => {
     await expect(tessPage.getByRole("region", { name: "People from your groups" }).getByRole("button", { name: "Add Mo" })).toBeVisible();
   });
 
-  test("without the flag, nothing changes", async ({ browser }) => {
-    const beaPage = await signedIn(browser, bea, "/you");
-    await expect(beaPage.getByRole("link", { name: "Friends" })).toHaveCount(0);
-    // No such page: the 404 screen.
-    await beaPage.goto("/you/friends");
-    await expect(beaPage.getByRole("heading", { level: 1, name: "We couldn't find that page" })).toBeAttached();
-    // No friend prompt on a group's list either.
-    await beaPage.goto(`/list/${crew}`);
-    await expect(beaPage.getByRole("complementary", { name: /Add friends from/ })).toHaveCount(0);
-  });
-
   test("with the flag, a group's list offers its people once", async ({ browser }) => {
     const moPage = await signedIn(browser, mo, `/list/${crew}`);
     const prompt = moPage.getByRole("complementary", { name: "Add friends from College crew" });

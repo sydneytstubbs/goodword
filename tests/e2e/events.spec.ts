@@ -75,7 +75,7 @@ test.describe("measurement", () => {
     await expect(page.getByRole("button", { name: "Your good word" })).toHaveAttribute("aria-pressed", "true");
 
     await expect.poll(async () => await eventsOf(priya, "add_opened")).toContainEqual({ entry_point: "title" });
-    await expect.poll(async () => (await eventsOf(priya, "good_word_created"))[0]).toMatchObject({ groups_count: 1, has_note: false, source: "digest" });
+    await expect.poll(async () => (await eventsOf(priya, "good_word_created"))[0]).toMatchObject({ groups_count: 0, friends: true, has_note: false, source: "digest" });
     const [created] = await eventsOf(priya, "good_word_created");
     expect(created.ms_from_add_opened).toEqual(expect.any(Number));
     expect(JSON.stringify(created)).not.toContain("Night Ferry");
