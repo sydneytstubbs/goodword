@@ -9,7 +9,7 @@ import { activitySection, type ActivityEntry, type ActivitySection } from "@/lib
 import { markActivityRead, markAllActivityRead } from "@/lib/conversations/actions";
 import { respondToRequest } from "@/lib/friends/actions";
 import { plainText } from "@/lib/conversations/body";
-import { conversationHref } from "@/lib/conversations/paths";
+import { conversationHref, wordConversationHref } from "@/lib/conversations/paths";
 import { nameList } from "@/lib/format";
 import { t } from "@/lib/messages";
 import { useActivityCount } from "../activity-count";
@@ -30,14 +30,25 @@ const kinds: Record<ActivityEntry["type"], ActivityKind> = {
 
 const sections: ActivitySection[] = ["today", "week", "earlier"];
 
+/** Comments and mentions under a good word read differently: whose good word it is (PRD F16.9). */
+function kindFor(entry: ActivityEntry, viewerId: string): ActivityKind {
+  if (!entry.word || (entry.type !== "mention" && entry.type !== "comment")) return kinds[entry.type];
+  const mine = entry.word.author.id === viewerId;
+  if (entry.type === "mention") return mine ? "mentionYourWord" : "mentionWord";
+  return mine ? "commentYourWord" : "commentWord";
+}
+
 function hrefFor(entry: ActivityEntry): string | undefined {
   if (entry.type === "friend_request") return undefined;
+  if (entry.word && entry.title) {
+    return wordConversationHref(entry.title, entry.word.goodWordId, entry.commentId ? { comment: entry.commentId } : {});
+  }
   if (entry.type === "friend_accepted" || !entry.group) return "/you/friends";
   if (entry.type === "group_join" || !entry.title) return `/groups/${entry.group.id}`;
   return conversationHref(entry.title, entry.group.id, entry.commentId ? { comment: entry.commentId } : {});
 }
 
-export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
+export function ActivityList({ entries, viewerId }: { entries: ActivityEntry[]; viewerId: string }) {
   const { showToast } = useToast();
   const { refresh } = useActivityCount();
   const [read, setRead] = useState<Set<string>>(new Set());
@@ -112,11 +123,12 @@ export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
                 {inSection.map((entry) => (
                   <li key={entry.key}>
                     <ActivityItem
-                      kind={kinds[entry.type]}
+                      kind={kindFor(entry, viewerId)}
                       actor={entry.actors[0]}
                       actorNames={entry.actors.length > 1 ? nameList(entry.actors.map((a) => a.name)) : undefined}
                       title={entry.title}
                       group={entry.group ?? undefined}
+                      wordAuthor={entry.word?.author.name}
                       quote={entry.quote ? plainText(entry.quote) : undefined}
                       spoiler={entry.spoiler && entry.type !== "group_join"}
                       at={entry.at}

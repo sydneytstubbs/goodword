@@ -10,6 +10,7 @@ import { VouchButton } from "@/components/domain/vouch-button";
 import type { SwitcherGroup } from "@/components/domain/group-switcher";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { conversationHref as groupConversationHref, wordConversationHref } from "@/lib/conversations/paths";
 import { track } from "@/lib/events/client";
 import { clearFilters, filterList, filtersToQuery, genreCounts, isFiltered, PAGE_SIZE, parseFilters, serviceCounts } from "@/lib/good-words/filters";
 import type { ImportRollup } from "@/lib/good-words/queries";
@@ -121,13 +122,19 @@ function HomeCard({ card, serverMine, group }: { card: ListCard; serverMine: MyG
   const { title } = card;
   const mine = mineFor(title.id, serverMine);
   const titleHref = `/title/${title.type}/${title.tmdbId}`;
-  const conversationGroup = card.latestComment?.groupId ?? card.viaGroupId;
+  // The conversation the newest comment is in, or the newest good word's (PRD F16.5).
+  const conversation = card.conversation;
+  const conversationHref = !conversation
+    ? `${titleHref}/conversation`
+    : conversation.kind === "word"
+      ? wordConversationHref(title, conversation.goodWordId)
+      : groupConversationHref(title, conversation.groupId);
   return (
     <RecCardHome
       card={card}
       viewerId={viewer.id}
       href={titleHref}
-      conversationHref={`${titleHref}/conversation${conversationGroup ? `?group=${conversationGroup}` : ""}`}
+      conversationHref={conversationHref}
       whereToWatchHref={`${titleHref}#where-to-watch`}
       group={group}
       vouchButton={

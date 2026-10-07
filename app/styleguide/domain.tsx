@@ -171,7 +171,7 @@ function RecCards() {
               goodWords: goodWords.nightFerry,
               isNew: true,
               comments: { count: 12, unseen: true },
-              latestComment: { authorName: people.tess.name, text: "the lighthouse bit got me", groupId: groups.college.id, commentId: "c1" },
+              latestComment: { authorName: people.tess.name, text: "the lighthouse bit got me", commentId: "c1", conversation: { kind: "group", groupId: groups.college.id } },
             }}
             viewerId={viewer.id}
             href="#rec-card"
@@ -544,6 +544,19 @@ function Conversation() {
             }}
           />
         </div>
+        <Note>
+          Under a good word (behind the home_enabled flag): the audience line never names who that is, and mentions offer only
+          people who can see the good word and whom you already know.
+        </Note>
+        <div className="max-w-detail overflow-visible rounded-card border border-dashed border-subtle pt-48">
+          <Composer
+            word={{ authorName: people.jonah.name, mine: false }}
+            members={[people.jonah, people.priya]}
+            viewerId={viewer.id}
+            draftKey="styleguide:night-ferry:jonahs-good-word"
+            onSend={() => showToast({ message: "Sent." })}
+          />
+        </div>
       </Component>
 
       <Component id="spoiler-cover" title="Spoiler cover" spec="4.2.12">
@@ -582,6 +595,8 @@ function Activity() {
           }
         />
         <ActivityItem kind="friendAccepted" actor={people.tess} at={new Date(NOW.getTime() - 86_400_000)} href="#activity-item" now={NOW} />
+        <ActivityItem kind="commentYourWord" actor={people.mo} title={titles.nightFerry} quote="the lighthouse bit got me" at={new Date(NOW.getTime() - 86_400_000 * 2)} unread href="#activity-item" now={NOW} />
+        <ActivityItem kind="mentionWord" actor={people.priya} title={titles.lowTide} wordAuthor={people.jonah.name} quote="@Tess this one" at={new Date(NOW.getTime() - 86_400_000 * 4)} href="#activity-item" now={NOW} />
       </div>
     </Component>
   );

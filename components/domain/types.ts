@@ -85,10 +85,15 @@ export type ListCard = {
   latestAt?: Date;
   /** Home only: the newest comment you can see on it (PRD F16.3). Spoilers have no text. */
   latestComment?: LatestComment;
+  /** Home only: the conversation its conversation row and Comment open (PRD F16.5). */
+  conversation?: CardConversation;
 };
 
-/** The newest comment on a title in one of your groups, for Home's conversation row (PRD F16.3). */
-export type LatestComment = { authorName: string; text: string | null; groupId: string; commentId: string };
+/** A conversation on a card: a group's, or the one under a good word (PRD F16.5). */
+export type CardConversation = { kind: "group"; groupId: string } | { kind: "word"; goodWordId: string };
+
+/** The newest comment you can see on a title, for Home's conversation row (PRD F16.3). */
+export type LatestComment = { authorName: string; text: string | null; commentId: string; conversation: CardConversation };
 
 /** A streaming service on a list, for the services filter (PRD F5.4). */
 export type Service = { id: number; name: string };

@@ -74,7 +74,8 @@ test("spoilers aren't in the DOM until revealed", async ({ page }) => {
 
 test("composer offers only this group's members, and inserts a mention", async ({ page }) => {
   await open(page, "light");
-  const box = page.getByRole("textbox", { name: "Comment" });
+  // The first composer is College crew's; the second is under a good word.
+  const box = page.getByRole("textbox", { name: "Comment" }).first();
   await box.fill("hey @p");
   const list = page.getByRole("listbox", { name: "People in College crew" });
   await expect(list.getByRole("option")).toHaveCount(1);

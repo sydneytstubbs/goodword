@@ -13,7 +13,18 @@ import type { Group, Person, Title } from "./types";
 // comment; opening it marks it read. A friend request isn't a link: its
 // Accept and Decline sit in the item (PRD F16.9).
 
-export type ActivityKind = "mention" | "comment" | "started" | "join" | "friendRequest" | "friendAccepted";
+export type ActivityKind =
+  | "mention"
+  | "comment"
+  | "started"
+  | "join"
+  | "friendRequest"
+  | "friendAccepted"
+  // Under a good word (PRD F16.9): someone else's, or yours.
+  | "mentionWord"
+  | "mentionYourWord"
+  | "commentWord"
+  | "commentYourWord";
 
 export function ActivityItem({
   kind,
@@ -21,6 +32,7 @@ export function ActivityItem({
   actorNames,
   title,
   group,
+  wordAuthor,
   quote,
   spoiler = false,
   at,
@@ -36,8 +48,10 @@ export function ActivityItem({
   /** Collapsed items name everyone: "Jonah and Tess" (PRD F14). */
   actorNames?: string;
   title?: Title;
-  /** Friend items have no group. */
+  /** Friend items, and comments under a good word, have no group. */
   group?: Group;
+  /** Whose good word the comment is under (the *Word kinds). */
+  wordAuthor?: string;
   /** The comment, quoted on one line. */
   quote?: string;
   /** Spoiler comments are never previewed (DS 4.2.12). */
@@ -52,7 +66,7 @@ export function ActivityItem({
   /** Opening an item marks it read (PRD F14). */
   onOpen?: () => void;
 }) {
-  const vars = { actor: actorNames ?? actor.name, title: title?.name ?? "", group: group?.name ?? "" };
+  const vars = { actor: actorNames ?? actor.name, title: title?.name ?? "", group: group?.name ?? "", author: wordAuthor ?? "" };
   const preview = spoiler ? t("spoiler.preview") : quote && `“${quote}”`;
   const rowClass = cn("flex items-start gap-3 border-b border-subtle px-5 py-3", unread && "bg-action-wash");
   const content = (

@@ -13,7 +13,8 @@ import type { CommentSegment, Person } from "./types";
 import { VisibilityLine, type GroupWithCount } from "./visibility-line";
 
 // Composer with mentions (DESIGN-SYSTEM.md 4.2.11). Mentions offer members of
-// this group only, never anyone outside it. An inserted mention is atomic:
+// this group only, never anyone outside it; under a good word, only people
+// who can see it and whom you already know (PRD F16.5). An inserted mention is atomic:
 // Backspace removes the whole "@Name". Desktop: Enter sends, Shift+Enter
 // adds a line. Mobile: Return adds a line. Drafts survive for the session.
 
@@ -31,8 +32,12 @@ export function matchMembers(members: Person[], query: string): Person[] {
   return [...prefix, ...contains].slice(0, MAX_SUGGESTIONS);
 }
 
+/** Under a good word: whose it is, and whether it's yours (PRD F16.5). */
+export type ComposerWord = { authorName: string; mine: boolean };
+
 export function Composer({
   group,
+  word,
   members,
   viewerId,
   draftKey,
@@ -41,8 +46,11 @@ export function Composer({
   inputRef,
   onSend,
 }: {
-  group: GroupWithCount;
-  /** Members of this group. */
+  /** A group's conversation. */
+  group?: GroupWithCount;
+  /** The conversation under a good word, in place of a group. */
+  word?: ComposerWord;
+  /** People who can be mentioned: members of this group, or who can see the good word. */
   members: Person[];
   viewerId: string;
   /** Unsent drafts are kept per title per group for the session. */
@@ -205,7 +213,7 @@ export function Composer({
         <ul
           id={listId}
           role="listbox"
-          aria-label={t("composer.suggestionsLabel", { group: group.name })}
+          aria-label={word ? t("composer.suggestionsLabelWord") : t("composer.suggestionsLabel", { group: group?.name ?? "" })}
           className="absolute inset-x-4 bottom-full mb-2 rounded-card border border-subtle bg-surface-raised p-1 shadow-md fc-edge"
         >
           {suggestions.map((person, i) => (
@@ -233,7 +241,15 @@ export function Composer({
       <span className="sr-only" aria-live="polite">
         {listOpen ? t("composer.suggestions", { count: suggestions.length }) : ""}
       </span>
-      <VisibilityLine groups={[group]} peopleCount={group.memberCount} compact />
+      {word ? (
+        // Never names who that is: it could be the author's friends (PRD F16.6 rule 4).
+        <p className="inline-flex items-center gap-2 text-caption text-muted">
+          <Icon name="private" size={16} className="shrink-0" />
+          <span>{word.mine ? t("composer.audienceYourWord") : t("composer.audienceWord", { name: word.authorName })}</span>
+        </p>
+      ) : (
+        group && <VisibilityLine groups={[group]} peopleCount={group.memberCount} compact />
+      )}
       {hint}
       <label htmlFor={`${listId}-input`} className="sr-only">
         {t("composer.label")}
@@ -247,7 +263,7 @@ export function Composer({
         rows={1}
         value={text}
         maxLength={MAX}
-        placeholder={t("composer.placeholder", { group: group.name })}
+        placeholder={word ? t("composer.placeholderWord") : t("composer.placeholder", { group: group?.name ?? "" })}
         // A textarea can't take role="combobox" in HTML, so it keeps its textbox role
         // with the autocomplete attributes that role supports.
         aria-autocomplete="list"

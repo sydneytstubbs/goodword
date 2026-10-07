@@ -18,14 +18,7 @@ export default async function HomePage({ searchParams }: PageProps<"/home">) {
   const { user, profile } = await requireOnboardedUser("/home");
   if (!profile.home_enabled) notFound();
   const groups = await listMyGroups(user.id);
-  const [home, friends] = await Promise.all([
-    homeList(
-      user.id,
-      groups.map((g) => g.id),
-      profile.region,
-    ),
-    friendIds(user.id),
-  ]);
+  const [home, friends] = await Promise.all([homeList(user.id, profile.region), friendIds(user.id)]);
   const empty = home.list.cards.length === 0 && home.rollups.length === 0;
   // The empty states offer your friend link.
   const link = empty ? `${await siteOrigin()}/join/${await myFriendLinkCode()}` : null;

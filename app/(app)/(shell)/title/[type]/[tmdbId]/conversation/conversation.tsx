@@ -25,14 +25,15 @@ import {
   revealComment,
   type CommentWriteResult,
 } from "@/lib/conversations/actions";
-import type { ConversationComment, ConversationPage } from "@/lib/conversations/types";
+import type { ConversationComment, ConversationKey, ConversationPage } from "@/lib/conversations/types";
 import { prefersReducedMotion } from "@/lib/hooks";
 import { t } from "@/lib/messages";
 import { useBroadcast } from "@/lib/supabase/realtime";
 import { useActivityCount } from "../../../../activity-count";
 import { OfflineBanner } from "../../../../offline-banner";
 
-// A group's conversation about a title (PRD F13, DS 4.2.10–4.2.12, 5.17).
+// A group's conversation about a title (PRD F13, DS 4.2.10–4.2.12, 5.17), or
+// the conversation under a good word (F16.5), which works the same way.
 // Oldest at the top; opens at the linked comment, the New divider, or the
 // bottom. Older comments load in pages of 30 when scrolling up, keeping your
 // place. New comments from others arrive live: at the bottom they scroll into
@@ -47,6 +48,11 @@ const GROUP_WINDOW = 5 * 60_000;
 const ANNOUNCE_EVERY = 10_000;
 const HIGHLIGHT_MS = 2000;
 const REVEALED_KEY = "revealed-comments";
+
+/** Where the conversation is: a group, or under a good word (PRD F16.5). */
+export type ConversationPlace =
+  | { kind: "group"; group: GroupWithCount; viewerIsOwner: boolean }
+  | { kind: "word"; goodWordId: string; author: Person };
 
 function byTime(a: Entry, b: Entry) {
   return a.comment.at.getTime() - b.comment.at.getTime();
@@ -103,10 +109,9 @@ function useViewportInsets(root: React.RefObject<HTMLElement | null>, composer: 
 export function Conversation({
   title,
   titleId,
-  group,
+  place,
   members,
   viewer,
-  viewerIsOwner,
   initial,
   linkedCommentId,
   compose,
@@ -115,19 +120,30 @@ export function Conversation({
 }: {
   title: Title;
   titleId: string;
-  group: GroupWithCount;
+  place: ConversationPlace;
+  /** People who can be mentioned here. */
   members: Person[];
   viewer: Person;
-  viewerIsOwner: boolean;
   /** Null when the conversation didn't load: an error with Retry, and the composer still works. */
   initial: ConversationPage | null;
   linkedCommentId?: string;
   /** Arrived from "Add a comment…": the composer is focused. */
   compose: boolean;
   showSpoilerHint: boolean;
-  /** Title detail, with this group's conversation selected. */
+  /** Title detail, with this conversation selected. */
   backHref: string;
 }) {
+  const key: ConversationKey =
+    place.kind === "group" ? { kind: "group", groupId: place.group.id, titleId } : { kind: "word", goodWordId: place.goodWordId, titleId };
+  const keyId = place.kind === "group" ? `${place.group.id}:${titleId}` : place.goodWordId;
+  // Group owners, and a good word's author, can delete others' comments (F13, F16.5).
+  const canModerate = place.kind === "group" ? place.viewerIsOwner : place.author.id === viewer.id;
+  const placeName =
+    place.kind === "group"
+      ? place.group.name
+      : place.author.id === viewer.id
+        ? t("conversation.yourWordHeading")
+        : t("conversation.wordHeading", { name: place.author.name });
   const router = useRouter();
   const { showToast, announce } = useToast();
   const { refresh: refreshActivity } = useActivityCount();
@@ -187,12 +203,14 @@ export function Conversation({
   const latestAt = entries.filter((e) => e.status === "sent").at(-1)?.comment.at.getTime() ?? null;
   useEffect(() => {
     if (latestAt === null) return;
-    markConversationRead(group.id, titleId, new Date(latestAt).toISOString())
+    markConversationRead(key, new Date(latestAt).toISOString())
       .then(refreshActivity)
       .catch(() => {
         // Offline: it's marked next time.
       });
-  }, [latestAt, group.id, titleId, refreshActivity]);
+    // The key is rebuilt each render; keyId names the conversation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latestAt, keyId, refreshActivity]);
 
   // Spoilers revealed earlier this session stay revealed (DS 4.2.12).
   useEffect(() => {
@@ -242,7 +260,7 @@ export function Conversation({
   // Live updates (F13): the message is only an id; the comment is fetched
   // with other people's spoiler text withheld.
   useBroadcast(
-    `conversation:${group.id}:${titleId}`,
+    place.kind === "group" ? `conversation:${place.group.id}:${titleId}` : `word:${place.goodWordId}`,
     "comment",
     (payload) => {
       const id = String(payload.id ?? "");
@@ -253,7 +271,7 @@ export function Conversation({
         return;
       }
       if (op === "insert" && mine) return;
-      fetchComment(id, group.id, titleId)
+      fetchComment(id, key)
         .then((comment) => {
           if (!comment) {
             if (op === "update") setEntries((current) => current.filter((e) => e.comment.id !== id));
@@ -280,7 +298,7 @@ export function Conversation({
       }
       const last = entriesRef.current.filter((e) => e.status === "sent").at(-1)?.comment.at;
       if (!last) return;
-      fetchNewerComments(group.id, titleId, last.toISOString())
+      fetchNewerComments(key, last.toISOString())
         .then((comments) => comments && merge(comments))
         .catch(() => {});
     },
@@ -298,7 +316,7 @@ export function Conversation({
 
   function send(id: string, body: CommentSegment[], spoiler: boolean) {
     setStatus(id, "sending");
-    postComment({ id, groupId: group.id, titleId, body, spoiler })
+    postComment({ id, conversation: key, body, spoiler })
       .catch((): CommentWriteResult => ({ ok: false, error: "failed" }))
       .then((result) => {
         setStatus(id, result.ok ? "sent" : "failed");
@@ -389,7 +407,7 @@ export function Conversation({
     const first = entries.find((e) => e.status === "sent")?.comment;
     if (!first || loadingOlder) return;
     setLoadingOlder(true);
-    const result = await fetchOlderComments(group.id, titleId, first.at.toISOString()).catch(() => null);
+    const result = await fetchOlderComments(key, first.at.toISOString()).catch(() => null);
     setLoadingOlder(false);
     if (!result) {
       showToast({ message: t("conversation.olderFailed") });
@@ -475,7 +493,7 @@ export function Conversation({
               <Comment
                 comment={entry.comment}
                 viewerId={viewer.id}
-                viewerIsOwner={viewerIsOwner}
+                viewerIsOwner={canModerate}
                 members={members}
                 status={entry.status}
                 grouped={grouped}
@@ -517,11 +535,22 @@ export function Conversation({
         <div className="flex min-w-0 flex-col gap-1 pt-2">
           <h1 id="conversation-title" className="line-clamp-2 text-heading text-default">
             <span className="lg:hidden">{title.name}</span>
-            <span className="hidden lg:inline">{t("conversation.previewHeading", { group: group.name })}</span>
+            <span className="hidden lg:inline">
+              {place.kind === "group" ? t("conversation.previewHeading", { group: place.group.name }) : placeName}
+            </span>
           </h1>
           <p className="inline-flex items-center gap-2 text-caption text-muted lg:hidden">
-            <GroupDot group={group} />
-            {t("conversation.inGroup", { group: group.name })}
+            {place.kind === "group" ? (
+              <>
+                <GroupDot group={place.group} />
+                {t("conversation.inGroup", { group: place.group.name })}
+              </>
+            ) : (
+              <>
+                <Icon name="friends" size={16} className="shrink-0" />
+                {placeName}
+              </>
+            )}
           </p>
         </div>
       </header>
@@ -545,10 +574,12 @@ export function Conversation({
           </div>
         )}
         <Composer
-          group={group}
+          {...(place.kind === "group"
+            ? { group: place.group }
+            : { word: { authorName: place.author.name, mine: place.author.id === viewer.id } })}
           members={members}
           viewerId={viewer.id}
-          draftKey={`${titleId}:${group.id}`}
+          draftKey={place.kind === "group" ? `${titleId}:${place.group.id}` : `word:${place.goodWordId}`}
           autoFocus={compose}
           inputRef={inputRef}
           hint={hint ? <p className="text-caption text-muted">{t("conversation.spoilerHint")}</p> : undefined}
