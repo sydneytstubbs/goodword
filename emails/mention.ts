@@ -1,12 +1,12 @@
-import { conversationHref } from "@/lib/conversations/paths";
+import { conversationHref, wordConversationHref } from "@/lib/conversations/paths";
 import { nameList } from "@/lib/format";
 import { t } from "@/lib/messages";
 import { button, escapeHtml, layout, row, styles, textFooter, type Email, type Footer } from "./layout";
 import { posterRow } from "./parts";
 import type { EmailLinks, MentionBatch } from "./types";
 
-// Mention email (PRD F7.4): one per conversation, naming who mentioned you
-// and on what. Each mentioning comment is shown, except a spoiler, which
+// Mention email (PRD F7.4, F16.9): one per conversation, naming who
+// mentioned you and on what: in a group, or under someone's good word. Each mentioning comment is shown, except a spoiler, which
 // only ever says "a spoiler comment" (DS 4.2.12). The button lands on the
 // first mentioning comment.
 
@@ -14,10 +14,18 @@ export function mentionEmail(batch: MentionBatch, links: EmailLinks): Email {
   const { origin } = links;
   const names = nameList([...new Set(batch.comments.map((c) => c.author))]);
   const subject = t("email.mention.subject", { names, title: batch.title.title });
-  const inGroup = t("email.mention.inGroup", { group: batch.group_name });
-  const href = `${origin}${conversationHref({ type: batch.title.type, tmdbId: batch.title.tmdb_id }, batch.group_id, { comment: batch.comments[0]?.id })}&ref=mention`;
+  const titleRef = { type: batch.title.type, tmdbId: batch.title.tmdb_id };
+  const comment = { comment: batch.comments[0]?.id };
+  const word = batch.good_word_id ?? null;
+  const inGroup = word
+    ? batch.word_author_id && batch.word_author_id === batch.user_id
+      ? t("email.mention.underYourWord")
+      : t("email.mention.underWord", { name: batch.word_author_name ?? "" })
+    : t("email.mention.inGroup", { group: batch.group_name ?? "" });
+  const path = word ? wordConversationHref(titleRef, word, comment) : conversationHref(titleRef, batch.group_id ?? "", comment);
+  const href = `${origin}${path}&ref=mention`;
   const footer: Footer = {
-    why: t("email.mention.why", { group: batch.group_name }),
+    why: word ? t("email.mention.whyWord") : t("email.mention.why", { group: batch.group_name ?? "" }),
     unsubscribe: { label: t("email.mention.unsubscribe"), href: links.unsubscribe },
     settings: { label: t("email.settings"), href: `${origin}/you/settings` },
   };

@@ -1,8 +1,11 @@
 import type { CommentSegment, Person, Title } from "@/components/domain/types";
 
-// Activity (PRD F14, DS 4.2.13, 5.17). Comment items for the same
+// Activity (PRD F14, F16.9, DS 4.2.13, 5.17). Comment items for the same
 // conversation within an hour collapse into one entry ("Jonah and Tess
 // commented on The Night Ferry"); the bell counts unread entries.
+
+/** The good word a conversation sits under, and whose it is (PRD F16.5). */
+export type ActivityWord = { goodWordId: string; author: Person };
 
 export type ActivityType = "mention" | "comment" | "conversation_started" | "group_join" | "friend_request" | "friend_accepted";
 
@@ -10,8 +13,10 @@ export type ActivityRecord = {
   id: string;
   type: ActivityType;
   actor: Person;
-  /** Null for friend items, which belong to no group (PRD F16.9). */
+  /** Null for friend items, which belong to no group, and for comments under a good word (PRD F16.9). */
   group: { id: string; name: string } | null;
+  /** Comments and mentions under a good word. */
+  word?: ActivityWord;
   title?: Title;
   commentId?: string;
   /** The comment, unless it's a spoiler. */
@@ -29,6 +34,7 @@ export type ActivityEntry = {
   /** Newest first, each person once. */
   actors: Person[];
   group: { id: string; name: string } | null;
+  word?: ActivityWord;
   title?: Title;
   /** The comment to land on: the earliest in a collapsed run. */
   commentId?: string;
@@ -47,7 +53,11 @@ export function collapseActivity(records: ActivityRecord[]): ActivityEntry[] {
   // The open run of comment items per conversation, and when its oldest item was.
   const open = new Map<string, { entry: ActivityEntry; oldest: Date }>();
   for (const record of records) {
-    const conversation = record.title && record.group ? `${record.group.id}:${record.title.id}` : null;
+    const conversation = record.word
+      ? `word:${record.word.goodWordId}`
+      : record.title && record.group
+        ? `${record.group.id}:${record.title.id}`
+        : null;
     const run = record.type === "comment" && conversation ? open.get(conversation) : undefined;
     if (run && run.oldest.getTime() - record.at.getTime() <= HOUR) {
       run.entry.ids.push(record.id);
@@ -63,6 +73,7 @@ export function collapseActivity(records: ActivityRecord[]): ActivityEntry[] {
       type: record.type,
       actors: [record.actor],
       group: record.group,
+      ...(record.word ? { word: record.word } : {}),
       title: record.title,
       commentId: record.commentId,
       quote: record.quote,

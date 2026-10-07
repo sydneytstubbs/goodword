@@ -46,11 +46,18 @@ export const EVENTS = {
   first_good_word_prompt: { client: true, props: { action: ["shown", "used", "dismissed"] } },
   conversation_opened: {
     client: false,
-    props: { group_id: "uuid", title_id: "uuid", from: ["title", "card", "activity", "email"], unseen_count: "int" },
+    props: { scope: ["good_word", "group"], group_id: "uuid", title_id: "uuid", from: ["title", "card", "activity", "email"], unseen_count: "int" },
   },
   comment_created: {
     client: false,
-    props: { group_id: "uuid", title_id: "uuid", length_bucket: ["short", "medium", "long"], mention_count: "int", is_spoiler: "bool" },
+    props: {
+      scope: ["good_word", "group"],
+      group_id: "uuid",
+      title_id: "uuid",
+      length_bucket: ["short", "medium", "long"],
+      mention_count: "int",
+      is_spoiler: "bool",
+    },
   },
   comment_edited: { client: false, props: {} },
   comment_deleted: { client: false, props: { undone: "bool" } },

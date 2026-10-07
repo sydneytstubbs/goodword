@@ -147,6 +147,7 @@ describe("weekly digest", () => {
 });
 
 describe("mention email", () => {
+  const WORD = "33333333-3333-4333-8333-333333333333";
   const batch = (comments: MentionBatch["comments"]): MentionBatch => ({
     group_id: CREW,
     group_name: "College crew",
@@ -172,6 +173,28 @@ describe("mention email", () => {
   it("lands on the first mentioning comment", () => {
     const { html } = mentionEmail(batch([{ id: "c1", author: "Priya", body: "@Mo hi", is_spoiler: false, created_at: "" }]), LINKS);
     expect(hrefs(html)).toContain(`${ORIGIN}/title/tv/201/conversation?group=${CREW}&comment=c1&ref=mention`);
+  });
+
+  it("under a good word, says whose and links to its conversation", () => {
+    const under = (forUser: string) =>
+      mentionEmail(
+        {
+          ...batch([{ id: "c1", author: "Priya", body: "@Mo look", is_spoiler: false, created_at: "" }]),
+          group_id: null,
+          group_name: null,
+          good_word_id: WORD,
+          word_author_id: "jonah",
+          word_author_name: "Jonah",
+          user_id: forUser,
+        },
+        LINKS,
+      );
+    const theirs = under("mo");
+    expect(theirs.text).toContain("Under Jonah's good word");
+    expect(theirs.html).not.toContain("College crew");
+    expect(hrefs(theirs.html)).toContain(`${ORIGIN}/title/tv/201/conversation?word=${WORD}&comment=c1&ref=mention`);
+    expect(theirs.text).toContain("someone mentioned you on Good Word");
+    expect(under("jonah").text).toContain("Under your good word");
   });
 
   it("never shows a spoiler's text", () => {

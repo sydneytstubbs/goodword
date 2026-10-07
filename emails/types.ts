@@ -24,11 +24,21 @@ export type DigestContent = {
   }>;
 };
 
+/**
+ * One conversation's mentions for one person: a group's (group_id and
+ * group_name), or the one under a good word (good_word_id, and whose it is:
+ * PRD F16.9).
+ */
 export type MentionBatch = {
-  group_id: string;
-  group_name: string;
+  group_id: string | null;
+  group_name: string | null;
   title: EmailTitle;
   comments: Array<{ id: string; author: string; body: string | null; is_spoiler: boolean; created_at: string }>;
+  good_word_id?: string | null;
+  word_author_id?: string | null;
+  word_author_name?: string | null;
+  /** The person it's for, so "your good word" reads right. */
+  user_id?: string;
 };
 
 export type JoinBatch = Array<{ group_id: string; group_name: string; name: string; at: string }>;

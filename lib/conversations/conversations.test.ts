@@ -94,6 +94,22 @@ describe("Activity", () => {
     expect(entries.map((e) => e.type)).toEqual(["comment", "mention", "comment", "comment", "group_join"]);
   });
 
+  it("collapses comments under one good word, apart from the group's conversation on the same title", () => {
+    const jonahsWord = { goodWordId: "w1", author: jonah };
+    const tessWord = { goodWordId: "w2", author: tess };
+    const entries = collapseActivity([
+      item({ at: at(1), group: null, word: jonahsWord, actor: priya }),
+      item({ at: at(2), group: null, word: jonahsWord, actor: tess }),
+      item({ at: at(3) }),
+      item({ at: at(4), group: null, word: tessWord }),
+    ]);
+    expect(entries.map((e) => [e.word?.goodWordId ?? e.group?.id, e.ids.length])).toEqual([
+      ["w1", 2],
+      ["g1", 1],
+      ["w2", 1],
+    ]);
+  });
+
   it("counts unread entries for the bell", () => {
     const entries = collapseActivity([item({ at: at(1) }), item({ at: at(2) }), item({ at: at(3), type: "mention" }), item({ at: at(400), read: true })]);
     expect(unreadCount(entries)).toBe(2);

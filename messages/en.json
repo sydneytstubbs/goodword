@@ -256,7 +256,11 @@
     "sendEmpty": "Write something to send",
     "suggestions_one": "{count} person",
     "suggestions_other": "{count} people",
-    "suggestionsLabel": "People in {group}"
+    "suggestionsLabel": "People in {group}",
+    "placeholderWord": "Say something about this…",
+    "suggestionsLabelWord": "People who can see this good word",
+    "audienceWord": "Everyone who can see {name}'s good word will see this",
+    "audienceYourWord": "Everyone who can see your good word will see this"
   },
   "spoiler": {
     "cover": "Spoiler from {name} · Tap to reveal",
@@ -268,7 +272,11 @@
     "started": "<b>{actor}</b> started a conversation about <b>{title}</b> in {group}",
     "join": "<b>{actor}</b> joined {group}",
     "friendRequest": "<b>{actor}</b> wants to be friends",
-    "friendAccepted": "<b>{actor}</b> accepted your friend request"
+    "friendAccepted": "<b>{actor}</b> accepted your friend request",
+    "mentionWord": "<b>{actor}</b> mentioned you on <b>{title}</b>, under {author}'s good word",
+    "mentionYourWord": "<b>{actor}</b> mentioned you under your good word for <b>{title}</b>",
+    "commentWord": "<b>{actor}</b> commented on <b>{title}</b>, under {author}'s good word",
+    "commentYourWord": "<b>{actor}</b> commented on your good word for <b>{title}</b>"
   },
   "conversation": {
     "previewHeading": "Talk about it in {group}",
@@ -292,7 +300,10 @@
     "revealFailed": "That spoiler didn't load. Check your connection and try again.",
     "didntSave": "That didn't save. Check your connection and try again.",
     "rateLimited": "That's a lot of comments for 10 minutes. Try again in a little while.",
-    "offline": "You're offline. You can keep reading what's already loaded."
+    "offline": "You're offline. You can keep reading what's already loaded.",
+    "wordHeading": "{name}'s good word",
+    "yourWordHeading": "Your good word",
+    "wordDocumentTitle": "{title} · {name}'s good word · Good Word"
   },
   "activityScreen": {
     "title": "Activity",
@@ -683,7 +694,10 @@
       "spoiler": "a spoiler comment",
       "open": "Open the conversation",
       "why": "You're getting this because someone in {group} mentioned you on Good Word.",
-      "unsubscribe": "Unsubscribe from mention emails"
+      "unsubscribe": "Unsubscribe from mention emails",
+      "underWord": "Under {name}'s good word",
+      "underYourWord": "Under your good word",
+      "whyWord": "You're getting this because someone mentioned you on Good Word."
     },
     "groupJoin": {
       "subjectOne": "{names} joined {group}",

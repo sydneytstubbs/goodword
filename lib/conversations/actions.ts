@@ -5,12 +5,21 @@ import { lengthBucket } from "@/lib/events/schema";
 import { recordEvent } from "@/lib/events/server";
 import { createClient } from "@/lib/supabase/server";
 import { COMMENT_MAX, decodeBody, encodeBody, plainText, trimSegments } from "./body";
-import { newerComments, olderComments as loadOlder, toComment, unreadActivityCount, type CommentRow } from "./queries";
-import type { ConversationComment } from "./types";
+import {
+  inConversation,
+  newerComments,
+  olderComments as loadOlder,
+  toComment,
+  unreadActivityCount,
+  type CommentRow,
+  type LiveCommentRow,
+} from "./queries";
+import type { ConversationComment, ConversationKey } from "./types";
 
-// Conversation writes and the reads screens make after load (PRD F13, F14).
-// Each calls a database function that checks membership, limits, and
-// mentions. The screens apply writes optimistically first and roll back on
+// Conversation writes and the reads screens make after load (PRD F13, F14,
+// F16.5). Each calls a database function that checks who can see the
+// conversation, limits, and mentions. A conversation is a group's about a
+// title, or the one under a good word (ConversationKey). The screens apply writes optimistically first and roll back on
 // failure (DS 5.10). Nothing here refreshes the router: the conversation keeps
 // its own list, and lists pick up counts on their next load (F13).
 
@@ -18,6 +27,8 @@ export type CommentWriteResult = { ok: true } | { ok: false; error: "failed" | "
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const valid = (...ids: string[]) => ids.every((id) => UUID.test(id));
+const validKey = (key: ConversationKey) =>
+  key.kind === "group" ? valid(key.groupId, key.titleId) : key.kind === "word" && valid(key.goodWordId, key.titleId);
 
 async function viewerId(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string | null> {
   const { data } = await supabase.auth.getClaims();
@@ -33,22 +44,19 @@ function cleanBody(body: CommentSegment[]): string | null {
 
 export async function postComment(input: {
   id: string;
-  groupId: string;
-  titleId: string;
+  conversation: ConversationKey;
   body: CommentSegment[];
   spoiler: boolean;
 }): Promise<CommentWriteResult> {
-  if (!valid(input.id, input.groupId, input.titleId)) return { ok: false, error: "failed" };
+  if (!valid(input.id) || !validKey(input.conversation)) return { ok: false, error: "failed" };
   const body = cleanBody(input.body);
   if (!body) return { ok: false, error: "tooLong" };
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("post_comment", {
-    p_id: input.id,
-    p_group: input.groupId,
-    p_title: input.titleId,
-    p_body: body,
-    p_spoiler: input.spoiler,
-  });
+  const key = input.conversation;
+  const { data, error } =
+    key.kind === "group"
+      ? await supabase.rpc("post_comment", { p_id: input.id, p_group: key.groupId, p_title: key.titleId, p_body: body, p_spoiler: input.spoiler })
+      : await supabase.rpc("post_word_comment", { p_id: input.id, p_good_word: key.goodWordId, p_body: body, p_spoiler: input.spoiler });
   if (error) return { ok: false, error: "failed" };
   if (data === "created") await recordComment(supabase, input, plainText(trimSegments(input.body)).length);
   if (data === "created" || data === "exists") return { ok: true };
@@ -63,14 +71,16 @@ export async function postComment(input: {
  */
 async function recordComment(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  input: { id: string; groupId: string; titleId: string; spoiler: boolean },
+  input: { id: string; conversation: ConversationKey; spoiler: boolean },
   length: number,
 ) {
   const { data: mentions } = await supabase.from("comment_mentions").select("mentioned_user_id").eq("comment_id", input.id);
   const mentioned = (mentions ?? []).map((m) => m.mentioned_user_id as string);
+  const key = input.conversation;
   await recordEvent("comment_created", {
-    group_id: input.groupId,
-    title_id: input.titleId,
+    scope: key.kind === "group" ? "group" : "good_word",
+    ...(key.kind === "group" ? { group_id: key.groupId } : {}),
+    title_id: key.titleId,
     length_bucket: lengthBucket(length),
     mention_count: mentioned.length,
     is_spoiler: input.spoiler,
@@ -107,18 +117,16 @@ export async function restoreComment(id: string): Promise<CommentWriteResult> {
   return { ok: true };
 }
 
-type LiveRow = CommentRow & { group_id: string; title_id: string };
-
 /**
  * One comment as the viewer may see it, for live updates (DS 5.17). Null if
  * it's gone or not in this conversation.
  */
-export async function fetchComment(id: string, groupId: string, titleId: string): Promise<ConversationComment | null> {
-  if (!valid(id, groupId, titleId)) return null;
+export async function fetchComment(id: string, conversation: ConversationKey): Promise<ConversationComment | null> {
+  if (!valid(id) || !validKey(conversation)) return null;
   const supabase = await createClient();
   const [{ data }, viewer] = await Promise.all([supabase.rpc("conversation_comment", { p_id: id }), viewerId(supabase)]);
-  const row = (data as LiveRow[] | null)?.[0];
-  if (!row || !viewer || row.group_id !== groupId || row.title_id !== titleId) return null;
+  const row = (data as LiveCommentRow[] | null)?.[0];
+  if (!row || !viewer || !inConversation(row, conversation)) return null;
   return toComment(row, viewer);
 }
 
@@ -134,39 +142,42 @@ export async function revealComment(id: string): Promise<CommentSegment[] | null
 }
 
 export async function fetchOlderComments(
-  groupId: string,
-  titleId: string,
+  conversation: ConversationKey,
   before: string,
 ): Promise<{ comments: ConversationComment[]; hasOlder: boolean } | null> {
-  if (!valid(groupId, titleId) || Number.isNaN(Date.parse(before))) return null;
+  if (!validKey(conversation) || Number.isNaN(Date.parse(before))) return null;
   const supabase = await createClient();
   const viewer = await viewerId(supabase);
   if (!viewer) return null;
   try {
-    return await loadOlder(groupId, titleId, before, viewer);
+    return await loadOlder(conversation, before, viewer);
   } catch {
     return null;
   }
 }
 
 /** Comments from `from` on, to catch up after the live connection drops (DS 5.17). */
-export async function fetchNewerComments(groupId: string, titleId: string, from: string): Promise<ConversationComment[] | null> {
-  if (!valid(groupId, titleId) || Number.isNaN(Date.parse(from))) return null;
+export async function fetchNewerComments(conversation: ConversationKey, from: string): Promise<ConversationComment[] | null> {
+  if (!validKey(conversation) || Number.isNaN(Date.parse(from))) return null;
   const supabase = await createClient();
   const viewer = await viewerId(supabase);
   if (!viewer) return null;
   try {
-    return await newerComments(groupId, titleId, from, viewer);
+    return await newerComments(conversation, from, viewer);
   } catch {
     return null;
   }
 }
 
 /** Marks what was shown as seen, and its Activity items read (F13, F14). */
-export async function markConversationRead(groupId: string, titleId: string, upTo: string): Promise<void> {
-  if (!valid(groupId, titleId) || Number.isNaN(Date.parse(upTo))) return;
+export async function markConversationRead(conversation: ConversationKey, upTo: string): Promise<void> {
+  if (!validKey(conversation) || Number.isNaN(Date.parse(upTo))) return;
   const supabase = await createClient();
-  await supabase.rpc("mark_conversation_read", { p_group: groupId, p_title: titleId, p_up_to: upTo });
+  if (conversation.kind === "group") {
+    await supabase.rpc("mark_conversation_read", { p_group: conversation.groupId, p_title: conversation.titleId, p_up_to: upTo });
+  } else {
+    await supabase.rpc("mark_word_read", { p_good_word: conversation.goodWordId, p_up_to: upTo });
+  }
 }
 
 export async function markSpoilerHintSeen(): Promise<void> {

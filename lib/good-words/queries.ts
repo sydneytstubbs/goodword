@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import type { GoodWord, GoodWordSource, Group, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
+import type { CardConversation, GoodWord, GoodWordSource, Group, LatestComment, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
 import { decodeBody, plainText } from "@/lib/conversations/body";
 import { commentCounts } from "@/lib/conversations/queries";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -125,30 +125,38 @@ const HOME_FIRST_VISIT_MS = 7 * 86_400_000;
 
 /**
  * Home (PRD F16.3): every title with a good word from someone else you can
- * see, from the one card query, with comment counts and each card's newest
- * comment from your groups, streaming services, and the import roll-ups.
+ * see, from the one card query, with each card's comments across the
+ * conversations you can see (your groups', and under good words, F16.5), the
+ * conversation it opens, streaming services, and the import roll-ups.
  */
-export async function homeList(viewerId: string, myGroupIds: string[], region: string): Promise<HomeData> {
+export async function homeList(viewerId: string, region: string): Promise<HomeData> {
   const supabase = await createClient();
-  const [{ cards, rowIds }, comments, rollups, profile] = await Promise.all([
+  const [{ cards, rowIds }, rollups, profile] = await Promise.all([
     titleCards({ kind: "home" }),
-    commentCounts(myGroupIds),
     supabase.rpc("home_import_rollups"),
     supabase.from("profiles").select("home_viewed_at").eq("user_id", viewerId).maybeSingle(),
   ]);
   const titleRowIds = [...rowIds.values()];
-  const [{ data: latest }, { data: mineRows }] =
+  const [{ data: talk }, { data: mineRows }, { data: wordRows }] =
     titleRowIds.length > 0
       ? await Promise.all([
-          supabase.rpc("latest_comments", { p_titles: titleRowIds }),
+          supabase.rpc("home_conversations", { p_titles: titleRowIds }),
           supabase
             .from("good_words")
             .select("title_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
             .eq("user_id", viewerId)
             .in("title_id", titleRowIds)
             .returns<Array<Omit<MineRow, "titles"> & { title_id: string }>>(),
+          // Others' good words shared with friends that you can see: each has a conversation (F16.5).
+          supabase
+            .from("good_words")
+            .select("id, user_id, title_id")
+            .in("title_id", titleRowIds)
+            .neq("user_id", viewerId)
+            .not("friends_shared_at", "is", null)
+            .returns<Array<{ id: string; user_id: string; title_id: string }>>(),
         ])
-      : [{ data: [] }, { data: [] }];
+      : [{ data: [] }, { data: [] }, { data: [] }];
   const titleIdOf = new Map([...rowIds].map(([titleId, rowId]) => [rowId, titleId]));
   const mine = Object.fromEntries(
     (mineRows ?? []).flatMap((row) => {
@@ -158,29 +166,52 @@ export async function homeList(viewerId: string, myGroupIds: string[], region: s
   );
   const seenAt = profile.data?.home_viewed_at as string | null | undefined;
   const seen = seenAt ? new Date(seenAt).getTime() : Date.now() - HOME_FIRST_VISIT_MS;
-  const latestByRow = new Map(
-    ((latest ?? []) as Array<{
+  const talkByRow = new Map(
+    ((talk ?? []) as Array<{
       title_id: string;
-      group_id: string;
-      comment_id: string;
-      author_name: string;
-      body: string | null;
-      mentions: Array<{ id: string; name: string }> | null;
-    }>).map((c) => [
-      c.title_id,
-      {
-        authorName: c.author_name,
-        text: c.body === null ? null : plainText(decodeBody(c.body, c.mentions ?? [])),
-        groupId: c.group_id,
-        commentId: c.comment_id,
-      },
-    ]),
+      comment_count: number;
+      unseen: boolean;
+      latest_comment_id: string;
+      latest_group_id: string | null;
+      latest_good_word_id: string | null;
+      latest_author_name: string;
+      latest_body: string | null;
+      latest_mentions: Array<{ id: string; name: string }> | null;
+    }>).map((r) => [r.title_id, r]),
   );
-  const withComments = cards.map((card) => {
+  const wordsByRow = new Map<string, Map<string, string>>();
+  for (const w of wordRows ?? []) {
+    const byPerson = wordsByRow.get(w.title_id) ?? new Map<string, string>();
+    byPerson.set(w.user_id, w.id);
+    wordsByRow.set(w.title_id, byPerson);
+  }
+  const withComments = cards.map((card): ListCard => {
     const rowId = rowIds.get(card.title.id) ?? "";
-    const count = comments.get(rowId);
-    const newest = latestByRow.get(rowId);
-    return { ...card, ...(count ? { comments: count } : {}), ...(newest ? { latestComment: newest } : {}) };
+    const row = talkByRow.get(rowId);
+    const latest: LatestComment | undefined =
+      row && (row.latest_good_word_id || row.latest_group_id)
+        ? {
+            authorName: row.latest_author_name,
+            text: row.latest_body === null ? null : plainText(decodeBody(row.latest_body, row.latest_mentions ?? [])),
+            commentId: row.latest_comment_id,
+            conversation: row.latest_good_word_id
+              ? { kind: "word", goodWordId: row.latest_good_word_id }
+              : { kind: "group", groupId: row.latest_group_id! },
+          }
+        : undefined;
+    // With no comments yet: the newest good word on the card that has a
+    // conversation (shared with friends), else the group it came through.
+    const words = wordsByRow.get(rowId);
+    const newestWord = card.goodWords.map((g) => words?.get(g.person.id)).find(Boolean);
+    const conversation: CardConversation | undefined =
+      latest?.conversation ??
+      (newestWord ? { kind: "word", goodWordId: newestWord } : card.viaGroupId ? { kind: "group", groupId: card.viaGroupId } : undefined);
+    return {
+      ...card,
+      ...(row ? { comments: { count: row.comment_count, unseen: row.unseen } } : {}),
+      ...(latest ? { latestComment: latest } : {}),
+      ...(conversation ? { conversation } : {}),
+    };
   });
   const list = await withServices(withComments, rowIds, region);
   return {

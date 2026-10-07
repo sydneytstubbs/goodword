@@ -31,3 +31,12 @@ export type ConversationPage = {
 
 /** Comments on a list card's title in one group (DS 4.2.2). */
 export type CommentCount = { count: number; unseen: boolean };
+
+/**
+ * Which conversation (PRD F16.5): a group's about a title, or the one under a
+ * good word. `titleId` is the title's row id either way.
+ */
+export type ConversationKey = { kind: "group"; groupId: string; titleId: string } | { kind: "word"; goodWordId: string; titleId: string };
+
+/** A good word's conversation as its reader sees it: whose good word, and whether it's theirs. */
+export type WordConversation = { goodWordId: string; titleId: string; author: { id: string; name: string } };
