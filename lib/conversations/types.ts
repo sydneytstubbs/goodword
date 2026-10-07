@@ -40,3 +40,6 @@ export type ConversationKey = { kind: "group"; groupId: string; titleId: string 
 
 /** A good word's conversation as its reader sees it: whose good word, and whether it's theirs. */
 export type WordConversation = { goodWordId: string; titleId: string; author: { id: string; name: string } };
+
+/** The conversation under a good word on the title page: its count, whether any is unseen, and the 3 newest (PRD F16.4). */
+export type WordConversationPreview = { count: number; unseen: boolean; recent: ConversationComment[] };

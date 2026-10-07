@@ -2,7 +2,8 @@ import "server-only";
 import { cache } from "react";
 import type { CardConversation, GoodWord, GoodWordSource, Group, LatestComment, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
 import { decodeBody, plainText } from "@/lib/conversations/body";
-import { commentCounts } from "@/lib/conversations/queries";
+import { commentCounts, toComment, type CommentRow } from "@/lib/conversations/queries";
+import type { WordConversationPreview } from "@/lib/conversations/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getTitle } from "@/lib/titles/cache";
@@ -330,6 +331,73 @@ export const titleGoodWords = cache(
     return { goodWords, mine: mineRow ? toMine(mineRow) : null };
   },
 );
+
+/** A good word on the title page (PRD F16.4): which one, and its conversation when it's shared with friends. */
+export type TitleGoodWord = GoodWord & { goodWordId: string; conversation?: WordConversationPreview };
+
+/**
+ * The title page with friends (PRD F16.4, F16.6): every good word for a title
+ * that the viewer may see, yours first, then newest first, each at the time
+ * it reached them; the chips of your groups each is in; and, for each one
+ * shared with friends, its conversation (F16.5). Row-level security decides
+ * which good words come back; nothing else is counted or hinted at.
+ */
+export async function titleGoodWordsWithFriends(
+  type: TitleType,
+  tmdbId: number,
+  viewer: Person,
+  myGroups: Group[],
+  friendIds: string[],
+): Promise<{ goodWords: TitleGoodWord[]; mine: MyGoodWord | null }> {
+  const supabase = await createClient();
+  const { data: title } = await supabase.from("titles").select("id").eq("media_type", type).eq("tmdb_id", tmdbId).maybeSingle();
+  if (!title) return { goodWords: [], mine: null };
+  const [{ data, error }, talk] = await Promise.all([
+    supabase
+      .from("good_words")
+      .select("id, user_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
+      .eq("title_id", title.id)
+      .returns<Array<TitleGoodWordRow & { id: string }>>(),
+    supabase.rpc("title_word_conversations", { p_title: title.id }),
+  ]);
+  if (error) throw new Error(`title good words: ${error.code}`);
+  const rows = data ?? [];
+  const nameOf = await names(supabase, rows.map((r) => r.user_id));
+  const groupOf = new Map(myGroups.map((g) => [g.id, { id: g.id, name: g.name }]));
+  const friends = new Set(friendIds);
+  const conversations = new Map(
+    ((talk.data ?? []) as Array<{ good_word_id: string; comment_count: number; unseen: boolean; recent: CommentRow[] }>).map((c) => [
+      c.good_word_id,
+      { count: c.comment_count, unseen: c.unseen, recent: c.recent.map((r) => toComment(r, viewer.id)) },
+    ]),
+  );
+  // When it reached you: its newest share into one of your groups, or with friends if you're a friend.
+  const reached = (r: TitleGoodWordRow) =>
+    [...r.good_word_groups.filter((g) => groupOf.has(g.group_id)).map((g) => g.shared_at), ...(r.friends_shared_at && friends.has(r.user_id) ? [r.friends_shared_at] : [])]
+      .sort()
+      .at(-1) ?? r.created_at;
+  const toGoodWord = (r: TitleGoodWordRow & { id: string }, person: Person, at: string): TitleGoodWord => {
+    const conversation = conversations.get(r.id);
+    return {
+      goodWordId: r.id,
+      person,
+      ...(r.note ? { note: r.note } : {}),
+      at: new Date(at),
+      groups: r.good_word_groups.flatMap((g) => groupOf.get(g.group_id) ?? []),
+      ...(person.id === viewer.id && r.friends_shared_at ? { friends: true } : {}),
+      ...(conversation ? { conversation } : {}),
+    };
+  };
+  const mineRow = rows.find((r) => r.user_id === viewer.id);
+  const others = rows
+    .filter((r) => r.user_id !== viewer.id)
+    .map((r) => toGoodWord(r, { id: r.user_id, name: nameOf.get(r.user_id) ?? "" }, reached(r)))
+    .sort((a, b) => b.at.getTime() - a.at.getTime());
+  return {
+    goodWords: [...(mineRow ? [toGoodWord(mineRow, viewer, mineRow.created_at)] : []), ...others],
+    mine: mineRow ? toMine(mineRow) : null,
+  };
+}
 
 export type SearchAnnotations = {
   /** Your own good words, by title key ("tv-101"). */

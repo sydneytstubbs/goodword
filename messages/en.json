@@ -41,7 +41,9 @@
     "emptyTitle": "{name} hasn't vouched for anything here yet",
     "emptyBody": "When they put in a good word in a group you share, it'll show up here.",
     "notSharedTitle": "Nothing to show",
-    "notShared": "You're not in any groups with this person."
+    "notShared": "You're not in any groups with this person.",
+    "friend": "Your friend",
+    "emptyBodyFriend": "When they put in a good word you can see, it'll show up here."
   },
   "count": {
     "cap": "99+",
@@ -81,7 +83,10 @@
     "genres": "Genres",
     "goodWords": "Good words",
     "more": "More",
-    "overview": "Overview"
+    "overview": "Overview",
+    "goodWordsHeading": "Good words",
+    "wordConversationFor": "Under {name}'s good word",
+    "wordConversationForYours": "Under your good word"
   },
   "titleDetail": {
     "loading": "Loading title",
@@ -89,7 +94,8 @@
     "errorBody": "Good Word is having a moment. Try again in a minute.",
     "notFoundTitle": "We couldn't find that title",
     "notFoundBody": "The link may be broken, or the title was removed. Try searching for it with Add.",
-    "noGoodWords": "None of your groups have vouched for this yet."
+    "noGoodWords": "None of your groups have vouched for this yet.",
+    "noGoodWordsFriends": "Nobody you know has vouched for this yet."
   },
   "vouch": {
     "put": "Put in a good word",
