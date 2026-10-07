@@ -24,7 +24,7 @@ import { t } from "@/lib/messages";
 // group a chip row switches between them (`?group=`). Spoilers are never
 // previewed, even your own (DS 4.2.12).
 
-function PreviewComment({ comment, viewerId, now }: { comment: ConversationComment; viewerId: string; now?: Date }) {
+export function PreviewComment({ comment, viewerId, now }: { comment: ConversationComment; viewerId: string; now?: Date }) {
   return (
     <li className="flex gap-3">
       <Avatar person={comment.author} size={32} decorative className="mt-0.5" />

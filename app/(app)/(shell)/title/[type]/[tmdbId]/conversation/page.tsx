@@ -86,6 +86,7 @@ export default async function ConversationPage({ params, searchParams }: PagePro
         titleId={titleId}
         viewer={{ id: user.id, name: profile.display_name }}
         region={profile.region}
+        home={profile.home_enabled}
         place={{ kind: "word", goodWordId: word.goodWordId, author: word.author }}
         members={people}
         page={page}
@@ -125,6 +126,7 @@ export default async function ConversationPage({ params, searchParams }: PagePro
       titleId={titleId}
       viewer={{ id: user.id, name: profile.display_name }}
       region={profile.region}
+      home={profile.home_enabled}
       place={{ kind: "group", group: { id: group.id, name: group.name, memberCount: group.members.length }, viewerIsOwner: group.me.role === "owner" }}
       members={group.members.map((m) => ({ id: m.id, name: m.name }))}
       page={page}
@@ -166,6 +168,7 @@ function ConversationScreen({
   titleId,
   viewer,
   region,
+  home,
   place,
   members,
   page,
@@ -179,6 +182,8 @@ function ConversationScreen({
   titleId: string;
   viewer: { id: string; name: string };
   region: string;
+  /** The home_enabled flag, for title detail beside it. */
+  home: boolean;
   place: ConversationPlace;
   members: Array<{ id: string; name: string }>;
   page: ConversationPage | null;
@@ -193,7 +198,7 @@ function ConversationScreen({
       {/* Beside the conversation on desktop, title detail stays in view (DS 5.17). */}
       <div className="hidden min-w-0 flex-1 px-4 pt-8 pb-12 lg:block">
         <div className="mx-auto max-w-detail">
-          <TitleContent type={parsed.type} tmdbId={parsed.tmdbId} title={title} viewer={viewer} region={region} headingLevel={2} />
+          <TitleContent type={parsed.type} tmdbId={parsed.tmdbId} title={title} viewer={viewer} region={region} headingLevel={2} home={home} />
         </div>
       </div>
       <Conversation

@@ -13,6 +13,7 @@ import { Poster } from "@/components/domain/poster";
 import { CaughtUpMarker, ImportRollupLine, RecCardDetail, RecCardGrid, RecCardHome, RecCardRow, VouchedByRow } from "@/components/domain/rec-card";
 import { RobotGuessCard } from "@/components/domain/robot-guess-card";
 import { SpoilerCover } from "@/components/domain/spoiler-cover";
+import { TitleGoodWords } from "@/components/domain/title-good-words";
 import { TitleSearch } from "@/components/domain/title-search";
 import type { CommentData } from "@/components/domain/types";
 import { GroupPicker, VisibilityLine } from "@/components/domain/visibility-line";
@@ -145,6 +146,50 @@ function RecCards() {
                 <p className="max-w-reading text-body text-default">
                   A night ferry crosses the same stretch of water every evening, and its six regulars start to notice that one of them is keeping a secret.
                 </p>
+              }
+            />
+          </div>
+        </Frame>
+      </Specimen>
+      <Specimen label="detail, the title page with friends (behind the home_enabled flag): where to watch with the title, then the good words you can see, yours first, each shared with friends with its conversation collapsed beneath it" wide>
+        <Frame>
+          <div className="p-5 md:p-8">
+            <RecCardDetail
+              title={titles.nightFerry}
+              goodWords={[]}
+              viewerId={viewer.id}
+              headingLevel={4}
+              now={NOW}
+              whereToWatch={<WhereToWatchList providers={providers} headingLevel={5} />}
+              people={
+                <TitleGoodWords
+                  title={titles.nightFerry}
+                  viewerId={viewer.id}
+                  headingLevel={5}
+                  now={NOW}
+                  noGoodWords={t("titleDetail.noGoodWordsFriends")}
+                  vouchButton={<VouchButton vouched size="lg" emphasis="primary" withFriends {...handlers} />}
+                  goodWords={[
+                    { goodWordId: "w-mine", person: viewer, note: "the lighthouse episode", at: NOW, groups: [], friends: true, conversation: { count: 0, unseen: false, recent: [] } },
+                    {
+                      goodWordId: "w-jonah",
+                      person: people.jonah,
+                      note: "strange and perfect",
+                      at: new Date(NOW.getTime() - 3_600_000),
+                      groups: [groups.college],
+                      conversation: {
+                        count: 4,
+                        unseen: true,
+                        recent: [
+                          { id: "p1", author: people.priya, body: [{ kind: "text", text: "agreed, ep 3" }], at: new Date(NOW.getTime() - 1_800_000), covered: false },
+                          { id: "p2", author: people.mo, body: [], at: new Date(NOW.getTime() - 1_200_000), spoiler: true, covered: true },
+                          { id: "p3", author: people.priya, body: [{ kind: "text", text: "the lighthouse bit got me" }], at: new Date(NOW.getTime() - 600_000), covered: false },
+                        ],
+                      },
+                    },
+                    { goodWordId: "w-bea", person: people.bea, at: new Date(NOW.getTime() - 86_400_000), groups: [groups.girls] },
+                  ]}
+                />
               }
             />
           </div>

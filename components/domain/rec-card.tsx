@@ -170,18 +170,26 @@ export function RecCardDetail({
   noGoodWords,
   conversation,
   overview,
+  people,
   now,
 }: Common & {
   /** title-l is the page's h1 (DS 3.2.2); /styleguide renders it lower. */
   headingLevel?: 1 | 2 | 3 | 4;
   whereToWatch?: ReactNode;
-  vouchButton: ReactNode;
+  /** Without `people`, the vouch button follows where to watch. */
+  vouchButton?: ReactNode;
   /** Shown when nobody in your groups has vouched for it yet (PRD F6). */
   noGoodWords?: ReactNode;
   /** The conversation preview, after the vouch button (DS 5.7, 5.17). */
   conversation?: ReactNode;
   /** Last, collapsed to three lines with More. */
   overview?: ReactNode;
+  /**
+   * The title page with friends (PRD F16.4): the good words you can see, each
+   * with its conversation, in place of the good words and vouch button here.
+   * Where to watch then comes first, with the title.
+   */
+  people?: ReactNode;
   now?: Date;
 }) {
   const Heading = `h${headingLevel}` as const;
@@ -205,8 +213,8 @@ export function RecCardDetail({
               </p>
             )}
           </div>
-          {goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
-          {goodWords.length > 0 && (
+          {!people && goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
+          {!people && goodWords.length > 0 && (
             <section aria-label={t("title.goodWords")} className="flex flex-col gap-6">
               {goodWords.map((g) => (
                 <figure key={g.person.id} className="flex flex-col gap-2">
@@ -239,7 +247,7 @@ export function RecCardDetail({
               {whereToWatch}
             </section>
           )}
-          <div>{vouchButton}</div>
+          {people ?? <div>{vouchButton}</div>}
           {conversation}
           {overview && (
             <section className="flex flex-col gap-2">
@@ -263,7 +271,7 @@ function sharedLabel(groups: Group[], friends: boolean): string {
 }
 
 /** Which of the viewer's groups a good word is in, and friends; "Only you" when none (PRD F6, F16.2). */
-function GoodWordGroups({ groups, friends = false }: { groups: Group[]; friends?: boolean }) {
+export function GoodWordGroups({ groups, friends = false }: { groups: Group[]; friends?: boolean }) {
   if (groups.length === 0 && !friends) {
     return (
       <span className="inline-flex items-center gap-1 text-caption text-muted">
