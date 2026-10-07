@@ -10,14 +10,22 @@ export type EmailTitle = {
   accent: "clay" | "ochre" | "moss" | "plum" | null;
 };
 
+/** One title in the digest: who vouched, the newest note, and the group only when that's how it reached you (PRD F7.1). */
+export type DigestTitle = EmailTitle & { vouchers: string[]; note: string | null; group: { id: string; name: string } | null };
+
+/** The weekly digest (PRD F7.1, F7.5): what Home shows, then each group's conversation summary. */
 export type DigestContent = {
   good_words: number;
   group_names: string[];
+  /** Titles with something new; the email lists up to 8. */
+  total_titles: number;
+  titles: DigestTitle[];
+  /** Friends' imports, one line each, counting only what you can see. */
+  rollups: Array<{ name: string; count: number }>;
+  /** Groups with new comments. */
   groups: Array<{
     id: string;
     name: string;
-    total: number;
-    titles: Array<EmailTitle & { vouchers: string[]; note: string | null }>;
     comments: number;
     conversations: number;
     top_conversations: Array<EmailTitle & { comments: number }>;

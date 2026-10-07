@@ -13,9 +13,16 @@ const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const enabled = Boolean(url && anon && service);
 
+// A timezone where it's midday now, so quiet hours (9pm to 9am local, F7.7)
+// never hold back the mention emails these tests expect, whatever time they run.
+function middayZone(): string {
+  const offset = 12 - new Date().getUTCHours();
+  return offset === 0 ? "UTC" : `Etc/GMT${offset > 0 ? "-" : "+"}${Math.abs(offset)}`;
+}
+
 type User = { id: string; client: SupabaseClient };
-type DigestGroup = { id: string; name: string; total: number; titles: Array<{ title: string; vouchers: string[]; note: string | null }>; comments: number };
-type Digest = { good_words: number; groups: DigestGroup[] } | null;
+type DigestTitle = { title: string; vouchers: string[]; note: string | null; group: { id: string; name: string } | null };
+type Digest = { good_words: number; titles: DigestTitle[]; groups: Array<{ id: string; name: string; comments: number }> } | null;
 type MentionRow = { user_id: string; group_id: string; item_ids: string[]; comments: Array<{ id: string; body: string | null; is_spoiler: boolean }> };
 
 describe.skipIf(!enabled)("email: preferences and due lists", () => {
@@ -35,7 +42,7 @@ describe.skipIf(!enabled)("email: preferences and due lists", () => {
     if (created.error) throw created.error;
     await admin
       .from("profiles")
-      .update({ display_name: name[0].toUpperCase() + name.slice(1), onboarded_at: new Date().toISOString(), timezone: "America/New_York" })
+      .update({ display_name: name[0].toUpperCase() + name.slice(1), onboarded_at: new Date().toISOString(), timezone: middayZone() })
       .eq("user_id", created.data.user.id);
     const link = await admin.auth.admin.generateLink({ type: "magiclink", email });
     if (link.error) throw link.error;
@@ -144,11 +151,12 @@ describe.skipIf(!enabled)("email: preferences and due lists", () => {
   it("builds a digest from other people's good words in your groups only", async () => {
     const digest = await digestFor(people.priya);
     expect(digest?.good_words).toBe(2);
-    expect(digest?.groups.map((g) => g.name)).toEqual(["College crew"]);
-    const titles = digest!.groups[0].titles;
+    const titles = digest!.titles;
     expect(titles.map((t) => t.title)).toEqual(["The Night Ferry"]);
     expect(titles[0].vouchers.sort()).toEqual(["Jonah", "Tess"]);
     expect(titles[0].note).toBe("ep 3 is where it gets you");
+    // It reached her only through College crew, so it carries the group.
+    expect(titles[0].group?.name).toBe("College crew");
     // Nothing from The girls, which Priya isn't in.
     expect(JSON.stringify(digest)).not.toContain("only for The girls");
   });
@@ -177,6 +185,16 @@ describe.skipIf(!enabled)("email: preferences and due lists", () => {
     const digest = await digestFor(people.priya);
     expect(digest!.groups[0].comments).toBe(1);
     expect(JSON.stringify(digest)).not.toContain("lighthouse");
+  });
+
+  it("covers friends' good words too, without a group, once they share them with friends (F16.9)", async () => {
+    // Bea is Priya's friend; her Moth Season is only in The girls, so it isn't in Priya's digest.
+    const [low, high] = [people.priya.id, people.bea.id].sort();
+    await admin.from("friendships").insert({ user_low: low, user_high: high, status: "accepted", requested_by: low, accepted_at: new Date().toISOString() });
+    expect((await digestFor(people.priya))!.titles.map((t) => t.title)).toEqual(["The Night Ferry"]);
+    await admin.from("good_words").update({ friends_shared_at: new Date().toISOString() }).eq("user_id", people.bea.id);
+    const moth = (await digestFor(people.priya))!.titles.find((t) => t.title === "Moth Season");
+    expect(moth).toMatchObject({ vouchers: ["Bea"], note: "only for The girls", group: null });
   });
 
   it("emails a mention once, without spoiler text, and not once it's read", async () => {
@@ -216,14 +234,9 @@ describe.skipIf(!enabled)("email: preferences and due lists", () => {
     const { data, error } = await admin.rpc("email_joins_due", { p_only: only() });
     expect(error).toBeNull();
     const rows = data as Array<{ user_id: string; joins: Array<{ name: string; group_name: string }> }>;
-    // Priya is the owner, so only she hears; outside quiet hours only.
-    const { data: quietNow } = await admin.rpc("email_quiet", { p_tz: "America/New_York" });
-    if (quietNow) {
-      expect(rows).toEqual([]);
-    } else {
-      const priya = rows.find((r) => r.user_id === people.priya.id);
-      expect(priya?.joins.map((j) => j.name).sort()).toEqual(["Jonah", "Tess"]);
-    }
+    // Priya is the owner, so only she hears (it's midday where these test accounts are).
+    const priya = rows.find((r) => r.user_id === people.priya.id);
+    expect(priya?.joins.map((j) => j.name).sort()).toEqual(["Jonah", "Tess"]);
     expect(rows.find((r) => r.user_id === people.jonah.id)).toBeUndefined();
   });
 });

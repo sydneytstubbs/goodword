@@ -38,15 +38,18 @@ function digest(overrides: Partial<DigestContent> = {}): DigestContent {
   return {
     good_words: 3,
     group_names: ["College crew", "The girls"],
+    total_titles: 2,
+    titles: [
+      // From friends: no group chip.
+      { ...title("The Night Ferry", 101), vouchers: ["Priya", "Jonah"], note: "ep 3 is where it gets you", group: null },
+      // Only through College crew: its chip.
+      { ...title("Moth Season", 102, { type: "movie", poster_path: null }), vouchers: ["Tess"], note: null, group: { id: CREW, name: "College crew" } },
+    ],
+    rollups: [{ name: "Luis", count: 40 }],
     groups: [
       {
         id: CREW,
         name: "College crew",
-        total: 2,
-        titles: [
-          { ...title("The Night Ferry", 101), vouchers: ["Priya", "Jonah"], note: "ep 3 is where it gets you" },
-          { ...title("Moth Season", 102, { type: "movie", poster_path: null }), vouchers: ["Tess"], note: null },
-        ],
         comments: 12,
         conversations: 3,
         top_conversations: [{ ...title("The Night Ferry", 101), comments: 7 }],
@@ -87,23 +90,23 @@ describe("weekly digest", () => {
     expect(digestEmail(digest({ good_words: 1 }), LINKS).subject).toBe("This week on Good Word: 1 new good word");
   });
 
-  it("names who vouched, shows notes, and summarizes conversations", () => {
+  it("covers what Home shows: who vouched, notes, the group only when that's how it came, imports as one line", () => {
     const { html, text } = digestEmail(digest(), LINKS);
     expect(html).toContain("Priya and Jonah vouched for this");
     expect(html).toContain("ep 3 is where it gets you");
-    expect(html).toContain("12 new comments on 3 titles");
+    expect(text).toContain("Moth Season\nTess vouched for this\nIn College crew");
+    expect(text).not.toContain("The Night Ferry\nPriya and Jonah vouched for this\nIn ");
+    expect(html).toContain("Luis added 40 titles to their list");
+    expect(html).toContain("In College crew: 12 new comments on 3 titles");
     expect(html).toContain("7 comments");
-    expect(text).toContain("The Night Ferry");
-    expect(text).toContain("Moth Season");
-    expect(text).toContain("12 new comments on 3 titles");
   });
 
-  it("links every title and conversation with ref=digest", () => {
+  it("links every title and conversation with ref=digest, and opens Home", () => {
     const links = hrefs(digestEmail(digest(), LINKS).html).filter((h) => h.startsWith(ORIGIN) && !h.includes("unsubscribe") && !h.includes("/you/settings"));
     expect(links).toContain(`${ORIGIN}/title/tv/101?ref=digest`);
     expect(links).toContain(`${ORIGIN}/title/movie/102?ref=digest`);
     expect(links).toContain(`${ORIGIN}/title/tv/101/conversation?group=${CREW}&ref=digest`);
-    expect(links).toContain(`${ORIGIN}/list?ref=digest`);
+    expect(links).toContain(`${ORIGIN}/home?ref=digest`);
     for (const link of links) expect(new URL(link).searchParams.get("ref")).toBe("digest");
   });
 
@@ -113,18 +116,15 @@ describe("weekly digest", () => {
     expect(html).toContain('role="img" aria-label="Moth Season"');
   });
 
-  it('shows "See all" only when there are more than it lists', () => {
+  it('shows "See all on Home" only when there are more than it lists', () => {
     expect(digestEmail(digest(), LINKS).html).not.toContain("See all");
-    const more = digest();
-    more.groups[0].total = 11;
-    const { html } = digestEmail(more, LINKS);
-    expect(html).toContain("See all 11 in College crew");
-    expect(hrefs(html)).toContain(`${ORIGIN}/list/${CREW}?ref=digest`);
+    const { html } = digestEmail(digest({ total_titles: 11 }), LINKS);
+    expect(html).toContain("See all 11 on Home");
   });
 
   it("says why you got it, with unsubscribe and settings links", () => {
     const { html, text } = digestEmail(digest(), LINKS);
-    expect(html).toContain("because you&#39;re in College crew and The girls on Good Word");
+    expect(text).toContain("You're getting this because you have friends or groups on Good Word.");
     expect(hrefs(html)).toContain(LINKS.unsubscribe);
     expect(hrefs(html)).toContain(`${ORIGIN}/you/settings`);
     expect(text).toContain(`Unsubscribe from the weekly digest: ${LINKS.unsubscribe}`);
@@ -133,7 +133,7 @@ describe("weekly digest", () => {
   it("escapes what people wrote", () => {
     const hostile = digest();
     hostile.groups[0].name = "<b>crew</b>";
-    hostile.groups[0].titles[0].note = '<img src=x onerror="alert(1)">';
+    hostile.titles[0].note = '<img src=x onerror="alert(1)">';
     const { html } = digestEmail(hostile, LINKS);
     expect(html).not.toContain("<img src=x");
     expect(html).not.toContain("<b>crew</b>");
