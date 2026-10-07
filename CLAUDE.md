@@ -48,12 +48,12 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 17 | Home | PRD 12, slice 17; F16.3 | In review |
 | 18 | Conversations by scope | PRD 12, slice 18; F16.5 | In review |
 | 19 | Title page | PRD 12, slice 19; F16.4 | In review |
-| 20 | The flip | PRD 12, slice 20; F16.10 | Not started |
+| 20 | The flip | PRD 12, slice 20; F16.10 | In review |
 | 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Not started |
 
 Before starting a step, check PRD Section 15 for open questions that step depends on, and ask about any that are still open.
 
-Steps 14 to 19 ship behind the `home_enabled` flag (PRD F16.10). With it off, the app works exactly as it did before step 14. Step 20 turns it on for everyone and removes it.
+Steps 14 to 19 shipped behind the `home_enabled` flag (PRD F16.10). Step 20 turned it on for everyone and the code no longer reads it; the column itself is dropped in a later cleanup.
 
 ---
 
