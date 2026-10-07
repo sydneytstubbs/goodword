@@ -46,7 +46,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 15 | Friends as an audience | PRD 12, slice 15; F16.2 | In review |
 | 16 | One card query | PRD 12, slice 16; F16.11 | In review |
 | 17 | Home | PRD 12, slice 17; F16.3 | In review |
-| 18 | Conversations by scope | PRD 12, slice 18; F16.5 | Not started |
+| 18 | Conversations by scope | PRD 12, slice 18; F16.5 | In review |
 | 19 | Title page | PRD 12, slice 19; F16.4 | Not started |
 | 20 | The flip | PRD 12, slice 20; F16.10 | Not started |
 | 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Not started |
