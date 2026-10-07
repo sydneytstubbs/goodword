@@ -14,29 +14,22 @@ import { useListNews } from "./list-news";
 // The tab bar (below 1024px) and the rail (from 1024px), DS 4.2.8. Add opens
 // the search sheet. The conversation screen hides the tab bar so its composer
 // sits at the bottom (PRD 6.2). Help sits in the rail's footer (DS 5.16).
-export function AppNav({ groups, home = false }: { groups: Group[]; home?: boolean }) {
+export function AppNav({ groups }: { groups: Group[] }) {
   const pathname = usePathname();
   const { openAdd } = useAdd();
   const { counts } = useListNews();
   const { count: activityCount } = useActivityCount();
   const addFromTab = () => openAdd({ entryPoint: "tab" });
   const addFromRail = () => openAdd({ entryPoint: "rail" });
-  // With Home (the home_enabled flag), group lists are reached from Home's switcher, so Home stays current on them.
-  const current =
-    pathname.startsWith("/home") || (home && pathname.startsWith("/list"))
-      ? "home"
-      : pathname.startsWith("/list")
-        ? "list"
-        : pathname.startsWith("/you")
-          ? "you"
-          : undefined;
+  // Group lists are reached from Home's switcher, so Home stays current on them.
+  const current = pathname.startsWith("/home") || pathname.startsWith("/list") ? "home" : pathname.startsWith("/you") ? "you" : undefined;
   const railCurrent = pathname === "/activity" ? "activity" : current;
 
   return (
     <>
-      <KeyboardShortcuts home={home} />
+      <KeyboardShortcuts />
       {!isConversationPath(pathname) && !isImportDeckPath(pathname) && (
-        <TabBar current={current} onAdd={addFromTab} listDot={Object.values(counts).some((n) => n > 0)} home={home} />
+        <TabBar current={current} onAdd={addFromTab} listDot={Object.values(counts).some((n) => n > 0)} />
       )}
       <Rail
         current={railCurrent}
@@ -45,7 +38,6 @@ export function AppNav({ groups, home = false }: { groups: Group[]; home?: boole
         newCounts={counts}
         currentGroupId={listGroupId(pathname) ?? undefined}
         onAdd={addFromRail}
-        home={home}
       />
     </>
   );

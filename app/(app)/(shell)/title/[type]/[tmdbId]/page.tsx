@@ -15,9 +15,8 @@ import { TitleUnavailable } from "./title-unavailable";
 // Title detail (PRD F6), reachable for any title: everyone in your groups who
 // vouched, with the chips of your groups each good word is in; where to watch
 // in your region; the vouch button; the conversation preview for the group in
-// `?group=` or the likeliest one (DS 5.17); the overview. With the
-// home_enabled flag it's the title page (F16.4): one URL for everyone, showing
-// only what each viewer may see (F16.6).
+// `?group=` or the likeliest one (DS 5.17); the overview. It's the title page
+// (F16.4): one URL for everyone, showing only what each viewer may see (F16.6).
 
 export async function generateMetadata({ params }: PageProps<"/title/[type]/[tmdbId]">): Promise<Metadata> {
   const parsed = parseTitleParams(await params);
@@ -51,7 +50,6 @@ export default async function TitlePage({ params, searchParams }: PageProps<"/ti
         title={title}
         viewer={{ id: user.id, name: profile.display_name }}
         region={profile.region}
-        home={profile.home_enabled}
         conversation={
           groups.length > 0 ? (
             <Suspense fallback={<ConversationPreviewSkeleton />}>

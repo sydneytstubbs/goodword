@@ -32,11 +32,11 @@ export type PutInput = {
   groupIds: string[];
   source: GoodWordSource;
   msFromAddOpened?: number;
-  /** Shared with your friends; only with the home_enabled flag (PRD F16.2, F16.10). */
+  /** Shared with your friends (PRD F16.2). */
   friends?: boolean;
 };
 
-/** With the home_enabled flag: friends are an audience, and how many you have. Null without it. */
+/** Friends are an audience, and how many you have. Null only while signed out. */
 export type FriendsAudience = { count: number } | null;
 
 /**

@@ -6,7 +6,6 @@ import { t } from "@/lib/messages";
 import NextLink from "next/link";
 import { Icon } from "@/components/icon";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useGoodWords } from "../good-words";
 import { useListNews } from "../list-news";
 
 // The list's own bar: the group switcher, group details, and the invite
@@ -23,13 +22,11 @@ export function ListBar({
 }) {
   const current = groups.find((g) => g.id === currentId);
   const { counts } = useListNews();
-  // Friends are an audience exactly when the account has the home_enabled flag (PRD F16.10).
-  const home = useGoodWords().friends !== null;
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="min-w-0">
-        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/list/${id}`} newCounts={counts} home={home} />
+        <GroupSwitcher groups={groups} currentId={currentId} hrefFor={(id) => `/list/${id}`} newCounts={counts} />
       </div>
       {current && (
         <div className="flex items-center">

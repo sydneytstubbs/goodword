@@ -151,7 +151,7 @@ function RecCards() {
           </div>
         </Frame>
       </Specimen>
-      <Specimen label="detail, the title page with friends (behind the home_enabled flag): where to watch with the title, then the good words you can see, yours first, each shared with friends with its conversation collapsed beneath it" wide>
+      <Specimen label="detail, the title page: where to watch with the title, then the good words you can see, yours first, each shared with friends with its conversation collapsed beneath it" wide>
         <Frame>
           <div className="p-5 md:p-8">
             <RecCardDetail
@@ -295,7 +295,7 @@ function Switcher() {
   const [current, setCurrent] = useState(groups.college.id);
   return (
     <Component id="group-switcher" title="Group switcher" spec="4.2.5">
-      <Specimen label="Opens a sheet; All groups is an explicit choice; counts of new good words since your last visit">
+      <Specimen label="Opens a sheet: Home first, then your groups, with counts of new good words since your last visit">
         <GroupSwitcher
           groups={switcherGroups}
           currentId={current}
@@ -303,9 +303,6 @@ function Switcher() {
           onSelect={setCurrent}
           newCounts={{ [groups.girls.id]: 3, [groups.book.id]: 1 }}
         />
-      </Specimen>
-      <Specimen label="With Home (behind the home_enabled flag): Home replaces All groups at the top">
-        <GroupSwitcher groups={switcherGroups} currentId="home" hrefFor={(id) => `/list/${id}`} onSelect={() => {}} home />
       </Specimen>
     </Component>
   );
@@ -332,7 +329,7 @@ function Visibility() {
         <Specimen label="One group, compact (composer)">
           <VisibilityLine groups={[groupsWithCounts[0]]} peopleCount={6} compact />
         </Specimen>
-        <Specimen label="Friends (home_enabled): live, Friends first in the picker; friends are never counted">
+        <Specimen label="Friends: live, Friends first in the picker; friends are never counted">
           <VisibilityLine groups={friendsChosen} peopleCount={0} friends={{ on: friendsOn, count: 4 }} onChange={() => setFriendsOpen(true)} />
         </Specimen>
         <Specimen label="Friends and a group">
@@ -411,24 +408,19 @@ function Bars() {
         </Specimen>
         <Specimen label="Tab bar (mobile and tablet)" wide>
           <Frame>
-            <TabBar placement="inline" current="list" onAdd={add} label="Tab bar preview" />
+            <TabBar placement="inline" current="home" onAdd={add} label="Tab bar preview" />
           </Frame>
         </Specimen>
-        <Specimen label="Tab bar, a group has new good words (dot on List)" wide>
+        <Specimen label="Tab bar, a group has new good words (dot on Home)" wide>
           <Frame>
             <TabBar placement="inline" current="you" listDot onAdd={add} label="Tab bar with new good words preview" />
-          </Frame>
-        </Specimen>
-        <Specimen label="Tab bar with Home (behind the home_enabled flag)" wide>
-          <Frame>
-            <TabBar placement="inline" current="home" onAdd={add} label="Tab bar with Home preview" home />
           </Frame>
         </Specimen>
         <Specimen label="Rail (1024px and up)" wide>
           <Frame>
             <Rail
               placement="inline"
-              current="list"
+              current="home"
               activityCount={3}
               groups={Object.values(groups)}
               newCounts={{ [groups.girls.id]: 3 }}
@@ -590,7 +582,7 @@ function Conversation() {
           />
         </div>
         <Note>
-          Under a good word (behind the home_enabled flag): the audience line never names who that is, and mentions offer only
+          Under a good word: the audience line never names who that is, and mentions offer only
           people who can see the good word and whom you already know.
         </Note>
         <div className="max-w-detail overflow-visible rounded-card border border-dashed border-subtle pt-48">

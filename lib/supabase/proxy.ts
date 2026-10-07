@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isNoindexPath, isProtectedPath, LAST_LIST_COOKIE, listGroupId } from "@/lib/auth/paths";
+import { isNoindexPath, isProtectedPath } from "@/lib/auth/paths";
 
 /**
  * Refreshes the session cookie on every request, then applies the access rules
@@ -45,12 +45,8 @@ export async function updateSession(request: NextRequest) {
   };
 
   if (!signedIn && isProtectedPath(pathname)) return redirect("/sign-in", { next: pathname + search });
-  if (signedIn && (pathname === "/sign-in" || pathname === "/")) return redirect("/list");
+  if (signedIn && (pathname === "/sign-in" || pathname === "/")) return redirect("/home");
 
   if (isNoindexPath(pathname)) response.headers.set("X-Robots-Tag", "noindex, nofollow");
-  const groupId = listGroupId(pathname);
-  if (signedIn && groupId) {
-    response.cookies.set(LAST_LIST_COOKIE, groupId, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax", httpOnly: true });
-  }
   return response;
 }

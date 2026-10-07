@@ -14,8 +14,8 @@ describe("event schema", () => {
         "where_to_watch_clicked", "email_sent", "email_clicked", "notification_pref_changed", "first_good_word_prompt",
         "conversation_opened", "comment_created", "comment_edited", "comment_deleted", "mention_notified", "activity_opened",
         "spoiler_revealed", "share_link_toggled", "import_started", "import_parsed", "import_failed", "import_card_decided", "import_finished",
-        // Friends (slice 14) and Home (17). share_prompt arrives with the flip (20).
-        "friend_link_shared", "friend_request_sent", "friend_added", "friend_removed", "home_caught_up",
+        // Friends (slice 14), Home (17), and the flip (20).
+        "friend_link_shared", "friend_request_sent", "friend_added", "friend_removed", "home_caught_up", "share_prompt",
       ].sort(),
     );
   });

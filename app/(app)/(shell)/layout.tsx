@@ -1,6 +1,7 @@
 import { safeRegion } from "@/lib/titles/providers";
 import { unreadActivityCount } from "@/lib/conversations/queries";
 import { friendCount } from "@/lib/friends/queries";
+import { sharePrompt } from "@/lib/share-prompt/queries";
 import { listMyGroups, newGoodWordCounts } from "@/lib/groups/queries";
 import { createClient } from "@/lib/supabase/server";
 import { ActivityCountProvider } from "./activity-count";
@@ -8,6 +9,7 @@ import { AddProvider } from "./add";
 import { AppNav } from "./app-nav";
 import { GoodWordsProvider } from "./good-words";
 import { ListNewsProvider } from "./list-news";
+import { SharePrompt } from "./share-prompt";
 import { ShellChrome } from "./shell-chrome";
 
 // Signed-in chrome: the tab bar or rail (DS 4.2.8), with Add opening the
@@ -22,7 +24,7 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
   const [groups, profile, newCounts, activityCount] = userId
     ? await Promise.all([
         listMyGroups(userId),
-        supabase.from("profiles").select("display_name, region, home_enabled").eq("user_id", userId).maybeSingle(),
+        supabase.from("profiles").select("display_name, region").eq("user_id", userId).maybeSingle(),
         newGoodWordCounts(),
         unreadActivityCount(),
       ])
@@ -34,8 +36,10 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
     ? await supabase.from("streaming_services").select("provider_ids").eq("user_id", userId).eq("region", region).maybeSingle()
     : { data: null };
   const myServices = (services?.provider_ids as number[] | null | undefined) ?? [];
-  // Friends as an audience, behind the home_enabled flag (PRD F16.2, F16.10).
-  const friends = userId && profile?.data?.home_enabled ? { count: await friendCount(userId) } : null;
+  // Friends are an audience (PRD F16.2).
+  const friends = userId ? { count: await friendCount(userId) } : null;
+  // "Share your list with friends?", once after the flip (PRD F16.10).
+  const prompt = userId ? await sharePrompt(userId).catch(() => null) : null;
 
   return (
     <GoodWordsProvider viewer={viewer} groups={groups} friends={friends} myServices={myServices}>
@@ -43,7 +47,8 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
         <ActivityCountProvider userId={viewer.id} initialCount={activityCount}>
           <AddProvider>
             <ShellChrome>{children}</ShellChrome>
-            <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} home={Boolean(profile?.data?.home_enabled)} />
+            {prompt && <SharePrompt friends={prompt.friends} goodWords={prompt.goodWords} />}
+            <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} />
           </AddProvider>
         </ActivityCountProvider>
       </ListNewsProvider>

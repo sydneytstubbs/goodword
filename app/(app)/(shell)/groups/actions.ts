@@ -56,7 +56,7 @@ export async function leaveGroup(groupId: string, groupName: string): Promise<Re
   const { data, error } = await supabase.rpc("leave_group", { p_group: groupId });
   if (error || (data !== "left" && data !== "deleted")) return { ok: false };
   await setNotice(data === "deleted" ? "deleted" : "left", { group: groupName });
-  redirect("/list");
+  redirect("/home");
 }
 
 export async function deleteGroup(groupId: string, groupName: string): Promise<Result> {
@@ -64,7 +64,7 @@ export async function deleteGroup(groupId: string, groupName: string): Promise<R
   const { data, error } = await supabase.rpc("delete_group", { p_group: groupId });
   if (error || data !== true) return { ok: false };
   await setNotice("deleted", { group: groupName });
-  redirect("/list");
+  redirect("/home");
 }
 
 export async function markWelcomeSeen(groupId: string) {

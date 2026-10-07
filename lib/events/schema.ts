@@ -68,6 +68,7 @@ export const EVENTS = {
   friend_request_sent: { client: false, props: { from: ["friends_screen", "group_prompt"] } },
   friend_added: { client: false, props: { via: ["link", "request", "seeded"] } },
   friend_removed: { client: false, props: {} },
+  share_prompt: { client: false, props: { action: ["share_all", "choose", "not_now"], friends_count_bucket: ["1", "2_5", "6_plus"] } },
   import_started: {
     client: false,
     props: { method: ["text", "screenshots", "both"], screenshot_count: "int", text_length_bucket: ["none", "short", "medium", "long"] },

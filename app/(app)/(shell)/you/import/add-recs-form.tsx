@@ -65,7 +65,7 @@ export function AddRecsForm({
 }: {
   groups: GroupWithCount[];
   peopleIn: Record<string, string[]>;
-  /** With the home_enabled flag: friends are an audience, on by default (PRD F16.2). */
+  /** Friends are an audience, on by default (PRD F16.2). */
   friends?: { count: number };
 }) {
   const router = useRouter();

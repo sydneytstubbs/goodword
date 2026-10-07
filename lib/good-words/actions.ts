@@ -48,7 +48,7 @@ export async function putGoodWord(
     p_note: note(input.note),
     p_groups: input.groupIds,
     p_source: input.source,
-    // Only with the home_enabled flag (PRD F16.2, F16.10); left out, friends sharing doesn't change.
+    // Left out, friends sharing doesn't change (PRD F16.2).
     ...(input.friends !== undefined ? { p_friends: input.friends } : {}),
   });
   const result = (data as Array<{ status: string; milestone: Milestone | null }> | null)?.[0];

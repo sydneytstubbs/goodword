@@ -26,8 +26,8 @@ export default async function GroupListPage({ params, searchParams }: PageProps<
   const [list, vouchedHere, friendPrompt] = await Promise.all([
     groupList(groupId, user.id, profile.region),
     hasGoodWordIn(groupId, user.id),
-    // Behind the home_enabled flag (PRD F16.10): add the people here as friends.
-    profile.home_enabled && !group.me.friendPromptDismissedAt ? friendPromptPeople(groupId, user.id) : Promise.resolve([]),
+    // Add the people here as friends (PRD F16.1).
+    !group.me.friendPromptDismissedAt ? friendPromptPeople(groupId, user.id) : Promise.resolve([]),
   ]);
   await recordEvent("list_viewed", { list: "group", filters: filterKeys(await searchParams), new_count: newCount(list.cards) }, user.id);
 

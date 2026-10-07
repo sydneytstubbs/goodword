@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { recordEvent } from "@/lib/events/server";
 import { filterKeys, newCount } from "@/lib/events/list";
@@ -12,11 +11,9 @@ import { HomeScreen } from "./home-screen";
 export const metadata: Metadata = { title: "Home · Good Word" };
 
 // Home (PRD F16.3, DS 5.19): every title with a good word from someone else
-// you can see, from the one card query. Behind the home_enabled flag until
-// the flip (F16.10): without it, there's no such page.
+// you can see, from the one card query.
 export default async function HomePage({ searchParams }: PageProps<"/home">) {
   const { user, profile } = await requireOnboardedUser("/home");
-  if (!profile.home_enabled) notFound();
   const groups = await listMyGroups(user.id);
   const [home, friends] = await Promise.all([homeList(user.id, profile.region), friendIds(user.id)]);
   const empty = home.list.cards.length === 0 && home.rollups.length === 0;

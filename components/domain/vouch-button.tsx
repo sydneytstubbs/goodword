@@ -22,7 +22,7 @@ export type VouchButtonProps = {
   onEditNote: () => void;
   onChangeGroups: () => void;
   onTakeBack: () => void;
-  /** Friends are an audience (the home_enabled flag): the menu says "Change who sees it". */
+  /** Friends are an audience: the menu says "Change who sees it". */
   withFriends?: boolean;
   fullWidth?: boolean;
   /**

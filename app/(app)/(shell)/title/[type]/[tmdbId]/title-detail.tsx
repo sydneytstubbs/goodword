@@ -14,7 +14,7 @@ import { useGoodWords } from "../../../good-words";
 // primary action, then the conversation preview (DS 5.17). Your own good word,
 // and the groups it's in, reflect pending changes at once.
 //
-// With the home_enabled flag, the title page (PRD F16.4): where to watch with
+// It's the title page (PRD F16.4): where to watch with
 // the title, then every good word you can see (yours first, or the vouch
 // button in its place), each with its conversation under it, then your groups'
 // conversations, then the overview.
@@ -49,7 +49,7 @@ export function TitleDetail({
         ...(mine.note ? { note: mine.note } : { note: undefined }),
         at: new Date(mine.createdAt),
         groups: groups.filter((g) => mine.groupIds.includes(g.id)).map(({ id, name }) => ({ id, name })),
-        // With the home_enabled flag: shared with your friends (PRD F16.2).
+        // Shared with your friends (PRD F16.2).
         ...(friends && mine.friendsSharedAt ? { friends: true } : { friends: undefined }),
       }
     : null;

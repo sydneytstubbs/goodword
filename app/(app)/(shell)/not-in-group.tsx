@@ -13,7 +13,7 @@ export function NotInGroup() {
         title={t("list.notInGroupTitle")}
         body={t("list.notInGroupBody")}
         action={
-          <ButtonLink href="/list" variant="secondary">
+          <ButtonLink href="/home" variant="secondary">
             {t("list.goToGroups")}
           </ButtonLink>
         }

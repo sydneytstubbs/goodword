@@ -48,7 +48,7 @@ export function ConfirmGoodWord({
   peopleCount: number;
   /** Opens the group picker; omit when you have no groups to pick from. */
   onChangeGroups?: () => void;
-  /** Friends, with the home_enabled flag (PRD F16.2). */
+  /** Friends as an audience (PRD F16.2). */
   friends?: FriendsPick;
 }) {
   return (

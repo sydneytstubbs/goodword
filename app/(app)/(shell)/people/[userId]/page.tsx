@@ -15,8 +15,8 @@ export const metadata: Metadata = { title: "Good Word" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Person view (PRD F8): someone's good words that you can see, with the usual
-// filters: in the groups you share, and, with the home_enabled flag, the ones
-// they shared with friends if you're their friend. Never their other groups,
+// filters: in the groups you share, and the ones they shared with friends if
+// you're their friend. Never their other groups,
 // and nothing at all for someone who's neither (not even their name).
 export default async function PersonPage({ params, searchParams }: PageProps<"/people/[userId]">) {
   const { userId } = await params;
@@ -24,7 +24,7 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/p
   if (!UUID.test(userId)) notFound();
   if (userId === user.id) redirect("/you");
 
-  const [groups, friends] = await Promise.all([listMyGroups(user.id), profile.home_enabled ? friendIds(user.id) : ([] as string[])]);
+  const [groups, friends] = await Promise.all([listMyGroups(user.id), friendIds(user.id)]);
   const shared = groups.filter((g) => g.members.some((m) => m.id === userId));
   const friend = friends.includes(userId);
   let name = shared.flatMap((g) => g.members).find((m) => m.id === userId)?.name;

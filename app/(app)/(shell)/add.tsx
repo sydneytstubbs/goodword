@@ -17,8 +17,7 @@ import { useCaptureVisitSource, visitSource } from "./visit-source";
 
 // Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
 // current screen: search, then the confirm step (poster, optional note, and
-// the visibility line, defaulting to all your groups, or to Friends with the
-// home_enabled flag, PRD F16.2). The group picker, Edit
+// the visibility line, defaulting to Friends, PRD F16.2). The audience picker, Edit
 // note, and Change groups replace the sheet's content rather than stacking a
 // second sheet (DS 4.1.13). Opening pushes a history entry so the Back
 // gesture closes the sheet (DS 5.1).
@@ -107,7 +106,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
   const openedAt = useRef(0);
   const [note, setNote] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  // With the home_enabled flag, friends are an audience too, on by default (PRD F16.2).
+  // Friends are an audience too, on by default (PRD F16.2).
   const [friendsOn, setFriendsOn] = useState(true);
   const friendsPick = friends ? { on: friendsOn, count: friends.count } : undefined;
   const [annotations, setAnnotations] = useState<ServerAnnotations>({ mine: {}, friends: {} });

@@ -8,7 +8,7 @@ describe("safeNext", () => {
   });
   it("falls back for anything that could leave the site", () => {
     for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)", "evil", "", null, undefined, "/a\nb"]) {
-      expect(safeNext(bad)).toBe("/list");
+      expect(safeNext(bad)).toBe("/home");
     }
   });
 });

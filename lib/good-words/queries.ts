@@ -1,5 +1,4 @@
 import "server-only";
-import { cache } from "react";
 import type { CardConversation, GoodWord, GoodWordSource, Group, LatestComment, MyGoodWord, Person, Service, List, ListCard, Title, TitleType } from "@/components/domain/types";
 import { decodeBody, plainText } from "@/lib/conversations/body";
 import { commentCounts, toComment, type CommentRow } from "@/lib/conversations/queries";
@@ -291,46 +290,6 @@ type TitleGoodWordRow = {
   friends_shared_at: string | null;
   good_word_groups: Array<{ group_id: string; shared_at: string }>;
 };
-
-/**
- * Everyone in your groups who vouched for a title, yours first, and your own
- * good word for the vouch button (F6). Never anyone outside your groups, and
- * each good word's group chips name only your groups (PRD 8).
- */
-export const titleGoodWords = cache(
-  async (
-    type: TitleType,
-    tmdbId: number,
-    viewer: Person,
-    myGroups: Group[],
-  ): Promise<{ goodWords: GoodWord[]; mine: MyGoodWord | null }> => {
-    const supabase = await createClient();
-    const { data: title } = await supabase.from("titles").select("id").eq("media_type", type).eq("tmdb_id", tmdbId).maybeSingle();
-    if (!title) return { goodWords: [], mine: null };
-    const { data, error } = await supabase
-      .from("good_words")
-      .select("user_id, note, source, created_at, friends_shared_at, good_word_groups(group_id, shared_at)")
-      .eq("title_id", title.id)
-      .returns<TitleGoodWordRow[]>();
-    if (error) throw new Error(`title good words: ${error.code}`);
-    const rows = data ?? [];
-    const nameOf = await names(supabase, rows.map((r) => r.user_id));
-    const groupOf = new Map(myGroups.map((g) => [g.id, { id: g.id, name: g.name }]));
-    const groupsOf = (r: TitleGoodWordRow) => r.good_word_groups.flatMap((g) => groupOf.get(g.group_id) ?? []);
-    const mineRow = rows.find((r) => r.user_id === viewer.id);
-    const latestShare = (r: TitleGoodWordRow) =>
-      r.good_word_groups.map((g) => g.shared_at).sort().at(-1) ?? r.created_at;
-    const others = rows
-      .filter((r) => r.user_id !== viewer.id && r.good_word_groups.length > 0)
-      .map((r) => ({ person: { id: r.user_id, name: nameOf.get(r.user_id) ?? "" }, note: r.note, at: latestShare(r), groups: groupsOf(r) }))
-      .sort((a, b) => b.at.localeCompare(a.at));
-    const goodWords: GoodWord[] = [
-      ...(mineRow ? [{ person: viewer, note: mineRow.note, at: mineRow.created_at, groups: groupsOf(mineRow) }] : []),
-      ...others,
-    ].map((g) => ({ person: g.person, ...(g.note ? { note: g.note } : {}), at: new Date(g.at), groups: g.groups }));
-    return { goodWords, mine: mineRow ? toMine(mineRow) : null };
-  },
-);
 
 /** A good word on the title page (PRD F16.4): which one, and its conversation when it's shared with friends. */
 export type TitleGoodWord = GoodWord & { goodWordId: string; conversation?: WordConversationPreview };

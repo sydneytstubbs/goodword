@@ -23,7 +23,7 @@ export default async function NotFound() {
           body={t("notFound.body")}
           action={
             user ? (
-              <ButtonLink href="/list" variant="secondary">
+              <ButtonLink href="/home" variant="secondary">
                 {t("notFound.goToGroups")}
               </ButtonLink>
             ) : (

@@ -87,13 +87,10 @@ export default async function MyListPage({ searchParams }: PageProps<"/you">) {
       <section className="flex max-w-reading flex-col items-start gap-3">
         <h2 className="text-title-m text-default">{t("you.accountHeading")}</h2>
         <p className="text-body text-muted">{t("you.signedInAs", { name: profile.display_name })}</p>
-        {/* Behind the home_enabled flag (PRD F16.10). */}
-        {profile.home_enabled && (
-          <TextLink href="/you/friends" variant="standalone" className="gap-2">
-            <Icon name="friends" size={20} />
-            {t("you.friendsLink")}
-          </TextLink>
-        )}
+        <TextLink href="/you/friends" variant="standalone" className="gap-2">
+          <Icon name="friends" size={20} />
+          {t("you.friendsLink")}
+        </TextLink>
         <TextLink href="/you/settings" variant="standalone" className="gap-2">
           <Icon name="settings" size={20} />
           {t("you.settingsLink")}

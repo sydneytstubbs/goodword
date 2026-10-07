@@ -10,9 +10,8 @@ import { Sheet } from "../ui/sheet";
 import type { Group } from "./types";
 
 // Visibility line (DESIGN-SYSTEM.md 4.2.6): who will see it, wherever
-// content is created or shared. Tapping it opens the audience picker. With
-// the home_enabled flag, friends are part of the audience (PRD F16.2); they
-// are never counted (DS 5.14).
+// content is created or shared. Tapping it opens the audience picker.
+// Friends are part of the audience (PRD F16.2); they are never counted (DS 5.14).
 
 export type GroupWithCount = Group & { memberCount: number };
 
@@ -42,7 +41,7 @@ export function VisibilityLine({
   groups: GroupWithCount[];
   /** Unique people across the selected groups. */
   peopleCount: number;
-  /** Friends, with the home_enabled flag. */
+  /** Friends as an audience (PRD F16.2). */
   friends?: FriendsPick;
   /** Opens the group picker. Omit where the audience is fixed (the composer). */
   onChange?: () => void;

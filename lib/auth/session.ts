@@ -9,8 +9,6 @@ export type Profile = {
   region: string;
   timezone: string | null;
   onboarded_at: string | null;
-  /** The Home and friends launch flag (PRD F16.10), on for test accounts until the flip. */
-  home_enabled: boolean;
 };
 
 const getUser = cache(async () => {
@@ -23,7 +21,7 @@ const getProfile = cache(async (userId: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("user_id, display_name, region, timezone, onboarded_at, home_enabled")
+    .select("user_id, display_name, region, timezone, onboarded_at")
     .eq("user_id", userId)
     .maybeSingle();
   return data as Profile | null;

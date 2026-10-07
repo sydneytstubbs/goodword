@@ -16,12 +16,13 @@
     "on": "On",
     "off": "Off",
     "you": "You",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "back": "Back"
   },
   "notFound": {
     "title": "We couldn't find that page",
     "body": "The link may be broken, or the page has moved.",
-    "goToGroups": "Go to your groups",
+    "goToGroups": "Go to Home",
     "goHome": "Go to Good Word"
   },
   "field": {
@@ -490,7 +491,7 @@
     "welcome": "You're in. Here's what {group} vouches for.",
     "notInGroupTitle": "You're not in this group",
     "notInGroupBody": "If someone sent you an invite link, open it to join.",
-    "goToGroups": "Go to your groups",
+    "goToGroups": "Go to Home",
     "inviteHint": "Got an invite link? Open it to join.",
     "loading": "Loading list",
     "errorTitle": "This list didn't load",
@@ -682,17 +683,20 @@
       "heading": "This week on Good Word",
       "preheader": "From {names}.",
       "vouched": "{names} vouched for this",
-      "seeAll": "See all {count} in {group}",
       "comments_one": "1 new comment",
       "comments_other": "{count} new comments",
       "titles_one": "1 title",
       "titles_other": "{count} titles",
-      "conversations": "{comments} on {titles}",
       "titleComments_one": "1 comment",
       "titleComments_other": "{count} comments",
       "open": "Open Good Word",
-      "why": "You're getting this because you're in {groups} on Good Word.",
-      "unsubscribe": "Unsubscribe from the weekly digest"
+      "why": "You're getting this because you have friends or groups on Good Word.",
+      "unsubscribe": "Unsubscribe from the weekly digest",
+      "inGroup": "In {group}",
+      "seeAllHome": "See all {count} on Home",
+      "rollup_one": "{name} added {count} title to their list",
+      "rollup_other": "{name} added {count} titles to their list",
+      "groupConversations": "In {group}: {comments} on {titles}"
     },
     "mention": {
       "subject": "{names} mentioned you on {title}",
@@ -1007,5 +1011,20 @@
     "loading": "Loading Home",
     "errorTitle": "Home didn't load",
     "errorBody": "Good Word is having a moment. Try again in a minute."
+  },
+  "sharePrompt": {
+    "title": "Share your list with friends?",
+    "body": "Your friends will see the good words you share. Nothing changes for your groups.",
+    "shareAll": "Share all",
+    "choose": "Choose",
+    "notNow": "Not now",
+    "chooseTitle": "Choose what to share",
+    "share": "Share",
+    "shareCount_one": "Share {count}",
+    "shareCount_other": "Share {count}",
+    "pickOne": "Choose at least one good word to share.",
+    "done_one": "Your friends can see {count} of your good words.",
+    "done_other": "Your friends can see {count} of your good words.",
+    "didntSave": "That didn't save. Check your connection and try again."
   }
 }

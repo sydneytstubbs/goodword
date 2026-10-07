@@ -18,9 +18,9 @@ import { Conversation, type ConversationPlace } from "./conversation";
 
 // A group's conversation about a title (PRD F13, DS 5.17), for members of
 // that group only: anyone else sees "You're not in this group" without the
-// group's name (PRD 6.4). Any title can have one. Or, with ?word= and the
-// home_enabled flag, the conversation under a good word (F16.5), for everyone
-// who can see that good word; anyone else gets a plain 404 (F16.6 rule 4).
+// group's name (PRD 6.4). Any title can have one. Or, with ?word=, the
+// conversation under a good word (F16.5), for everyone who can see that good
+// word; anyone else gets a plain 404 (F16.6 rule 4).
 // On desktop it's a panel beside title detail.
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -36,9 +36,9 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/tit
   const wordId = one(query.word);
   const result = parsed ? await loadTitle(parsed.type, parsed.tmdbId) : null;
   if (!result || !("title" in result) || !result.title || !(groupId || wordId)) return { title: "Good Word" };
-  const { user, profile } = await requireOnboardedUser(`/title/${parsed!.type}/${parsed!.tmdbId}`);
+  const { user } = await requireOnboardedUser(`/title/${parsed!.type}/${parsed!.tmdbId}`);
   if (!groupId && wordId) {
-    const word = profile.home_enabled && UUID.test(wordId) ? await wordConversation(wordId).catch(() => null) : null;
+    const word = UUID.test(wordId) ? await wordConversation(wordId).catch(() => null) : null;
     return { title: word ? t("conversation.wordDocumentTitle", { title: result.title.name, name: word.author.name }) : "Good Word" };
   }
   if (!groupId) return { title: "Good Word" };
@@ -69,7 +69,7 @@ export default async function ConversationPage({ params, searchParams }: PagePro
 
   // Under a good word (F16.5): only with the flag, and only for people who can see it.
   if (wordParam) {
-    if (!profile.home_enabled || !UUID.test(wordParam)) notFound();
+    if (!UUID.test(wordParam)) notFound();
     const word = await wordConversation(wordParam);
     if (!word || word.titleId !== titleId) notFound();
     const key = { kind: "word" as const, goodWordId: word.goodWordId, titleId };
@@ -86,7 +86,6 @@ export default async function ConversationPage({ params, searchParams }: PagePro
         titleId={titleId}
         viewer={{ id: user.id, name: profile.display_name }}
         region={profile.region}
-        home={profile.home_enabled}
         place={{ kind: "word", goodWordId: word.goodWordId, author: word.author }}
         members={people}
         page={page}
@@ -126,7 +125,6 @@ export default async function ConversationPage({ params, searchParams }: PagePro
       titleId={titleId}
       viewer={{ id: user.id, name: profile.display_name }}
       region={profile.region}
-      home={profile.home_enabled}
       place={{ kind: "group", group: { id: group.id, name: group.name, memberCount: group.members.length }, viewerIsOwner: group.me.role === "owner" }}
       members={group.members.map((m) => ({ id: m.id, name: m.name }))}
       page={page}
@@ -168,7 +166,6 @@ function ConversationScreen({
   titleId,
   viewer,
   region,
-  home,
   place,
   members,
   page,
@@ -182,8 +179,6 @@ function ConversationScreen({
   titleId: string;
   viewer: { id: string; name: string };
   region: string;
-  /** The home_enabled flag, for title detail beside it. */
-  home: boolean;
   place: ConversationPlace;
   members: Array<{ id: string; name: string }>;
   page: ConversationPage | null;
@@ -198,7 +193,7 @@ function ConversationScreen({
       {/* Beside the conversation on desktop, title detail stays in view (DS 5.17). */}
       <div className="hidden min-w-0 flex-1 px-4 pt-8 pb-12 lg:block">
         <div className="mx-auto max-w-detail">
-          <TitleContent type={parsed.type} tmdbId={parsed.tmdbId} title={title} viewer={viewer} region={region} headingLevel={2} home={home} />
+          <TitleContent type={parsed.type} tmdbId={parsed.tmdbId} title={title} viewer={viewer} region={region} headingLevel={2} />
         </div>
       </div>
       <Conversation

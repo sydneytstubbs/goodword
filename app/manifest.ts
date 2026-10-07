@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Good Word",
     short_name: "Good Word",
     description: "A shared list of the shows and movies your friends would vouch for.",
-    start_url: "/list",
+    start_url: "/home",
     scope: "/",
     display: "standalone",
     background_color: brand.paper,

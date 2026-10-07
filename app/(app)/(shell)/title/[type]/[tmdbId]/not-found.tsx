@@ -12,7 +12,7 @@ export default function TitleNotFound() {
         title={t("titleDetail.notFoundTitle")}
         body={t("titleDetail.notFoundBody")}
         action={
-          <ButtonLink href="/list" variant="secondary">
+          <ButtonLink href="/home" variant="secondary">
             {t("list.goToGroups")}
           </ButtonLink>
         }

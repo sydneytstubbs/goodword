@@ -3,18 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-// Desktop shortcuts that go somewhere (DS 3.9): `g` then `s` (list), `y` (My
-// list), or `a` (Activity), and `?` for the list in Help. With Home (the
-// home_enabled flag), `g` then `h` goes Home. `n` and `/` live with Add.
-// Never while typing, never with a sheet or menu open, never required.
+// Desktop shortcuts that go somewhere (DS 3.9): `g` then `h` (Home), `y` (My
+// list), or `a` (Activity), and `?` for the list in Help. `g` then `s` still
+// works and opens Home too. `n` and `/` live with Add. Never while typing,
+// never with a sheet or menu open, never required.
 
-const GO: Record<string, string> = { s: "/list", y: "/you", a: "/activity" };
+const GO: Record<string, string> = { h: "/home", s: "/home", y: "/you", a: "/activity" };
 const SEQUENCE_MS = 1500;
 
 const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 
-export function KeyboardShortcuts({ home = false }: { home?: boolean }) {
+export function KeyboardShortcuts() {
   const router = useRouter();
   useEffect(() => {
     let pendingG = 0;
@@ -26,7 +26,7 @@ export function KeyboardShortcuts({ home = false }: { home?: boolean }) {
         router.push("/you/help#shortcuts");
         return;
       }
-      const go = home && e.key === "h" ? "/home" : GO[e.key];
+      const go = GO[e.key];
       if (pendingG && Date.now() - pendingG < SEQUENCE_MS && go) {
         e.preventDefault();
         pendingG = 0;
@@ -37,6 +37,6 @@ export function KeyboardShortcuts({ home = false }: { home?: boolean }) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [router, home]);
+  }, [router]);
   return null;
 }

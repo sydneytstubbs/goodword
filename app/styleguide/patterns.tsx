@@ -130,7 +130,7 @@ function Lists() {
           </ul>
         </div>
       </Frame>
-      <Frame label="My list: each card says where it's shared (Friends, with home_enabled), or Only you">
+      <Frame label="My list: each card says where it's shared (Friends, groups), or Only you">
         <div className="p-4">
           <ul className={GRID}>
             <li>

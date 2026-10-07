@@ -13,7 +13,7 @@ export default function ConversationNotFound() {
         title={t("notFound.title")}
         body={t("notFound.body")}
         action={
-          <ButtonLink href="/list" variant="secondary">
+          <ButtonLink href="/home" variant="secondary">
             {t("notFound.goToGroups")}
           </ButtonLink>
         }
