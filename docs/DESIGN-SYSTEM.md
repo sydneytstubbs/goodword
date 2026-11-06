@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.4.8 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
+**Version** 3.4.9 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -1195,7 +1195,7 @@ Technical details, when useful for support, go in a collapsed "Details" line.
 | Name prompt | What should friends call you? |
 | Leave group | Leave College crew? Your good words will leave this list too. |
 | Delete group | Delete College crew? This removes 42 good words for 6 people and can't be undone. |
-| First good word milestone | Your first good word. · Your friends will see it on their lists. |
+| First good word milestone | Your first good word. · Your friends will see it on Home. |
 | 10th good word milestone | Ten good words. · That's a list worth browsing. |
 | First-good-word prompt | What's something you'd tell these folks to watch? |
 | List didn't load | This list didn't load · Good Word is having a moment. Try again in a minute. |
@@ -1551,6 +1551,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.4.9 (2026-11-06):** Step 21 (drafted). The first-good-word milestone reads "Your friends will see it on Home." (6.6).
 - **v3.4.8 (2026-10-07):** Step 20, the flip. Home, the Home tab, and the Home row in the switcher are the only versions now (4.2.5, 4.2.8); the Groups tab and All groups are gone, and `g` then `h` goes Home (`g` then `s` still goes to your lists, which open Home). The "Share your list with friends?" sheet's **Choose** is a checklist in the sheet (5.20). The weekly digest follows Home (PRD F7.1). Copy in 6.6.
 - **v3.4.7 (2026-10-07):** Step 19. The title page with friends (5.7): the good words section has its own heading, "Good words" (`Check`, `heading`), like Where to watch; your vouch button sits under your good word, or at the top of the section when you haven't put one in. A good word's conversation row is a disclosure button (`aria-expanded`): `ChatCircle`, the count, the unseen dot, and the latest comment on one line; opened, the 3 newest comments, "See all 4 comments", and the "Add a comment…" field (5.17). With no comments it's the quiet "Say something" link, as on Home. Person view says "Your friend" for friends. Copy: "Nobody you know has vouched for this yet." (6.6).
 - **v3.4.6 (2026-10-07):** Step 18. The conversation under a good word (`?word=`) is the group conversation screen with "Jonah's good word" (or "Your good word") where the group name goes, with the `UserPlus` icon in place of the group dot (5.17). Its composer says "Everyone who can see Jonah's good word will see this", never naming who that is, with the placeholder "Say something about this…"; mention suggestions are people who can see the good word and whom you already know (4.2.11). Activity items for comments and mentions under a good word name whose good word it is instead of a group (4.2.13), and so does the mention email. A good word's author can delete any comment under it (PRD open question 16). Someone who can't see the good word gets the same "We couldn't find that page" as any unknown URL. Microcopy in 6.6.

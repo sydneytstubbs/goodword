@@ -1,6 +1,6 @@
 # Good Word: Brand Guide
 
-**Version** 2.0.1 (Editorial) · **Owner** Sydney · **Last updated** 2026-09-28
+**Version** 2.0.2 (Editorial) · **Owner** Sydney · **Last updated** 2026-11-06
 
 How Good Word presents itself, anywhere: the app, the marketing page, emails, invite previews, and the app icon. `DESIGN-SYSTEM.md` holds the exact tokens and components; this guide explains the brand they express. If the two ever disagree on a value, the design system wins.
 
@@ -8,7 +8,7 @@ How Good Word presents itself, anywhere: the app, the marketing page, emails, in
 
 ## 1. Positioning
 
-**Good Word is the private shelf of shows and movies your friends vouch for.**
+**Good Word is the private list of shows and movies your friends vouch for.**
 
 - **For** people who trust their friends' taste more than any algorithm.
 - **Unlike** streaming algorithms and public review sites, every pick comes from someone you know, with their name on it.
@@ -153,3 +153,9 @@ Quiet and quick. Things fade and settle a few pixels into place; nothing bounces
 
 - **v2.0.1 (2026-09-28):** Instrument Serif minimum is 24px, matching `DESIGN-SYSTEM.md` 3.2.2 (was 28px).
 - **v2.0 (2026-09-27):** Editorial direction.
+
+---
+
+## Changelog
+
+- **v2.0.2 (2026-11-06):** The positioning line says list, not shelf (PRD slice 21). Drafted by Claude; waiting on Sydney's review.

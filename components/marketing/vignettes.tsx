@@ -6,10 +6,11 @@ import { Icon } from "../icon";
 import { Comment } from "../domain/comment";
 import { Composer } from "../domain/composer";
 import { Poster } from "../domain/poster";
-import { RecCardGrid, RecCardRow } from "../domain/rec-card";
+import { RecCardHome, RecCardRow } from "../domain/rec-card";
 import { titleMeta } from "../domain/title-meta";
 import type { CommentData, Title } from "../domain/types";
 import { VisibilityLine } from "../domain/visibility-line";
+import { VouchButton } from "../domain/vouch-button";
 import { Button } from "../ui/button";
 import { AvatarStack } from "../ui/avatar";
 import { FilterChip, GroupDot } from "../ui/chip";
@@ -22,33 +23,44 @@ import { goodWords, groups, members, NOW, people, titles, viewer } from "./conte
 
 const noop = () => {};
 
-/** Hero phone (spec 6.2): a College crew shelf with four cards. */
-export function HeroShelfScreen() {
+/** A friend's good word as Home shows it (DS 4.2.2 home), for the vignettes. */
+function HomeCard({ title, words, comments, latest }: { title: Title; words: typeof goodWords.heist; comments?: number; latest?: string }) {
+  return (
+    <RecCardHome
+      card={{
+        title,
+        goodWords: words,
+        isNew: true,
+        ...(comments ? { comments: { count: comments, unseen: true } } : {}),
+        ...(latest ? { latestComment: { authorName: people.tess.name, text: latest, commentId: "c1", conversation: { kind: "group" as const, groupId: groups.college.id } } } : {}),
+      }}
+      viewerId={viewer.id}
+      href="#"
+      conversationHref="#"
+      whereToWatchHref="#"
+      vouchButton={<VouchButton vouched={false} putLabel={t("vouch.vouchToo")} onPut={noop} onEditNote={noop} onChangeGroups={noop} onTakeBack={noop} />}
+      now={NOW}
+    />
+  );
+}
+
+/** Hero phone (spec 6.2): Home, your friends' good words with their notes. */
+export function HeroHomeScreen() {
   return (
     <div className="flex h-full flex-col">
       <div className="h-11" />
       <div className="flex h-topbar items-center justify-between px-5">
         <span className="inline-flex items-center gap-1 text-heading text-default">
-          {groups.college.name}
+          {t("nav.home")}
           <Icon name="switcher" size={20} />
         </span>
         <span className="flex items-center gap-4 text-default">
           <Icon name="activity" size={24} />
-          <Icon name="share" size={24} />
         </span>
       </div>
-      <div className="flex flex-col gap-3 px-5 pt-1 pb-5">
-        <p className="text-title-l text-default">{groups.college.name}</p>
-        <div className="flex items-center gap-2">
-          <AvatarStack people={members.college} size={24} />
-          <span className="text-caption text-muted">{t("groups.members", { count: members.college.length })}</span>
-        </div>
-      </div>
-      <div className="grid flex-1 grid-cols-2 gap-x-3 gap-y-6 overflow-hidden px-5">
-        <RecCardGrid title={titles.nightFerry} goodWords={goodWords.nightFerry} href="#" isNew commentCount={12} viewerId={viewer.id} eager />
-        <RecCardGrid title={titles.moth} goodWords={goodWords.moth} href="#" viewerId={viewer.id} eager />
-        <RecCardGrid title={titles.lowTide} goodWords={goodWords.lowTide} href="#" viewerId={viewer.id} />
-        <RecCardGrid title={titles.heist} goodWords={goodWords.heist} href="#" viewerId={viewer.id} />
+      <div className="flex-1 overflow-hidden px-5">
+        <HomeCard title={titles.nightFerry} words={goodWords.nightFerry} comments={12} latest={t("marketing.how.homeLatest")} />
+        <HomeCard title={titles.lowTide} words={goodWords.lowTide} />
       </div>
     </div>
   );
@@ -75,13 +87,7 @@ export function ConfirmSheetVignette() {
         minRows={2}
       />
       <div className="mt-4">
-        <VisibilityLine
-          groups={[
-            { ...groups.college, memberCount: members.college.length },
-            { ...groups.girls, memberCount: members.girls.length },
-          ]}
-          peopleCount={11}
-        />
+        <VisibilityLine groups={[{ ...groups.college, memberCount: members.college.length }]} peopleCount={members.college.length} friends={{ on: true, count: 8 }} />
       </div>
       <Button variant="primary" size="lg" icon="add" fullWidth className="mt-4">
         {t("vouch.put")}
@@ -90,34 +96,17 @@ export function ConfirmSheetVignette() {
   );
 }
 
-function MiniShelf({ group, tone, children }: { group: { id: string; name: string }; tone: 1 | 2 | 3 | 4; children: React.ReactNode }) {
+/** How it works 02 (spec 6.4): your good word on a friend's Home. */
+export function HomeCardVignette() {
   return (
-    <div className="flex flex-col gap-4 rounded-card border border-subtle bg-surface-raised p-4 shadow-sm">
-      <p className="inline-flex items-center gap-2 text-heading text-default">
-        <GroupDot group={group} tone={tone} />
-        {group.name}
-      </p>
-      {children}
+    <div className="rounded-card border border-subtle bg-surface-raised px-5 shadow-sm md:px-6">
+      <HomeCard title={titles.nightFerry} words={goodWords.nightFerry.slice(0, 2)} />
     </div>
   );
 }
 
-/** How it works 02 (spec 6.4): the same good word on two shelves. */
-export function TwoShelvesVignette() {
-  return (
-    <div className="grid grid-cols-2 gap-3 md:gap-4">
-      <MiniShelf group={groups.college} tone={3}>
-        <RecCardGrid title={titles.nightFerry} goodWords={goodWords.nightFerry} href="#" viewerId={viewer.id} />
-      </MiniShelf>
-      <MiniShelf group={groups.girls} tone={4}>
-        <RecCardGrid title={titles.nightFerry} goodWords={[goodWords.nightFerry[0]]} href="#" viewerId={viewer.id} />
-      </MiniShelf>
-    </div>
-  );
-}
-
-/** How it works 03 (spec 6.4): a filtered shelf, every pick with a name on it. */
-export function FilteredShelfVignette() {
+/** How it works 03 (spec 6.4): a filtered list, every pick with a name on it. */
+export function FilteredListVignette() {
   const picks: Array<{ title: Title; words: typeof goodWords.heist }> = [
     { title: titles.heist, words: goodWords.heist },
     { title: titles.parking, words: goodWords.parking },
@@ -157,16 +146,16 @@ export function FilteredShelfVignette() {
 }
 
 /** Groups (spec 6.5): one shelf column. */
-export function ShelfColumn({
+export function ListColumn({
   group,
   tone,
   people: groupMembers,
-  shelf,
+  list,
 }: {
   group: { id: string; name: string };
   tone: 1 | 2 | 3 | 4;
   people: typeof members.college;
-  shelf: Array<{ title: Title; caption?: string }>;
+  list: Array<{ title: Title; caption?: string }>;
 }) {
   return (
     <div className="flex flex-col gap-5 rounded-card border border-subtle bg-surface-raised p-5 shadow-sm">
@@ -178,7 +167,7 @@ export function ShelfColumn({
         <AvatarStack people={groupMembers} size={24} ring="surface-raised" />
       </div>
       <ul className="flex flex-col gap-4">
-        {shelf.map(({ title, caption }) => (
+        {list.map(({ title, caption }) => (
           <li key={title.id} className="flex items-center gap-4">
             <Poster title={title} size="activity" />
             <div className="flex flex-col gap-1">

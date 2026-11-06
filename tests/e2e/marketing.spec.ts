@@ -20,7 +20,7 @@ test("one h1, the hero headline, and the spec's metadata", async ({ page }) => {
   await expect(page).toHaveTitle("Good Word: show and movie recs from your friends");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A private shelf of shows and movies your friends vouch for. No algorithm, no strangers.",
+    "A private list of shows and movies your friends vouch for. No algorithm, no strangers.",
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
 });

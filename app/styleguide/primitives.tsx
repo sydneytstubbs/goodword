@@ -552,7 +552,7 @@ function StatusComponents() {
         {milestone ? (
           <Milestone
             line="Your first good word."
-            body="Your groups will see it on their lists."
+            body="Your friends will see it on Home."
             onDismiss={() => setMilestone(false)}
           />
         ) : (

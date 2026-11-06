@@ -10,10 +10,10 @@ import { RevealObserver } from "@/components/marketing/reveal-observer";
 import {
   ConfirmSheetVignette,
   ConversationScreen,
-  FilteredShelfVignette,
-  HeroShelfScreen,
-  ShelfColumn,
-  TwoShelvesVignette,
+  FilteredListVignette,
+  HeroHomeScreen,
+  HomeCardVignette,
+  ListColumn,
 } from "@/components/marketing/vignettes";
 import { cn } from "@/lib/cn";
 import { t, tRich, type MessageKey } from "@/lib/messages";
@@ -70,7 +70,7 @@ function Hero() {
         </div>
         <div className="relative lg:col-span-5">
           <PhoneFrame label={t("marketing.hero.phoneAlt")} className="mx-auto max-w-90 lg:me-0 lg:max-w-80">
-            <HeroShelfScreen />
+            <HeroHomeScreen />
           </PhoneFrame>
           <QuoteCard
             quote={t("marketing.hero.quote")}
@@ -116,8 +116,8 @@ function Problem() {
 
 const STEPS = [
   { n: "01", title: "marketing.how.step1Title", body: "marketing.how.step1Body", alt: "marketing.how.step1Alt", vignette: <ConfirmSheetVignette /> },
-  { n: "02", title: "marketing.how.step2Title", body: "marketing.how.step2Body", alt: "marketing.how.step2Alt", vignette: <TwoShelvesVignette /> },
-  { n: "03", title: "marketing.how.step3Title", body: "marketing.how.step3Body", alt: "marketing.how.step3Alt", vignette: <FilteredShelfVignette /> },
+  { n: "02", title: "marketing.how.step2Title", body: "marketing.how.step2Body", alt: "marketing.how.step2Alt", vignette: <HomeCardVignette /> },
+  { n: "03", title: "marketing.how.step3Title", body: "marketing.how.step3Body", alt: "marketing.how.step3Alt", vignette: <FilteredListVignette /> },
 ] as const;
 
 function HowItWorks() {
@@ -164,31 +164,31 @@ function Groups() {
       />
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
         <div data-reveal>
-          <ShelfColumn
+          <ListColumn
             group={groups.college}
             tone={3}
             people={members.college}
-            shelf={[{ title: titles.nightFerry }, { title: titles.moth }, { title: titles.lowTide }]}
+            list={[{ title: titles.nightFerry }, { title: titles.moth }, { title: titles.lowTide }]}
           />
         </div>
         <div data-reveal data-reveal-index="1">
-          <ShelfColumn
+          <ListColumn
             group={groups.girls}
             tone={4}
             people={members.girls}
-            shelf={[
+            list={[
               { title: titles.parking },
-              { title: titles.lowTide, caption: t("marketing.groups.onTwoShelves") },
+              { title: titles.lowTide, caption: t("marketing.groups.onTwoLists") },
               { title: titles.heist },
             ]}
           />
         </div>
         <div data-reveal data-reveal-index="2">
-          <ShelfColumn
+          <ListColumn
             group={groups.book}
             tone={2}
             people={members.book}
-            shelf={[{ title: titles.salt }, { title: titles.weather }, { title: titles.choir }]}
+            list={[{ title: titles.salt }, { title: titles.weather }, { title: titles.choir }]}
           />
         </div>
       </div>
@@ -264,7 +264,8 @@ function WhatItIsnt() {
   );
 }
 
-const FAQ = [1, 2, 3, 4, 5, 6, 7] as const;
+// "Do I need a group?" (8) follows "Is it public?" (marketing spec 6.9).
+const FAQ = [1, 8, 2, 3, 4, 5, 6, 7] as const;
 
 function Faq() {
   return (

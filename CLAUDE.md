@@ -49,7 +49,7 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 18 | Conversations by scope | PRD 12, slice 18; F16.5 | In review |
 | 19 | Title page | PRD 12, slice 19; F16.4 | In review |
 | 20 | The flip | PRD 12, slice 20; F16.10 | In review |
-| 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Not started |
+| 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Drafted, waiting on review |
 
 Before starting a step, check PRD Section 15 for open questions that step depends on, and ask about any that are still open.
 

@@ -1,6 +1,6 @@
 # Good Word: Marketing Page Spec (v2, Editorial)
 
-**Version** 2.2 · **Last updated** 2026-09-29
+**Version** 2.3 · **Last updated** 2026-11-06
 
 Design and UX requirements for the single-page marketing site that explains Good Word. This version replaces the playful v1 direction with a calm, modern, editorial one. Written to be handed to Claude Code as the build brief.
 
@@ -19,14 +19,14 @@ Design and UX requirements for the single-page marketing site that explains Good
 
 ## 1. Product in one paragraph
 
-Good Word is a private place where small groups of friends keep a shelf of the shows and movies they'd vouch for. You belong to a few circles (college friends, the group chat, your book club), and each one has its own shelf. When you need something to watch, you pull from people whose taste you actually trust, and you can talk about it with them. Every pick has a real person's name on it. No algorithm picks, no public profiles, no star ratings.
+Good Word is a private list of the shows and movies your friends vouch for. You put in a good word once, and your friends see it on Home; you can also share it with your groups (college friends, the group chat, your book club), each with its own list. When you need something to watch, you pull from people whose taste you actually trust, and you can talk about it with them. Every pick has a real person's name on it. No algorithm picks, no public profiles, no star ratings.
 
 **Core messages the page must land:**
 1. **Humans do the recommending.** Every pick comes from a friend.
 2. **Small, private groups.** Your people, not strangers or influencers.
-3. **Vouching, not tracking.** You choose what goes on the shelf.
+3. **Vouching, not tracking.** You choose what goes on your list.
 4. **Fast.** Putting in a good word takes about ten seconds.
-5. **Talk about it.** Comment, mention friends, and keep spoilers covered, inside the group.
+5. **Talk about it.** Comment, mention friends, and keep spoilers covered, with only the people who can see it.
 
 ---
 
@@ -115,9 +115,9 @@ Order is fixed. All sections sit on `--surface` unless noted. Content max width 
 - **Eyebrow:** "Coming soon"
 - **Headline:** Take your friends' *word* for it.
   - `[ALT]` The show recs you'd actually trust.
-- **Subhead** (max 36ch): A private shelf of shows and movies your friends vouch for. No algorithm. No strangers. Just your people.
+- **Subhead** (max 36ch): A private list of shows and movies your friends vouch for. No algorithm. No strangers. Just your people.
 - **CTA:** primary cobalt button "See how it works" (scrolls to 6.4).
-- **Layout (desktop):** headline spans the left 7 columns, set very large. On the right 5 columns, a phone frame (7.6) showing a College crew shelf: 4 grid cards with posters and vouched-by rows. Overlapping the phone's lower-left edge, one white quote card (7.2): *"ep 3 is where it gets you. trust me."* — Priya. Everything straight, aligned to the grid.
+- **Layout (desktop):** headline spans the left 7 columns, set very large. On the right 5 columns, a phone frame (7.6) showing Home: friends' good words as `home` cards (DS 4.2.2), with their notes. Overlapping the phone's lower-left edge, one white quote card (7.2): *"ep 3 is where it gets you. trust me."* — Priya. Everything straight, aligned to the grid.
 - **Layout (mobile):** eyebrow, headline, subhead, CTA, then the phone frame full width with the quote card beneath it (not overlapping).
 
 ### 6.3 The problem
@@ -134,45 +134,46 @@ Order is fixed. All sections sit on `--surface` unless noted. Content max width 
 - **Headline:** Three things. That's the whole app.
 - Three steps in a **zig-zag** layout (alternating text left/right with a UI vignette), not a grid. Each step has a small `overline` number ("01", "02", "03"), a `display-m` title, and 1 to 2 lines of body.
   1. **Put in a good word.** Search a title, tap once, add a note if you like. About ten seconds.
-     *Vignette:* the confirm sheet (DS 5.4): The Night Ferry poster, the note field with "ep 3 is where it gets you", the visibility line "Visible to 2 groups · 11 people", and the cobalt "Put in a good word" button.
-  2. **It lands on your groups' shelves.** College friends, the group chat, your book club. Each group keeps its own shelf.
-     *Vignette:* two shelves side by side, labeled College crew and The girls, with The Night Ferry's card on both.
+     *Vignette:* the confirm sheet (DS 5.4): The Night Ferry poster, the note field with "ep 3 is where it gets you", the visibility line "Visible to your friends and College crew", and the cobalt "Put in a good word" button.
+  2. **Your friends see it on Home.** They see it the next time they open the app. Share it with a group too, if you like.
+     *Vignette:* a `home` card (DS 4.2.2): Priya and Jonah vouched for The Night Ferry, with Priya's note.
   3. **Pick from people you trust.** Filter by mood, length, and where it's streaming, and every pick still has a friend's name on it.
-     *Vignette:* a shelf with active filters "Comedy · Under 2 hours · Netflix" and three cards, one showing "Priya and Mo vouched for this."
+     *Vignette:* a list with active filters "Comedy · Under 2 hours · Netflix" and three cards, one showing "Priya and Mo vouched for this."
 
 ### 6.5 Groups (`#groups`)
 - **Eyebrow:** "Groups"
 - **Headline:** Different friends, different *taste*.
-- **Body:** You'd trust your film friend on a slow Korean thriller and your sister on a comfort rewatch. Keep a separate shelf for each circle.
-- **Visual:** three vertical "shelf" columns in white cards with hairline borders, each headed by a group name, member avatars, and a colored dot (Moss, Plum, Ochre): **College crew**, **The girls**, **Sunday book club**. Each column shows three stacked poster thumbnails with titles. Low Tide Club appears in two columns, with a small `caption` under the second: "On 2 shelves."
+- **Body:** You'd trust your film friend on a slow Korean thriller and your sister on a comfort rewatch. Start a group for each circle, each with its own list.
+- **Visual:** three vertical list columns in white cards with hairline borders, each headed by a group name, member avatars, and a colored dot (Moss, Plum, Ochre): **College crew**, **The girls**, **Sunday book club**. Each column shows three stacked poster thumbnails with titles. Low Tide Club appears in two columns, with a small `caption` under the second: "On 2 lists."
 
 ### 6.6 Talk about it (`#talk`)
 - **Eyebrow:** "Talk about it"
 - **Headline:** Finished it? Say so.
-- **Body:** Every title on your shelf has a conversation, just for that group. Mention a friend to pull them in. Mark spoilers so nobody gets ruined.
+- **Body:** Every good word has a conversation under it, for everyone who can see it, and each group has its own. Mention a friend to pull them in. Mark spoilers so nobody gets ruined.
 - **Visual:** a phone frame showing a conversation (DS 5.17) for The Night Ferry in College crew: Tess's comment "just finished ep 6. **@Priya** you were right", a spoiler cover "Spoiler from Mo · Tap to reveal", and the composer with its "Say something to College crew…" placeholder.
-- Beneath, one quiet line in `caption`: "Conversations stay inside the group. No one else can see them."
+- Beneath, one quiet line in `caption`: "Conversations stay with the people who can see them."
 
 ### 6.7 Humans only (full-bleed ink section)
 - Background `--inverse-surface` (ink), text `--inverse-text`. This is the page's one dramatic moment.
 - **Headline (display-xl, white):** Humans *only*.
 - Three statements stacked in a left-aligned column, each with a bold Inter lead and a muted continuation, separated by hairlines in `rgb(255 255 255 / 0.15)`:
-  - **Every pick has a name on it.** If it's on the shelf, a friend put it there.
+  - **Every pick has a name on it.** If it's on Home, a friend put it there.
   - **We don't watch you watch.** Nothing is logged unless you choose to vouch for it.
   - **No algorithm picks.** If none of your friends have vouched for a short horror movie yet, we'll just tell you.
 
 ### 6.8 What it isn't
-- A single centered-left line of phrases in Inter 20px, `--text-muted`, with a 1px strikethrough: ~~Star ratings~~ · ~~Public profiles~~ · ~~Followers~~ · ~~Endless feeds~~ · ~~Reviews nobody reads~~
+- A single centered-left line of phrases in Inter 20px, `--text-muted`, with a 1px strikethrough: ~~Star ratings~~ · ~~Public profiles~~ · ~~Followers~~ · ~~Endless scrolling~~ · ~~Reviews from strangers~~
 - Followed by, in Instrument Serif italic `display-m`: *Just your friends' good word.*
-- The struck list has an `aria-label`: "Good Word has no star ratings, public profiles, followers, endless feeds, or reviews."
+- The struck list has an `aria-label`: "Good Word has no star ratings, public profiles, followers, endless scrolling, or reviews from strangers."
 
 ### 6.9 FAQ (`#faq`)
 - **Headline:** Questions
 - Accessible accordion (native `<details>` and `<summary>`), full-width rows divided by hairlines, a plus that becomes a minus (CSS only). Question in Inter 18px/500, answer in `--text-muted`.
-  - **Is it public?** No. Groups are private and invite-only. Only people in a group can see its shelf and its conversations.
+  - **Is it public?** No. Only your friends and the people in your groups can see your good words. Nobody else can find you or your list.
+  - **Do I need a group?** No. Send your friend link to someone, and you'll see each other's good words on Home. Groups are for circles that want their own list.
   - **Is it just for movies?** Shows and movies to start. Restaurants and "who's your plumber" may come later.
-  - **Do I have to log everything I watch?** No. Only what you'd recommend. It's a shelf of favorites, not a diary.
-  - **Can we talk about what we watched?** Yes. Every title has a conversation for your group, with mentions and spoiler covers.
+  - **Do I have to log everything I watch?** No. Only what you'd recommend. It's a list of favorites, not a diary.
+  - **Can we talk about what we watched?** Yes. Every good word has a conversation under it, and each group has its own, with mentions and spoiler covers.
   - **Does it use AI?** Only behind the scenes, to match titles and fill in details. It never recommends anything on its own.
   - **When can I use it?** We're building it now. Coming soon.
   - **Is it free?** Yes, for now.
@@ -230,7 +231,7 @@ All built from DS v3 components and tokens.
 ### 8.2 Accessibility (WCAG 2.2 AA)
 - One `<h1>` (hero headline), logical heading order after that.
 - Landmarks: `<header>`, `<nav>`, `<main>`, `<section aria-labelledby>`, `<footer>`. "Skip to content" link first.
-- Phone-frame vignettes are `aria-hidden` for their inner UI and carry a text alternative describing what they show (for example, "A group shelf for College crew showing four shows with the friends who vouched for them").
+- Phone-frame vignettes are `aria-hidden` for their inner UI and carry a text alternative describing what they show (for example, "Home, showing the shows and movies your friends vouched for, with their notes").
 - All contrast pairs from DS 3.1.3; the ink section's muted text uses `rgb(255 255 255 / 0.72)` (verify ≥ 4.5:1 on ink).
 - Visible focus states everywhere. Full keyboard navigation including the menu overlay (focus trap, Esc) and FAQ.
 - Tap targets ≥ 44×44px.
@@ -242,7 +243,7 @@ All built from DS v3 components and tokens.
 
 ### 8.4 Performance and SEO
 - Lighthouse ≥ 95 in all four categories on mobile. LCP < 2.0s, CLS < 0.05. (Accepted for launch: Lighthouse's simulated mobile LCP measures 2.3–2.7s, because the hero headline waits for Instrument Serif; the real paint is about 0.2s.) The hero is text and HTML only.
-- Title: "Good Word: show and movie recs from your friends". Meta description: "A private shelf of shows and movies your friends vouch for. No algorithm, no strangers."
+- Title: "Good Word: show and movie recs from your friends". Meta description: "A private list of shows and movies your friends vouch for. No algorithm, no strangers."
 - Open Graph image (1200×630): paper background, the hero headline in Instrument Serif, the monogram in the corner (BRAND 4.2).
 - Favicon and Apple touch icon: the cobalt monogram.
 
@@ -289,6 +290,8 @@ Follow BRAND 3 and DS 6. On this page specifically:
 ---
 
 ## 12. Changelog
+
+- **v2.3 (2026-11-06):** Copy pass for the friends-first app (PRD slice 21): shelf becomes list throughout; the hero phone and How it works 02 show Home; Talk about it covers conversations under a good word; Humans only says Home; What it isn't strikes "Endless scrolling" and "Reviews from strangers" (the promises from the Home and friends spec, and no "feeds"); FAQ answers for friends, plus "Do I need a group?". Drafted by Claude; waiting on Sydney's review.
 
 - **v2.2 (2026-09-30):** The footer links to the Privacy and Terms pages (6.11).
 - **v2.1 (2026-09-29):** The sticky nav turns solid `--surface` after scrolling, not 90% (it read grey over the ink section). Two more invented titles, Borrowed Weather and The Tuesday Choir, so the Groups columns (6.5) don't repeat titles other than Low Tide Club. The simulated mobile LCP of 2.3–2.7s is accepted (8.4).
