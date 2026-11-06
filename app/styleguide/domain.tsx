@@ -128,7 +128,7 @@ function RecCards() {
           <RecCardRow title={titles.moth} goodWords={[]} href="#rec-card" viewerId={viewer.id} trailing={<VouchButton vouched={false} titleName={titles.moth.name} {...handlers} />} />
         </div>
       </Specimen>
-      <Specimen label="detail: friends first, each with your groups it's in; where to watch; the vouch button; the overview (title-l is its h1; shown lower here)" wide>
+      <Specimen label="detail: poster, title, and preview with View more; each good word with your groups it's in; the vouch button; then Where to watch and Details, collapsed (title-l is its h1; shown lower here)" wide>
         <Frame>
           <div className="p-5 md:p-8">
             <RecCardDetail
@@ -151,7 +151,7 @@ function RecCards() {
           </div>
         </Frame>
       </Specimen>
-      <Specimen label="detail, the title page: where to watch with the title, then the good words you can see, yours first, each shared with friends with its conversation collapsed beneath it" wide>
+      <Specimen label="detail, the title page: the good words you can see, yours first, each read as the first comment of its conversation, open beneath it; then Where to watch and Details, collapsed" wide>
         <Frame>
           <div className="p-5 md:p-8">
             <RecCardDetail

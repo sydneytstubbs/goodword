@@ -1,10 +1,11 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Step 2 acceptance (PRD F2, slice 2): one person creates and invites,
 // another joins from the link; privacy between groups; owner actions.
 test.describe("groups", () => {
   test.skip(!live, "needs the Supabase environment variables");
+  test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
   test.describe.configure({ mode: "serial" });
 
   const users: TestUser[] = [];

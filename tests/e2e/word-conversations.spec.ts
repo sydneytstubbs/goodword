@@ -128,7 +128,7 @@ test.describe("conversations under a good word", () => {
   test("Home's conversation row opens the conversation under the good word", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/home");
     const card = page.getByRole("article", { name: "Jonah vouched for The Night Ferry" });
-    await expect(card).toContainText("Priya: @Jonah the lighthouse bit got me");
+    await expect(card).toContainText("Priya @Jonah the lighthouse bit got me");
     await card.getByRole("link", { name: /1 comment/ }).click();
     await expect(page).toHaveURL(new RegExp(`conversation\\?word=${word}`));
   });

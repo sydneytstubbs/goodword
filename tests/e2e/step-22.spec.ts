@@ -10,8 +10,8 @@ import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, ope
 
 const base = 900_000_000 + Math.floor(Math.random() * 90_000_000);
 const titles = {
-  ferry: { type: "tv", tmdbId: base, name: "The Night Ferry", year: 2024, accent: "plum", genres: ["Drama"], overview: "A night ferry crosses the same water every evening." },
-  heist: { type: "movie", tmdbId: base + 1, name: "Grandma's Heist", year: 2023, accent: "clay", genres: ["Comedy"], overview: null },
+  ferry: { type: "tv", tmdbId: base, name: "The Night Ferry", year: 2024, accent: "plum", genres: [{ id: 18, name: "Drama" }], overview: "A night ferry crosses the same water every evening." },
+  heist: { type: "movie", tmdbId: base + 1, name: "Grandma's Heist", year: 2023, accent: "clay", genres: [{ id: 35, name: "Comedy" }], overview: null },
 };
 const ago = (hours: number) => new Date(Date.now() - hours * 3_600_000).toISOString();
 
@@ -77,8 +77,9 @@ test.describe("step 22", () => {
     await expect(ferry.getByRole("link", { name: "The Night Ferry" }).first()).toHaveAttribute("href", `/title/tv/${titles.ferry.tmdbId}`);
     // The note reads as the first comment; no type, year, or where to watch.
     await expect(ferry).toContainText("Jonah strange and perfect");
-    await expect(ferry).not.toContainText("2024");
-    await expect(ferry).not.toContainText("Series");
+    // The only "Series · 2024" is the typographic fallback poster's (DS 4.2.1), hidden from screen readers.
+    await expect(ferry.getByText("Series · 2024")).toHaveCount(1);
+    await expect(ferry.locator('[aria-hidden="true"]').getByText("Series · 2024")).toHaveCount(1);
     await expect(ferry.getByRole("link", { name: /Where to watch/ })).toHaveCount(0);
     await expect(ferry.getByRole("link", { name: /Add a comment/ })).toBeVisible();
     await expect(ferry.getByRole("button", { name: "Vouch too The Night Ferry" })).toBeVisible();

@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { groupsEnabled } from "@/lib/flags";
 import { fullTime, nameList, relativeTime, runtime } from "@/lib/format";
@@ -177,7 +177,7 @@ export function CollapsibleSection({
 }) {
   const Heading = `h${headingLevel}` as const;
   const [open, setOpen] = useState(defaultOpen);
-  const regionId = `${id}-content`;
+  const regionId = useId();
   useEffect(() => {
     const fromHash = () => {
       if (window.location.hash === `#${id}`) setOpen(true);
@@ -187,8 +187,9 @@ export function CollapsibleSection({
     return () => window.removeEventListener("hashchange", fromHash);
   }, [id]);
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-20 border-b border-subtle">
-      <Heading id={`${id}-heading`} className="text-heading text-default">
+    // Not a landmark: its heading gives it structure, and the page can hold two (the styleguide does).
+    <div id={id} className="scroll-mt-20 border-b border-subtle">
+      <Heading className="text-heading text-default">
         <button
           type="button"
           aria-expanded={open}
@@ -204,7 +205,7 @@ export function CollapsibleSection({
       <div id={regionId} hidden={!open} className="pb-6 pt-1">
         {children}
       </div>
-    </section>
+    </div>
   );
 }
 

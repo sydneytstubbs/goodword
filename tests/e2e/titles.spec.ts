@@ -70,8 +70,10 @@ test.describe("titles", () => {
 
     // No posters from TMDB: typographic fallbacks, never an image.
     await expect(results.first()).toContainText("The Night Ferry");
-    await expect(results.first()).toContainText("Series · 2024");
-    await expect(results.nth(1)).toContainText("Film");
+    // Results show the year only (DS 4.2.4, v3.5.0).
+    await expect(results.first()).toContainText("2024");
+    await expect(results.first()).not.toContainText("Series");
+    await expect(results.nth(1)).not.toContainText("Film");
     await expect(sheet.locator("img")).toHaveCount(0);
     await expectNoViolations(page);
 

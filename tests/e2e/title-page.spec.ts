@@ -85,7 +85,7 @@ test.describe("the title page", () => {
 
   const goodWords = (page: Page) => page.getByRole("group", { name: "Good words" });
 
-  test("Priya sees all three good words, hers first, and the conversation under Jonah's opens in place", async ({ browser }) => {
+  test("Priya sees all three good words, hers first, with the conversation under Jonah's open", async ({ browser }) => {
     const page = await signedIn(browser, priya, path);
     const section = goodWords(page);
     await expect(section.getByRole("listitem").filter({ has: page.getByRole("figure") })).toHaveCount(3);
@@ -93,17 +93,15 @@ test.describe("the title page", () => {
     await expect(section).toContainText("the ferry scene");
     await expect(section).toContainText("strange and perfect");
     await expect(section).not.toContainText("the lighthouse”");
-    // Where to watch comes with the title, before the good words (DS 5.7).
+    // The good words come before where to watch, which is collapsed (PRD F16.4, v1.6.0).
     const order = await page.getByRole("heading", { name: /^(Where to watch|Good words)$/ }).allTextContents();
-    expect(order).toEqual(["Where to watch", "Good words"]);
+    expect(order).toEqual(["Good words", "Where to watch"]);
+    await expect(page.getByRole("button", { name: "Where to watch" })).toHaveAttribute("aria-expanded", "false");
 
-    const toggle = section.getByRole("button", { name: /^1 comment.*Under Jonah's good word/ });
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    // The conversation under Jonah's good word is open.
+    await expect(section.getByRole("list", { name: "Comments, Under Jonah's good word" })).toContainText("the lighthouse bit got me");
     await expectNoViolations(page);
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    await expect(section.getByRole("list", { name: "Comments" })).toContainText("the lighthouse bit got me");
-    await section.getByRole("link", { name: "See 1 comment" }).click();
+    await section.getByRole("link", { name: /^Add a comment….*Under Jonah's good word$/ }).click();
     await expect(page).toHaveURL(new RegExp(`conversation\\?word=${words.jonah}`));
   });
 
@@ -126,11 +124,11 @@ test.describe("the title page", () => {
     await expect(section).toContainText("the ferry scene");
     await expect(section).not.toContainText("ep 3 is where it gets you");
     await expect(section).not.toContainText("strange and perfect");
-    await section.getByRole("button", { name: /1 comment/ }).click();
-    await expect(section.getByRole("list", { name: "Comments" })).toContainText("the lighthouse bit got me");
+    // Open under the good word (PRD F16.4, v1.6.0).
+    await expect(section.getByRole("list", { name: /^Comments, Under Jonah's good word$/ })).toContainText("the lighthouse bit got me");
 
     // Jonah's name opens his person view: his good words Mo can see.
-    await section.getByRole("link", { name: "Jonah" }).click();
+    await section.getByRole("link", { name: "Jonah", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Jonah's good words" })).toBeVisible();
     await expect(page.getByText("Your friend")).toBeVisible();
     await expect(page.getByRole("link", { name: /^The Night Ferry/ })).toBeVisible();

@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
-import { admin, createUser, deleteUsers, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Copy link in the group invite sheet (DS 4.2.7) copies the link, with the
 // Clipboard API, without it (in-app browsers), and when it's refused.
 test.describe("copy the group invite link", () => {
   test.skip(!live, "needs the Supabase project");
+  test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
   const users: TestUser[] = [];
   const crew = randomUUID();
   const code = randomUUID().replaceAll("-", "");

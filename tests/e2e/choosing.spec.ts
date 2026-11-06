@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Step 5 acceptance (PRD F5.4, F5.5, F6, slice 5): J4 end to end, filters
 // that survive refresh and Back, paging, New badges and counts, and title
@@ -35,6 +35,7 @@ const byKey = Object.fromEntries(seeds.map((s) => [s.key, s]));
 
 test.describe("choosing", () => {
   test.skip(!live, "needs the Supabase environment variables");
+  test.skip(!groupsOn, "built on group lists and group conversations; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
   test.describe.configure({ mode: "serial" });
 
   const users: TestUser[] = [];
@@ -126,6 +127,7 @@ test.describe("choosing", () => {
   const cards = (page: Page) => page.getByRole("list").filter({ has: page.getByRole("link", { name: /Vouched for by/ }) }).getByRole("listitem");
 
   test("New since your last visit: badges on cards and a count in the switcher", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const page = await signedIn(browser, tess, `/list/${crew}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("College crew");
     await expect(page.getByRole("link", { name: /^Low Tide Club, film, 2024\. .* New\.$/ })).toBeVisible();

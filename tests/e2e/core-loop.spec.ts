@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Step 4 acceptance (PRD F4, F5, slice 4): put in a good word from Add and
 // from a title, one card per title per group, edit, change groups, take back
@@ -18,6 +18,7 @@ const titles = {
 
 test.describe("the core loop", () => {
   test.skip(!live, "needs the Supabase environment variables");
+  test.skip(!groupsOn, "built on group lists and group conversations; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
   test.describe.configure({ mode: "serial" });
 
   const users: TestUser[] = [];
@@ -85,6 +86,7 @@ test.describe("the core loop", () => {
   }
 
   test("J3: put in a good word from Add, see it on both lists, with the audience named", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const page = await signedIn(browser, priya, `/list/${crew}`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("College crew");
     await expect(page.getByRole("heading", { level: 2, name: "Nothing here yet" })).toBeVisible();

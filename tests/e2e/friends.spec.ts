@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Friends (PRD F16.1, J8 steps 1 and 2), behind the home_enabled flag
 // (F16.10). Two people on two "phones": a friend link from one, accepted by
@@ -83,6 +83,7 @@ test.describe("friends", () => {
   });
 
   test("a request from your groups, accepted from Activity", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const tessPage = await signedIn(browser, tess, "/you/friends");
     const fromGroups = tessPage.getByRole("region", { name: "People from your groups" });
     await expect(fromGroups.getByText("In College crew").first()).toBeVisible();
@@ -102,6 +103,7 @@ test.describe("friends", () => {
   });
 
   test("removing a friend asks first, and is quiet", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const tessPage = await signedIn(browser, tess, "/you/friends");
     await tessPage.getByRole("button", { name: "More actions for Mo" }).click();
     await tessPage.getByRole("menuitem", { name: "Remove friend" }).click();
@@ -115,6 +117,7 @@ test.describe("friends", () => {
   });
 
   test("with the flag, a group's list offers its people once", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const moPage = await signedIn(browser, mo, `/list/${crew}`);
     const prompt = moPage.getByRole("complementary", { name: "Add friends from College crew" });
     await expect(prompt).toBeVisible();

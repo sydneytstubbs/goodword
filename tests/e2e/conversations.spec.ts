@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Step 6 acceptance (PRD F13, F14, J6, slice 6): on two devices, a mention
 // shows in Activity within seconds, a spoiler stays covered (and out of the
@@ -16,6 +16,7 @@ const moth = { type: "movie", tmdbId: base + 1, name: "Moth Season" };
 
 test.describe("conversations", () => {
   test.skip(!live, "needs the Supabase environment variables");
+  test.skip(!groupsOn, "built on group lists and group conversations; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
   test.describe.configure({ mode: "serial" });
 
   const users: TestUser[] = [];
@@ -91,6 +92,7 @@ test.describe("conversations", () => {
   }
 
   test("J6: a mention reaches Activity within seconds, and a spoiler stays covered until revealed", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const priyaPage = await signedIn(browser, priya, titlePath(ferry));
     // Jonah and Tess joined College crew, and Bea joined The girls.
     await expect(activityLink(priyaPage, 3)).toBeVisible();

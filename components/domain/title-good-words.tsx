@@ -106,7 +106,7 @@ export function TitleGoodWords({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <figcaption className="flex flex-wrap items-center gap-x-2">
             {mine ? (
-              <span className="inline-flex min-h-target items-center text-body-strong text-default">{t("common.you")}</span>
+              <span className="text-body-strong text-default">{t("common.you")}</span>
             ) : (
               <NextLink
                 href={`/people/${g.person.id}`}

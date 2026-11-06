@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Friends as an audience (PRD F16.2), behind the home_enabled flag (F16.10).
 // Priya has the flag and a friend (Jonah) and is in College crew with Tess;
@@ -83,6 +83,7 @@ test.describe("friends as an audience", () => {
   }
 
   test("with the flag: Friends on and groups off, the toast names friends, and My list shows it", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const page = await signedIn(browser, priya, `/list/${crew}`);
     await page.getByRole("main").getByRole("button", { name: "Put in a good word" }).click();
     const sheet = await pick(page, "The Night Ferry");
@@ -115,6 +116,7 @@ test.describe("friends as an audience", () => {
   });
 
   test("with the flag: Change who sees it turns friends off", async ({ browser }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     const page = await signedIn(browser, priya, `/title/tv/${base}`);
     await page.getByRole("button", { name: "Your good word" }).click();
     await page.getByRole("menuitem", { name: "Change who sees it" }).click();

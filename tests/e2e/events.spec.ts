@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Step 9 (PRD 11, slice 9): events fire from their flows, and /admin/metrics
 // shows them to admins only. Priya owns College crew; Jonah joins from the
@@ -55,6 +55,7 @@ test.describe("measurement", () => {
   };
 
   test("invite opened signed out, sign-in, and joining", async ({ browser, page }) => {
+    test.skip(!groupsOn, "goes through group screens; runs with NEXT_PUBLIC_GROUPS_ENABLED=true (PRD F16.7)");
     await page.goto(`/join/${code}`);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("College crew");
     await expect.poll(async () => (await eventsOf(null, "invite_link_opened")).some((p) => p.group_id === crew && p.signed_in === false)).toBe(true);
