@@ -50,10 +50,13 @@ Work through these steps in order. Update this table when a step is reviewed and
 | 19 | Title page | PRD 12, slice 19; F16.4 | In review |
 | 20 | The flip | PRD 12, slice 20; F16.10 | In review |
 | 21 | Copy pass: marketing page, brand line, onboarding | PRD 12, slice 21 | Not started |
+| 22 | Image-first Home, title page, and Add; groups behind a flag | PRD 12, slice 22; F16.3, F16.4, F16.7 | In review |
 
 Before starting a step, check PRD Section 15 for open questions that step depends on, and ask about any that are still open.
 
 Steps 14 to 19 shipped behind the `home_enabled` flag (PRD F16.10). Step 20 turned it on for everyone and the code no longer reads it; the column itself is dropped in a later cleanup.
+
+Groups are behind `NEXT_PUBLIC_GROUPS_ENABLED` (`lib/flags.ts`), off unless set to `true` (PRD F16.7). With it off, hide group entry points; never delete group code or data.
 
 ---
 
@@ -87,7 +90,7 @@ Steps 14 to 19 shipped behind the `home_enabled` flag (PRD F16.10). Step 20 turn
 Next.js 16 has breaking changes from older versions; see `AGENTS.md` and `node_modules/next/dist/docs/` before writing Next.js code.
 
 **Environment variables** (never commit values; keep `.env.example` current):
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, `EMAIL_API_KEY` (Resend, from step 1), and `ANTHROPIC_API_KEY` (Add recs, from step 11). For database migrations and auth settings: `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`. If one is missing, tell Sydney which one and where to get it; don't work around it.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `TMDB_API_READ_TOKEN`, `APP_URL`, `EMAIL_API_KEY` (Resend, from step 1), `ANTHROPIC_API_KEY` (Add recs, from step 11), and `NEXT_PUBLIC_GROUPS_ENABLED` (the groups flag, step 22; empty means off). For database migrations and auth settings: `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`. If one is missing, tell Sydney which one and where to get it; don't work around it.
 
 ---
 

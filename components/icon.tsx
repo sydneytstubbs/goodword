@@ -11,6 +11,7 @@ import {
   DotsThree,
   EyeSlash,
   GoogleLogo,
+  Info,
   House,
   Images,
   GearSix,
@@ -42,6 +43,9 @@ export const icons = {
   close: X,
   back: CaretLeft,
   switcher: CaretDown,
+  // Collapsible sections on the title page (DS 5.7)
+  expand: CaretDown,
+  details: Info,
   share: ShareNetwork,
   copyLink: LinkSimple,
   settings: GearSix,

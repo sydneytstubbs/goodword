@@ -1,6 +1,6 @@
 # Good Word: Product Requirements (MVP)
 
-**Version** 1.5.0 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-10-06
+**Version** 1.6.0 · **Status** Ready to build · **Owner** Sydney (product and design) · **Last updated** 2026-11-06
 
 The build brief for the Good Word web app. It defines **what** the product does: scope, user journeys, screens, business rules, data, integrations, and the build order. **How** things look, behave, and read is defined in `DESIGN-SYSTEM.md`, which this document references by section number (for example, DS 5.4).
 
@@ -805,20 +805,22 @@ Home answers one question the moment the app opens: what are my friends watching
 - **One card per title.** If Jonah and Tess both vouch for The Night Ferry, that's one card with both names. You're named on it too when you've vouched.
 - **Newest first.** A newly visible good word moves its title to the top. Comments never reorder anything; they show as an unseen dot on the card.
 - **No ranking.** Nothing is sorted by engagement, and Home has no sort control. No suggested titles or suggested people, ever.
-- **It ends.** Cards new since your last visit come first, then a "You're all caught up" marker. Older cards load 24 at a time on a tap ("Show earlier good words"), never automatically, so there's no endless scrolling.
+- **It keeps what's been said.** Home is a lasting collection of your friends' good words, not just what's new. Cards new since your last visit come first, then a "You're all caught up" marker, then the 24 most recent earlier cards, always shown, so Home is never blank just because nobody vouched this week. More earlier cards load 24 at a time on a tap ("Show earlier good words"), never automatically, so there's still no endless scrolling (v1.6.0).
+- **Empty only when nobody has vouched.** Home is empty only when nobody you can see has ever put in a good word.
 - **Last visit** is stored per person and updates the way F5.5 does: when you leave Home, or after 10 seconds on it.
 - **Imports stay quiet.** Good words with source `import` don't make or move cards on their own. Friends see one line per import instead: "Luis added 40 titles to their list", counting only the good words that viewer can see, linking to Luis's person view (F8). If another person vouches for one of those titles, the card appears as usual and lists Luis too.
 - **Group chip.** A card shows the group's chip only when its good words reached you through a group and not through friendship.
 - **Filters.** The filter bar's type, services, genres, and length filters (F5.4) work on Home as on a list, and their state lives in the URL. The caught-up marker stays between new and older cards.
 - **Live updates.** The "N new good words" pill (F5.6) works on Home for good words you can see.
 
-**The card** (DS 4.2.2, `home` variant) leads with the friend's words, not the poster:
-- **Who:** the people who vouched, newest first: "Jonah", "Jonah and Tess", "Jonah, Tess and 2 more". You're named when you've vouched too.
-- **Note:** the newest voucher's note in full, exactly as typed, never truncated. With several notes, "See all 3 good words" opens title detail.
-- **Title:** poster, title, type, and year. Tapping opens title detail.
-- **Conversation:** comment count and one line of the latest comment (F16.5). A spoiler comment never previews. With no comments, a quiet "Say something", not a zero.
-- **Actions:** Comment, **Vouch too** (opens the confirm sheet with the title chosen; reads "Your good word" once you've vouched), and Where to watch.
-- **Not on the card:** hearts, likes, view counts, double-tap, or any button that shares outside Good Word.
+**The card** (DS 4.2.2, `home` variant) is image-first, laid out like a photo in a friends' app: who, the poster, the actions, then the words (v1.6.0, replacing "leads with the friend's words"):
+- **Who:** the people who vouched, newest first: "Jonah", "Jonah and Tess", "Jonah, Tess and 2 more", with when. You're named when you've vouched too.
+- **Poster:** large, the card's main visual. Tapping it opens the title page.
+- **Actions:** Comment and **Vouch too** (opens the confirm sheet with the title chosen; reads "Your good word" once you've vouched), right under the poster.
+- **Title:** the title's name only. No type, year, runtime, genres, or other title data on the card; that's on the title page.
+- **Note, as the first comment:** the newest note from someone else, in full, exactly as typed, shown as the first line of the conversation ("**Jonah** strange and perfect"). It stays a note (F4): it's stored on the good word and travels with it. With several notes, "See all 3 good words" opens the title page.
+- **Conversation:** "See all 4 comments", then one line of the latest comment (F16.5). A spoiler comment never previews. Then "Add a comment…", which opens the conversation with the composer ready.
+- **Not on the card:** hearts, likes, view counts, double-tap, where to watch (on the title page), or any button that shares outside Good Word.
 
 **States** (DS 5.12)
 
@@ -826,7 +828,7 @@ Home answers one question the moment the app opens: what are my friends watching
 |---|---|
 | Empty, no friends and no groups | Your friend link and "Start your own list" with **Put in a good word** |
 | Friends or groups, nothing from anyone yet | "Nothing from your friends yet." with your friend link |
-| Nothing new | The caught-up marker, **Put in a good word**, and "Show earlier good words" |
+| Nothing new | The caught-up marker with **Put in a good word**, then the most recent earlier cards and "Show earlier good words" |
 | No results | "Nobody's vouched for a Netflix movie yet." + Clear filters |
 | Loading | 4 skeleton cards |
 | Error | Error state + Retry |
@@ -836,17 +838,21 @@ Home answers one question the moment the app opens: what are my friends watching
 - Given Jonah and Tess both shared The Night Ferry with friends, when their friend Priya opens Home, then she sees one card naming both, with Tess's note if hers is newer.
 - Given a new comment on an older title, then its card doesn't move, and it shows an unseen dot.
 - Given Luis imports 40 titles shared with friends, then his friends' Home shows one line, "Luis added 40 titles to their list", and no card for each.
-- Given 3 cards are new since Priya's last visit, then they come first, then "You're all caught up", and older cards appear only when she taps "Show earlier good words".
+- Given 3 cards are new since Priya's last visit, then they come first, then "You're all caught up", then up to 24 earlier cards; more appear only when she taps "Show earlier good words".
+- Given nothing is new since Priya's last visit and her friends have vouched before, then Home shows "You're all caught up" and her friends' earlier good words, never an empty screen.
 - Given Jonah shared a good word only with College crew, when Priya (his friend, not in College crew) opens Home, then it isn't there; and for Tess (in College crew, not his friend) it's there with the College crew chip.
 
 #### F16.4 Title page (`/title/[type]/[tmdbId]`)
-Every title has one page at one URL, whoever opens it. What appears on it depends on who's looking. This replaces F6's content order.
+Every title has one page at one URL, whoever opens it. What appears on it depends on who's looking. This replaces F6's content order. People come here for their friends' take, so the conversation comes before the title's data (v1.6.0).
 
-1. **Header:** poster, title, meta, genres, and where to watch, as F6.
-2. **Good words from your people:** every good word you can see, newest first: who, their note, when. Yours sits first; if you don't have one, a **Put in a good word** prompt takes its place.
-3. **A conversation under each good word** (F16.5), collapsed to its count and latest comment; it opens in place.
-4. **Group conversations:** each of your groups gets its own labeled section ("In College crew"), with the chip row and default as F6 and F13. Unchanged.
-5. Overview.
+1. **Poster:** large, at the top.
+2. **Title**, right under it, then a short preview: one meta line (type, year, runtime or seasons) and the overview to 2 lines, with **View more** to read the rest in place.
+3. **Good words from your people:** every good word you can see, newest first: who and when, with the note shown as the first comment of the conversation under it. Yours sits first; if you don't have one, a **Put in a good word** prompt takes its place.
+4. **A conversation under each good word** (F16.5), open: its 3 newest comments, "See all", and "Add a comment…".
+5. **Group conversations** (only with the groups flag on, F16.7): each of your groups gets its own labeled section ("In College crew"), as F6 and F13.
+6. **More about the title**, in sections collapsed by default: **Where to watch** (as F6, with JustWatch attribution) and **Details** (type, year, runtime or seasons, genres, original title). A link to `#where-to-watch` opens that section.
+
+- Cast and crew aren't shown: the title cache doesn't hold them (section 8). Adding them means fetching TMDB credits and is its own decision.
 
 - The composer always says who will see a comment before you type: "College crew will see this", or "Everyone who can see Jonah's good word will see this". It never names a group or count the viewer can't see (rule 4), which is why it doesn't say "Jonah's friends" when the good word also went to groups.
 - Anyone signed in can open any title's page. It shows only what passes F16.6, with no count or hint of anything else.
@@ -896,11 +902,18 @@ Groups keep everything they have and move one level down in the app.
 
 The case for keeping groups is the one on the marketing page: different friends, different taste. Home is everyone; a group is the film nerds.
 
+**Groups flag (v1.6.0).** Groups are switched off for now, behind `NEXT_PUBLIC_GROUPS_ENABLED` (off unless set to `true`; `lib/flags.ts`). Groups may come back later as part of group messaging rather than as lists of their own; that isn't built. With the flag off:
+- **Hidden:** the switcher on Home, the rail's group list, My list's Groups section and group filter, Create a group, group toggles in the audience picker (Friends is the only choice), group chips, group conversations on the title page, "People from your groups" on Friends, and group join items in Activity. The Invite action on the "nobody else can see this" toast opens Friends.
+- **Not reachable:** `/groups/*`, `/list/[groupId]`, and group invite links (`/join/[code]` for a group) are 404s. Friend links work as before.
+- **Kept:** every group, membership, share, and conversation stays in the database, and visibility doesn't change (F16.6): a good word shared into a group still reaches its members, on Home and the title page, without a chip. Changing who sees a good word keeps the groups it's already in. A Home card whose conversation is a group's still opens it, so no conversation becomes unreachable. The visibility line still names a group a good word is already in, so it never understates who can see it.
+- **Not changed:** emails. The weekly digest still includes group conversation summaries; see open question 17.
+
 #### F16.8 Navigation
 - **Tab bar:** Home · Add (center) · My list. The Activity bell stays in the header (6.2).
 - **Home's bar** holds the switcher: Home first, then each group (with its New count), then Create a group. Picking a group opens its list as today. All groups is gone; `/list/all` redirects to `/home`.
 - **Default route:** signed in, `/` and `/list` go to Home, and so does finishing sign-in without an invite.
-- **Desktop rail:** Put in a good word, Home, Activity, My list, then the group list.
+- **Desktop rail:** Put in a good word, Home, Activity, My list, then the group list (only with the groups flag on, F16.7).
+- **With the groups flag off,** Home has no switcher: the header holds the wordmark and the Activity bell, and Home starts with its filters.
 - **Tapping a person's name** opens their person view (F8): the good words of theirs you can see (decision 8).
 
 #### F16.9 Activity, email, and live updates
@@ -1166,6 +1179,7 @@ Build in this order. Each slice ends with a phone-testable demo. Stop after each
 | **19. Title page** | Title detail shows what each viewer may see, in F16.4's order, with a conversation under each good word | F16.6's acceptance criteria pass as RLS tests, by page, URL, and API |
 | **20. The flip** | Home becomes the default for everyone; friends seeded from shared groups; the "Share your list with friends?" prompt; digest covers Home; All groups redirects; the flag and old paths removed | A flag-free account gets the prompt once and lands on Home; nothing became more visible without its author |
 | **21. Copy pass** | Marketing page, BRAND.md's positioning line, onboarding, and FAQ rewritten for a friends-first app with "list" | The marketing spec and page agree; the promises in F16's source spec ("Followers", "Public profiles", "Endless scrolling", "Reviews from strangers" stay crossed out) still hold |
+| **22. Image-first Home, title page, and Add; groups behind a flag** | Home cards led by the poster, with the note as the first comment and no title data; earlier cards always shown under the caught-up marker; the title page in F16.4's v1.6.0 order with Where to watch and Details collapsed; a lighter Add sheet; the groups flag, off by default (F16.7) | F16.3's and F16.4's acceptance criteria pass; with the flag off no group entry point shows and every existing good word, list, and conversation still works |
 
 **Across every slice:** each new screen meets DS 12.1 before the slice is called done, and is checked on iOS Safari first.
 
@@ -1232,11 +1246,15 @@ Decide before the slice that needs them.
 | 14 | Does a good word shared only into groups also get a conversation under it, beside the group's conversation? | **Decided (2026-10-07): no.** Only friends-shared good words get a conversation under them; group-only good words are talked about in the group's conversation, as today (F16.5) | Slice 18 |
 | 15 | Limits for friends | **Decided (2026-10-06): no limits** on friends or friend requests (F16.1) | Slice 14 |
 | 16 | Who can delete comments under a good word, besides their authors? | **Decided (2026-10-07): only the good word's author**, the way a group owner can in a group conversation (F13, F16.5) | Slice 18 |
+| 17 | With groups off, should the weekly digest drop its group conversation summaries? | Open. Left as is in slice 22: email is unchanged, and its links still work | Before groups-off ships to more people |
+| 18 | Should notes move into the conversation as real first comments (editable there, counted, 500 characters)? | Open. Slice 22 shows the note as the first comment but keeps it on the good word (140 characters, travels with it to every audience) | Before a later slice |
+| 19 | Cast and crew on the title page | Open. Needs TMDB credits fetched and cached (9.1); not in slice 22 | Before a later slice |
 
 ---
 
 ## 16. Changelog
 
+- **v1.6.0 (2026-11-06):** Step 22, from Sydney's "Feed, Movie Details & Shelf: UX Updates" (2026-11-06): image-first, social-first, with progressive disclosure. **Home** (F16.3): the card leads with the poster, with who above it and Comment and Vouch too right under it, then the title's name, the note shown as the first comment, the latest comment, and "Add a comment…"; type, year, and Where to watch leave the card. Home keeps what's been said: the 24 most recent earlier cards always show under "You're all caught up", and "Show earlier good words" still adds 24 at a time, so Home ends (no endless scrolling). **Title page** (F16.4): poster, title, a short preview with View more, then the good words with their conversations open, then group conversations (flag on only), then Where to watch and Details in collapsed sections; genres move into Details. **Add** (DS 5.4): bigger posters in results with only the year, and a poster-first confirm step. **Groups** (F16.7): behind `NEXT_PUBLIC_GROUPS_ENABLED`, off by default; every group entry point is hidden and group routes are 404s, with nothing deleted and visibility unchanged. Open questions 17 to 19 added. The word "shelf" in the source spec is read as "list" (v1.4.0).
 - **v1.5.0 (2026-10-07):** Step 20, the flip, live for everyone (Sydney's call: the only account it affects yet is hers). Home is the default and the first tab for everyone; `/list` and `/list/all` go to Home; Friends, friends as an audience, conversations under good words, the title page, and person view for friends are on for everyone, and the code no longer reads `home_enabled`. People who share a group became friends once (`friendships.seeded`; rerunning the seeding adds nothing new). Nothing became more visible: existing good words keep `friends_shared_at` empty until their author shares them. The "Share your list with friends?" sheet shows once to people who had an account before the flip (`profiles.share_prompt_due`), have a friend, and have good words not shared with friends; **Choose** is a checklist in the same sheet (F16.10), and `answer_share_prompt` records the answer (`share_prompt_answered_at`). The weekly digest now covers what Home shows (F7.1): up to 8 titles from friends and groups, newest first, each once, with the group chip only when that's how it reached you, import roll-ups as one line each, "See all N on Home", then each group's conversation summary (F7.5); it links to Home. The `events_list_rename` trigger is dropped. Left for later, to avoid breaking the app between a migration and its deploy: dropping the `home_enabled` column (now true for everyone, by default too) and renaming the database names that still say shelf (v1.4.1).
 - **v1.4.9 (2026-10-07):** Step 19, the title page, behind `home_enabled`. Title detail follows F16.4's order: the title with where to watch, then every good word you can see (friends' included), yours first or the vouch button in its place, each shared with friends with its conversation collapsed beneath it (count, unseen dot, and latest comment; it opens in place to the 3 newest, "See all", and "Add a comment"), then your groups' conversations (unchanged), then the overview. `title_word_conversations(title)` reads those conversations for the person asking; row-level security decides which good words come back, so nothing is counted or hinted at (F16.6 rule 4). With nobody you know on it: "Nobody you know has vouched for this yet." Person view now opens for friends as well as people you share a group with (F8, as section 6.1 already says), since names on the title page and Home's roll-up lines link there; it says "Your friend". Group-only good words still show their group chips; a friend's good word shows no chip.
 - **v1.4.8 (2026-10-07):** Step 18, conversations by scope, behind `home_enabled`. `conversations` (scope `group` or `good_word`) is added and backfilled from every group conversation, and comments, reads, participants, and Activity now carry `conversation_id`; group conversations keep their group and title columns and work exactly as before, with triggers linking anything written the old way (section 8, F16.10 "additive first"). `can_view_conversation` decides who sees a conversation (F16.6 rule 2). Conversations under a good word open at `?word=`, made on the first comment; the good word's author is always a participant, so comments under it reach them in Activity as `comment` (F16.9). Taking a good word back keeps its conversation for the 10-minute Undo window, so Undo brings the comments back; after that it's deleted. Mentions under a good word keep only people who can see it, and suggestions show only people you already know (friends, people in your groups, and people who've commented there). Mention emails cover both kinds, one per conversation, naming whose good word it is. Home's conversation row counts the comments you can see across your groups' conversations and the ones under good words, previews the newest, and opens that conversation, or the newest good word's when there are none yet. The good-word Realtime topic is `word:<good word id>`. `conversation_opened` and `comment_created` gain `scope` (11.2). Live updates couldn't be checked in the build environment, which can't open websockets (the same limit the J6 test hits there); they need a check on two phones.

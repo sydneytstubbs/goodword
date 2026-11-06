@@ -1,6 +1,6 @@
 # Good Word Design System
 
-**Version** 3.4.8 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-10-06
+**Version** 3.5.0 (Editorial) · **Status** Active · **Owner** Sydney (design) · **Last updated** 2026-11-06
 
 The single source of truth for how Good Word looks, behaves, and speaks, across the marketing page and the product app. It covers foundations (tokens), components, patterns (flows), content, accessibility, platform behavior, and how the system itself is maintained. It is written for Claude Code to build against and for any designer or engineer who touches the product. Version 3.0 moves the visual language from playful to editorial: calm, modern, and minimal. The identity behind it is in `BRAND.md`.
 
@@ -116,7 +116,7 @@ Use these words exactly, in UI and in code comments. Consistency of language is 
 | **spoiler** | A comment its author has covered until tapped | |
 | **robot guess** | An opt-in, clearly labeled non-human suggestion | recommendation, AI pick, for you |
 
-A **note** and a **comment** are different things: a note is part of someone's good word and travels with it to everyone who can see it. A comment belongs to one conversation.
+A **note** and a **comment** are different things: a note is part of someone's good word and travels with it to everyone who can see it. A comment belongs to one conversation. On Home and the title page the note is *shown* as the first comment of the conversation under its good word (name in `body-strong`, then the note), but it's still a note: it's edited with Edit note, never counted as a comment, and never called a caption.
 
 "Log" is fine in code and analytics, but never in UI copy.
 
@@ -445,6 +445,7 @@ Depth is quiet: most things sit flat on the page, and only temporary layers floa
 | Mention | `At` | Spoiler | `EyeSlash` |
 | Send comment | `PaperPlaneRight` | Add screenshots (5.18) | `Images` |
 | Friends, friend link | `UserPlus` | Caught up | `Check` |
+| Expand a section (5.7) | `CaretDown` | Title details (5.7) | `Info` |
 
 ### 3.6 Imagery
 - **Posters are the color.** Real TMDB images in product mode, with a typographic fallback (4.2.1). Never crop, filter, tint, or invert them, in either theme. Show them large enough to enjoy.
@@ -663,7 +664,7 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 
 #### 4.2.1 Poster
 - 2:3 ratio, `--radius-poster`, inset 1px `--poster-edge`, `--shadow-sm`. A fixed aspect-ratio box so it never shifts layout. `--surface-sunken` placeholder while loading. Lazy-loaded below the fold. `alt` is the title and year, or empty when the title is written right next to it.
-- **Image sizes** come from TMDB's size variants via `srcset` (Section 9).
+- **Image sizes** come from TMDB's size variants via `srcset` (Section 9). The `feature` size (Home cards) is the full column width up to 384px, with w780 in the srcset for 3x phones.
 - **Fallback (typographic poster)** when there's no image or it fails: a people-tone fill, the title in Instrument Serif (white, sized to fit, max 3 lines, never under 24px on grid cards; on 64px row posters show only the first letter), and year and type in `caption` in solid white.
 - **Fallback tone comes from genre.** Use the first genre TMDB lists, mapped by mood:
 
@@ -684,15 +685,16 @@ Each component documents: **purpose**, **anatomy**, **variants and sizes**, **st
 One component, four variants. Home uses the same component (`variant="home"`), never a separate card (PRD F16.11).
 - **`grid`** (lists): no card box. The poster (level 1) is the object; beneath it, 10px apart: title (`card-title`, 2 lines max), meta (`caption`, `--text-muted`, "Series · 2024"), the vouched-by row, and, if there is one, the most recent friend note as a quote (`caption` in `--text-muted`, in curly quotes, 2 lines max). When the group's conversation has comments, a comment count sits at the end of the meta line (`ChatCircle` 16px and the number), with a 6px `--action` dot when there are comments you haven't seen. A "New" label badge (4.1.11) sits on the poster's top-left corner, 8px in.
 - **`row`** (search results, dense lists): 48×72 poster left; title, meta, and vouched-by right; vouch button trailing. Level 0, hairline `--border-subtle` dividers between rows, 12px vertical padding.
-- **`detail`** (title screen): large poster, title as `title-l`, meta, genres, then each friend's good word as a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote` (Instrument Serif italic 24px), and group chips for which of **your** groups it's in ("Only you" for your own with none); then where to watch (5.7), the vouch button (`lg`), the conversation preview (5.17), and the overview.
-- **`home`** (Home, 5.19): leads with the friend's words, not the poster. Level 0, no card box, hairline `--border-subtle` dividers between cards, `--space-6` above and below each. Top to bottom:
-  1. **Who:** avatar stack (24) and names in `body-strong`, newest first ("Jonah", "Jonah and Tess", "Jonah, Tess and 2 more"; you're named as "You" when you've vouched), then the relative time of the newest good word (`caption`, `--text-muted`), and the group's chip (4.1.11) only when the card reached you through that group and not through friendship.
-  2. **Note:** the newest note from someone other than you in `quote` (Instrument Serif italic 24px), in full, exactly as typed: never truncated or auto-capitalized. With several notes, "See all 3 good words" (tertiary link) to title detail. With no note, this line is skipped.
-  3. **Title:** 48×72 poster, title (`card-title`), meta (`caption`, "Series · 2024"). This row is the link to title detail. The New badge sits on the poster.
-  4. **Conversation:** `ChatCircle` 16px, the count, and one line of the latest comment (`caption`, `--text-muted`, one line with ellipsis), or "a spoiler comment". A 6px `--action` dot marks unseen comments. With no comments it reads "Say something" in `--text-muted`, never "0". The row links to the conversation (5.17).
-  5. **Actions:** Comment (tertiary, `ChatCircle`), **Vouch too** (the vouch button, `md`, secondary; "Your good word" once vouched), Where to watch (tertiary, `MonitorPlay`). At least 44px each.
-  - **Never on the card:** hearts, likes, view counts, double-tap, or a button that shares outside Good Word.
-  - **Accessibility:** each card is an `<article>` named by its first line ("Jonah and Tess vouched for The Night Ferry"). Because it has several targets, the card itself isn't a link; the title row is.
+- **`detail`** (title screen, 5.7): large poster, title as `title-l`, then the preview: meta (`caption`) and the overview to 2 lines with View more; then the good words with their conversations; then the collapsed Where to watch and Details sections (v3.5.0). Without the title page's people (the styleguide's plain variant), each good word is a quote block: avatar (32), name (`body-strong`), relative time (`caption`), the note in `quote`, and group chips (groups flag on), then the vouch button (`lg`) and the conversation preview (5.17).
+- **`home`** (Home, 5.19): image-first, like a photo shared by a friend (v3.5.0). Level 0, no card box, hairline `--border-subtle` dividers between cards, `--space-6` above and below each. Top to bottom:
+  1. **Who:** avatar stack (32) and names in `body-strong`, newest first ("Jonah", "Jonah and Tess", "Jonah, Tess and 2 more"; you're named as "You" when you've vouched), then the relative time of the newest good word (`caption`, `--text-muted`), and, with the groups flag on, the group's chip (4.1.11) only when the card reached you through that group and not through friendship.
+  2. **Poster:** the `feature` poster (4.2.1), full column width up to 384px, 2:3, the card's level-1 object. It's the link to the title page, named by the title. The New badge sits on its top-left corner, 8px in. Desktop hover raises it to `--shadow-md`.
+  3. **Actions:** Comment (icon button, `ChatCircle`, named "Comment on The Night Ferry") and **Vouch too** (the vouch button, `md`, secondary; "Your good word" once vouched). At least 44px each.
+  4. **Title:** the name only, in `card-title`, linking to the title page. No meta, genres, or runtime.
+  5. **Note, as the first comment:** the vouching person's name in `body-strong` and the newest note from someone other than you in `body`, in full, exactly as typed: never truncated or auto-capitalized. With several notes, "See all 3 good words" (tertiary link) to the title page. With no note, this line is skipped.
+  6. **Conversation:** "See all 12 comments" (`caption`, `--text-muted`, with a 6px `--action` dot for unseen comments), then the latest comment on one line (name in `label` weight, text with ellipsis, or "a spoiler comment" in italic). Then "Add a comment…" (`body`, `--text-muted`, 44px tall), which opens the conversation with the composer focused. With no comments, only "Add a comment…" shows, never "0".
+  - **Never on the card:** hearts, likes, view counts, double-tap, where to watch, type or year, or a button that shares outside Good Word.
+  - **Accessibility:** each card is an `<article>` named by its first line ("Jonah and Tess vouched for The Night Ferry"). Because it has several targets, the card itself isn't a link; the poster and the title are.
 - **Friends chip** (My list cards and your own good word on title detail, PRD F16.2): the group chip's style with the `UserPlus` icon in place of the people-tone dot, labeled "Friends", before any group chips. The accessible name says "Shared with your friends."
 - **Vouched-by row:** avatar stack (24px) plus names in `caption` ("Priya, Jonah +1"). Always visible. Your own good word is listed as "You".
 - **Behavior:** the whole card is one link to the detail screen. In `row`, the vouch button is a separate target, and the rest of the row is the link. No nested interactive elements inside the card link. Desktop hover raises the poster to `--shadow-md`; nothing moves.
@@ -712,7 +714,7 @@ One component, four variants. Home uses the same component (`variant="home"`), n
 
 #### 4.2.4 Title search
 - Full-width field with `MagnifyingGlass` icon and a clear button. Autofocus when opened from Add.
-- Debounce 250ms; minimum 2 characters. Results render as `row` rec cards.
+- Debounce 250ms; minimum 2 characters. Results are rows led by a 64×96 poster, then the title (`card-title`) and the year only (`caption`), then the annotation. No type, runtime, or genres: the poster carries recognition (v3.5.0).
 - **Result annotations** prevent duplicates: "On your list" for titles you already vouched for; friends' avatars for titles they vouched for ("Priya vouched for this").
 - **States:** empty (recent searches, up to 5, clearable), loading (3 skeleton rows), results, no results ("Nothing for 'nite ferry'. Check the spelling, or try the original title."), error ("Search isn't working right now. Try again." with Retry), offline ("You're offline. Search needs a connection, so try again when you're back." with Retry).
 - **Accessibility:** combobox pattern with a listbox (`role="combobox"`, `aria-expanded`, `aria-activedescendant`). Arrow keys move, Enter selects, Esc clears then closes. Result count announced politely ("6 results").
@@ -791,7 +793,7 @@ One component, four variants. Home uses the same component (`variant="home"`), n
 
 #### 4.2.14 Caught-up marker
 - **Purpose:** tells you Home has ended, so it never feels endless (5.19).
-- **Anatomy:** a centered row: hairline `--border-subtle` rules either side of `Check` (16px, `--text-muted`) and "You're all caught up" in `body-strong`, then "Show earlier good words" (tertiary button) beneath. `--space-8` above and below.
+- **Anatomy:** a centered row: hairline `--border-subtle` rules either side of `Check` (16px, `--text-muted`) and "You're all caught up" in `body-strong`. `--space-8` above and below. The 24 most recent earlier cards follow it, always; "Show earlier good words" (tertiary button) sits after them while there are more (v3.5.0).
 - The text is an `<h2>`, so screen reader users can jump to where new ends. Loading earlier cards announces "24 earlier good words loaded" politely.
 - When nothing is new, it sits at the top of Home with **Put in a good word** (primary) under it.
 
@@ -868,7 +870,7 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 
 1. **Tap Add** (tab bar, rail, `n` on desktop, or the vouch button on any title). The search sheet opens with the keyboard up.
 2. **Pick a result.** Annotations prevent duplicates (4.2.4).
-3. **Confirm sheet:** poster, title, year; the note field (optional, placeholder "ep 3 is where it gets you"); the visibility line, defaulting to **Friends on, groups off** (4.2.6); and the primary button "Put in a good word".
+3. **Confirm sheet:** poster-first: the poster (128px wide) beside the title and year; the note field (optional, placeholder "ep 3 is where it gets you"); the visibility line, defaulting to **Friends on, groups off** (4.2.6); and the primary button "Put in a good word". Nothing else: no type, runtime, or genres (v3.5.0).
 4. **Tap the button.** The sheet closes, the card appears at the top of My list with the insert animation, and a toast names the audience: "Your friends and College crew can see this." with Undo.
 
 **Rules**
@@ -894,11 +896,11 @@ Target: median under 10 seconds from tapping Add to seeing the confirmation.
 - **Pagination:** infinite scroll with a visible "Load more" fallback button and a footer ("That's the whole list") so users know when they've reached the end. Screen readers get the result count and the load-more button.
 
 ### 5.7 Title detail
-- Order of content, most to least important (PRD F16.4): poster, title, meta, and where to watch; the good words you can see, newest first with yours first (or a **Put in a good word** prompt), each with its conversation collapsed beneath it (5.17); the group conversations, one labeled section per group ("In College crew"); then the overview.
+- Order of content, most to least important (PRD F16.4, v3.5.0): the poster, large (`detail`, up to 320px, centered below 1024px); the title (`title-l`) right under it; the preview: meta (`caption`, "Film · 2023 · 1h 52m") and the overview clamped to 2 lines with **View more** (a disclosure button that expands it in place); then the good words you can see, yours first (or a **Put in a good word** prompt), each with its note shown as the first comment and its conversation open beneath it: the 3 newest comments, "See all", and "Add a comment…" (5.17); then the group conversations (groups flag on only); then **More about this title**.
+- **More about this title** is a stack of collapsible sections, collapsed by default, built on `<details>` and `<summary>` (keyboard and VoiceOver work natively): **Where to watch** (`MonitorPlay`) and **Details** (`Info`: type, year, runtime or seasons, genres, original title as a description list). Each summary is a 56px row in `heading` with `CaretDown`, which turns 180° when open (no motion with reduced motion), and hairline dividers between rows. Opening `#where-to-watch` from a link opens that section.
 - Nothing on the page hints at good words or conversations the viewer can't see: no counts, no "more from people you don't know" (5.14).
-- Meta (type, year, runtime or seasons) and genres sit with the title as text; the overview comes last (PRD F6, 4.2.2 `detail`).
 - **Where to watch** comes from TMDB's watch provider data for the user's region, showing provider names and logos grouped by Stream / Rent / Buy. **JustWatch attribution is required** alongside this data, per TMDB's terms. If nothing is available: "Not streaming in your region right now." Each provider links to TMDB's watch page for the title and opens in a new tab, since the user is mid-choice (4.1.3). It loads after the rest of the screen, with its own skeleton and its own error state with Retry (5.12, partial).
-- The overview is collapsed to 3 lines with "More" when longer.
+- The overview is collapsed to 2 lines with "View more" when longer.
 
 ### 5.8 Groups
 - **Create:** one field ("Name your group", with examples like "College crew") and a Create button. Then land directly on the invite card. Nothing else is asked.
@@ -1049,8 +1051,8 @@ How someone turns a list they already have into recs (PRD F15). One decision per
 ### 5.19 Home
 **User problem:** opening the app, people want to know what their friends are watching, without a stream they can scroll forever (PRD F16.3).
 
-- **Layout:** Home's bar (the switcher, 4.2.5), the filter bar (5.6, without sort), then `home` rec cards (4.2.2) newest first in one column, at most `--width-reading` wide and centered on larger screens. Import roll-up lines (4.2.15) sit between cards at their time.
-- **New, then caught up:** cards new since your last visit come first, each with the New badge; then the caught-up marker (4.2.14); then nothing until you tap "Show earlier good words", which adds 24 more and keeps the button at the end until there are no more ("That's everything from your friends"). No infinite scroll on Home.
+- **Layout:** Home's bar (the switcher, 4.2.5, groups flag on only), the filter bar (5.6, without sort), then `home` rec cards (4.2.2) newest first in one column, at most `--width-reading` wide and centered on larger screens. Import roll-up lines (4.2.15) sit between cards at their time.
+- **New, then caught up, then earlier:** cards new since your last visit come first, each with the New badge; then the caught-up marker (4.2.14); then the 24 most recent earlier cards, always, so Home never looks empty when friends have vouched before; then "Show earlier good words", which adds 24 more and stays at the end until there are no more ("That's everything from your friends"). No infinite scroll on Home.
 - **Order never changes under you.** New good words that arrive while you're on Home wait behind the live pill ("2 new good words", F5.6). Comments never move a card; they light the card's dot.
 - **Filters** narrow the cards and keep the marker between new and older.
 - **Primary action:** the Add tab. On Home, **Put in a good word** is primary only in the empty and nothing-new states; otherwise Home has no primary button of its own, so cobalt stays meaningful.
@@ -1551,6 +1553,7 @@ It is excluded from search indexing and from production navigation, and it's the
 
 ## 17. Changelog
 
+- **v3.5.0 (2026-11-06):** Step 22 (PRD v1.6.0). Image-first and social-first. The `home` rec card leads with a `feature` poster under who vouched, with Comment and Vouch too beneath it, then the title's name, the note shown as the first comment, the latest comment, and "Add a comment…"; type, year, and Where to watch leave it (4.2.2). New `feature` poster size, with w780 (4.2.1). Home always shows the 24 most recent earlier cards under the caught-up marker (4.2.14, 5.19). The title page puts the poster, title, and a short preview with View more first, the conversation next, and Where to watch and Details in collapsed `<details>` sections last (5.7); genres move into Details. Title search rows lead with a 64×96 poster and show only the year (4.2.4); the confirm step is poster-first (5.4). With the groups flag off (PRD F16.7) the switcher, the rail's groups, group chips, and group toggles don't render. The glossary says how a note is shown as the first comment while staying a note (1.4).
 - **v3.4.8 (2026-10-07):** Step 20, the flip. Home, the Home tab, and the Home row in the switcher are the only versions now (4.2.5, 4.2.8); the Groups tab and All groups are gone, and `g` then `h` goes Home (`g` then `s` still goes to your lists, which open Home). The "Share your list with friends?" sheet's **Choose** is a checklist in the sheet (5.20). The weekly digest follows Home (PRD F7.1). Copy in 6.6.
 - **v3.4.7 (2026-10-07):** Step 19. The title page with friends (5.7): the good words section has its own heading, "Good words" (`Check`, `heading`), like Where to watch; your vouch button sits under your good word, or at the top of the section when you haven't put one in. A good word's conversation row is a disclosure button (`aria-expanded`): `ChatCircle`, the count, the unseen dot, and the latest comment on one line; opened, the 3 newest comments, "See all 4 comments", and the "Add a comment…" field (5.17). With no comments it's the quiet "Say something" link, as on Home. Person view says "Your friend" for friends. Copy: "Nobody you know has vouched for this yet." (6.6).
 - **v3.4.6 (2026-10-07):** Step 18. The conversation under a good word (`?word=`) is the group conversation screen with "Jonah's good word" (or "Your good word") where the group name goes, with the `UserPlus` icon in place of the group dot (5.17). Its composer says "Everyone who can see Jonah's good word will see this", never naming who that is, with the placeholder "Say something about this…"; mention suggestions are people who can see the good word and whom you already know (4.2.11). Activity items for comments and mentions under a good word name whose good word it is instead of a group (4.2.13), and so does the mention email. A good word's author can delete any comment under it (PRD open question 16). Someone who can't see the good word gets the same "We couldn't find that page" as any unknown URL. Microcopy in 6.6.
