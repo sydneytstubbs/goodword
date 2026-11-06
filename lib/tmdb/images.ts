@@ -3,15 +3,15 @@
 // for years; it's kept here so no request waits on fetching it.
 export const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/";
 
-export type PosterWidth = 154 | 342 | 500;
+export type PosterWidth = 154 | 342 | 500 | 780;
 
-const WIDTHS: PosterWidth[] = [154, 342, 500];
+const WIDTHS: PosterWidth[] = [154, 342, 500, 780];
 
 export function posterSrc(path: string, width: PosterWidth = 342): string {
   return `${TMDB_IMAGE_BASE}w${width}${path}`;
 }
 
-/** All three variants: w154 for rows, w342 for grid cards, w500 for detail. */
+/** All four variants: w154 for rows, w342 for grid cards, w500 for detail, w780 for Home on 3x phones. */
 export function posterSrcSet(path: string): string {
   return WIDTHS.map((w) => `${posterSrc(path, w)} ${w}w`).join(", ");
 }

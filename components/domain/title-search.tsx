@@ -12,7 +12,6 @@ import { IconButton } from "../ui/icon-button";
 import { Skeleton, SkeletonRegion } from "../ui/skeleton";
 import { TextField } from "../ui/text-field";
 import { Poster } from "./poster";
-import { titleMeta } from "./title-meta";
 import type { Person, Title } from "./types";
 
 // Title search (DESIGN-SYSTEM.md 4.2.4, 5.5). Combobox with a listbox:
@@ -207,7 +206,7 @@ export function TitleSearch({
         <SkeletonRegion label={t("search.loading")}>
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center gap-3 border-b border-subtle py-3">
-              <Skeleton className="aspect-2/3 w-12 rounded-poster" />
+              <Skeleton className="aspect-2/3 w-16 rounded-poster" />
               <div className="flex flex-1 flex-col gap-2">
                 <Skeleton className="h-4 w-2/3 rounded-control" />
                 <Skeleton className="h-3 w-1/3 rounded-control" />
@@ -238,14 +237,15 @@ export function TitleSearch({
                 onClick={() => select(title)}
                 onMouseEnter={() => setActive(i)}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 border-b border-subtle px-1 py-3",
+                  "flex cursor-pointer items-center gap-4 rounded-control px-1 py-2",
                   i === active && "bg-surface-hover fc-selected",
                 )}
               >
-                <Poster title={title} size="row" />
+                <Poster title={title} size="activity" />
                 <span className="flex min-w-0 flex-col gap-1">
                   <span className="line-clamp-2 text-card-title text-default">{title.name}</span>
-                  <span className="text-caption text-muted">{titleMeta(title)}</span>
+                  {/* The year only: the poster carries recognition (DS 4.2.4). */}
+                  {title.year && <span className="text-caption text-muted">{title.year}</span>}
                   {onList ? (
                     <span className="inline-flex items-center gap-1 text-caption font-medium text-action-text">
                       <Icon name="vouched" size={16} />

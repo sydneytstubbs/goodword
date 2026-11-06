@@ -4,12 +4,11 @@ import { t } from "@/lib/messages";
 import { Icon } from "../icon";
 import { Textarea } from "../ui/textarea";
 import { Poster } from "./poster";
-import { titleMeta } from "./title-meta";
 import type { Title } from "./types";
 import { VisibilityLine, type FriendsPick, type GroupWithCount } from "./visibility-line";
 
 // The confirm step of putting in a good word (DESIGN-SYSTEM.md 5.4): poster,
-// title, and year; the optional note; and the visibility line, which opens
+// title, and year, poster-first; the optional note; and the visibility line, which opens
 // the group picker. When the good word is already on every list picked, it
 // says so instead of asking for a note (the sheet then offers Edit note).
 
@@ -53,11 +52,12 @@ export function ConfirmGoodWord({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-3">
-        <Poster title={title} size="row" />
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="line-clamp-2 text-card-title text-default">{title.name}</p>
-          <p className="text-caption text-muted">{titleMeta(title)}</p>
+      {/* Poster-first, like the photo at the top of a share sheet (DS 5.4). */}
+      <div className="flex items-end gap-4">
+        <Poster title={title} size="confirm" />
+        <div className="flex min-w-0 flex-col gap-1 pb-1">
+          <p className="line-clamp-3 text-card-title text-default">{title.name}</p>
+          {title.year && <p className="text-caption text-muted">{title.year}</p>}
         </div>
       </div>
       {already ? (

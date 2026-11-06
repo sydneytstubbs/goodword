@@ -1,13 +1,13 @@
 "use client";
 
 import NextLink from "next/link";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { fullTime, nameList, relativeTime } from "@/lib/format";
+import { groupsEnabled } from "@/lib/flags";
+import { fullTime, nameList, relativeTime, runtime } from "@/lib/format";
 import { t, tRich } from "@/lib/messages";
-import { Icon } from "../icon";
+import { Icon, type IconName } from "../icon";
 import { Avatar, AvatarStack } from "../ui/avatar";
-import { Button } from "../ui/button";
 import { ButtonLink } from "../ui/button-link";
 import { TextLink } from "../ui/text-link";
 import { LabelBadge, UnreadDot } from "../ui/badge";
@@ -156,9 +156,83 @@ export function RecCardRow({
 }
 
 /**
- * detail: the title screen (DS 4.2.2, 5.7; PRD F6). Friends first: poster,
- * title, meta, and genres; each friend's good word with the chips of your
- * groups it's in; where to watch; the vouch button; then the overview.
+ * A collapsible section on the title page (DS 5.7): a heading holding a
+ * disclosure button, collapsed by default. The content stays in the DOM (it
+ * can stream in while closed), hidden until opened. A link to `#id` opens it.
+ */
+export function CollapsibleSection({
+  id,
+  icon,
+  title,
+  headingLevel = 2,
+  defaultOpen = false,
+  children,
+}: {
+  id: string;
+  icon: IconName;
+  title: string;
+  headingLevel?: 2 | 3 | 4 | 5;
+  defaultOpen?: boolean;
+  children: ReactNode;
+}) {
+  const Heading = `h${headingLevel}` as const;
+  const [open, setOpen] = useState(defaultOpen);
+  const regionId = `${id}-content`;
+  useEffect(() => {
+    const fromHash = () => {
+      if (window.location.hash === `#${id}`) setOpen(true);
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    return () => window.removeEventListener("hashchange", fromHash);
+  }, [id]);
+  return (
+    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-20 border-b border-subtle">
+      <Heading id={`${id}-heading`} className="text-heading text-default">
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={regionId}
+          onClick={() => setOpen((o) => !o)}
+          className="-mx-2 flex min-h-14 w-full items-center gap-3 rounded-control px-2 text-start transition duration-fast ease-standard hover:bg-surface-hover"
+        >
+          <Icon name={icon} size={20} className="shrink-0" />
+          <span className="flex-1">{title}</span>
+          <Icon name={open ? "collapse" : "expand"} size={20} className="shrink-0 text-muted" />
+        </button>
+      </Heading>
+      <div id={regionId} hidden={!open} className="pb-6 pt-1">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/** Details (DS 5.7): type, year, runtime or seasons, genres, and the original title, as a description list. */
+export function TitleDetails({ title, originalTitle }: { title: Title; originalTitle?: string }) {
+  const rows: Array<[string, string]> = [[t("title.detailType"), t(`title.${title.type}`)]];
+  if (title.year) rows.push([t("title.detailYear"), String(title.year)]);
+  if (title.type === "movie" && title.runtime) rows.push([t("title.detailRuntime"), runtime(title.runtime)]);
+  if (title.type === "tv" && title.seasons) rows.push([t("title.detailSeasons"), t("title.seasons", { count: title.seasons })]);
+  if (title.genres.length > 0) rows.push([t("title.genres"), title.genres.join(t("title.metaSeparator"))]);
+  if (originalTitle) rows.push([t("title.detailOriginalTitle"), originalTitle]);
+  return (
+    <dl className="flex flex-col gap-3">
+      {rows.map(([label, value]) => (
+        <div key={label} className="flex flex-col gap-0.5">
+          <dt className="text-caption text-muted">{label}</dt>
+          <dd className="text-body text-default">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/**
+ * detail: the title screen (DS 4.2.2, 5.7; PRD F16.4). The poster, the title
+ * right under it, and a short preview (meta and the overview with View more);
+ * then the good words, each with its conversation; then the group
+ * conversations; then where to watch and details, collapsed.
  */
 export function RecCardDetail({
   title,
@@ -170,30 +244,33 @@ export function RecCardDetail({
   noGoodWords,
   conversation,
   overview,
+  originalTitle,
   people,
   now,
 }: Common & {
   /** title-l is the page's h1 (DS 3.2.2); /styleguide renders it lower. */
   headingLevel?: 1 | 2 | 3 | 4;
+  /** In its own collapsed section, after the conversation. */
   whereToWatch?: ReactNode;
-  /** Without `people`, the vouch button follows where to watch. */
+  /** Without `people`, the vouch button follows the good words. */
   vouchButton?: ReactNode;
-  /** Shown when nobody in your groups has vouched for it yet (PRD F6). */
+  /** Shown when nobody you know has vouched for it yet (PRD F6). */
   noGoodWords?: ReactNode;
-  /** The conversation preview, after the vouch button (DS 5.7, 5.17). */
+  /** Group conversations, after the good words (DS 5.7, 5.17). */
   conversation?: ReactNode;
-  /** Last, collapsed to three lines with More. */
+  /** The preview, under the meta line: clamped with View more. */
   overview?: ReactNode;
+  /** For Details, when it differs from the title. */
+  originalTitle?: string;
   /**
    * The title page with friends (PRD F16.4): the good words you can see, each
    * with its conversation, in place of the good words and vouch button here.
-   * Where to watch then comes first, with the title.
    */
   people?: ReactNode;
   now?: Date;
 }) {
   const Heading = `h${headingLevel}` as const;
-  const SubHeading = `h${headingLevel + 1}` as "h2" | "h3" | "h4" | "h5";
+  const subLevel = (headingLevel + 1) as 2 | 3 | 4 | 5;
   // Step down to 44px when 56px would need three lines (DS 3.2.2).
   const long = title.name.length > 22;
   // Side by side on desktop, when there's room: beside a conversation panel
@@ -201,17 +278,12 @@ export function RecCardDetail({
   return (
     <div className="@container">
       <div className="flex flex-col gap-6 lg:@2xl:flex-row lg:@2xl:items-start lg:@2xl:gap-10">
-        <Poster title={title} size="detail" eager className="lg:@2xl:w-72" />
+        <Poster title={title} size="detail" eager className="self-center lg:@2xl:w-72 lg:@2xl:self-start" />
         <div className="flex min-w-0 flex-1 flex-col gap-8">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <Heading className={cn("text-default", long ? "text-title-l-step" : "text-title-l")}>{title.name}</Heading>
             <p className="text-caption text-muted">{titleMeta(title, true)}</p>
-            {title.genres.length > 0 && (
-              <p className="text-caption text-muted">
-                <span className="sr-only">{t("title.genres")}: </span>
-                {title.genres.join(t("title.metaSeparator"))}
-              </p>
-            )}
+            {overview && <div className="pt-1">{overview}</div>}
           </div>
           {!people && goodWords.length === 0 && noGoodWords && <p className="text-body text-muted">{noGoodWords}</p>}
           {!people && goodWords.length > 0 && (
@@ -238,23 +310,19 @@ export function RecCardDetail({
               ))}
             </section>
           )}
-          {whereToWatch && (
-            <section id="where-to-watch" className="flex scroll-mt-20 flex-col gap-3">
-              <SubHeading className="flex items-center gap-2 text-heading text-default">
-                <Icon name="whereToWatch" size={20} />
-                {t("title.whereToWatch")}
-              </SubHeading>
-              {whereToWatch}
-            </section>
-          )}
           {people ?? <div>{vouchButton}</div>}
           {conversation}
-          {overview && (
-            <section className="flex flex-col gap-2">
-              <SubHeading className="sr-only">{t("title.overview")}</SubHeading>
-              {overview}
-            </section>
-          )}
+          {/* More about this title: collapsed by default (PRD F16.4). */}
+          <div className="flex flex-col border-t border-subtle">
+            {whereToWatch && (
+              <CollapsibleSection id="where-to-watch" icon="whereToWatch" title={t("title.whereToWatch")} headingLevel={subLevel}>
+                {whereToWatch}
+              </CollapsibleSection>
+            )}
+            <CollapsibleSection id="title-details" icon="details" title={t("title.details")} headingLevel={subLevel}>
+              <TitleDetails title={title} originalTitle={originalTitle} />
+            </CollapsibleSection>
+          </div>
         </div>
       </div>
     </div>
@@ -271,7 +339,11 @@ function sharedLabel(groups: Group[], friends: boolean): string {
 }
 
 /** Which of the viewer's groups a good word is in, and friends; "Only you" when none (PRD F6, F16.2). */
-export function GoodWordGroups({ groups, friends = false }: { groups: Group[]; friends?: boolean }) {
+export function GoodWordGroups({ groups: inGroups, friends = false }: { groups: Group[]; friends?: boolean }) {
+  // With the groups flag off there are no group chips; a good word that's in a
+  // group shows nothing rather than "Only you", so it never understates who sees it (PRD F16.7).
+  const groups = groupsEnabled ? inGroups : [];
+  if (!groupsEnabled && inGroups.length > 0 && !friends) return null;
   if (groups.length === 0 && !friends) {
     return (
       <span className="inline-flex items-center gap-1 text-caption text-muted">
@@ -306,45 +378,52 @@ export function homeWho(goodWords: GoodWord[], viewerId: string): string {
 }
 
 /**
- * home (Home, DS 5.19): leads with the friend's words, not the poster. Who
- * vouched, the newest note in full, the title (the link to title detail),
- * the conversation row, and the actions. Never likes, counts of views, or
- * sharing outside Good Word. Several targets, so the card itself isn't a link.
+ * home (Home, DS 4.2.2, 5.19): image-first, like a photo a friend shared. Who
+ * vouched, the poster (a link to the title page), Comment and Vouch too, the
+ * title's name, the note shown as the first comment, the latest comment, and
+ * "Add a comment…". No type, year, or other title data: that's on the title
+ * page. Never likes, counts of views, or sharing outside Good Word. Several
+ * targets, so the card itself isn't a link.
  */
 export function RecCardHome({
   card,
   viewerId,
   href,
   conversationHref,
-  whereToWatchHref,
+  composeHref,
   group,
   vouchButton,
+  eager = false,
   now,
 }: {
   card: ListCard;
   viewerId: string;
-  /** Title detail. */
+  /** The title page. */
   href: string;
-  /** The conversation to open from the conversation row and Comment. */
+  /** The conversation its comments open. */
   conversationHref: string;
-  whereToWatchHref: string;
-  /** The group it reached you through, when nothing on it came through friendship. */
+  /** The same conversation with the composer focused; defaults to `conversationHref`. */
+  composeHref?: string;
+  /** The group it reached you through, when nothing on it came through friendship (groups flag on only). */
   group?: Group;
   /** Vouch too, or Your good word once you've vouched. */
   vouchButton: ReactNode;
+  /** The first card's poster loads eagerly (DS 9). */
+  eager?: boolean;
   now?: Date;
 }) {
   const { title, goodWords } = card;
   const who = homeWho(goodWords, viewerId);
   const newest = goodWords[0];
   // Home leads with a friend's words: the newest note from someone else (yours only if theirs are missing).
-  const note = (goodWords.find((g) => g.person.id !== viewerId) ?? newest)?.note;
+  const noted = goodWords.find((g) => g.person.id !== viewerId) ?? newest;
   const comments = card.comments?.count ?? 0;
   const latest = card.latestComment;
+  const nameOf = (person: Person) => (person.id === viewerId ? t("common.you") : person.name);
   return (
-    <article aria-label={t("home.cardName", { who, title: title.name })} className="flex flex-col gap-4 border-b border-subtle py-6">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <AvatarStack people={goodWords.map((g) => g.person)} size={24} ring="surface" />
+    <article aria-label={t("home.cardName", { who, title: title.name })} className="flex flex-col gap-3 border-b border-subtle py-6">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <AvatarStack people={goodWords.map((g) => g.person)} size={32} ring="surface" />
         <span className="text-body-strong text-default">{who}</span>
         {newest && (
           <time dateTime={newest.at.toISOString()} title={fullTime(newest.at)} className="text-caption text-muted">
@@ -353,58 +432,63 @@ export function RecCardHome({
         )}
         {group && <GroupChip group={group} />}
       </div>
-      {note && <p className="text-quote text-default break-words">“{note}”</p>}
-      {goodWords.length > 1 && (
-        <TextLink href={href} variant="standalone" className="self-start">
-          {t("home.seeAll", { count: goodWords.length })}
-        </TextLink>
-      )}
-      <NextLink href={href} className="group flex items-center gap-3 self-start rounded-control">
-        <span className="relative">
-          <Poster title={title} size="row" />
-          {card.isNew && <LabelBadge className="absolute -top-2 start-1" />}
-        </span>
-        <span className="flex min-w-0 flex-col gap-1">
-          <span className="line-clamp-2 text-card-title text-default group-hover:underline">{title.name}</span>
-          <span className="text-caption text-muted">{titleMeta(title)}</span>
-        </span>
+      <NextLink href={href} aria-label={card.isNew ? `${title.name}. ${t("common.new")}.` : title.name} className="group relative block w-full max-w-96 self-start rounded-poster">
+        <Poster title={title} size="feature" eager={eager} className="transition-shadow duration-fast ease-standard group-hover:shadow-md" />
+        {card.isNew && <LabelBadge className="absolute top-2 start-2" />}
       </NextLink>
-      <NextLink
-        href={conversationHref}
-        className="-mx-2 flex min-h-target items-center gap-2 rounded-control px-2 text-caption text-muted transition duration-fast ease-standard hover:bg-surface-hover"
-      >
-        <Icon name="comment" size={16} className="shrink-0" />
-        {comments > 0 ? (
-          <>
-            <span className="tabular-nums">{t("title.comments", { count: comments })}</span>
-            {card.comments?.unseen && <UnreadDot size={6} label={t("title.unseenComments")} />}
-            {latest && (
-              <span className={cn("min-w-0 truncate", latest.text === null && "italic")}>
-                · {latest.authorName}: {latest.text === null ? t("spoiler.preview") : latest.text}
-              </span>
-            )}
-          </>
-        ) : (
-          <span>{t("home.saySomething")}</span>
-        )}
-      </NextLink>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="-ms-3 flex flex-wrap items-center gap-2">
         <ButtonLink href={conversationHref} variant="ghost" icon="comment">
           {t("home.comment")}
           <span className="sr-only"> {title.name}</span>
         </ButtonLink>
         {vouchButton}
-        <ButtonLink href={whereToWatchHref} variant="ghost" icon="whereToWatch">
-          {t("title.whereToWatch")}
-          <span className="sr-only"> {title.name}</span>
-        </ButtonLink>
+      </div>
+      <NextLink href={href} className="self-start rounded-control text-card-title text-default underline-offset-4 hover:underline">
+        {title.name}
+      </NextLink>
+      <div className="flex flex-col gap-2">
+        {/* The note, shown as the first comment; it's still a note (DS 1.4). */}
+        {noted?.note && (
+          <p className="text-body text-default break-words">
+            <span className="text-body-strong">{nameOf(noted.person)}</span> {noted.note}
+          </p>
+        )}
+        {goodWords.length > 1 && (
+          <TextLink href={href} variant="standalone" className="self-start">
+            {t("home.seeAll", { count: goodWords.length })}
+          </TextLink>
+        )}
+        {comments > 0 && (
+          <NextLink
+            href={conversationHref}
+            className="-mx-2 flex min-h-target flex-col justify-center gap-1 rounded-control px-2 py-1 transition duration-fast ease-standard hover:bg-surface-hover"
+          >
+            <span className="flex items-center gap-2 text-caption text-muted">
+              <span className="tabular-nums">{t("conversation.seeAll", { count: comments })}</span>
+              {card.comments?.unseen && <UnreadDot size={6} label={t("title.unseenComments")} />}
+            </span>
+            {latest && (
+              <span className="min-w-0 truncate text-body text-default">
+                <span className="text-label font-semibold">{latest.authorName}</span>{" "}
+                <span className={cn(latest.text === null && "text-muted italic")}>{latest.text === null ? t("spoiler.preview") : latest.text}</span>
+              </span>
+            )}
+          </NextLink>
+        )}
+        <NextLink
+          href={composeHref ?? conversationHref}
+          className="-mx-2 flex min-h-target items-center rounded-control px-2 text-body text-muted transition duration-fast ease-standard hover:bg-surface-hover"
+        >
+          {t("conversation.addComment")}
+          <span className="sr-only">, {title.name}</span>
+        </NextLink>
       </div>
     </article>
   );
 }
 
-/** The caught-up marker (DS 4.2.14): Home ends here; earlier good words load only on a tap. */
-export function CaughtUpMarker({ onEarlier, children }: { onEarlier?: () => void; children?: ReactNode }) {
+/** The caught-up marker (DS 4.2.14): where new ends; the most recent earlier good words follow it. */
+export function CaughtUpMarker({ children }: { children?: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-3 py-8">
       <div className="flex w-full items-center gap-3">
@@ -414,11 +498,6 @@ export function CaughtUpMarker({ onEarlier, children }: { onEarlier?: () => void
         <span aria-hidden="true" className="flex-1 border-t border-subtle" />
       </div>
       {children}
-      {onEarlier && (
-        <Button variant="ghost" onClick={onEarlier}>
-          {t("home.earlier")}
-        </Button>
-      )}
     </div>
   );
 }

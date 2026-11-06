@@ -11,9 +11,9 @@ import { TitleDetail } from "./title-detail";
 import { WhereToWatch } from "./where-to-watch";
 
 // The title page's content (PRD F16.4), on its own screen or beside a
-// conversation on desktop (DS 5.17): where to watch in your region, every good
+// conversation on desktop (DS 5.17): the title and its preview, every good
 // word you can see (friends' included) with its conversation, the vouch
-// button, your groups' conversations, and the overview.
+// button, your groups' conversations, then where to watch and details.
 export async function TitleContent({
   type,
   tmdbId,
@@ -47,6 +47,7 @@ export async function TitleContent({
       }
       conversation={conversation}
       overview={overview ? <Overview text={overview} /> : undefined}
+      originalTitle={title.originalTitle}
     />
   );
 }

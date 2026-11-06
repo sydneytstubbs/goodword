@@ -208,7 +208,7 @@ function RecCards() {
       <Specimen label="Vouched-by row, with your own good word as “You”">
         <VouchedByRow goodWords={[{ person: viewer, at: NOW }, ...goodWords.nightFerry]} viewerId={viewer.id} />
       </Specimen>
-      <Specimen label="home: who, the newest note in full, the title row (the link to title detail), the conversation row, and Comment, Vouch too, Where to watch. The card isn't a link; it's an article named by its first line" wide>
+      <Specimen label="home: who, the poster (the link to the title page), Comment and Vouch too, the title, the note as the first comment, the latest comment, and Add a comment. No title data. The card isn't a link; it's an article named by its first line" wide>
         <div className="w-full max-w-reading">
           <RecCardHome
             card={{
@@ -221,7 +221,6 @@ function RecCards() {
             viewerId={viewer.id}
             href="#rec-card"
             conversationHref="#rec-card"
-            whereToWatchHref="#rec-card"
             vouchButton={<VouchButton vouched={false} putLabel={t("vouch.vouchToo")} titleName={titles.nightFerry.name} {...handlers} />}
             now={NOW}
           />
@@ -230,7 +229,6 @@ function RecCards() {
             viewerId={viewer.id}
             href="#rec-card"
             conversationHref="#rec-card"
-            whereToWatchHref="#rec-card"
             group={groups.college}
             vouchButton={<VouchButton vouched {...handlers} />}
             now={NOW}
@@ -246,14 +244,14 @@ function HomeParts() {
     <>
       <Component id="caught-up" title="Caught-up marker" spec="4.2.14">
         <SpecimenGrid>
-          <Specimen label="After new cards: earlier ones load only on a tap">
+          <Specimen label="After new cards: the most recent earlier cards follow it">
             <div className="w-full">
-              <CaughtUpMarker onEarlier={() => {}} />
+              <CaughtUpMarker />
             </div>
           </Specimen>
           <Specimen label="Nothing new: at the top, with Put in a good word">
             <div className="w-full">
-              <CaughtUpMarker onEarlier={() => {}}>
+              <CaughtUpMarker>
                 <Button variant="primary" size="lg" icon="add">
                   {t("vouch.put")}
                 </Button>

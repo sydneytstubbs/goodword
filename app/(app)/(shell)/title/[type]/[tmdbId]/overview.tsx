@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { t } from "@/lib/messages";
 
-// The overview, collapsed to three lines with More when it's longer (DS 5.7).
+// The overview, collapsed to two lines with View more when it's longer (DS 5.7).
 // The full text is always in the DOM, so screen readers and find-in-page get it all.
 export function Overview({ text }: { text: string }) {
   const ref = useRef<HTMLParagraphElement>(null);
@@ -23,7 +23,7 @@ export function Overview({ text }: { text: string }) {
 
   return (
     <div className="flex max-w-reading flex-col items-start gap-1">
-      <p ref={ref} id="overview" className={cn("text-body text-default", !expanded && "line-clamp-3")}>
+      <p ref={ref} id="overview" className={cn("text-body text-default", !expanded && "line-clamp-2")}>
         {text}
       </p>
       {overflows && !expanded && (

@@ -14,10 +14,10 @@ import { useGoodWords } from "../../../good-words";
 // primary action, then the conversation preview (DS 5.17). Your own good word,
 // and the groups it's in, reflect pending changes at once.
 //
-// It's the title page (PRD F16.4): where to watch with
-// the title, then every good word you can see (yours first, or the vouch
-// button in its place), each with its conversation under it, then your groups'
-// conversations, then the overview.
+// It's the title page (PRD F16.4): the poster, the title and its preview, then
+// every good word you can see (yours first, or the vouch button in its place),
+// each with its conversation open under it, then your groups' conversations
+// (groups flag on), then where to watch and details, collapsed.
 export function TitleDetail({
   title,
   goodWords,
@@ -25,6 +25,7 @@ export function TitleDetail({
   whereToWatch,
   conversation,
   overview,
+  originalTitle,
   headingLevel = 1,
 }: {
   title: Title;
@@ -34,6 +35,7 @@ export function TitleDetail({
   whereToWatch: ReactNode;
   conversation?: ReactNode;
   overview?: ReactNode;
+  originalTitle?: string;
   /** Beside a conversation on desktop, the conversation has the page's h1. */
   headingLevel?: 1 | 2;
 }) {
@@ -91,6 +93,7 @@ export function TitleDetail({
       whereToWatch={whereToWatch}
       conversation={conversation}
       overview={overview}
+      originalTitle={originalTitle}
       headingLevel={headingLevel}
       vouchButton={vouchButton}
       people={people}

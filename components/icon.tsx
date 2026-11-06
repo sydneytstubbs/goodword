@@ -6,6 +6,7 @@ import {
   Bell,
   CaretDown,
   CaretLeft,
+  CaretUp,
   ChatCircle,
   Check,
   DotsThree,
@@ -45,6 +46,7 @@ export const icons = {
   switcher: CaretDown,
   // Collapsible sections on the title page (DS 5.7)
   expand: CaretDown,
+  collapse: CaretUp,
   details: Info,
   share: ShareNetwork,
   copyLink: LinkSimple,

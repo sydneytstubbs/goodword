@@ -83,11 +83,17 @@
     "whereToWatch": "Where to watch",
     "genres": "Genres",
     "goodWords": "Good words",
-    "more": "More",
+    "more": "View more",
     "overview": "Overview",
     "goodWordsHeading": "Good words",
     "wordConversationFor": "Under {name}'s good word",
-    "wordConversationForYours": "Under your good word"
+    "wordConversationForYours": "Under your good word",
+    "details": "Details",
+    "detailType": "Type",
+    "detailYear": "Year",
+    "detailRuntime": "Runtime",
+    "detailSeasons": "Seasons",
+    "detailOriginalTitle": "Original title"
   },
   "titleDetail": {
     "loading": "Loading title",

@@ -12,22 +12,28 @@ import type { Title } from "./types";
 // hairline edge so light posters don't bleed into the page. Falls back to a
 // typographic poster in the title's genre tone when there's no image or it fails.
 
-export type PosterSize = "row" | "activity" | "grid" | "detail";
+export type PosterSize = "row" | "activity" | "confirm" | "grid" | "detail" | "feature";
 
 const sizes: Record<PosterSize, string> = {
   row: "w-12",
   activity: "w-16",
+  // The confirm step of Add (DS 5.4).
+  confirm: "w-32",
   grid: "w-full",
   detail: "w-full max-w-80",
+  // Home cards: the column's width, up to 384px (DS 4.2.1).
+  feature: "w-full max-w-96",
 };
 
 // Rendered widths, so the browser picks w154 for rows, w342 for grid cards,
-// and w500 for detail from the srcset (DS 9).
+// w500 for detail, and up to w780 for Home cards from the srcset (DS 9).
 const renderedWidths: Record<PosterSize, string> = {
   row: "48px",
   activity: "64px",
+  confirm: "128px",
   grid: "(min-width: 768px) 240px, 50vw",
   detail: "320px",
+  feature: "(min-width: 416px) 384px, calc(100vw - 32px)",
 };
 
 export function Poster({

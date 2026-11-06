@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { conversationHref as groupConversationHref, wordConversationHref } from "@/lib/conversations/paths";
 import { track } from "@/lib/events/client";
+import { groupsEnabled } from "@/lib/flags";
 import { clearFilters, filterList, filtersToQuery, genreCounts, isFiltered, PAGE_SIZE, parseFilters, serviceCounts } from "@/lib/good-words/filters";
 import type { ImportRollup } from "@/lib/good-words/queries";
 import { applyOverlays } from "@/lib/good-words/list";
@@ -24,24 +25,26 @@ import { LiveList } from "../list/live-list";
 
 // Home (PRD F16.3, DS 5.19): what your friends are vouching for, one card
 // per title, newest first. Cards new since your last visit come first, then
-// "You're all caught up". Earlier cards load 24 at a time, only on a tap, so
-// Home ends. Import roll-up lines sit between cards at their time. The order
+// "You're all caught up", then the 24 most recent earlier cards, always, so
+// Home keeps what's been said. More load 24 at a time, only on a tap, so Home
+// ends. Import roll-up lines sit between cards at their time. The order
 // never changes under you: new good words wait behind the live pill.
 
 const VIEW_AFTER_MS = 10_000;
 
-// Earlier pages shown, kept for the session so Back from a title returns to
-// the same place (DS 5.1). Filters don't close them. Read only after the
-// first hydration, so the server's render always matches.
+// Earlier pages shown (the first is always open, PRD v1.6.0), kept for the
+// session so Back from a title returns to the same place (DS 5.1). Filters
+// don't close them. Read only after the first hydration, so the server's
+// render always matches.
 let hydrated = false;
 const PAGES_KEY = "home-pages";
 
 function restoredPages(): number {
-  if (!hydrated) return 0;
+  if (!hydrated) return 1;
   try {
-    return Math.max(0, Number(sessionStorage.getItem(PAGES_KEY)) || 0);
+    return Math.max(1, Number(sessionStorage.getItem(PAGES_KEY)) || 1);
   } catch {
-    return 0;
+    return 1;
   }
 }
 
@@ -88,7 +91,8 @@ function useCaughtUpEvent(newCount: number, pages: number) {
     const send = () => {
       if (sent || !state.current.seen) return;
       sent = true;
-      track("home_caught_up", { new_count: state.current.newCount, earlier_loaded: state.current.pages });
+      // Pages loaded on a tap; the first earlier page is always shown.
+      track("home_caught_up", { new_count: state.current.newCount, earlier_loaded: Math.max(0, state.current.pages - 1) });
     };
     window.addEventListener("pagehide", send);
     return () => {
@@ -116,7 +120,7 @@ function interleave(cards: ListCard[], rollups: ImportRollup[]): Item[] {
 }
 
 /** One Home card with its own vouch button (DS 4.2.2 home). */
-function HomeCard({ card, serverMine, group }: { card: ListCard; serverMine: MyGoodWord | null; group?: Group }) {
+function HomeCard({ card, serverMine, group, eager }: { card: ListCard; serverMine: MyGoodWord | null; group?: Group; eager?: boolean }) {
   const { viewer, friends, mineFor, takeBack } = useGoodWords();
   const { openAdd, openEditNote, openChangeGroups } = useAdd();
   const { title } = card;
@@ -124,19 +128,21 @@ function HomeCard({ card, serverMine, group }: { card: ListCard; serverMine: MyG
   const titleHref = `/title/${title.type}/${title.tmdbId}`;
   // The conversation the newest comment is in, or the newest good word's (PRD F16.5).
   const conversation = card.conversation;
-  const conversationHref = !conversation
-    ? `${titleHref}/conversation`
-    : conversation.kind === "word"
-      ? wordConversationHref(title, conversation.goodWordId)
-      : groupConversationHref(title, conversation.groupId);
+  const hrefFor = (compose: boolean) =>
+    !conversation
+      ? `${titleHref}/conversation`
+      : conversation.kind === "word"
+        ? wordConversationHref(title, conversation.goodWordId, { compose })
+        : groupConversationHref(title, conversation.groupId, { compose });
   return (
     <RecCardHome
       card={card}
       viewerId={viewer.id}
       href={titleHref}
-      conversationHref={conversationHref}
-      whereToWatchHref={`${titleHref}#where-to-watch`}
+      conversationHref={hrefFor(false)}
+      composeHref={hrefFor(true)}
       group={group}
+      eager={eager}
       vouchButton={
         <VouchButton
           vouched={mine !== null}
@@ -236,22 +242,29 @@ export function HomeScreen({
     </Button>
   );
 
-  const renderItems = (items: Item[]) =>
-    items.map((item) =>
+  const renderItems = (items: Item[], first = false) =>
+    items.map((item, i) =>
       item.kind === "rollup" ? (
         <li key={`rollup-${item.rollup.importId}`}>
           <ImportRollupLine person={item.rollup.person} count={item.rollup.count} at={new Date(item.rollup.at)} />
         </li>
       ) : (
         <li key={item.card.title.id}>
-          <HomeCard card={item.card} serverMine={serverMine[item.card.title.id] ?? null} group={item.card.viaGroupId ? groupOf.get(item.card.viaGroupId) : undefined} />
+          <HomeCard
+            card={item.card}
+            serverMine={serverMine[item.card.title.id] ?? null}
+            // The group chip, only with the groups flag on (PRD F16.7).
+            group={groupsEnabled && item.card.viaGroupId ? groupOf.get(item.card.viaGroupId) : undefined}
+            eager={first && i === 0}
+          />
         </li>
       ),
     );
 
   const bar: ReactNode = (
     <>
-      <ListBar groups={groups} currentId="home" />
+      {/* The switcher leads to group lists: only with the groups flag on (PRD F16.7, F16.8). */}
+      {groupsEnabled && <ListBar groups={groups} currentId="home" />}
       <LiveList groupIds={groups.map((g) => g.id)} friendIds={friendIds} home />
       <h1 className="sr-only">{t("home.title")}</h1>
     </>
@@ -309,18 +322,18 @@ export function HomeScreen({
         <div className="flex flex-col">
           {!nothingNew && (
             <section aria-label={t("home.newCards")}>
-              <ul className="flex flex-col">{renderItems(interleave(fresh, freshLines))}</ul>
+              <ul className="flex flex-col">{renderItems(interleave(fresh, freshLines), true)}</ul>
             </section>
           )}
           <div ref={caughtUpRef}>
-            <CaughtUpMarker onEarlier={pages === 0 && earlier.length > 0 ? showEarlier : undefined}>
+            <CaughtUpMarker>
               {nothingNew && !filtered && putButton}
             </CaughtUpMarker>
           </div>
-          {pages > 0 && (
+          {earlierShown.length + earlierLines.length > 0 && (
             <section aria-label={t("home.earlierCards")} className="flex flex-col gap-8">
               <ul className="flex flex-col">
-                {renderItems(interleave(earlierShown, earlierLines))}
+                {renderItems(interleave(earlierShown, earlierLines), nothingNew)}
               </ul>
               {hasMore && (
                 <div className="flex justify-center">
@@ -331,7 +344,7 @@ export function HomeScreen({
               )}
             </section>
           )}
-          {!hasMore && (pages > 0 || earlier.length === 0) && <p className="pt-2 text-center text-caption text-muted">{t("home.end")}</p>}
+          {!hasMore && <p className="pt-2 text-center text-caption text-muted">{t("home.end")}</p>}
         </div>
       )}
       <p aria-live="polite" className="sr-only">

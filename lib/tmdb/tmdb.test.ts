@@ -148,7 +148,7 @@ describe("poster images", () => {
   it("builds TMDB size variants", () => {
     expect(posterSrc("/f.jpg")).toBe("https://image.tmdb.org/t/p/w342/f.jpg");
     expect(posterSrcSet("/f.jpg")).toBe(
-      "https://image.tmdb.org/t/p/w154/f.jpg 154w, https://image.tmdb.org/t/p/w342/f.jpg 342w, https://image.tmdb.org/t/p/w500/f.jpg 500w",
+      "https://image.tmdb.org/t/p/w154/f.jpg 154w, https://image.tmdb.org/t/p/w342/f.jpg 342w, https://image.tmdb.org/t/p/w500/f.jpg 500w, https://image.tmdb.org/t/p/w780/f.jpg 780w",
     );
   });
 });
