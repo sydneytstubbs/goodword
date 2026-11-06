@@ -49,3 +49,6 @@ export async function expectNoViolations(page: Page) {
     .analyze();
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }
+
+/** The groups flag the app was built with (PRD F16.7): group specs run only with it on. */
+export const groupsOn = process.env.NEXT_PUBLIC_GROUPS_ENABLED === "true";

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { admin, createUser, deleteUsers, expectNoViolations, live, openMagicLink, type TestUser } from "./helpers/accounts";
+import { admin, createUser, deleteUsers, expectNoViolations, groupsOn, live, openMagicLink, type TestUser } from "./helpers/accounts";
 
 // Home (PRD F16.3, DS 5.19), behind the home_enabled flag (F16.10). Priya has
 // the flag and three friends (Jonah, Tess, Luis), and is in College crew with
@@ -111,34 +111,35 @@ test.describe("Home", () => {
     return page;
   }
 
-  test("one card per title, new first, then caught up; earlier cards only on a tap", async ({ browser }) => {
+  test("one card per title, new first, then caught up, then earlier cards", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/home");
     const main = page.getByRole("main");
 
     // One card naming both, with Tess's newer note.
     const ferry = main.getByRole("article", { name: "Tess and Jonah vouched for The Night Ferry" });
     await expect(ferry).toBeVisible();
-    await expect(ferry).toContainText("“ep 3 is where it gets you”");
+    // The newest note reads as the first comment (PRD v1.6.0).
+    await expect(ferry).toContainText("Tess ep 3 is where it gets you");
     await expect(ferry).not.toContainText("the ferry scene");
     await expect(ferry.getByRole("link", { name: "See all 2 good words" })).toBeVisible();
-    await expect(ferry.getByRole("link", { name: /Say something/ })).toBeVisible();
+    await expect(ferry.getByRole("link", { name: /Add a comment/ })).toBeVisible();
     await expect(ferry.getByRole("button", { name: "Vouch too The Night Ferry" })).toBeVisible();
 
-    // Reached only through College crew: the group's chip.
+    // Reached only through College crew: the group's chip, with the groups flag on (F16.7).
     const lowTide = main.getByRole("article", { name: "Jonah vouched for Low Tide Club" });
-    await expect(lowTide).toContainText("College crew");
+    if (groupsOn) await expect(lowTide).toContainText("College crew");
+    else await expect(lowTide).not.toContainText("College crew");
     await expect(ferry).not.toContainText("College crew");
 
     // The import is one line, not a card.
     await expect(main.getByRole("link", { name: /Luis added 1 title to their list/ })).toBeVisible();
     await expect(main.getByRole("article", { name: /Moth Season/ })).toHaveCount(0);
 
-    // Then caught up, and older cards wait for a tap.
+    // Then caught up, then the earlier cards, without a tap (PRD v1.6.0).
     await expect(main.getByRole("heading", { level: 2, name: "You're all caught up" })).toBeVisible();
-    await expect(main.getByRole("article", { name: /Grandma's Heist/ })).toHaveCount(0);
-    await expectNoViolations(page);
-    await main.getByRole("button", { name: "Show earlier good words" }).click();
     await expect(main.getByRole("article", { name: "Tess vouched for Grandma's Heist" })).toBeVisible();
+    // Fewer than 24 earlier cards: no button, and Home says it's ended.
+    await expect(main.getByRole("button", { name: "Show earlier good words" })).toHaveCount(0);
     await expect(main.getByText("That's everything from your friends")).toBeVisible();
     await expectNoViolations(page);
 
@@ -161,14 +162,13 @@ test.describe("Home", () => {
       .toBe(1);
   });
 
-  test("with nothing new, caught up sits at the top with Put in a good word", async ({ browser }) => {
+  test("with nothing new, caught up sits at the top with Put in a good word, then earlier cards", async ({ browser }) => {
     await admin().from("profiles").update({ home_viewed_at: new Date(Date.now() + 60_000).toISOString() }).eq("user_id", priya.id);
     const page = await signedIn(browser, priya, "/home");
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { level: 2, name: "You're all caught up" })).toBeVisible();
     await expect(main.getByRole("button", { name: "Put in a good word" })).toBeVisible();
-    await expect(main.getByRole("article")).toHaveCount(0);
-    await main.getByRole("button", { name: "Show earlier good words" }).click();
+    // Home is never blank when friends have vouched before (PRD F16.3, v1.6.0).
     await expect(main.getByRole("article", { name: /The Night Ferry/ })).toBeVisible();
     await expectNoViolations(page);
   });
@@ -176,7 +176,6 @@ test.describe("Home", () => {
   test("filters narrow the cards and live in the URL", async ({ browser }) => {
     const page = await signedIn(browser, priya, "/home");
     const main = page.getByRole("main");
-    await main.getByRole("button", { name: "Show earlier good words" }).click();
     await main.getByRole("radio", { name: "Movies" }).click();
     await expect(page).toHaveURL(/type=movie/);
     await expect(main.getByRole("article", { name: /Grandma's Heist/ })).toBeVisible();
@@ -194,6 +193,7 @@ test.describe("Home", () => {
   });
 
   test("with the flag, the switcher leads with Home and the Groups tab goes Home", async ({ browser }) => {
+    test.skip(!groupsOn, "the switcher shows only with the groups flag on (PRD F16.7)");
     const page = await signedIn(browser, priya, "/you");
     await page.goto("/list");
     await page.waitForURL((u) => u.pathname === "/home");
