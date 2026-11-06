@@ -5,6 +5,7 @@ import { requireOnboardedUser } from "@/lib/auth/session";
 import { cachedTitleId } from "@/lib/conversations/queries";
 import { recordEvent } from "@/lib/events/server";
 import { referrerPath } from "@/lib/events/referrer";
+import { groupsEnabled } from "@/lib/flags";
 import { listMyGroups } from "@/lib/groups/queries";
 import { ConversationPreviewSkeleton } from "@/components/domain/conversation-preview";
 import { ConversationPreviewLoader } from "./conversation-preview-loader";
@@ -51,7 +52,8 @@ export default async function TitlePage({ params, searchParams }: PageProps<"/ti
         viewer={{ id: user.id, name: profile.display_name }}
         region={profile.region}
         conversation={
-          groups.length > 0 ? (
+          // Group conversations, only with the groups flag on (PRD F16.4, F16.7).
+          groupsEnabled && groups.length > 0 ? (
             <Suspense fallback={<ConversationPreviewSkeleton />}>
               <ConversationPreviewLoader title={title} titleId={titleId} groups={groups} viewerId={user.id} askedGroupId={asked} />
             </Suspense>

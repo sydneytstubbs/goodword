@@ -88,6 +88,14 @@ export function collapseActivity(records: ActivityRecord[]): ActivityEntry[] {
   return entries;
 }
 
+/**
+ * Group joins lead to group details, a 404 with the groups flag off (PRD
+ * F16.7), so they're left out of the list and the bell's count.
+ */
+export function shownActivity(records: ActivityRecord[], groups: boolean): ActivityRecord[] {
+  return groups ? records : records.filter((r) => r.type !== "group_join");
+}
+
 export function unreadCount(entries: ActivityEntry[]): number {
   return entries.filter((e) => e.unread).length;
 }

@@ -9,6 +9,7 @@ import { requireOnboardedUser } from "@/lib/auth/session";
 import { myList } from "@/lib/good-words/queries";
 import { recordEvent } from "@/lib/events/server";
 import { filterKeys } from "@/lib/events/list";
+import { groupsEnabled } from "@/lib/flags";
 import { listMyGroups } from "@/lib/groups/queries";
 import { unfinishedImport } from "@/lib/import/queries";
 import { deckHref } from "@/lib/import/paths";
@@ -24,7 +25,7 @@ export const metadata: Metadata = { title: "My list · Good Word" };
 export default async function MyListPage({ searchParams }: PageProps<"/you">) {
   const { user, profile } = await requireOnboardedUser("/you");
   const [groups, list, unfinished] = await Promise.all([
-    listMyGroups(user.id),
+    groupsEnabled ? listMyGroups(user.id) : [],
     myList(user.id, profile.display_name, profile.region),
     unfinishedImport(),
   ]);
@@ -54,6 +55,8 @@ export default async function MyListPage({ searchParams }: PageProps<"/you">) {
 
       <MyListCards list={list} />
 
+      {/* Your groups, only with the groups flag on (PRD F16.7). */}
+      {groupsEnabled && (
       <section className="flex max-w-reading flex-col gap-3">
         <h2 className="text-title-m text-default">{t("you.groupsHeading")}</h2>
         {groups.length === 0 ? (
@@ -83,6 +86,7 @@ export default async function MyListPage({ searchParams }: PageProps<"/you">) {
           {t("groups.createGroup")}
         </TextLink>
       </section>
+      )}
 
       <section className="flex max-w-reading flex-col items-start gap-3">
         <h2 className="text-title-m text-default">{t("you.accountHeading")}</h2>

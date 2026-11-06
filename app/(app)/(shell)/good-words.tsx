@@ -18,6 +18,7 @@ import {
 } from "@/lib/good-words/actions";
 import type { Overlay } from "@/lib/good-words/list";
 import { audienceNames } from "@/lib/format";
+import { groupsEnabled } from "@/lib/flags";
 import { t } from "@/lib/messages";
 
 // The viewer's good words, written optimistically (DS 5.10, PRD F4): a change
@@ -274,7 +275,7 @@ export function GoodWordsProvider({
         const onlyGroup = input.groupIds.length === 1 ? input.groupIds[0] : null;
         showToast({
           message: t("vouch.onListInvite"),
-          action: { label: t("vouch.invite"), onAction: () => router.push(onlyGroup ? `/groups/${onlyGroup}` : "/groups/new") },
+          action: { label: t("vouch.invite"), onAction: () => router.push(!groupsEnabled ? "/you/friends" : onlyGroup ? `/groups/${onlyGroup}` : "/groups/new") },
         });
       }
       const attempt = () =>

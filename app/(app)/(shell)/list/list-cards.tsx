@@ -4,7 +4,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { FilterBar, type FilterChange } from "@/components/domain/filter-bar";
 import { RecCardGrid } from "@/components/domain/rec-card";
-import type { Service, ListCard } from "@/components/domain/types";
+import type { Group, Service, ListCard } from "@/components/domain/types";
+import { groupsEnabled } from "@/lib/flags";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Milestone } from "@/components/ui/milestone";
@@ -76,6 +77,20 @@ export function useStuck() {
     return () => observer.disconnect();
   }, []);
   return { ref, stuck };
+}
+
+/**
+ * My list: the groups a card is shared into, for its chips. With the groups
+ * flag off (PRD F16.7) there are no chips, and a good word that's in a group
+ * shows nothing rather than "Only you", so it never understates who sees it.
+ */
+function sharedLists(card: ListCard, groupOf: Map<string, Group>): Group[] | undefined {
+  const ids = card.groupIds ?? [];
+  if (!groupsEnabled) return ids.length > 0 && !card.friends ? undefined : [];
+  return ids.flatMap((id) => {
+    const group = groupOf.get(id);
+    return group ? [group] : [];
+  });
 }
 
 export function ListCards({
@@ -156,7 +171,8 @@ export function ListCards({
           services: serviceCounts(cards, services, filters),
           genres: genreCounts(cards, filters),
           hasMyServices: myServices.length > 0,
-          ...(scope.kind === "mine" ? { groups: groups.map(({ id, name }) => ({ id, name })) } : {}),
+          // My list's group filter, only with the groups flag on (PRD F16.7).
+          ...(scope.kind === "mine" && groupsEnabled ? { groups: groups.map(({ id, name }) => ({ id, name })) } : {}),
         }}
       />
       {shown.length === 0 ? (
@@ -181,14 +197,7 @@ export function ListCards({
                   commentCount={card.comments?.count}
                   unseenComments={card.comments?.unseen}
                   eager={i < 4}
-                  lists={
-                    scope.kind === "mine"
-                      ? (card.groupIds ?? []).flatMap((id) => {
-                          const group = groupOf.get(id);
-                          return group ? [group] : [];
-                        })
-                      : undefined
-                  }
+                  lists={scope.kind === "mine" ? sharedLists(card, groupOf) : undefined}
                   friends={scope.kind === "mine" && card.friends}
                 />
               </li>

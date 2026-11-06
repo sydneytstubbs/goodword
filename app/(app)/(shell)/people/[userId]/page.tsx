@@ -5,6 +5,7 @@ import { recordEvent } from "@/lib/events/server";
 import { filterKeys } from "@/lib/events/list";
 import { personList } from "@/lib/good-words/queries";
 import { friendIds } from "@/lib/friends/queries";
+import { groupsEnabled } from "@/lib/flags";
 import { listMyGroups } from "@/lib/groups/queries";
 import { createClient } from "@/lib/supabase/server";
 import { t } from "@/lib/messages";
@@ -53,7 +54,7 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/p
 
   return (
     <main className="mx-auto flex w-full max-w-content flex-col gap-8 px-4 py-8">
-      <PersonList name={name} groups={shared.map(({ id, name }) => ({ id, name }))} friend={friend} list={list} />
+      <PersonList name={name} groups={groupsEnabled ? shared.map(({ id, name }) => ({ id, name })) : []} friend={friend} list={list} />
     </main>
   );
 }

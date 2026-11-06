@@ -13,6 +13,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { t } from "@/lib/messages";
 import { useGoodWords } from "./good-words";
 import { track } from "@/lib/events/client";
+import { groupsEnabled } from "@/lib/flags";
 import { useCaptureVisitSource, visitSource } from "./visit-source";
 
 // Add (PRD 6.2, DS 5.4): a command, not a destination. One sheet over the
@@ -113,6 +114,10 @@ export function AddProvider({ children }: { children: ReactNode }) {
 
   const allIds = groups.map((g) => g.id);
   const withCounts: GroupWithCount[] = groups.map((g) => ({ id: g.id, name: g.name, memberCount: g.members.length }));
+  // Groups to toggle in the audience picker: none with the groups flag off, so
+  // Friends is the only choice (PRD F16.7). The visibility line still names
+  // any group a good word is already in, so it never understates who sees it.
+  const pickable = groupsEnabled ? withCounts : [];
   const peopleIn = (ids: string[]) =>
     new Set(groups.filter((g) => ids.includes(g.id)).flatMap((g) => g.members.map((m) => m.id))).size;
 
@@ -130,7 +135,8 @@ export function AddProvider({ children }: { children: ReactNode }) {
       const mine = mineOf(title);
       setNote(readDraft(title.id) ?? mine?.note ?? "");
       // Friends on and groups off with the flag (decision 5); otherwise all your groups (F4).
-      setSelected(friends ? [] : groups.map((g) => g.id));
+      // With groups off, keep the groups it's already in: there are no toggles to put them back (F16.7).
+      setSelected(!groupsEnabled ? (mine?.groupIds ?? []) : friends ? [] : groups.map((g) => g.id));
       setFriendsOn(true);
       setView({ kind: "confirm", title });
     },
@@ -284,7 +290,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
         groups={chosen}
         peopleCount={peopleIn(selected)}
         friends={friendsPick}
-        onChangeGroups={groups.length > 0 || friends ? () => setView({ kind: "picker", title }) : undefined}
+        onChangeGroups={pickable.length > 0 || friends ? () => setView({ kind: "picker", title }) : undefined}
       />
     );
     footer = already ? (
@@ -300,7 +306,7 @@ export function AddProvider({ children }: { children: ReactNode }) {
     sheetTitle = t("visibility.pickerTitle");
     body = (
       <GroupPickerFields
-        groups={withCounts}
+        groups={pickable}
         selectedIds={selected}
         onSelectedChange={setSelected}
         friends={friendsPick}
@@ -315,7 +321,9 @@ export function AddProvider({ children }: { children: ReactNode }) {
           selected.length !== mine.groupIds.length ||
           selected.some((id) => !mine.groupIds.includes(id)) ||
           (friends !== null && friendsOn !== Boolean(mine.friendsSharedAt));
-        if (changed) setGroups(title, mine, allIds.filter((id) => selected.includes(id)), friends ? friendsOn : undefined);
+        // Groups not shown as toggles keep their place (PRD F16.7).
+        const ordered = [...allIds.filter((id) => selected.includes(id)), ...selected.filter((id) => !allIds.includes(id))];
+        if (changed) setGroups(title, mine, ordered, friends ? friendsOn : undefined);
         close();
       }
     };

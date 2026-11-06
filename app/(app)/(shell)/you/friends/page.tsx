@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireOnboardedUser } from "@/lib/auth/session";
 import { markFriendActivityRead } from "@/lib/friends/actions";
+import { groupsEnabled } from "@/lib/flags";
 import { friendsOverview } from "@/lib/friends/queries";
 import { siteOrigin } from "@/lib/origin";
 import { FriendsScreen } from "./friends-screen";
@@ -14,5 +15,5 @@ export default async function FriendsPage() {
   const [overview, origin] = await Promise.all([friendsOverview(user.id), siteOrigin()]);
   // Opening Friends marks friend Activity items read (like a group's joins).
   await markFriendActivityRead();
-  return <FriendsScreen me={{ id: user.id, name: profile.display_name }} overview={overview} link={`${origin}/join/${overview.linkCode}`} />;
+  return <FriendsScreen me={{ id: user.id, name: profile.display_name }} overview={groupsEnabled ? overview : { ...overview, fromGroups: [] }} link={`${origin}/join/${overview.linkCode}`} />;
 }

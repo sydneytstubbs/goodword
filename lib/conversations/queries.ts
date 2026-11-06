@@ -4,7 +4,8 @@ import type { TitleType } from "@/components/domain/types";
 import type { GroupSummary } from "@/lib/groups/queries";
 import { createClient } from "@/lib/supabase/server";
 import { recordToTitle, type TitleRecord } from "@/lib/tmdb/normalize";
-import { collapseActivity, unreadCount, type ActivityRecord, type ActivityType } from "./activity";
+import { groupsEnabled } from "@/lib/flags";
+import { collapseActivity, shownActivity, unreadCount, type ActivityRecord, type ActivityType } from "./activity";
 import { decodeBody } from "./body";
 import type { CommentCount, ConversationComment, ConversationKey, ConversationPage, ConversationPreview, WordConversation } from "./types";
 
@@ -277,7 +278,7 @@ export async function activityRecords(options: { unreadOnly?: boolean } = {}): P
 /** The bell's count: unread Activity entries, after collapsing (F14). Zero if it can't be read. */
 export async function unreadActivityCount(): Promise<number> {
   try {
-    return unreadCount(collapseActivity(await activityRecords({ unreadOnly: true })));
+    return unreadCount(collapseActivity(shownActivity(await activityRecords({ unreadOnly: true }), groupsEnabled)));
   } catch (error) {
     console.error("activity count failed", (error as Error).message);
     return 0;

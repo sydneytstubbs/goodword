@@ -3,6 +3,7 @@ import { unreadActivityCount } from "@/lib/conversations/queries";
 import { friendCount } from "@/lib/friends/queries";
 import { sharePrompt } from "@/lib/share-prompt/queries";
 import { listMyGroups, newGoodWordCounts } from "@/lib/groups/queries";
+import { groupsEnabled } from "@/lib/flags";
 import { createClient } from "@/lib/supabase/server";
 import { ActivityCountProvider } from "./activity-count";
 import { AddProvider } from "./add";
@@ -43,12 +44,13 @@ export default async function ShellLayout({ children }: LayoutProps<"/">) {
 
   return (
     <GoodWordsProvider viewer={viewer} groups={groups} friends={friends} myServices={myServices}>
-      <ListNewsProvider counts={newCounts}>
+      {/* With groups off there are no group lists to badge (PRD F16.7). */}
+      <ListNewsProvider counts={groupsEnabled ? newCounts : {}}>
         <ActivityCountProvider userId={viewer.id} initialCount={activityCount}>
           <AddProvider>
             <ShellChrome>{children}</ShellChrome>
             {prompt && <SharePrompt friends={prompt.friends} goodWords={prompt.goodWords} />}
-            <AppNav groups={groups.map(({ id, name }) => ({ id, name }))} />
+            <AppNav groups={groupsEnabled ? groups.map(({ id, name }) => ({ id, name })) : []} />
           </AddProvider>
         </ActivityCountProvider>
       </ListNewsProvider>

@@ -5,6 +5,7 @@ import { Rail, TabBar } from "@/components/domain/app-bars";
 import type { Group } from "@/components/domain/types";
 import { listGroupId } from "@/lib/auth/paths";
 import { isConversationPath } from "@/lib/conversations/paths";
+import { groupsEnabled } from "@/lib/flags";
 import { isImportDeckPath } from "@/lib/import/paths";
 import { useActivityCount } from "./activity-count";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
@@ -38,6 +39,7 @@ export function AppNav({ groups }: { groups: Group[] }) {
         newCounts={counts}
         currentGroupId={listGroupId(pathname) ?? undefined}
         onAdd={addFromRail}
+        showGroups={groupsEnabled}
       />
     </>
   );

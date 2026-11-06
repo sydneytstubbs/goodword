@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireOnboardedUser } from "@/lib/auth/session";
-import { collapseActivity, unreadCount } from "@/lib/conversations/activity";
+import { collapseActivity, shownActivity, unreadCount } from "@/lib/conversations/activity";
+import { groupsEnabled } from "@/lib/flags";
 import { recordEvent } from "@/lib/events/server";
 import { activityRecords } from "@/lib/conversations/queries";
 import { ActivityList } from "./activity-list";
@@ -13,7 +14,7 @@ export const metadata: Metadata = { title: "Activity · Good Word" };
 // read; opening the screen doesn't.
 export default async function ActivityPage() {
   const { user } = await requireOnboardedUser("/activity");
-  const entries = collapseActivity(await activityRecords());
+  const entries = collapseActivity(shownActivity(await activityRecords(), groupsEnabled));
   await recordEvent("activity_opened", { unread_count: unreadCount(entries) }, user.id);
   return (
     <main className="mx-auto flex w-full max-w-detail flex-col gap-6 px-4 pt-1 pb-12">

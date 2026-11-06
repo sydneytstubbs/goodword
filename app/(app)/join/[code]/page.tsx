@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Wordmark } from "@/components/domain/wordmark";
 import { Avatar } from "@/components/ui/avatar";
 import { Banner } from "@/components/ui/banner";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TextLink } from "@/components/ui/text-link";
+import { groupsEnabled } from "@/lib/flags";
 import { getInvitePreview } from "@/lib/groups/queries";
 import { t } from "@/lib/messages";
 import { recordEvent } from "@/lib/events/server";
@@ -50,6 +51,8 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/joi
     if (!error) await recordEvent("invite_link_opened", { kind: "friend", signed_in: signedIn }, data.user?.id ?? null);
     return <FriendLanding code={code} inviter={preview.inviter} signedIn={signedIn} error={typeof error === "string" ? error : undefined} />;
   }
+  // Group invites are off with the groups flag (PRD F16.7); friend links still work.
+  if (!groupsEnabled) notFound();
   if (!error) await recordEvent("invite_link_opened", { kind: "group", group_id: preview.groupId, signed_in: signedIn }, data.user?.id ?? null);
   if (signedIn) {
     const { data: member } = await supabase.from("group_members").select("id").eq("group_id", preview.groupId).eq("user_id", data.user!.id).maybeSingle();

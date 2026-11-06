@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { acceptFriendLink } from "@/lib/friends/accept";
 import { joinWithCode } from "@/lib/groups/join";
 import { getInvitePreview } from "@/lib/groups/queries";
+import { groupsEnabled } from "@/lib/flags";
 import { createClient } from "@/lib/supabase/server";
 
 // Accept an invite: a form POST when signed in, or a GET when returning from
@@ -17,6 +18,8 @@ async function handle(request: NextRequest, { params }: RouteContext<"/join/[cod
 
   const preview = await getInvitePreview(code);
   if (preview.status === "active" && preview.kind === "friend") return go(await acceptFriendLink(code));
+  // Group invites are off with the groups flag (PRD F16.7): back to the landing, a 404.
+  if (!groupsEnabled) return go(`/join/${code}`);
   return go(await joinWithCode(code));
 }
 
